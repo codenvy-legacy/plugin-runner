@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.api.runner.dto.RunOptions;
+import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
 
@@ -21,6 +22,7 @@ import javax.annotation.Nonnull;
  *
  * @author Andrey Plotnikov
  */
+@ImplementedBy(RunnerManagerPresenter.class)
 public interface RunnerManager {
 
     /** Launch a new default runner. */
