@@ -11,13 +11,15 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.api.runner.dto.RunOptions;
-import com.codenvy.ide.api.mvp.Presenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.api.parts.AbstractPartPresenter;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The class provides much business logic:
@@ -26,11 +28,14 @@ import javax.annotation.Nonnull;
  * 2. Manage runners (stop runner, get different information about runner and etc).
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 @Singleton
-public class RunnerManagerPresenter implements Presenter, RunnerManager, RunnerManagerView.ActionDelegate {
+public class RunnerManagerPresenter extends AbstractPartPresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
 
     private final RunnerManagerView view;
+
+    private Runner selectedRunner;
 
     @Inject
     public RunnerManagerPresenter(RunnerManagerView view) {
@@ -41,7 +46,7 @@ public class RunnerManagerPresenter implements Presenter, RunnerManager, RunnerM
     /** {@inheritDoc} */
     @Override
     public void onRunnerSelected(@Nonnull Runner runner) {
-
+        this.selectedRunner = runner;
     }
 
     /** {@inheritDoc} */
@@ -71,13 +76,13 @@ public class RunnerManagerPresenter implements Presenter, RunnerManager, RunnerM
     /** {@inheritDoc} */
     @Override
     public void onConsoleButtonClicked() {
-
+        view.activateConsole(selectedRunner);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onTerminalButtonClicked() {
-
+        view.activateTerminal(selectedRunner);
     }
 
     /** {@inheritDoc} */
@@ -96,6 +101,27 @@ public class RunnerManagerPresenter implements Presenter, RunnerManager, RunnerM
     @Override
     public void go(@Nonnull AcceptsOneWidget container) {
         container.setWidget(view);
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String getTitle() {
+        return "Runner 2";
+    }
+
+    /** {@inheritDoc} */
+    @Nullable
+    @Override
+    public ImageResource getTitleImage() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Nullable
+    @Override
+    public String getTitleToolTip() {
+        return null;
     }
 
 }

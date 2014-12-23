@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +21,9 @@ import javax.annotation.Nullable;
  * This is abstract representation of widget that provides an ability to show runners and manage them.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
+@ImplementedBy(RunnerManagerViewImpl.class)
 public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate> {
 
     /**

@@ -10,21 +10,26 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client;
 
-import com.codenvy.ide.api.extension.Extension;
-import com.google.inject.Inject;
+import com.google.gwt.i18n.client.Messages;
 import com.google.inject.Singleton;
 
 /**
- * Codenvy IDE3 extension provides functionality of Runner. It has to provides major operation for Runner: launch new runner, get different
- * information about runners, stop runner. The main feature is an ability to runner a few runner in the same time.
+ * Contains all names of graphical elements needed for runner plugin.
  *
- * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 @Singleton
-@Extension(title = "Runner", version = "1.0.0")
-public class RunnerExtension {
-    @Inject
-    public RunnerExtension() {
-        // TODO write configuration of plugin
-    }
+public interface RunnerLocalizationConstant extends Messages {
+
+    @Key("runner.label.application.info")
+    String runnerLabelApplicationInfo();
+
+    @Key("runner.label.timeout.info")
+    String runnerLabelTimeoutInfo();
+
+    @Key("runner.tab.console")
+    String runnerTabConsole();
+
+    @Key("runner.tab.terminal")
+    String runnerTabTerminal();
 }
