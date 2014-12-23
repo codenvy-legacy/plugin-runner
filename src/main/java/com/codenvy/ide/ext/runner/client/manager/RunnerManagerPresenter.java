@@ -11,8 +11,8 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.api.runner.dto.RunOptions;
-import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.api.parts.AbstractPartPresenter;
+import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
@@ -41,6 +41,11 @@ public class RunnerManagerPresenter extends AbstractPartPresenter implements Run
     public RunnerManagerPresenter(RunnerManagerView view) {
         this.view = view;
         this.view.setDelegate(this);
+    }
+
+    /** @return the GWT widget that is controlled by the presenter */
+    public RunnerManagerView getView() {
+        return view;
     }
 
     /** {@inheritDoc} */

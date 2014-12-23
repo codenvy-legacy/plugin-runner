@@ -26,6 +26,17 @@ import javax.annotation.Nullable;
 @ImplementedBy(RunnerManagerViewImpl.class)
 public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate> {
 
+    /** Sets active runner panel when runner is started */
+    void setActive();
+
+    /**
+     * Updates runner view representation when runner state changed.
+     *
+     * @param runner
+     *         runner which was changed
+     */
+    void update(@Nonnull Runner runner);
+
     /**
      * Adds a new runner part on the view.
      *
@@ -51,14 +62,65 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void setTimeout(@Nonnull String timeout);
 
     /**
-     * Prints a given line in the console for a given runner.
+     * Prints a given line with info content in the console for a given runner.Printed line will look like this: [INFO] some string
      *
      * @param runner
      *         runner that needs to contain a given line
      * @param line
      *         line that needs to be printed
      */
-    void print(@Nonnull Runner runner, @Nonnull String line);
+    void printInfo(@Nonnull Runner runner, @Nonnull String line);
+
+    /**
+     * Prints a given line with error content in the console for a given runner.Printed line will look like this: [ERROR] some string
+     *
+     * @param runner
+     *         runner that needs to contain a given line
+     * @param line
+     *         line that needs to be printed
+     */
+    void printError(@Nonnull Runner runner, @Nonnull String line);
+
+    /**
+     * Prints a given line with warning content in the console for a given runner.Printed line will look like this: [WARNING] some string
+     *
+     * @param runner
+     *         runner that needs to contain a given line
+     * @param line
+     *         line that needs to be printed
+     */
+    void printWarn(@Nonnull Runner runner, @Nonnull String line);
+
+    /**
+     * Prints a given line with docker content in the console for a given runner.Printed line will look like this: [DOCKER] some string
+     *
+     * @param runner
+     *         runner that needs to contain a given line
+     * @param line
+     *         line that needs to be printed
+     */
+    void printDocker(@Nonnull Runner runner, @Nonnull String line);
+
+    /**
+     * Prints a given line with stand out content in the console for a given runner.Printed line will look like this: [STDOUT] some string
+     *
+     * @param runner
+     *         runner that needs to contain a given line
+     * @param line
+     *         line that needs to be printed
+     */
+    void printStdOut(@Nonnull Runner runner, @Nonnull String line);
+
+    /**
+     * Prints a given line with stand error content in the console for a given runner.Printed line will look like this:
+     * [STDERR] some string
+     *
+     * @param runner
+     *         runner that needs to contain a given line
+     * @param line
+     *         line that needs to be printed
+     */
+    void printStdErr(@Nonnull Runner runner, @Nonnull String line);
 
     /**
      * Binds a terminal on the server part with a GWT widget on the view.
@@ -112,7 +174,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's choosing to show runner terminal widget. */
         void onTerminalButtonClicked();
-
     }
 
 }

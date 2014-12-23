@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.manager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.runnerview.RunnerView;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -22,6 +23,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
@@ -75,10 +77,16 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
 
     private ActionDelegate delegate;
 
+    private final Provider<RunnerView> runnerViewProvider;
+
     @Inject
-    public RunnerManagerViewImpl(RunnerManagerViewImplUiBinder uiBinder, RunnerResources resources, RunnerLocalizationConstant locales) {
+    public RunnerManagerViewImpl(RunnerManagerViewImplUiBinder uiBinder,
+                                 RunnerResources resources,
+                                 RunnerLocalizationConstant locales,
+                                 Provider<RunnerView> runnerViewProvider) {
         this.resources = resources;
         this.locale = locales;
+        this.runnerViewProvider = runnerViewProvider;
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -131,8 +139,24 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
 
     /** {@inheritDoc} */
     @Override
-    public void addRunner(@Nonnull Runner runner) {
+    public void setActive() {
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void update(@Nonnull Runner runner) {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addRunner(@Nonnull Runner runner) {
+        RunnerView runnerView = runnerViewProvider.get();
+
+        runnerView.update(runner);
+
+        runnersPanel.add(runnerView);
     }
 
     /** {@inheritDoc} */
@@ -149,7 +173,37 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
 
     /** {@inheritDoc} */
     @Override
-    public void print(@Nonnull Runner runner, @Nonnull String line) {
+    public void printInfo(@Nonnull Runner runner, @Nonnull String line) {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void printError(@Nonnull Runner runner, @Nonnull String line) {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void printWarn(@Nonnull Runner runner, @Nonnull String line) {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void printDocker(@Nonnull Runner runner, @Nonnull String line) {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void printStdOut(@Nonnull Runner runner, @Nonnull String line) {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void printStdErr(@Nonnull Runner runner, @Nonnull String line) {
 
     }
 
