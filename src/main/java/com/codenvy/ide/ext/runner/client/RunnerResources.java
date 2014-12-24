@@ -14,6 +14,8 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.inject.Singleton;
 
+import org.vectomatic.dom.svg.ui.SVGResource;
+
 /**
  * Class contains references to resources which need to correct displaying of runner plugin.
  *
@@ -31,4 +33,13 @@ public interface RunnerResources extends ClientBundle {
 
     @Source("runner.css")
     RunnerCss runnerCss();
+
+    @Source("images/run.svg")
+    SVGResource runAppImage();
+
+    @Source("images/edit-custom-environments.svg")
+    SVGResource editEnvironmentsImage();
+
+    @Source("images/run-with.svg")
+    SVGResource runWithImage();
 }

@@ -32,4 +32,28 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("runner.tab.terminal")
     String runnerTabTerminal();
+
+    @Key("action.run")
+    String actionRun();
+
+    @Key("action.custom.run")
+    String actionCustomRun();
+
+    @Key("action.run.description")
+    String actionRunDescription();
+
+    @Key("action.edit.run")
+    String actionEditRun();
+
+    @Key("action.edit.run.description")
+    String actionEditRunDescription();
+
+    @Key("action.group.run.with")
+    String actionGroupRunWith();
+
+    @Key("action.group.run.with.description")
+    String actionGroupRunWithDescription();
+
+    @Key("action.custom.run.description")
+    String actionCustomRunDescription();
 }
