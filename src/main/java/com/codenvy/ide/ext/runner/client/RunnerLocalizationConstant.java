@@ -13,6 +13,8 @@ package com.codenvy.ide.ext.runner.client;
 import com.google.gwt.i18n.client.Messages;
 import com.google.inject.Singleton;
 
+import javax.annotation.Nonnull;
+
 /**
  * Contains all names of graphical elements needed for runner plugin.
  *
@@ -56,4 +58,53 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("action.custom.run.description")
     String actionCustomRunDescription();
+
+    @Key("custom.environments.title")
+    String customEnvironmentsTitle();
+
+    @Key("custom.environments.button.add")
+    String customEnvironmentsButtonAdd();
+
+    @Key("custom.environments.button.Remove")
+    String customEnvironmentsButtonRemove();
+
+    @Key("custom.environments.button.close")
+    String customEnvironmentsButtonClose();
+
+    @Key("custom.environments.button.edit")
+    String customEnvironmentsButtonEdit();
+
+    @Key("custom.environments.empty.table")
+    String customEnvironmentsEmptyTable();
+
+    @Key("action.manager.environment.text")
+    String actionManagerEnvironmentText(@Nonnull String text);
+
+    @Key("action.manager.environment.description")
+    String actionManagerEnvironmentDescription(@Nonnull String description);
+
+    @Key("validator.space.not.allowed")
+    String validatorSpaceNotAllowed();
+
+    @Key("validator.dots.not.allowed")
+    String validatorDotsNotAllowed();
+
+    @Key("validator.name.invalid")
+    String validatorNameInvalid();
+
+    @Key("add.environment.dialog.title")
+    String addEnvironmentDialogTitle();
+
+    @Key("add.environment.dialog.label")
+    String addEnvironmentDialogLabel();
+
+    @Key("retrieve.images.failed")
+    String retrieveImagesFailed(@Nonnull String error);
+
+    @Key("remove.environment")
+    String removeEnvironment();
+
+    @Key("remove.environment.message")
+    String removeEnvironmentMessage(@Nonnull String environmentName);
+
 }

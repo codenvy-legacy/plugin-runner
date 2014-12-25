@@ -18,3 +18,18 @@
     border-right: 1px solid #878787;
     border-top: 1px solid #878787;
 }
+
+.blueButton {
+    background: #256c9f;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.29), inset 0 1px 0 0 rgba(55, 126, 172, 1);
+    border-color: #2f3237;
+}
+
+.blueButton:HOVER {
+    background: #18537e;
+}
+
+.blueButton:ACTIVE {
+    background: #18537e;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.29), inset 0 1px 1px 0 rgba(0, 0, 0, 0.75);
+}

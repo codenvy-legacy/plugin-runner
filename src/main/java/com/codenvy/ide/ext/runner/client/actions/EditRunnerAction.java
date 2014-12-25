@@ -12,9 +12,13 @@ package com.codenvy.ide.ext.runner.client.actions;
 
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ProjectAction;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.customenvironment.customenvironmentview.CustomEnvironmentPresenter;
 import com.google.inject.Inject;
+
+import javax.annotation.Nonnull;
 
 /**
  * Action which allows run project with user's runner parameters.
@@ -23,19 +27,26 @@ import com.google.inject.Inject;
  */
 public class EditRunnerAction extends ProjectAction {
 
+    private final CustomEnvironmentPresenter environmentPresenter;
+
     @Inject
-    public EditRunnerAction(RunnerLocalizationConstant locale, RunnerResources resources) {
+    public EditRunnerAction(RunnerLocalizationConstant locale, RunnerResources resources, CustomEnvironmentPresenter environmentPresenter) {
         super(locale.actionEditRun(), locale.actionEditRunDescription(), resources.editEnvironmentsImage());
+
+        this.environmentPresenter = environmentPresenter;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void updateProjectAction(ActionEvent event) {
+    protected void updateProjectAction(@Nonnull ActionEvent event) {
+        CurrentProject currentProject = appContext.getCurrentProject();
+
+        event.getPresentation().setEnabledAndVisible(currentProject != null);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void actionPerformed(ActionEvent event) {
-        //TODO need special dialog window to add and edit custom runner environments
+    public void actionPerformed(@Nonnull ActionEvent event) {
+        environmentPresenter.showDialog();
     }
 }

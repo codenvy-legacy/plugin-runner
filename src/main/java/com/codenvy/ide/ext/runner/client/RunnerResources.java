@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.TextResource;
 import com.google.inject.Singleton;
 
 import org.vectomatic.dom.svg.ui.SVGResource;
@@ -29,6 +30,8 @@ public interface RunnerResources extends ClientBundle {
         String fullSize();
 
         String activeTab();
+
+        String blueButton();
     }
 
     @Source("runner.css")
@@ -42,4 +45,19 @@ public interface RunnerResources extends ClientBundle {
 
     @Source("images/run-with.svg")
     SVGResource runWithImage();
+
+    @Source("images/addEnvironment.svg")
+    SVGResource addEnvironmentImage();
+
+    @Source("images/editEnvironment.svg")
+    SVGResource editEnvironmentImage();
+
+    @Source("images/removeEnvironment.svg")
+    SVGResource removeEnvironmentImage();
+
+    @Source("images/environment.svg")
+    SVGResource environmentImage();
+
+    @Source("docker-template.txt")
+    TextResource dockerTemplate();
 }

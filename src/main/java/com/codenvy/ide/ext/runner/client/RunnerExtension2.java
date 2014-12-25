@@ -39,8 +39,9 @@ import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 @Extension(title = "Runner", version = "1.0.0")
 public class RunnerExtension2 { //TODO need rename
 
-    private static final String RUN_APP_ID     = "runApp";
-    public static final  String GROUP_RUN_WITH = "runWithGroup";
+    public static final  String RUN_APP_ID       = "runApp";
+    public static final  String GROUP_RUN_WITH_2 = "runWithGroup2"; //TODO need rename it when old runner extension will be deleted
+    private static final String GROUP_RUN_WITH   = "RunWithGroup";
 
     @Inject
     public RunnerExtension2(RunnerResources resources) {
@@ -67,6 +68,7 @@ public class RunnerExtension2 { //TODO need rename
         DefaultActionGroup runToolbarGroup = new DefaultActionGroup(GROUP_RUN_TOOLBAR, false, actionManager);
 
         actionManager.registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
+        actionManager.registerAction(GROUP_RUN_WITH_2, runWithGroup);
 
         runWithGroup.add(editRunnerAction);
         runWithGroup.addSeparator();

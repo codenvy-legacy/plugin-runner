@@ -45,6 +45,8 @@ public class RunWithGroup extends DefaultActionGroup {
     public void update(ActionEvent e) {
         CurrentProject currentProject = appContext.getCurrentProject();
 
-        e.getPresentation().setEnabled(currentProject != null && !currentProject.isReadOnly());
+        boolean isVisible = !(currentProject == null || currentProject.isReadOnly());
+
+        e.getPresentation().setEnabledAndVisible(isVisible);
     }
 }

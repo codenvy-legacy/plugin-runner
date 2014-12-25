@@ -41,9 +41,9 @@ public class RunAction extends ProjectAction {
     /** {@inheritDoc} */
     @Override
     protected void updateProjectAction(@Nonnull final ActionEvent event) {
-        final CurrentProject currentProject = appContext.getCurrentProject();
+        CurrentProject currentProject = appContext.getCurrentProject();
 
-        event.getPresentation().setEnabled(currentProject != null);
+        event.getPresentation().setEnabledAndVisible(currentProject != null);
     }
 
     /** {@inheritDoc} */
