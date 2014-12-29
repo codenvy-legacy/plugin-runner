@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runnerview;
+package com.codenvy.ide.ext.runner.client.widgets.runner;
 
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -21,8 +21,8 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-@ImplementedBy(RunnerViewImpl.class)
-public interface RunnerView extends View<RunnerView.ActionDelegate> {
+@ImplementedBy(RunnerWidgetImpl.class)
+public interface RunnerWidget extends View<RunnerWidget.ActionDelegate> {
 
     /**
      * Updates runner view representation when runner state changed.

@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.terminal;
+package com.codenvy.ide.ext.runner.client.widgets.terminal;
 
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
@@ -18,8 +18,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
  */
 public class TerminalImpl extends Composite implements Terminal {
 
-    interface TerminalImplUiBinder extends UiBinder<HTMLPanel, TerminalImpl> {
+    interface TerminalImplUiBinder extends UiBinder<Widget, TerminalImpl> {
     }
 
     private static final TerminalImplUiBinder UI_BINDER = GWT.create(TerminalImplUiBinder.class);

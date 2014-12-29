@@ -11,8 +11,8 @@
 package com.codenvy.ide.ext.runner.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
-import com.codenvy.ide.ext.runner.client.console.Console;
-import com.codenvy.ide.ext.runner.client.console.ConsoleImpl;
+import com.codenvy.ide.ext.runner.client.widgets.console.Console;
+import com.codenvy.ide.ext.runner.client.widgets.console.ConsoleImpl;
 import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.EnvironmentActionFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.HandlerFactory;

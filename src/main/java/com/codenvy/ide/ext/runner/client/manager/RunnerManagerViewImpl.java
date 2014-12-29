@@ -12,11 +12,11 @@ package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.console.Console;
+import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runnerview.RunnerView;
-import com.codenvy.ide.ext.runner.client.terminal.Terminal;
+import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -80,11 +80,11 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final Provider<RunnerView>  runnerViewProvider;
-    private final ConsoleFactory        consoleFactory;
-    private final Provider<Terminal>    terminalProvider;
-    private final Map<Runner, Console>  consoles;
-    private final Map<Runner, Terminal> terminals;
+    private final Provider<RunnerWidget> runnerViewProvider;
+    private final ConsoleFactory         consoleFactory;
+    private final Provider<Terminal>     terminalProvider;
+    private final Map<Runner, Console>   consoles;
+    private final Map<Runner, Terminal>  terminals;
 
     private ActionDelegate delegate;
 
@@ -92,7 +92,7 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     public RunnerManagerViewImpl(RunnerManagerViewImplUiBinder uiBinder,
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locales,
-                                 Provider<RunnerView> runnerViewProvider,
+                                 Provider<RunnerWidget> runnerViewProvider,
                                  ConsoleFactory consoleFactory,
                                  Provider<Terminal> terminalProvider) {
         this.resources = resources;
@@ -162,9 +162,9 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     /** {@inheritDoc} */
     @Override
     public void addRunner(@Nonnull Runner runner) {
-        RunnerView runnerView = runnerViewProvider.get();
-        runnerView.update(runner);
-        runnersPanel.add(runnerView);
+        RunnerWidget runnerWidget = runnerViewProvider.get();
+        runnerWidget.update(runner);
+        runnersPanel.add(runnerWidget);
 
         Console console = consoleFactory.createConsole(runner);
         consoles.put(runner, console);

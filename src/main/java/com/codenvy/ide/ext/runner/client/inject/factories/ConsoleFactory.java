@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.inject.factories;
 
-import com.codenvy.ide.ext.runner.client.console.Console;
+import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 
 import javax.annotation.Nonnull;

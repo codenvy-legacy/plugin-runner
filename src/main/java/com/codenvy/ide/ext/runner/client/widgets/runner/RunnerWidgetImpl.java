@@ -8,13 +8,13 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runnerview;
+package com.codenvy.ide.ext.runner.client.widgets.runner;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -27,25 +27,24 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public class RunnerViewImpl extends Composite implements RunnerView {
+public class RunnerWidgetImpl extends Composite implements RunnerWidget {
 
     @Singleton
-    interface RunnerViewImplUiBinder extends UiBinder<Widget, RunnerViewImpl> {
+    interface RunnerViewImplUiBinder extends UiBinder<Widget, RunnerWidgetImpl> {
     }
 
     @UiField
-    FlowPanel runnerImage;
+    Label runnerName;
     @UiField
-    Label     runnerName;
+    Label ram;
     @UiField
-    Label     ram;
+    Label startTime;
     @UiField
-    Label     startTime;
+    Image image;
 
     @Inject
-    public RunnerViewImpl(RunnerViewImplUiBinder ourUiBinder) {
-        ourUiBinder.createAndBindUi(this);
-
+    public RunnerWidgetImpl(RunnerViewImplUiBinder ourUiBinder) {
+        initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     /** {@inheritDoc} */
@@ -55,7 +54,8 @@ public class RunnerViewImpl extends Composite implements RunnerView {
 
         runnerName.setText(runner.getTitle());
         ram.setText(String.valueOf(runner.getRAM()));
-        startTime.setText(String.valueOf(runner.getCreationTime()));
+      //TODO need as set time as in old plugin version
+     // startTime.setText(runner.getCreationTime().toString());
     }
 
     /** {@inheritDoc} */

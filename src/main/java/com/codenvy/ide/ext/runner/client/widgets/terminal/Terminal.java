@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.terminal;
+package com.codenvy.ide.ext.runner.client.widgets.terminal;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.user.client.ui.IsWidget;
