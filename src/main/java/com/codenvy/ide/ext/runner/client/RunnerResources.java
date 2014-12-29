@@ -32,6 +32,14 @@ public interface RunnerResources extends ClientBundle {
         String activeTab();
 
         String blueButton();
+
+        String treeIcon();
+
+        String runButton();
+
+        String cancelButton();
+
+        String fontStyle();
     }
 
     @Source("runner.css")

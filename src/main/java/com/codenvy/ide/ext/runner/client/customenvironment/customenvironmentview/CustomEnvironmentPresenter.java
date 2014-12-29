@@ -47,7 +47,8 @@ import javax.annotation.Nonnull;
  */
 public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionDelegate {
 
-    private static final String DOCKER_SCRIPT_NAME = "/Dockerfile";
+    private static final String DOCKER_SCRIPT_NAME          = "/Dockerfile";
+    private static final String ENVIRONMENT_NOT_EXIST_ERROR = "Path 'a/.codenvy/runners/environments' doesn't exist.";
 
     private final String                     envFolderPath;
     private final NotificationManager        notificationManager;
@@ -176,20 +177,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
             @Override
             protected void onSuccess(@Nonnull Array<ItemReference> result) {
                 for (ItemReference item : result.asIterable()) {
-                    ProjectNode project = new ProjectNode(null,
-                                                          currentProject.getProjectDescription(),
-                                                          null,
-                                                          TreeSettings.DEFAULT,
-                                                          eventBus,
-                                                          projectServiceClient,
-                                                          dtoUnmarshallerFactory);
-
-                    eventBus.fireEvent(new FileEvent(new EnvironmentScript(project,
-                                                                           item,
-                                                                           eventBus,
-                                                                           projectServiceClient,
-                                                                           dtoUnmarshallerFactory,
-                                                                           environmentName), FileEvent.FileOperation.OPEN));
+                    createAndOpenFile(item, environmentName);
                 }
             }
 
@@ -198,6 +186,23 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                 Log.error(CustomEnvironmentPresenter.class, ignore.getMessage());
             }
         });
+    }
+
+    private void createAndOpenFile(@Nonnull ItemReference item, @Nonnull String environmentName) {
+        ProjectNode project = new ProjectNode(null,
+                                              currentProject.getProjectDescription(),
+                                              null,
+                                              TreeSettings.DEFAULT,
+                                              eventBus,
+                                              projectServiceClient,
+                                              dtoUnmarshallerFactory);
+
+        eventBus.fireEvent(new FileEvent(new EnvironmentScript(project,
+                                                               item,
+                                                               eventBus,
+                                                               projectServiceClient,
+                                                               dtoUnmarshallerFactory,
+                                                               environmentName), FileEvent.FileOperation.OPEN));
     }
 
     /** Show dialog window to add,edit or remove custom environments. */
@@ -232,7 +237,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
 
                     @Override
                     public void onFailure(Throwable caught) {
-                        if (caught.getMessage().contains("doesn't exist")) {
+                        if (caught.getMessage().contains(ENVIRONMENT_NOT_EXIST_ERROR)) {
                             createEnvironmentsFolder();
                         }
 

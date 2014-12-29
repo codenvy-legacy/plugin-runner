@@ -123,13 +123,13 @@ public class EnvironmentActionManager implements ProjectActionHandler {
                                          new AsyncRequestCallback<Array<ItemReference>>(unmarshaller) {
                                              @Override
                                              protected void onSuccess(@Nonnull Array<ItemReference> result) {
-                                                 Array<String> environments = Collections.createArray();
+                                                 Array<String> environmentList = Collections.createArray();
 
                                                  for (ItemReference item : result.asIterable()) {
-                                                     environments.add(item.getName());
+                                                     environmentList.add(item.getName());
                                                  }
 
-                                                 callback.onSuccess(environments);
+                                                 callback.onSuccess(environmentList);
                                              }
 
                                              @Override

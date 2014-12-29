@@ -15,18 +15,24 @@ import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.customrun.customrunview.CustomRunPresenter;
 import com.google.inject.Inject;
 
 /**
  * Action which allows user set custom parameters to runner via special dialog window which allows set up runner.
  *
+ * @author Artem Zatsarynnyy
  * @author Dmitry Shnurenko
  */
 public class CustomRunAction extends ProjectAction {
 
+    private final CustomRunPresenter customRunPresenter;
+
     @Inject
-    public CustomRunAction(RunnerLocalizationConstant locale, RunnerResources resources) {
+    public CustomRunAction(RunnerLocalizationConstant locale, RunnerResources resources, CustomRunPresenter customRunPresenter) {
         super(locale.actionCustomRun(), locale.actionCustomRunDescription(), resources.runAppImage());
+
+        this.customRunPresenter = customRunPresenter;
     }
 
     /** {@inheritDoc} */
@@ -34,12 +40,12 @@ public class CustomRunAction extends ProjectAction {
     protected void updateProjectAction(ActionEvent event) {
         CurrentProject currentProject = appContext.getCurrentProject();
 
-        event.getPresentation().setEnabled(currentProject != null);
+        event.getPresentation().setEnabledAndVisible(currentProject != null);
     }
 
     /** {@inheritDoc} */
     @Override
     public void actionPerformed(ActionEvent event) {
-        //TODO need special dialog window for setting custom run parameters
+        customRunPresenter.showDialog();
     }
 }

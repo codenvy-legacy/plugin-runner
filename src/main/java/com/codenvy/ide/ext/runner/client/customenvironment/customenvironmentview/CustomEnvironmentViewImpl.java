@@ -55,7 +55,7 @@ public class CustomEnvironmentViewImpl extends Window implements CustomEnvironme
     interface CustomEnvironmentViewImplUiBinder extends UiBinder<Widget, CustomEnvironmentViewImpl> {
     }
 
-    private static final CustomEnvironmentViewImplUiBinder ourUiBinder = GWT.create(CustomEnvironmentViewImplUiBinder.class);
+    private static final CustomEnvironmentViewImplUiBinder UI_BINDER = GWT.create(CustomEnvironmentViewImplUiBinder.class);
 
     @UiField
     ScrollPanel listPanel;
@@ -71,7 +71,7 @@ public class CustomEnvironmentViewImpl extends Window implements CustomEnvironme
                                      com.codenvy.ide.Resources resources) {
 
         setTitle(locale.customEnvironmentsTitle());
-        setWidget(ourUiBinder.createAndBindUi(this));
+        setWidget(UI_BINDER.createAndBindUi(this));
 
         createButtons(locale, runnerResources);
 

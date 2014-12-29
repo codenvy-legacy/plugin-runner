@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client;
 import com.google.gwt.i18n.client.Messages;
 import com.google.inject.Singleton;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 /**
@@ -107,4 +108,42 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("remove.environment.message")
     String removeEnvironmentMessage(@Nonnull String environmentName);
 
+    @Key("custom.runner.title")
+    String customRunnerTitle();
+
+    @Key("custom.runner.get.environment.failed")
+    String customRunnerGetEnvironmentFailed();
+
+    @Key("custom.runner.memory.runner")
+    String customRunnerMemoryRunner();
+
+    @Key("custom.runner.memory.total")
+    String customRunnerMemoryTotal();
+
+    @Key("custom.runner.memory.available")
+    String customRunnerMemoryAvailable();
+
+    @Key("custom.runner.skip.build")
+    String customRunnerSkipBuild();
+
+    @Key("custom.runner.environment")
+    String customRunnerEnvironment();
+
+    @Key("custom.runner.button.cancel")
+    String customRunnerButtonCancel();
+
+    @Key("message.fail.remember.options")
+    String messageFailRememberOptions();
+
+    @Key("messages.un.multiple.ram.value")
+    String ramSizeMustBeMultipleOf(@Nonnull String multiple);
+
+    @Key("messages.incorrect.value")
+    String messagesIncorrectValue();
+
+    @Key("messages.total.ram.less.custom")
+    String messagesTotalRamLessCustom(@Nonnegative int totalRam, @Nonnegative int customRam);
+
+    @Key("messages.available.ram.less.custom")
+    String messagesAvailableRamLessCustom(@Nonnegative int overrideRam, @Nonnegative int total, @Nonnegative int used);
 }

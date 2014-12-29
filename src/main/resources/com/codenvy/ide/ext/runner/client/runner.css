@@ -33,3 +33,36 @@
     background: #18537e;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.29), inset 0 1px 1px 0 rgba(0, 0, 0, 0.75);
 }
+
+.treeIcon {
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -2px;
+    pointer-events: none;
+    fill: mainFontColor;
+}
+
+.runButton {
+    background: rgba(0, 135, 77, 1);
+}
+
+.runButton:hover {
+    background: rgba(0, 98, 53, 0.74);
+}
+
+.runButton,
+.cancelButton {
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "Helvetica Neue", "Myriad Pro", arial, Verdana, Verdana, sans-serif;
+    border-radius: 1px;
+}
+
+.fontStyle {
+    font-size: 13px;
+    font-family: "Helvetica Neue", "Myriad Pro", arial, Verdana, Verdana, sans-serif;
+    color: #dbdbdb;
+}
