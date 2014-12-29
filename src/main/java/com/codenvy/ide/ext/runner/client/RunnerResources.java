@@ -31,6 +31,10 @@ public interface RunnerResources extends ClientBundle {
 
         String activeTab();
 
+        String consolePanel();
+
+        String logLink();
+
         String blueButton();
 
         String treeIcon();

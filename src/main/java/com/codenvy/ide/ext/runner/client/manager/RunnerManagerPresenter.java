@@ -11,8 +11,15 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.api.runner.dto.RunOptions;
-import com.codenvy.ide.api.parts.AbstractPartPresenter;
+import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
+import com.codenvy.ide.api.parts.PartPresenter;
+import com.codenvy.ide.api.parts.base.BasePresenter;
+import com.codenvy.ide.dto.DtoFactory;
+import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.runneractions.ActionFactory;
+import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
@@ -20,6 +27,11 @@ import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.RUN;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 
 /**
  * The class provides much business logic:
@@ -31,16 +43,31 @@ import javax.annotation.Nullable;
  * @author Dmitry Shnurenko
  */
 @Singleton
-public class RunnerManagerPresenter extends AbstractPartPresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
+public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
 
-    private final RunnerManagerView view;
+    private final RunnerManagerView         view;
+    private final DtoFactory                dtoFactory;
+    private final AppContext                appContext;
+    private final ModelsFactory             modelsFactory;
+    private final ActionFactory             actionFactory;
+    private final Map<Runner, RunnerAction> runActions;
 
     private Runner selectedRunner;
 
     @Inject
-    public RunnerManagerPresenter(RunnerManagerView view) {
+    public RunnerManagerPresenter(RunnerManagerView view,
+                                  ActionFactory actionFactory,
+                                  ModelsFactory modelsFactory,
+                                  AppContext appContext,
+                                  DtoFactory dtoFactory) {
         this.view = view;
         this.view.setDelegate(this);
+        this.dtoFactory = dtoFactory;
+        this.actionFactory = actionFactory;
+        this.modelsFactory = modelsFactory;
+        this.appContext = appContext;
+
+        this.runActions = new HashMap<>();
     }
 
     /** @return the GWT widget that is controlled by the presenter */
@@ -63,7 +90,12 @@ public class RunnerManagerPresenter extends AbstractPartPresenter implements Run
     /** {@inheritDoc} */
     @Override
     public void onStopButtonClicked() {
+        RunnerAction runAction = runActions.remove(selectedRunner);
+        if (runAction != null) {
+            runAction.stop();
+        }
 
+        actionFactory.createAndPerform(STOP, selectedRunner);
     }
 
     /** {@inheritDoc} */
@@ -93,19 +125,41 @@ public class RunnerManagerPresenter extends AbstractPartPresenter implements Run
     /** {@inheritDoc} */
     @Override
     public void launchRunner() {
+        CurrentProject currentProject = appContext.getCurrentProject();
+        if (currentProject == null) {
+            return;
+        }
 
+        RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
+                                          .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")));
+
+        launchRunner(modelsFactory.createRunner(runOptions));
     }
 
     /** {@inheritDoc} */
     @Override
-    public void launchRunner(@Nonnull RunOptions runOptions) {
+    public void launchRunner(@Nonnull RunOptions runOptions, @Nonnull String environmentName) {
+        launchRunner(modelsFactory.createRunner(runOptions, environmentName));
+    }
 
+    private void launchRunner(@Nonnull Runner runner) {
+        view.addRunner(runner);
+
+        runActions.put(runner, actionFactory.createAndPerform(RUN, runner));
     }
 
     /** {@inheritDoc} */
     @Override
     public void go(@Nonnull AcceptsOneWidget container) {
         container.setWidget(view);
+    }
+
+    /** Sets active runner panel when runner is started */
+    public void setActive() {
+        PartPresenter activePart = partStack.getActivePart();
+        if (!this.equals(activePart)) {
+            partStack.setActivePart(this);
+        }
     }
 
     /** {@inheritDoc} */
@@ -126,6 +180,7 @@ public class RunnerManagerPresenter extends AbstractPartPresenter implements Run
     @Nullable
     @Override
     public String getTitleToolTip() {
+        // TODO tooltip like in old version
         return null;
     }
 

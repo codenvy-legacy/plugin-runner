@@ -12,6 +12,8 @@ package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.console.Console;
+import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runnerview.RunnerView;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,6 +30,8 @@ import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class provides view representation of runner panel.
@@ -75,18 +79,23 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private ActionDelegate delegate;
-
     private final Provider<RunnerView> runnerViewProvider;
+    private final ConsoleFactory       consoleFactory;
+    private final Map<Runner, Console> consoles;
+
+    private ActionDelegate delegate;
 
     @Inject
     public RunnerManagerViewImpl(RunnerManagerViewImplUiBinder uiBinder,
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locales,
-                                 Provider<RunnerView> runnerViewProvider) {
+                                 Provider<RunnerView> runnerViewProvider,
+                                 ConsoleFactory consoleFactory) {
         this.resources = resources;
         this.locale = locales;
         this.runnerViewProvider = runnerViewProvider;
+        this.consoleFactory = consoleFactory;
+        this.consoles = new HashMap<>();
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -139,24 +148,20 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
 
     /** {@inheritDoc} */
     @Override
-    public void setActive() {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void update(@Nonnull Runner runner) {
-
+        // don't forget about terminal
     }
 
     /** {@inheritDoc} */
     @Override
     public void addRunner(@Nonnull Runner runner) {
         RunnerView runnerView = runnerViewProvider.get();
-
         runnerView.update(runner);
-
         runnersPanel.add(runnerView);
+
+        Console console = consoleFactory.createConsole(runner);
+        consoles.put(runner, console);
+        activateConsole(runner);
     }
 
     /** {@inheritDoc} */
@@ -174,37 +179,68 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     /** {@inheritDoc} */
     @Override
     public void printInfo(@Nonnull Runner runner, @Nonnull String line) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
 
+        console.printInfo(line);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printError(@Nonnull Runner runner, @Nonnull String line) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
 
+        console.printError(line);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printWarn(@Nonnull Runner runner, @Nonnull String line) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
 
+        console.printWarn(line);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printDocker(@Nonnull Runner runner, @Nonnull String line) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
+
+        console.printDocker(line);
 
     }
 
     /** {@inheritDoc} */
     @Override
     public void printStdOut(@Nonnull Runner runner, @Nonnull String line) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
 
+        console.printStdOut(line);
     }
 
     /** {@inheritDoc} */
     @Override
     public void printStdErr(@Nonnull Runner runner, @Nonnull String line) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
 
+        console.printStdErr(line);
     }
 
     /** {@inheritDoc} */
@@ -218,6 +254,14 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     public void activateConsole(@Nonnull Runner runner) {
         terminalTab.removeStyleName(resources.runnerCss().activeTab());
         consoleTab.addStyleName(resources.runnerCss().activeTab());
+
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
+
+        printArea.clear();
+        printArea.add(console);
     }
 
     /** {@inheritDoc} */

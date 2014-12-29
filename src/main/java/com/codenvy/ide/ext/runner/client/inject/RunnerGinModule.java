@@ -11,7 +11,11 @@
 package com.codenvy.ide.ext.runner.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.codenvy.ide.ext.runner.client.console.Console;
+import com.codenvy.ide.ext.runner.client.console.ConsoleImpl;
+import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.EnvironmentActionFactory;
+import com.codenvy.ide.ext.runner.client.inject.factories.HandlerFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.models.RunnerImpl;
@@ -30,6 +34,12 @@ public class RunnerGinModule extends AbstractGinModule {
     protected void configure() {
         install(new GinFactoryModuleBuilder().implement(Runner.class, RunnerImpl.class)
                                              .build(ModelsFactory.class));
+
+        install(new GinFactoryModuleBuilder().build(HandlerFactory.class));
+
+        install(new GinFactoryModuleBuilder().implement(Console.class, ConsoleImpl.class)
+                                             .build(ConsoleFactory.class));
+
         install(new GinFactoryModuleBuilder().build(EnvironmentActionFactory.class));
     }
 }

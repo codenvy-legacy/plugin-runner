@@ -31,9 +31,9 @@ public interface RunnerManager {
     /**
      * Launch a new runner with given configurations.
      *
-     * @param runOptions
-     *         options which need to be applied to runner
+     * @param environmentName
+     *         name of custom configuration
      */
-    void launchRunner(@Nonnull RunOptions runOptions);
+    void launchRunner(@Nonnull RunOptions runOptions, @Nonnull String environmentName);
 
 }

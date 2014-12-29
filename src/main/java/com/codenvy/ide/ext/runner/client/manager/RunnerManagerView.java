@@ -22,12 +22,10 @@ import javax.annotation.Nullable;
  *
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 @ImplementedBy(RunnerManagerViewImpl.class)
 public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate> {
-
-    /** Sets active runner panel when runner is started */
-    void setActive();
 
     /**
      * Updates runner view representation when runner state changed.
@@ -62,7 +60,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void setTimeout(@Nonnull String timeout);
 
     /**
-     * Prints a given line with info content in the console for a given runner.Printed line will look like this: [INFO] some string
+     * Prints a given line with info content in the console for a given runner.
+     * Printed line will look like this: [INFO] some string
      *
      * @param runner
      *         runner that needs to contain a given line
@@ -72,7 +71,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printInfo(@Nonnull Runner runner, @Nonnull String line);
 
     /**
-     * Prints a given line with error content in the console for a given runner.Printed line will look like this: [ERROR] some string
+     * Prints a given line with error content in the console for a given runner.
+     * Printed line will look like this: [ERROR] some string
      *
      * @param runner
      *         runner that needs to contain a given line
@@ -82,7 +82,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printError(@Nonnull Runner runner, @Nonnull String line);
 
     /**
-     * Prints a given line with warning content in the console for a given runner.Printed line will look like this: [WARNING] some string
+     * Prints a given line with warning content in the console for a given runner.
+     * Printed line will look like this: [WARNING] some string
      *
      * @param runner
      *         runner that needs to contain a given line
@@ -92,7 +93,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printWarn(@Nonnull Runner runner, @Nonnull String line);
 
     /**
-     * Prints a given line with docker content in the console for a given runner.Printed line will look like this: [DOCKER] some string
+     * Prints a given line with docker content in the console for a given runner.
+     * Printed line will look like this: [DOCKER] some string
      *
      * @param runner
      *         runner that needs to contain a given line
@@ -102,7 +104,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printDocker(@Nonnull Runner runner, @Nonnull String line);
 
     /**
-     * Prints a given line with stand out content in the console for a given runner.Printed line will look like this: [STDOUT] some string
+     * Prints a given line with stand out content in the console for a given runner.
+     * Printed line will look like this: [STDOUT] some string
      *
      * @param runner
      *         runner that needs to contain a given line
@@ -112,8 +115,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printStdOut(@Nonnull Runner runner, @Nonnull String line);
 
     /**
-     * Prints a given line with stand error content in the console for a given runner.Printed line will look like this:
-     * [STDERR] some string
+     * Prints a given line with stand error content in the console for a given runner.
+     * Printed line will look like this: [STDERR] some string
      *
      * @param runner
      *         runner that needs to contain a given line

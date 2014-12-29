@@ -195,7 +195,8 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
 
             view.close();
 
-            managerPresenter.launchRunner(runOptions);
+            // TODO it seems need to change last parameter. It seems id isn't good variant for it.
+            managerPresenter.launchRunner(runOptions, runnerEnvironment.getId());
         }
     }
 

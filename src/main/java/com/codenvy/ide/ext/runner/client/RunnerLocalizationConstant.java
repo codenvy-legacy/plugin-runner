@@ -19,16 +19,63 @@ import javax.annotation.Nonnull;
 /**
  * Contains all names of graphical elements needed for runner plugin.
  *
+ * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  * @author Dmitry Shnurenko
  */
 @Singleton
 public interface RunnerLocalizationConstant extends Messages {
+
+    @Key("unknown.error.message")
+    String unknownErrorMessage();
+
+    String environmentCooking(@Nonnull String projectName);
+
+    String applicationStarting(@Nonnull String projectName);
+
+    String applicationStopped(@Nonnull String projectName);
+
+    String applicationFailed(@Nonnull String projectName);
+
+    String applicationCanceled(@Nonnull String projectName);
+
+    String applicationMaybeStarted(@Nonnull String projectName);
+
+    String applicationStarted(@Nonnull String projectName);
+
+    String startApplicationFailed(@Nonnull String projectName);
+
+    String applicationLogsFailed();
 
     @Key("runner.label.application.info")
     String runnerLabelApplicationInfo();
 
     @Key("runner.label.timeout.info")
     String runnerLabelTimeoutInfo();
+
+    @Key("messages.totalLessRequiredMemory")
+    String messagesTotalLessRequiredMemory(@Nonnegative int totalRAM, @Nonnegative int requestedRAM);
+
+    @Key("messages.availableLessRequiredMemory")
+    String messagesAvailableLessRequiredMemory(@Nonnegative int totalRAM, @Nonnegative int usedRAM, @Nonnegative int requestedRAM);
+
+    @Key("messages.totalLessOverrideMemory")
+    String messagesTotalLessOverrideMemory(@Nonnegative int overrideRAM, @Nonnegative int totalRAM);
+
+    @Key("messages.availableLessOverrideMemory")
+    String messagesAvailableLessOverrideMemory(@Nonnegative int overrideRAM, @Nonnegative int totalRAM, @Nonnegative int usedRAM);
+
+    @Key("messages.overrideMemory")
+    String messagesOverrideMemory();
+
+    @Key("messages.overrideLessRequiredMemory")
+    String messagesOverrideLessRequiredMemory(@Nonnegative int overrideRAM, @Nonnegative int requestedRAM);
+
+    @Key("action.project.running.now")
+    String projectRunningNow(@Nonnull String project);
+
+    @Key("titles.warning")
+    String titlesWarning();
 
     @Key("runner.tab.console")
     String runnerTabConsole();
@@ -59,6 +106,11 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("action.custom.run.description")
     String actionCustomRunDescription();
+
+    @Key("get.resources.failed")
+    String getResourcesFailed();
+
+    String fullLogTraceConsoleLink();
 
     @Key("custom.environments.title")
     String customEnvironmentsTitle();
@@ -146,4 +198,5 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("messages.available.ram.less.custom")
     String messagesAvailableRamLessCustom(@Nonnegative int overrideRam, @Nonnegative int total, @Nonnegative int used);
+
 }

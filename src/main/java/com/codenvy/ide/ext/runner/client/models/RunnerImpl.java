@@ -11,9 +11,9 @@
 package com.codenvy.ide.ext.runner.client.models;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
-import com.codenvy.api.project.server.ProjectDescription;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
+import com.codenvy.api.runner.dto.RunnerMetric;
 import com.codenvy.api.runner.gwt.client.utils.RunnerUtils;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -26,53 +26,53 @@ import java.util.Objects;
 
 import static com.codenvy.api.runner.ApplicationStatus.RUNNING;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
+import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
 
 /**
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class RunnerImpl implements Runner {
 
     private static final String RUNNER_NAME   = "Runner ";
     private static       int    RUNNER_NUMBER = 1;
 
-    private final int    ram;
-    private final String title;
+    private final RunOptions runOptions;
+    private final String     title;
 
-    private ApplicationProcessDescriptor description;
+    private ApplicationProcessDescriptor descriptor;
     private Status                       status;
+    private int                          ram;
     private boolean                      isAlive;
+    private boolean                      isAnyAppRunning;
+    private boolean                      isAnyAppLaunched;
 
     /**
-     * The constructor for default configuration runner. This runner just needs project description where all configurations are located.
-     * It analyzes project description and get all needed information.
+     * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
      *
-     * @param projectDescription
-     *         project description that needs to be analyzed
+     * @param runOptions
+     *         options which needs to be used
      */
     @AssistedInject
-    public RunnerImpl(@Assisted ProjectDescription projectDescription) {
-        this(projectDescription.getRunners().getConfig(projectDescription.getRunners().getDefault()).getRam(),
-             RUNNER_NAME + RUNNER_NAME);
+    public RunnerImpl(@Nonnull @Assisted RunOptions runOptions) {
+        this(runOptions, null);
     }
 
     /**
-     * The constructor for custom runner. This runner needs runner options (user configurations) and environment name (inputted by user).
+     * This runner needs runner options (user configurations) and environment name (inputted by user).
      * It analyzes all given information and get necessary information.
      *
      * @param runOptions
-     *         custom configuration of runner
+     *         options which needs to be used
      * @param environmentName
      *         name of custom configuration
      */
     @AssistedInject
-    public RunnerImpl(@Assisted RunOptions runOptions, @Assisted String environmentName) {
-        this(runOptions.getMemorySize(), RUNNER_NAME + RUNNER_NUMBER + " - " + environmentName);
-    }
-
-    private RunnerImpl(@Nonnegative int ram, @Nonnull String title) {
-        this.ram = ram;
-        this.title = title;
+    public RunnerImpl(@Nonnull @Assisted RunOptions runOptions, @Nullable @Assisted String environmentName) {
+        this.runOptions = runOptions;
+        this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + environmentName);
+        this.ram = runOptions.getMemorySize();
 
         RUNNER_NUMBER++;
     }
@@ -84,18 +84,33 @@ public class RunnerImpl implements Runner {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void setRAM(@Nonnegative int ram) {
+        this.ram = ram;
+
+        runOptions.setMemorySize(ram);
+    }
+
+    /** {@inheritDoc} */
     @Nonnull
     @Override
     public Date getCreationTime() {
-        Objects.requireNonNull(description);
-        return new Date(description.getCreationTime());
+        Objects.requireNonNull(descriptor);
+        return new Date(descriptor.getCreationTime());
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String getEnvironmentId() {
+        return runOptions.getEnvironmentId();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isStarted() {
-        Objects.requireNonNull(description);
-        return description.getStartTime() != -1;
+        Objects.requireNonNull(descriptor);
+        return descriptor.getStartTime() != -1;
     }
 
     /** {@inheritDoc} */
@@ -122,15 +137,15 @@ public class RunnerImpl implements Runner {
     @Nullable
     @Override
     public String getApplicationURL() {
-        if (description == null) {
+        if (descriptor == null) {
             return null;
         }
 
-        if (!(RUNNING.equals(description.getStatus()) && isAlive)) {
+        if (!(RUNNING.equals(descriptor.getStatus()) && isAlive)) {
             return null;
         }
 
-        Link appLink = RunnerUtils.getLink(description, LINK_REL_WEB_URL);
+        Link appLink = RunnerUtils.getLink(descriptor, LINK_REL_WEB_URL);
         if (appLink == null) {
             return null;
         }
@@ -140,7 +155,7 @@ public class RunnerImpl implements Runner {
 
     @Nonnull
     private String getCodeServerParam() {
-        Link codeServerLink = RunnerUtils.getLink(description, "code server");
+        Link codeServerLink = RunnerUtils.getLink(descriptor, "code server");
 
         if (codeServerLink == null) {
             return "";
@@ -163,7 +178,20 @@ public class RunnerImpl implements Runner {
     @Nullable
     @Override
     public String getTerminalURL() {
-        Link link = RunnerUtils.getLink(description, LINK_REL_SHELL_URL);
+        Link link = RunnerUtils.getLink(descriptor, LINK_REL_SHELL_URL);
+
+        if (link == null) {
+            return null;
+        }
+
+        return link.getHref();
+    }
+
+    /** {@inheritDoc} */
+    @Nullable
+    @Override
+    public String getLogUrl() {
+        Link link = RunnerUtils.getLink(descriptor, LINK_REL_VIEW_LOG);
 
         if (link == null) {
             return null;
@@ -174,8 +202,8 @@ public class RunnerImpl implements Runner {
 
     /** {@inheritDoc} */
     @Override
-    public void setProcessDescription(@Nonnull ApplicationProcessDescriptor description) {
-        this.description = description;
+    public void setProcessDescriptor(@Nullable ApplicationProcessDescriptor descriptor) {
+        this.descriptor = descriptor;
     }
 
     /** {@inheritDoc} */
@@ -192,30 +220,78 @@ public class RunnerImpl implements Runner {
 
     /** {@inheritDoc} */
     @Override
+    public boolean isAnyAppLaunched() {
+        return isAnyAppLaunched;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setAppLaunchStatus(boolean isAnyAppLaunched) {
+        this.isAnyAppLaunched = isAnyAppLaunched;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isAnyAppRunning() {
+        return isAnyAppRunning;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setAppRunningStatus(boolean isAnyAppRunning) {
+        this.isAnyAppRunning = isAnyAppRunning;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getProcessId() {
+        Objects.requireNonNull(descriptor);
+        return descriptor.getProcessId();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public RunnerMetric getRunnerMetricByName(@Nonnull String name) {
+        if (descriptor == null) {
+            return null;
+        }
+
+        for (RunnerMetric stat : descriptor.getRunStats()) {
+            if (name.equals(stat.getName())) {
+                return stat;
+            }
+        }
+
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public RunOptions getOptions() {
+        return runOptions;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         RunnerImpl runner = (RunnerImpl)o;
 
-        boolean isEqualed = Objects.equals(description, runner.description);
-        isEqualed &= Objects.equals(status, runner.status);
-        isEqualed &= Objects.equals(title, runner.title);
-        isEqualed &= ram == runner.ram;
-        isEqualed &= isAlive == runner.isAlive;
-
-        return isEqualed;
+        return Objects.equals(title, runner.title);
     }
 
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        int result = Objects.hash(description, title, status);
-        // for primitive types isn't good idea to use Objects. in Java 8 add an ability to use hash method for primitive types
-        result = 31 * result + ram;
-        result = 31 * result + (isAlive ? 1 : 0);
-
-        return result;
+        return Objects.hash(title);
     }
 
 }

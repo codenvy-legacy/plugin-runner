@@ -49,15 +49,16 @@ public class EnvironmentAction extends ProjectAction {
     /** {@inheritDoc} */
     @Override
     public void actionPerformed(@Nonnull ActionEvent event) {
-        RunOptions runOptions = dtoFactory.createDto(RunOptions.class);
-        runOptions.setEnvironmentId("project://" + environmentName);
+        RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
+                                          .withEnvironmentId("project://" + environmentName);
 
-        //TODO need create run options inside launch method and hand on name of environment instead of run options
-        managerPresenter.launchRunner(runOptions);
+        managerPresenter.launchRunner(runOptions, environmentName);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void updateProjectAction(ActionEvent e) {
+    protected void updateProjectAction(@Nonnull ActionEvent actionEvent) {
+        // do nothing
     }
+
 }
