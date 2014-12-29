@@ -92,64 +92,43 @@ public class ConsoleImpl extends Composite implements Console {
     /** {@inheritDoc} */
     @Override
     public void printInfo(@Nonnull String line) {
-        HTML message = new HTML();
-        message.setHTML(buildSafeHtmlMessage(INFO, INFO_COLOR, INFO + ' ' + line));
-
-        print(message);
+        print(buildSafeHtmlMessage(INFO, INFO_COLOR, INFO + ' ' + line));
     }
 
     /** {@inheritDoc} */
     @Override
     public void printError(@Nonnull String line) {
-        HTML message = new HTML();
-        message.setHTML(buildSafeHtmlMessage(ERROR, ERROR_COLOR, ERROR + ' ' + line));
-
-        print(message);
+        print(buildSafeHtmlMessage(ERROR, ERROR_COLOR, ERROR + ' ' + line));
     }
 
     /** {@inheritDoc} */
     @Override
     public void printWarn(@Nonnull String line) {
-        HTML message = new HTML();
-        message.setHTML(buildSafeHtmlMessage(WARN, WARN_COLOR, WARN + ' ' + line));
-
-        print(message);
+        print(buildSafeHtmlMessage(WARN, WARN_COLOR, WARN + ' ' + line));
     }
 
     /** {@inheritDoc} */
     @Override
     public void printDocker(@Nonnull String line) {
-        HTML message = new HTML();
-        message.setHTML(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, DOCKER + ' ' + line));
-
-        print(message);
+        print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, DOCKER + ' ' + line));
     }
 
     /** {@inheritDoc} */
     @Override
     public void printDockerError(@Nonnull String line) {
-        HTML message = new HTML();
-        message.setHTML(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, ERROR, ERROR_COLOR, DOCKER + ' ' + ERROR + ' ' + line));
-
-        print(message);
+        print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, ERROR, ERROR_COLOR, DOCKER + ' ' + ERROR + ' ' + line));
     }
 
     /** {@inheritDoc} */
     @Override
     public void printStdOut(@Nonnull String line) {
-        HTML message = new HTML();
-        message.setHTML(buildSafeHtmlMessage(STDOUT, STDOUT_COLOR, STDOUT + ' ' + line));
-
-        print(message);
+        print(buildSafeHtmlMessage(STDOUT, STDOUT_COLOR, STDOUT + ' ' + line));
     }
 
     /** {@inheritDoc} */
     @Override
     public void printStdErr(@Nonnull String line) {
-        HTML message = new HTML();
-        message.setHTML(buildSafeHtmlMessage(STDERR, STDERR_COLOR, STDERR + ' ' + line));
-
-        print(message);
+        print(buildSafeHtmlMessage(STDERR, STDERR_COLOR, STDERR + ' ' + line));
     }
 
     /**
@@ -165,13 +144,12 @@ public class ConsoleImpl extends Composite implements Console {
      */
     @Nonnull
     private SafeHtml buildSafeHtmlMessage(@Nonnull String type, @Nonnull String color, @Nonnull String message) {
-        return new SafeHtmlBuilder()
-                .appendHtmlConstant("<pre " + PRE_STYLE + '>')
-                .appendHtmlConstant("[<span style='color:" + color + ";'>")
-                .appendHtmlConstant("<b>" + type.replaceAll("[\\[\\]]", "") + "</b></span>]")
-                .append(SimpleHtmlSanitizer.sanitizeHtml(message.substring((type).length())))
-                .appendHtmlConstant("</pre>")
-                .toSafeHtml();
+        return new SafeHtmlBuilder().appendHtmlConstant("<pre " + PRE_STYLE + '>')
+                                    .appendHtmlConstant("[<span style='color:" + color + ";'>")
+                                    .appendHtmlConstant("<b>" + type.replaceAll("[\\[\\]]", "") + "</b></span>]")
+                                    .append(SimpleHtmlSanitizer.sanitizeHtml(message.substring((type).length())))
+                                    .appendHtmlConstant("</pre>")
+                                    .toSafeHtml();
     }
 
     /**
@@ -196,21 +174,20 @@ public class ConsoleImpl extends Composite implements Console {
                                           @Nonnull String subtype,
                                           @Nonnull String subcolor,
                                           @Nonnull String message) {
-        return new SafeHtmlBuilder()
-                .appendHtmlConstant("<pre " + PRE_STYLE + '>')
-                .appendHtmlConstant("[<span style='color:" + color + ";'>")
-                .appendHtmlConstant("<b>" + type.replaceAll("[\\[\\]]", "") + "</b></span>]")
-                .appendHtmlConstant(" [<span style='color:" + subcolor + ";'>")
-                .appendHtmlConstant("<b>" + subtype.replaceAll("[\\[\\]]", "") + "</b></span>]")
-                .append(SimpleHtmlSanitizer.sanitizeHtml(message.substring((type + ' ' + subtype).length())))
-                .appendHtmlConstant("</pre>")
-                .toSafeHtml();
+        return new SafeHtmlBuilder().appendHtmlConstant("<pre " + PRE_STYLE + '>')
+                                    .appendHtmlConstant("[<span style='color:" + color + ";'>")
+                                    .appendHtmlConstant("<b>" + type.replaceAll("[\\[\\]]", "") + "</b></span>]")
+                                    .appendHtmlConstant(" [<span style='color:" + subcolor + ";'>")
+                                    .appendHtmlConstant("<b>" + subtype.replaceAll("[\\[\\]]", "") + "</b></span>]")
+                                    .append(SimpleHtmlSanitizer.sanitizeHtml(message.substring((type + ' ' + subtype).length())))
+                                    .appendHtmlConstant("</pre>")
+                                    .toSafeHtml();
     }
 
-    private void print(@Nonnull Widget message) {
+    private void print(@Nonnull SafeHtml message) {
         cleanOverHeadLinesIfAny();
 
-        output.add(message);
+        output.add(new HTML(message));
     }
 
     private void cleanOverHeadLinesIfAny() {

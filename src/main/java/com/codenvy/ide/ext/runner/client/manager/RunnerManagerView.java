@@ -126,15 +126,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printStdErr(@Nonnull Runner runner, @Nonnull String line);
 
     /**
-     * Binds a terminal on the server part with a GWT widget on the view.
-     *
-     * @param runner
-     *         runner that needs to be bound with terminal widget on the view
-     */
-    // TODO may be this method is unnecessary. Needs to have a look when implementing it. It seems we can use just activate terminal method
-    void setTerminalURL(@Nonnull Runner runner);
-
-    /**
      * Shows a console widget for a given runner on the view.
      *
      * @param runner

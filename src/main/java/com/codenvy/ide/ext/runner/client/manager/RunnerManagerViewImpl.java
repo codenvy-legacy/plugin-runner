@@ -16,6 +16,7 @@ import com.codenvy.ide.ext.runner.client.console.Console;
 import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runnerview.RunnerView;
+import com.codenvy.ide.ext.runner.client.terminal.Terminal;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -72,16 +73,18 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
 
     //print area
     @UiField
-    FlowPanel printArea;
+    FlowPanel mainArea;
 
     @UiField(provided = true)
     final RunnerResources            resources;
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final Provider<RunnerView> runnerViewProvider;
-    private final ConsoleFactory       consoleFactory;
-    private final Map<Runner, Console> consoles;
+    private final Provider<RunnerView>  runnerViewProvider;
+    private final ConsoleFactory        consoleFactory;
+    private final Provider<Terminal>    terminalProvider;
+    private final Map<Runner, Console>  consoles;
+    private final Map<Runner, Terminal> terminals;
 
     private ActionDelegate delegate;
 
@@ -90,12 +93,16 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locales,
                                  Provider<RunnerView> runnerViewProvider,
-                                 ConsoleFactory consoleFactory) {
+                                 ConsoleFactory consoleFactory,
+                                 Provider<Terminal> terminalProvider) {
         this.resources = resources;
         this.locale = locales;
         this.runnerViewProvider = runnerViewProvider;
         this.consoleFactory = consoleFactory;
+        this.terminalProvider = terminalProvider;
+
         this.consoles = new HashMap<>();
+        this.terminals = new HashMap<>();
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -149,7 +156,7 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
-        // don't forget about terminal
+        // TODO don't forget about terminal, update it
     }
 
     /** {@inheritDoc} */
@@ -245,12 +252,6 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
 
     /** {@inheritDoc} */
     @Override
-    public void setTerminalURL(@Nonnull Runner runner) {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void activateConsole(@Nonnull Runner runner) {
         terminalTab.removeStyleName(resources.runnerCss().activeTab());
         consoleTab.addStyleName(resources.runnerCss().activeTab());
@@ -260,8 +261,8 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
             return;
         }
 
-        printArea.clear();
-        printArea.add(console);
+        mainArea.clear();
+        mainArea.add(console);
     }
 
     /** {@inheritDoc} */
@@ -269,6 +270,17 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     public void activateTerminal(@Nonnull Runner runner) {
         consoleTab.removeStyleName(resources.runnerCss().activeTab());
         terminalTab.addStyleName(resources.runnerCss().activeTab());
+
+        Terminal terminal = terminals.get(runner);
+        if (terminal == null) {
+            terminal = terminalProvider.get();
+            terminal.update(runner);
+
+            terminals.put(runner, terminal);
+        }
+
+        mainArea.clear();
+        mainArea.add(terminal);
     }
 
     /** {@inheritDoc} */

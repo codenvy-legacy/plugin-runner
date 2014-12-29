@@ -199,4 +199,5 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("messages.available.ram.less.custom")
     String messagesAvailableRamLessCustom(@Nonnegative int overrideRam, @Nonnegative int total, @Nonnegative int used);
 
+    String runnerNotReady();
 }

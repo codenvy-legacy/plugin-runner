@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import javax.annotation.Nonnull;
 
 /**
- * The widget that provide an ability to show different messages. It contains methos for showing messages and cleaning message (removing
+ * The widget that provides an ability to show different messages. It contains methods for showing messages and cleaning message (removing
  * all messages from area).
  *
  * @author Andrey Plotnikov

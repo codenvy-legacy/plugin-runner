@@ -93,7 +93,7 @@
             margin-top: 3px;
         }
 
-        .printArea {
+        .mainArea {
             background: #303030;
             border-top: 1px solid #878787;
         }
@@ -164,7 +164,7 @@
 
                     <!--print panel-->
                     <g:center>
-                        <g:FlowPanel ui:field="printArea" addStyleNames="{resources.runnerCss.fullSize} {style.printArea}"/>
+                        <g:FlowPanel ui:field="mainArea" addStyleNames="{resources.runnerCss.fullSize} {style.mainArea}"/>
                     </g:center>
                 </g:DockLayoutPanel>
 
