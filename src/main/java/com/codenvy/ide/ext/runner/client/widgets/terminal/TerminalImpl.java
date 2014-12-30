@@ -61,10 +61,10 @@ public class TerminalImpl extends Composite implements Terminal {
         unavailableLabel.setVisible(!visible);
         terminal.setVisible(visible);
 
-        if (url == null) {
-            terminal.getElement().removeAttribute("src");
-        } else {
+        if (visible) {
             terminal.setUrl(url);
+        } else {
+            terminal.getElement().removeAttribute("src");
         }
     }
 }
