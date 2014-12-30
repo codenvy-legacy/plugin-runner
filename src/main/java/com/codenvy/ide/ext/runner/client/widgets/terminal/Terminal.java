@@ -14,12 +14,13 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.ImplementedBy;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The widget that provides an ability to work like terminal. It contains methods for updating visual components.
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 @ImplementedBy(TerminalImpl.class)
 public interface Terminal extends IsWidget {
@@ -29,5 +30,5 @@ public interface Terminal extends IsWidget {
      * @param runner
      *         runner where all parameters are located
      */
-    void update(@Nonnull Runner runner);
+    void update(@Nullable Runner runner);
 }

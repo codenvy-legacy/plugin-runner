@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author Andrey Plotnikov
@@ -54,14 +54,24 @@ public class TerminalImpl extends Composite implements Terminal {
 
     /** {@inheritDoc} */
     @Override
-    public void update(@Nonnull Runner runner) {
+    public void update(@Nullable Runner runner) {
+        if (runner == null) {
+            setTerminalVisible(false, null);
+
+            return;
+        }
+
         String url = runner.getTerminalURL();
         boolean visible = runner.isAnyAppRunning() && url != null;
 
-        unavailableLabel.setVisible(!visible);
-        terminal.setVisible(visible);
+        setTerminalVisible(visible, url);
+    }
 
-        if (visible) {
+    private void setTerminalVisible(boolean isVisible, @Nullable String url) {
+        unavailableLabel.setVisible(!isVisible);
+        terminal.setVisible(isVisible);
+
+        if (isVisible) {
             terminal.setUrl(url);
         } else {
             terminal.getElement().removeAttribute("src");

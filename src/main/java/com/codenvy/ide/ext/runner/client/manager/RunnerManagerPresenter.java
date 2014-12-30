@@ -41,6 +41,7 @@ import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
  *
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 @Singleton
 public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
@@ -143,9 +144,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     }
 
     private void launchRunner(@Nonnull Runner runner) {
-        view.addRunner(runner);
+        selectedRunner = runner;
 
-        runActions.put(runner, actionFactory.createAndPerform(RUN, runner));
+        view.addRunner(selectedRunner);
+
+        runActions.put(selectedRunner, actionFactory.createAndPerform(RUN, selectedRunner));
     }
 
     /** {@inheritDoc} */

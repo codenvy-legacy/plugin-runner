@@ -66,6 +66,14 @@ public class TerminalImplTest {
     }
 
     @Test
+    public void unavilableMessageShouldBeShownWhenRunnerIsNull() throws Exception {
+        terminal.update(null);
+
+        verify(terminal.unavailableLabel).setVisible(true);
+        verify(terminal.terminal).setVisible(false);
+    }
+
+    @Test
     public void terminalShouldBeShownWhenAllParameterAreExist() throws Exception {
         when(runner.isAnyAppRunning()).thenReturn(true);
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);

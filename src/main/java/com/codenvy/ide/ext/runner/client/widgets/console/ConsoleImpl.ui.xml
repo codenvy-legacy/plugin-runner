@@ -23,8 +23,8 @@
         }
     </ui:style>
 
-    <g:ScrollPanel ui:field="panel" addStyleNames="{style.scrollPanel} {res.runnerCss.consolePanel}">
-        <g:FlowPanel ui:field="output" addStyleNames="{res.runnerCss.fullSize}"/>
+    <g:ScrollPanel ui:field="panel" addStyleNames="{style.scrollPanel} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
+        <g:FlowPanel ui:field="output"/>
     </g:ScrollPanel>
 
 </ui:UiBinder>

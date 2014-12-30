@@ -137,8 +137,6 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
         String projectName = project.getProjectDescription().getName();
         String message = locale.environmentCooking(projectName);
 
-        notification.update(message, INFO, PROGRESS, null, true);
-
         notification = new Notification(message, PROGRESS, true);
         notificationManager.showNotification(notification);
 
