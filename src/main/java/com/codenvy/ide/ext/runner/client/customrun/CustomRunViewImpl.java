@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.customrun.view;
+package com.codenvy.ide.ext.runner.client.customrun;
 
 import elemental.events.KeyboardEvent;
 import elemental.events.MouseEvent;
@@ -18,8 +18,6 @@ import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.customrun.RunnerDataAdapter;
-import com.codenvy.ide.ext.runner.client.customrun.RunnerRenderer;
 import com.codenvy.ide.ui.tree.Tree;
 import com.codenvy.ide.ui.tree.TreeNodeElement;
 import com.codenvy.ide.ui.window.Window;

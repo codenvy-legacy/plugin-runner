@@ -15,7 +15,7 @@ import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.customenvironment.view.CustomEnvironmentPresenter;
+import com.codenvy.ide.ext.runner.client.customenvironment.CustomEnvironmentPresenter;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
