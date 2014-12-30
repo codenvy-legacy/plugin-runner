@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
  * Provides methods which allow change visual representation of runner.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 @ImplementedBy(RunnerWidgetImpl.class)
 public interface RunnerWidget extends View<RunnerWidget.ActionDelegate> {
@@ -33,6 +34,13 @@ public interface RunnerWidget extends View<RunnerWidget.ActionDelegate> {
     void update(@Nonnull Runner runner);
 
     interface ActionDelegate {
+        /**
+         * Performs some actions in response to user's choosing a runner.
+         *
+         * @param runner
+         *         runner that was chosen
+         */
+        void onRunnerSelected(@Nonnull Runner runner);
     }
 
 }

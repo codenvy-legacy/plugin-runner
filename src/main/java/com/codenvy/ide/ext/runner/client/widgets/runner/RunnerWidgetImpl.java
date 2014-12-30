@@ -11,6 +11,8 @@
 package com.codenvy.ide.ext.runner.client.widgets.runner;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -28,6 +30,7 @@ import java.util.Date;
  * Class provides view representation of runner.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class RunnerWidgetImpl extends Composite implements RunnerWidget {
 
@@ -44,14 +47,25 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     @UiField
     Image image;
 
+    private ActionDelegate delegate;
+    private Runner runner;
+
     @Inject
     public RunnerWidgetImpl(RunnerViewImplUiBinder ourUiBinder) {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                delegate.onRunnerSelected(runner);
+            }
+        }, ClickEvent.getType());
     }
 
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
+        this.runner = runner;
         //TODO  need add update runner image which depends on the runner state
 
         runnerName.setText(runner.getTitle());
@@ -65,6 +79,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     /** {@inheritDoc} */
     @Override
     public void setDelegate(ActionDelegate delegate) {
+        this.delegate = delegate;
     }
 
 }

@@ -39,8 +39,10 @@ import java.util.Map;
  * Class provides view representation of runner panel.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
-public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView {
+public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate>
+        implements RunnerManagerView, RunnerWidget.ActionDelegate {
 
     @Singleton
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
@@ -158,6 +160,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
+    public void onRunnerSelected(@Nonnull Runner runner) {
+        delegate.onRunnerSelected(runner);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void update(@Nonnull Runner runner) {
         appReference.setText(runner.getApplicationURL());
         // TODO don't forget about terminal, update it
@@ -168,6 +176,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     public void addRunner(@Nonnull Runner runner) {
         RunnerWidget runnerWidget = runnerViewProvider.get();
         runnerWidget.update(runner);
+        runnerWidget.setDelegate(this);
+
         runnersPanel.add(runnerWidget);
 
         Console console = consoleFactory.createConsole(runner);
@@ -262,6 +272,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
         Console console = consoles.get(runner);
         if (console == null) {
+            mainArea.clear();
             return;
         }
 

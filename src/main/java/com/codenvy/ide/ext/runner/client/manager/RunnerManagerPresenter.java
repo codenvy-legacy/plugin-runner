@@ -80,6 +80,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Override
     public void onRunnerSelected(@Nonnull Runner runner) {
         this.selectedRunner = runner;
+
+        // TODO it isn't good idea
+        onConsoleButtonClicked();
     }
 
     /** {@inheritDoc} */
