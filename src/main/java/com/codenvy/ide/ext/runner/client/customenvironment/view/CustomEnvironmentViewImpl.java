@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.customenvironment.customenvironmentview;
+package com.codenvy.ide.ext.runner.client.customenvironment.view;
 
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;

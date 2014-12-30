@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.customrun.customrunview;
+package com.codenvy.ide.ext.runner.client.customrun.view;
 
 import elemental.events.KeyboardEvent;
 import elemental.events.MouseEvent;
