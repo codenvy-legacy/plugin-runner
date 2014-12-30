@@ -26,14 +26,13 @@ import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
-import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -46,8 +45,7 @@ import java.util.Map;
  */
 public class CustomRunPresenter implements CustomRunView.ActionDelegate {
 
-    private final static String MULTIPLE_RAM_SIZE   = "128";
-    private final static String DEFAULT_MEMORY_SIZE = "256MB";
+    private static final String DEFAULT_MEMORY_SIZE = "256MB";
 
     private final CustomRunView              view;
     private final AppContext                 appContext;
@@ -59,7 +57,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
     private final DtoFactory                 dtoFactory;
     private final EventBus                   eventBus;
     private final RunnerManagerPresenter     managerPresenter;
-    private final DialogFactory              dialogFactory;
+    private final RunnerUtil                 util;
 
     private CurrentProject    currentProject;
     private RunnerEnvironment runnerEnvironment;
@@ -75,7 +73,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
                               DtoFactory dtoFactory,
                               EventBus eventBus,
                               RunnerManagerPresenter managerPresenter,
-                              DialogFactory dialogFactory) {
+                              RunnerUtil util) {
         this.view = view;
         this.view.setDelegate(this);
 
@@ -88,7 +86,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
         this.dtoFactory = dtoFactory;
         this.eventBus = eventBus;
         this.managerPresenter = managerPresenter;
-        this.dialogFactory = dialogFactory;
+        this.util = util;
     }
 
     /** Shows dialog window editing custom run parameters. */
@@ -187,7 +185,9 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
             saveOptions();
         }
 
-        if (isRunnerMemoryCorrect()) {
+        boolean isMemoryCorrect = util.isRunnerMemoryCorrect(view.getTotalMemorySize(), view.getRunnerMemorySize());
+
+        if (isMemoryCorrect) {
             RunOptions runOptions = dtoFactory.createDto(RunOptions.class);
             runOptions.setEnvironmentId(runnerEnvironment.getId());
             runOptions.setMemorySize(view.getRunnerMemorySize());
@@ -200,37 +200,6 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
         }
     }
 
-    private boolean isRunnerMemoryCorrect() {
-        int runnerMemory = view.getRunnerMemorySize();
-        int totalMemory = view.getTotalMemorySize();
-        int availableMemory = view.getAvailableMemorySize();
-
-        if (runnerMemory == -1 || totalMemory == -1 || availableMemory == -1) {
-            showWarning(locale.messagesIncorrectValue());
-            return false;
-        }
-
-        if (runnerMemory < 0 || runnerMemory % 128 != 0) {
-            showWarning(locale.ramSizeMustBeMultipleOf(MULTIPLE_RAM_SIZE));
-            return false;
-        }
-
-        if (runnerMemory > totalMemory) {
-            showWarning(locale.messagesTotalRamLessCustom(runnerMemory, totalMemory));
-            return false;
-        }
-
-        if (runnerMemory > availableMemory) {
-            showWarning(locale.messagesAvailableRamLessCustom(runnerMemory, totalMemory, totalMemory - availableMemory));
-            return false;
-        }
-
-        return true;
-    }
-
-    private void showWarning(@Nonnull String warningMessage) {
-        dialogFactory.createMessageDialog("Warning", warningMessage, null).show();
-    }
 
     private void saveOptions() {
         String selectedEnvironmentId = runnerEnvironment.getId();
@@ -266,7 +235,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
 
                                         @Override
                                         protected void onFailure(Throwable exception) {
-                                            showWarning(locale.messageFailRememberOptions());
+                                            util.showWarning(locale.messageFailRememberOptions());
                                         }
                                     });
     }

@@ -10,18 +10,19 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.ide.api.parts.PartStackUIResources;
+import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,7 +40,7 @@ import java.util.Map;
  *
  * @author Dmitry Shnurenko
  */
-public class RunnerManagerViewImpl extends Composite implements RunnerManagerView {
+public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView {
 
     @Singleton
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
@@ -86,15 +87,16 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     private final Map<Runner, Console>   consoles;
     private final Map<Runner, Terminal>  terminals;
 
-    private ActionDelegate delegate;
-
     @Inject
-    public RunnerManagerViewImpl(RunnerManagerViewImplUiBinder uiBinder,
+    public RunnerManagerViewImpl(PartStackUIResources partStackUIResources,
+                                 RunnerManagerViewImplUiBinder uiBinder,
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locales,
                                  Provider<RunnerWidget> runnerViewProvider,
                                  ConsoleFactory consoleFactory,
                                  Provider<Terminal> terminalProvider) {
+        super(partStackUIResources);
+
         this.resources = resources;
         this.locale = locales;
         this.runnerViewProvider = runnerViewProvider;
@@ -104,7 +106,8 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
 
-        initWidget(uiBinder.createAndBindUi(this));
+        container.add(uiBinder.createAndBindUi(this));
+        titleLabel.setText("Runners");
 
         initializePanelsEvents();
     }
@@ -156,6 +159,7 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
+        appReference.setText(runner.getApplicationURL());
         // TODO don't forget about terminal, update it
     }
 
@@ -282,11 +286,4 @@ public class RunnerManagerViewImpl extends Composite implements RunnerManagerVie
         mainArea.clear();
         mainArea.add(terminal);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setDelegate(ActionDelegate actionDelegate) {
-        this.delegate = actionDelegate;
-    }
-
 }

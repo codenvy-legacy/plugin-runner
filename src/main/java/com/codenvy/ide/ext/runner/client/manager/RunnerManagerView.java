@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.ide.api.mvp.View;
+import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.ImplementedBy;
 
@@ -141,7 +142,7 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void activateTerminal(@Nonnull Runner runner);
 
-    interface ActionDelegate {
+    interface ActionDelegate extends BaseActionDelegate {
 
         /**
          * Performs some actions in response to user's choosing a runner.

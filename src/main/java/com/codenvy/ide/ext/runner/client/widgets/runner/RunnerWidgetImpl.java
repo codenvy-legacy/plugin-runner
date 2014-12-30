@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.widgets.runner;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -21,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
+import java.util.Date;
 
 /**
  * Class provides view representation of runner.
@@ -53,9 +55,11 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
         //TODO  need add update runner image which depends on the runner state
 
         runnerName.setText(runner.getTitle());
-        ram.setText(String.valueOf(runner.getRAM()));
-      //TODO need as set time as in old plugin version
-     // startTime.setText(runner.getCreationTime().toString());
+        //TODO need set memory size from runner options
+        ram.setText(512 + " MB");
+        Date startDate = new Date();
+        String startDateFormatted = DateTimeFormat.getFormat("dd-MM-yy HH:mm").format(startDate);
+        startTime.setText(startDateFormatted);
     }
 
     /** {@inheritDoc} */

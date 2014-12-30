@@ -42,7 +42,7 @@
         }
 
         .timeLabel {
-            margin-left: 90px;
+            margin-left: 15px;
         }
     </ui:style>
 

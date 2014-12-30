@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.runneractions;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.run.RunAction;
 import com.google.inject.Inject;
@@ -28,17 +29,23 @@ import javax.annotation.Nonnull;
 @Singleton
 public class ActionFactory {
 
-    private final Provider<RunAction>     runActionProvider;
-    private final Provider<GetLogsAction> getLogsActionProvider;
-    private final Provider<StopAction>    stopActionProvider;
+    private final Provider<RunAction>                 runActionProvider;
+    private final Provider<GetLogsAction>             getLogsActionProvider;
+    private final Provider<StopAction>                stopActionProvider;
+    private final Provider<GetResourceAction>         getResourceProvider;
+    private final Provider<GetRunningProcessesAction> runningProcessesActionProvider;
 
     @Inject
     public ActionFactory(Provider<RunAction> runActionProvider,
                          Provider<GetLogsAction> getLogsActionProvider,
-                         Provider<StopAction> stopActionProvider) {
+                         Provider<StopAction> stopActionProvider,
+                         Provider<GetResourceAction> getResourceProvider,
+                         Provider<GetRunningProcessesAction> runningProcessesActionProvider) {
         this.runActionProvider = runActionProvider;
         this.getLogsActionProvider = getLogsActionProvider;
         this.stopActionProvider = stopActionProvider;
+        this.getResourceProvider = getResourceProvider;
+        this.runningProcessesActionProvider = runningProcessesActionProvider;
     }
 
     /**
@@ -65,6 +72,14 @@ public class ActionFactory {
 
             case STOP:
                 action = stopActionProvider.get();
+                break;
+
+            case GET_RESOURCES:
+                action = getResourceProvider.get();
+                break;
+
+            case GET_RUNNING_PROCESS:
+                action = runningProcessesActionProvider.get();
                 break;
 
             default:
