@@ -83,8 +83,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         view.update(runner);
 
-        // TODO it isn't good idea
-        onConsoleButtonClicked();
+        if (runner.isConsoleActive()) {
+            view.activateConsole(selectedRunner);
+        } else {
+            view.activateTerminal(selectedRunner);
+        }
     }
 
     /** {@inheritDoc} */
@@ -120,12 +123,16 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Override
     public void onConsoleButtonClicked() {
         view.activateConsole(selectedRunner);
+
+        selectedRunner.activateConsole();
     }
 
     /** {@inheritDoc} */
     @Override
     public void onTerminalButtonClicked() {
         view.activateTerminal(selectedRunner);
+
+        selectedRunner.activateTerminal();
     }
 
     /** {@inheritDoc} */

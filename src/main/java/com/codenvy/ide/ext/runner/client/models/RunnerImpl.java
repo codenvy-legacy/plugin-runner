@@ -46,6 +46,7 @@ public class RunnerImpl implements Runner {
     private boolean                      isAlive;
     private boolean                      isAnyAppRunning;
     private boolean                      isAnyAppLaunched;
+    private boolean                      isConsoleActive;
 
     /**
      * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
@@ -72,8 +73,27 @@ public class RunnerImpl implements Runner {
         this.runOptions = runOptions;
         this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + environmentName);
         this.ram = runOptions.getMemorySize();
+        this.isConsoleActive = true;
 
         RUNNER_NUMBER++;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConsoleActive() {
+        return isConsoleActive;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void activateConsole() {
+        isConsoleActive = true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void activateTerminal() {
+        isConsoleActive = false;
     }
 
     /** {@inheritDoc} */

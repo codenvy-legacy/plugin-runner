@@ -27,6 +27,19 @@ import java.util.Date;
  */
 public interface Runner {
 
+    /**
+     * Returns boolean flag which allows define is console active or not for current runner.
+     *
+     * @return <code>true</code> console is active,<code>false</code> console isn't active, terminal is actives
+     */
+    boolean isConsoleActive();
+
+    /** Sets true value console flag, which defines that console is active. */
+    void activateConsole();
+
+    /** Sets false value console flag, which defines that terminal is active. */
+    void activateTerminal();
+
     /** @return amount of available RAM for current runner */
     @Nonnegative
     int getRAM();
