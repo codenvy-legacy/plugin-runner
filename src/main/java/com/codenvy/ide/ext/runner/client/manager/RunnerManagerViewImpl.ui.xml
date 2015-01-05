@@ -76,6 +76,7 @@
         }
 
         .appRefLabel {
+            cursor: pointer;
             float: left;
             margin-top: 3px;
             margin-left: 6px;

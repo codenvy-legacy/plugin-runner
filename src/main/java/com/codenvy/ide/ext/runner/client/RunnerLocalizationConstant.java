@@ -200,4 +200,7 @@ public interface RunnerLocalizationConstant extends Messages {
     String messagesAvailableRamLessCustom(@Nonnegative int overrideRam, @Nonnegative int total, @Nonnegative int used);
 
     String runnerNotReady();
+
+    @Key("runners.panel.title")
+    String runnersPanelTitle();
 }

@@ -23,6 +23,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -41,8 +43,8 @@ import java.util.Map;
  * @author Dmitry Shnurenko
  * @author Valeriy Svydenko
  */
-public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate>
-        implements RunnerManagerView, RunnerWidget.ActionDelegate {
+public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView,
+                                                                                                 RunnerWidget.ActionDelegate {
 
     @Singleton
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
@@ -83,33 +85,37 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final Provider<RunnerWidget> runnerViewProvider;
-    private final ConsoleFactory         consoleFactory;
-    private final Provider<Terminal>     terminalProvider;
-    private final Map<Runner, Console>   consoles;
-    private final Map<Runner, Terminal>  terminals;
+    private final Provider<RunnerWidget>    runnerViewProvider;
+    private final ConsoleFactory            consoleFactory;
+    private final Provider<Terminal>        terminalProvider;
+    private final Map<Runner, Console>      consoles;
+    private final Map<Runner, Terminal>     terminals;
+    private final Map<Runner, RunnerWidget> runnerWidgets;
+
+    private String url;
 
     @Inject
     public RunnerManagerViewImpl(PartStackUIResources partStackUIResources,
                                  RunnerManagerViewImplUiBinder uiBinder,
                                  RunnerResources resources,
-                                 RunnerLocalizationConstant locales,
+                                 RunnerLocalizationConstant locale,
                                  Provider<RunnerWidget> runnerViewProvider,
                                  ConsoleFactory consoleFactory,
                                  Provider<Terminal> terminalProvider) {
         super(partStackUIResources);
 
         this.resources = resources;
-        this.locale = locales;
+        this.locale = locale;
         this.runnerViewProvider = runnerViewProvider;
         this.consoleFactory = consoleFactory;
         this.terminalProvider = terminalProvider;
 
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
+        this.runnerWidgets = new HashMap<>();
 
         container.add(uiBinder.createAndBindUi(this));
-        titleLabel.setText("Runners");
+        titleLabel.setText(locale.runnersPanelTitle());
 
         initializePanelsEvents();
     }
@@ -167,14 +173,29 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
-        appReference.setText(runner.getApplicationURL());
-        // TODO don't forget about terminal, update it
+        url = runner.getApplicationURL();
+
+        appReference.setText(url);
+
+        Terminal terminal = terminals.get(runner);
+
+        if (terminal != null) {
+            terminal.update(runner);
+        }
+
+        RunnerWidget runnerWidget = runnerWidgets.get(runner);
+
+        if (runnerWidget != null) {
+            runnerWidget.update(runner);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public void addRunner(@Nonnull Runner runner) {
         RunnerWidget runnerWidget = runnerViewProvider.get();
+        runnerWidgets.put(runner, runnerWidget);
+
         runnerWidget.update(runner);
         runnerWidget.setDelegate(this);
 
@@ -296,5 +317,10 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
         mainArea.clear();
         mainArea.add(terminal);
+    }
+
+    @UiHandler("appReference")
+    public void onAppReferenceClicked(@SuppressWarnings("UnusedParameters") ClickEvent clickEvent) {
+        Window.open(url, "_blank", "");
     }
 }

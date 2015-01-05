@@ -48,7 +48,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     Image image;
 
     private ActionDelegate delegate;
-    private Runner runner;
+    private Runner         runner;
 
     @Inject
     public RunnerWidgetImpl(RunnerViewImplUiBinder ourUiBinder) {

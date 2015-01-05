@@ -81,6 +81,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     public void onRunnerSelected(@Nonnull Runner runner) {
         this.selectedRunner = runner;
 
+        view.update(runner);
+
         // TODO it isn't good idea
         onConsoleButtonClicked();
     }
@@ -149,9 +151,13 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private void launchRunner(@Nonnull Runner runner) {
         selectedRunner = runner;
 
-        view.addRunner(selectedRunner);
+        view.addRunner(runner);
 
-        runActions.put(selectedRunner, actionFactory.createAndPerform(RUN, selectedRunner));
+        RunnerAction runnerAction = actionFactory.createAndPerform(RUN, runner);
+
+        runActions.put(runner, runnerAction);
+
+        view.update(runner);
     }
 
     /** {@inheritDoc} */

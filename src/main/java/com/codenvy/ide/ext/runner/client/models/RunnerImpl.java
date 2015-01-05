@@ -24,7 +24,6 @@ import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.Objects;
 
-import static com.codenvy.api.runner.ApplicationStatus.RUNNING;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
@@ -138,10 +137,6 @@ public class RunnerImpl implements Runner {
     @Override
     public String getApplicationURL() {
         if (descriptor == null) {
-            return null;
-        }
-
-        if (!(RUNNING.equals(descriptor.getStatus()) && isAlive)) {
             return null;
         }
 
