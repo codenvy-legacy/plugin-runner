@@ -124,7 +124,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onCleanConsoleButtonClicked() {
-
+        view.clearConsole(selectedRunner);
     }
 
     /** {@inheritDoc} */

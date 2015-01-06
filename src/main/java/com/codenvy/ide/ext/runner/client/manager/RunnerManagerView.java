@@ -137,6 +137,14 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printStdErr(@Nonnull Runner runner, @Nonnull String line);
 
     /**
+     * Clean console for a given runner.
+     *
+     * @param runner
+     *         runner that is bound wth console which needs to be cleaned
+     */
+    void clearConsole(@Nonnull Runner runner);
+
+    /**
      * Shows a console widget for a given runner on the view.
      *
      * @param runner

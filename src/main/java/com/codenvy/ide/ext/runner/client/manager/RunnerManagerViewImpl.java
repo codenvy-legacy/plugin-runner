@@ -295,6 +295,17 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
+    public void clearConsole(@Nonnull Runner runner) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
+
+        console.clear();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void activateConsole(@Nonnull Runner runner) {
         terminalTab.removeStyleName(resources.runnerCss().activeTab());
         consoleTab.addStyleName(resources.runnerCss().activeTab());
