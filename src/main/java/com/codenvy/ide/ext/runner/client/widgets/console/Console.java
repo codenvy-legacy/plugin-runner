@@ -19,8 +19,17 @@ import javax.annotation.Nonnull;
  * all messages from area).
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public interface Console extends IsWidget {
+
+    /**
+     * Prints message with s given content.
+     *
+     * @param message
+     *         message that needs to be printed
+     */
+    void printMessage(@Nonnull String message);
 
     /**
      * Prints Info message with a given content.
@@ -75,6 +84,9 @@ public interface Console extends IsWidget {
      *         line that needs to be printed
      */
     void printStdOut(@Nonnull String line);
+
+    /** Scroll to bottom of the view. */
+    void scrollBottom();
 
     /**
      * Prints STDERR message with a given content.

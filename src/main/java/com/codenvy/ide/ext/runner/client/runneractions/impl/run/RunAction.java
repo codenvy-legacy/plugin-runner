@@ -60,7 +60,7 @@ public class RunAction extends AbstractAppLaunchAction {
                      EventBus eventBus) {
 
         super(notificationManager,
-              runnerManagerPresenter.getView(),
+              runnerManagerPresenter,
               locale,
               handlerFactory,
               messageBus,

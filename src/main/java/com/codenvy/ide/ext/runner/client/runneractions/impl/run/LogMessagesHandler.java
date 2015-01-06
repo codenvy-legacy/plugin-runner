@@ -34,6 +34,7 @@ import static com.codenvy.ide.ext.runner.client.runneractions.impl.AbstractAppLa
  *
  * @author Artem Zatsarynnyy
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
     private static final int TIMEOUT = 5000;
@@ -114,7 +115,7 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
     }
 
     private void printLine(@Nonnull LogMessage logMessage) {
-        view.printInfo(runner, logMessage.getText());
+        view.printMessage(runner, logMessage.getText());
 
         lastPrintedMessageNum = logMessage.getNumber();
     }

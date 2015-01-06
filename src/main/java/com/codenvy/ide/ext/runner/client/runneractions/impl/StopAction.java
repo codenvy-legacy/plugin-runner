@@ -59,16 +59,15 @@ public class StopAction implements RunnerAction {
                       AsyncCallbackFactory asyncCallbackFactory,
                       RunnerLocalizationConstant constant,
                       NotificationManager notificationManager,
-                      RunnerManagerPresenter runnerManagerPresenter,
-                      RunnerManagerPresenter presenter) {
+                      RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
         this.appContext = appContext;
         this.asyncCallbackFactory = asyncCallbackFactory;
         this.constant = constant;
         this.notificationManager = notificationManager;
-        this.presenter = presenter;
 
         notification = new Notification("", ERROR);
+        presenter = runnerManagerPresenter;
         view = runnerManagerPresenter.getView();
     }
 
@@ -125,7 +124,7 @@ public class StopAction implements RunnerAction {
         runner.setAppLaunchStatus(false);
         runner.setStatus(FAILED);
 
-        view.update(runner);
+        presenter.update(runner);
     }
 
     /** {@inheritDoc} */

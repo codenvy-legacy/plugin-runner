@@ -61,6 +61,16 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void setTimeout(@Nonnull String timeout);
 
     /**
+     * Prints a given line with unknown content in the console for a given runner.
+     *
+     * @param runner
+     *         runner that needs to contain a given line
+     * @param line
+     *         line that needs to be printed
+     */
+    void printMessage(@Nonnull Runner runner, @Nonnull String line);
+
+    /**
      * Prints a given line with info content in the console for a given runner.
      * Printed line will look like this: [INFO] some string
      *

@@ -22,7 +22,7 @@ import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.inject.factories.HandlerFactory;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.util.loging.Log;
@@ -60,7 +60,7 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
                                      RunnerServiceClient service,
                                      DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                      AppContext appContext,
-                                     RunnerManagerView view,
+                                     RunnerManagerPresenter presenter,
                                      RunnerLocalizationConstant locale,
                                      HandlerFactory handlerFactory,
                                      MessageBus messageBus,
@@ -70,7 +70,7 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
                                      EventBus eventBus,
                                      @Named("workspaceId") String workspaceId) {
         super(notificationManager,
-              view,
+              presenter,
               locale,
               handlerFactory,
               messageBus,

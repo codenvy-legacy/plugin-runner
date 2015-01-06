@@ -173,10 +173,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
-        url = runner.getApplicationURL();
-
-        appReference.setText(url);
-
         Terminal terminal = terminals.get(runner);
 
         if (terminal != null) {
@@ -209,13 +205,25 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void setApplicationURl(@Nullable String url) {
-
+        this.url = url;
+        appReference.setText(url);
     }
 
     /** {@inheritDoc} */
     @Override
     public void setTimeout(@Nonnull String timeout) {
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void printMessage(@Nonnull Runner runner, @Nonnull String line) {
+        Console console = consoles.get(runner);
+        if (console == null) {
+            return;
+        }
+
+        console.printMessage(line);
     }
 
     /** {@inheritDoc} */
@@ -299,6 +307,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
         mainArea.clear();
         mainArea.add(console);
+
+        console.scrollBottom();
     }
 
     /** {@inheritDoc} */

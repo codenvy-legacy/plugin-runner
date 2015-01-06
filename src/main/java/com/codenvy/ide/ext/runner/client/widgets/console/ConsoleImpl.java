@@ -15,6 +15,7 @@ import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
@@ -37,6 +38,7 @@ import javax.annotation.Nonnull;
  * @author Vitaliy Guliy
  * @author Mihail Kuznyetsov
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class ConsoleImpl extends Composite implements Console {
 
@@ -87,6 +89,28 @@ public class ConsoleImpl extends Composite implements Console {
         this.runner = runner;
 
         initWidget(UI_BINDER.createAndBindUi(this));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void printMessage(@Nonnull String message) {
+        if (message.startsWith(INFO)) {
+            print(buildSafeHtmlMessage(INFO, INFO_COLOR, message));
+        } else if (message.startsWith(ERROR)) {
+            print(buildSafeHtmlMessage(ERROR, ERROR_COLOR, message));
+        } else if (message.startsWith(WARN)) {
+            print(buildSafeHtmlMessage(WARN, WARN_COLOR, message));
+        } else if (message.startsWith(DOCKER + " " + ERROR)) {
+            print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, ERROR, ERROR_COLOR, message));
+        } else if (message.startsWith(DOCKER)) {
+            print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, message));
+        } else if (message.startsWith(STDOUT)) {
+            print(buildSafeHtmlMessage(STDOUT, STDOUT_COLOR, message));
+        } else if (message.startsWith(STDERR)) {
+            print(buildSafeHtmlMessage(STDERR, STDERR_COLOR, message));
+        } else {
+            print(buildSafeHtmlMessage(message));
+        }
     }
 
     /** {@inheritDoc} */
@@ -184,10 +208,30 @@ public class ConsoleImpl extends Composite implements Console {
                                     .toSafeHtml();
     }
 
+    /**
+     * Return sanitized message (with all restricted HTML-tags escaped) in SafeHtml
+     *
+     * @param message
+     *         message to print
+     * @return message in SafeHtml
+     */
+    private SafeHtml buildSafeHtmlMessage(@Nonnull String message) {
+        return new SafeHtmlBuilder()
+                .appendHtmlConstant("<pre " + PRE_STYLE + ">")
+                .append(SimpleHtmlSanitizer.sanitizeHtml(message))
+                .appendHtmlConstant("</pre>")
+                .toSafeHtml();
+    }
+
     private void print(@Nonnull SafeHtml message) {
         cleanOverHeadLinesIfAny();
 
-        output.add(new HTML(message));
+        HTML html = new HTML(message);
+        html.getElement().getStyle().setPaddingLeft(2, Style.Unit.PX);
+
+        output.add(html);
+
+        scrollBottom();
     }
 
     private void cleanOverHeadLinesIfAny() {
@@ -223,6 +267,12 @@ public class ConsoleImpl extends Composite implements Console {
         html.getElement().appendChild(link.getElement());
 
         output.insert(html, 0);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void scrollBottom() {
+        panel.getElement().setScrollTop(panel.getElement().getScrollHeight());
     }
 
     /** {@inheritDoc} */

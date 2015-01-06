@@ -76,12 +76,26 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         return view;
     }
 
+    /**
+     * Updates runner when runner state changed.
+     *
+     * @param runner
+     *         runner which was changed
+     */
+    public void update(@Nonnull Runner runner) {
+        view.update(runner);
+
+        if (runner.equals(selectedRunner)) {
+            view.setApplicationURl(selectedRunner.getApplicationURL());
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void onRunnerSelected(@Nonnull Runner runner) {
         this.selectedRunner = runner;
 
-        view.update(runner);
+        update(selectedRunner);
 
         if (runner.isConsoleActive()) {
             view.activateConsole(selectedRunner);
@@ -158,13 +172,13 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private void launchRunner(@Nonnull Runner runner) {
         selectedRunner = runner;
 
-        view.addRunner(runner);
+        view.addRunner(selectedRunner);
 
-        RunnerAction runnerAction = actionFactory.createAndPerform(RUN, runner);
+        RunnerAction runnerAction = actionFactory.createAndPerform(RUN, selectedRunner);
 
-        runActions.put(runner, runnerAction);
+        runActions.put(selectedRunner, runnerAction);
 
-        view.update(runner);
+        update(selectedRunner);
     }
 
     /** {@inheritDoc} */

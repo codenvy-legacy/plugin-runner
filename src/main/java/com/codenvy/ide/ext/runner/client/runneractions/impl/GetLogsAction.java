@@ -93,7 +93,7 @@ public class GetLogsAction implements RunnerAction {
                 .build(new StringUnmarshaller(), new SuccessCallback<String>() {
                            @Override
                            public void onSuccess(String result) {
-                               view.printInfo(runner, result);
+                               view.printMessage(runner, result);
                            }
                        },
                        new FailureCallback() {
@@ -117,7 +117,7 @@ public class GetLogsAction implements RunnerAction {
         runner.setAppLaunchStatus(false);
         runner.setStatus(FAILED);
 
-        view.update(runner);
+        presenter.update(runner);
     }
 
     /** {@inheritDoc} */

@@ -20,6 +20,7 @@ import com.codenvy.ide.commons.exception.ServerException;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.HandlerFactory;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
@@ -82,6 +83,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
 
     private final NotificationManager        notificationManager;
     private final RunnerManagerView          view;
+    private final RunnerManagerPresenter     presenter;
     private final AppContext                 appContext;
     private final RunnerLocalizationConstant locale;
     private final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
@@ -104,7 +106,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
     private Notification notification;
 
     protected AbstractAppLaunchAction(@Nonnull NotificationManager notificationManager,
-                                      @Nonnull RunnerManagerView view,
+                                      @Nonnull RunnerManagerPresenter presenter,
                                       @Nonnull RunnerLocalizationConstant locale,
                                       @Nonnull HandlerFactory handlerFactory,
                                       @Nonnull MessageBus messageBus,
@@ -122,7 +124,8 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
         this.dtoFactory = dtoFactory;
         this.appContext = appContext;
         this.eventBus = eventBus;
-        this.view = view;
+        this.presenter = presenter;
+        this.view = presenter.getView();
     }
 
     /**
@@ -210,7 +213,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
         runner.setAppLaunchStatus(false);
         runner.setStatus(FAILED);
 
-        view.update(runner);
+        presenter.update(runner);
 
         if (notification == null) {
             notification = new Notification(message, ERROR, true);
@@ -249,7 +252,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
 
             case NEW:
                 runner.setStatus(IN_PROGERESS);
-                view.update(runner);
+                presenter.update(runner);
                 break;
 
             default:
@@ -262,7 +265,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
         runner.setStatus(RUNNING);
         runner.setAppRunningStatus(true);
 
-        view.update(runner);
+        presenter.update(runner);
 
         startCheckingAppHealth();
 
@@ -301,7 +304,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
         }
 
         notification.update(message, notificationType, FINISHED, null, true);
-        view.update(runner);
+        presenter.update(runner);
 
         stop();
     }
@@ -312,7 +315,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
         runner.setAliveStatus(false);
         runner.setStatus(FAILED);
 
-        view.update(runner);
+        presenter.update(runner);
 
         project.setIsRunningEnabled(true);
 
@@ -333,7 +336,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
         runner.setAliveStatus(false);
         runner.setStatus(FAILED);
 
-        view.update(runner);
+        presenter.update(runner);
 
         project.setIsRunningEnabled(true);
         project.setProcessDescriptor(null);
@@ -359,7 +362,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
                 runner.setAliveStatus(true);
                 runner.setStatus(RUNNING);
 
-                view.update(runner);
+                presenter.update(runner);
 
                 String projectName = project.getProjectDescription().getName();
                 String notificationMessage = locale.applicationMaybeStarted(projectName);
@@ -390,7 +393,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
                 runner.setAliveStatus(true);
                 runner.setStatus(RUNNING);
 
-                view.update(runner);
+                presenter.update(runner);
 
                 String projectName = project.getProjectDescription().getName();
                 String notificationMessage = locale.applicationStarted(projectName);

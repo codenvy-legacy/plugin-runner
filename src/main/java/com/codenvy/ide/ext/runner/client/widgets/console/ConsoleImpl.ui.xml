@@ -21,9 +21,15 @@
             padding-bottom: 5px;
             padding-top: 5px;
         }
+
+        .fontStyle pre {
+            font-family: "Droid Sans Mono", monospace;
+            font-size: 11px;
+        }
     </ui:style>
 
-    <g:ScrollPanel ui:field="panel" addStyleNames="{style.scrollPanel} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
+    <g:ScrollPanel ui:field="panel"
+                   addStyleNames="{style.scrollPanel} {style.fontStyle} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
         <g:FlowPanel ui:field="output"/>
     </g:ScrollPanel>
 

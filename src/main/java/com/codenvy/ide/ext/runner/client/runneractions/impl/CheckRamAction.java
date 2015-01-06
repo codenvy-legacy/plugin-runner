@@ -23,6 +23,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
@@ -58,10 +59,11 @@ public class CheckRamAction implements RunnerAction {
     private final NotificationManager        notificationManager;
     private final Notification               notification;
 
-    private RunnerConfiguration runnerConfiguration;
-    private CurrentProject      project;
-    private Runner              runner;
-    private RunnerManagerView   view;
+    private RunnerConfiguration    runnerConfiguration;
+    private CurrentProject         project;
+    private Runner                 runner;
+    private RunnerManagerView      view;
+    private RunnerManagerPresenter presenter;
 
     @Inject
     public CheckRamAction(RunnerServiceClient service,
@@ -69,7 +71,7 @@ public class CheckRamAction implements RunnerAction {
                           DialogFactory dialogFactory,
                           NotificationManager notificationManager,
                           Notification notification,
-                          RunnerManagerView view,
+                          RunnerManagerPresenter presenter,
                           AsyncCallbackFactory asyncCallbackFactory,
                           RunnerLocalizationConstant constant,
                           RunAction runAction) {
@@ -81,7 +83,8 @@ public class CheckRamAction implements RunnerAction {
         this.dialogFactory = dialogFactory;
         this.notificationManager = notificationManager;
         this.notification = notification;
-        this.view = view;
+        this.presenter = presenter;
+        this.view = presenter.getView();
     }
 
     /** {@inheritDoc} */
@@ -235,7 +238,7 @@ public class CheckRamAction implements RunnerAction {
         runner.setAppLaunchStatus(false);
         runner.setStatus(FAILED);
 
-        view.update(runner);
+        presenter.update(runner);
     }
 
     private boolean isSufficientMemory(@Nonnegative int totalMemory,
