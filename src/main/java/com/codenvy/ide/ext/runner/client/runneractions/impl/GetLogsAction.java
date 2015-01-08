@@ -12,7 +12,6 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
-import com.codenvy.api.runner.gwt.client.utils.RunnerUtils;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
@@ -31,7 +30,6 @@ import com.google.inject.Inject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 
@@ -80,8 +78,7 @@ public class GetLogsAction implements RunnerAction {
             return;
         }
 
-        final Link viewLogsLink = RunnerUtils.getLink(project.getProcessDescriptor(), LINK_REL_VIEW_LOG);
-
+        final Link viewLogsLink = runner.getLogUrl();
         if (viewLogsLink == null) {
             onFail(constant.applicationLogsFailed(), null);
             return;

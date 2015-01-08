@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.widgets.console;
 
+import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -26,6 +27,7 @@ import org.mockito.Mock;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,7 +48,7 @@ public class ConsoleImplTest {
     private RunnerResources            resources;
     @Mock
     private RunnerLocalizationConstant locale;
-    @Mock
+    @Mock()
     private Runner                     runner;
     @InjectMocks
     private ConsoleImpl                console;
@@ -101,7 +103,7 @@ public class ConsoleImplTest {
     }
 
     @Test
-    public void messageShouldBeCleanedWhenTheAmoutIs1000AndLogUrlIsAbsent() throws Exception {
+    public void messageShouldBeCleanedWhenTheAmountIs1000AndLogUrlIsAbsent() throws Exception {
         when(console.output.getWidgetCount()).thenReturn(1000);
 
         console.printInfo(SOME_TEXT);
@@ -112,9 +114,13 @@ public class ConsoleImplTest {
     }
 
     @Test
-    public void messageShouldBeCleanedWhenTheAmoutIs1000AndLogUrlIsExist() throws Exception {
+    public void messageShouldBeCleanedWhenTheAmountIs1000AndLogUrlIsExist() throws Exception {
         when(console.output.getWidgetCount()).thenReturn(1000);
-        when(runner.getLogUrl()).thenReturn(SOME_TEXT);
+
+        Link logLink = mock(Link.class);
+        when(logLink.getHref()).thenReturn(SOME_TEXT);
+
+        when(runner.getLogUrl()).thenReturn(logLink);
 
         console.printInfo(SOME_TEXT);
 

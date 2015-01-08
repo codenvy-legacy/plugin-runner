@@ -13,8 +13,6 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl;
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
-import com.codenvy.api.runner.gwt.client.utils.RunnerUtils;
-import com.codenvy.api.runner.internal.Constants;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
@@ -83,7 +81,7 @@ public class StopAction implements RunnerAction {
 
         presenter.setActive();
 
-        final Link stopLink = RunnerUtils.getLink(project.getProcessDescriptor(), Constants.LINK_REL_STOP);
+        Link stopLink = runner.getStopUrl();
         if (stopLink == null) {
             onFail(constant.applicationFailed(project.getProjectDescription().getName()), null);
             return;

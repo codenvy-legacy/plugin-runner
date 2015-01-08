@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.models;
 
+import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.api.runner.dto.RunnerMetric;
@@ -93,11 +94,15 @@ public interface Runner {
 
     /** @return url where full log is located */
     @Nullable
-    String getLogUrl();
+    Link getLogUrl();
 
     /** @return url where recipe (Docker) file is located */
     @Nullable
     String getRecipeUrl();
+
+    /** @return url where the rest service for stopping runner is located */
+    @Nullable
+    Link getStopUrl();
 
     /**
      * Changes application process descriptor.

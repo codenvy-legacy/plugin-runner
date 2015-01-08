@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_RUNNER_RECIPE;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
+import static com.codenvy.api.runner.internal.Constants.LINK_REL_STOP;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
 
@@ -199,8 +200,8 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Nullable
     @Override
-    public String getLogUrl() {
-        return getUrlByName(LINK_REL_VIEW_LOG);
+    public Link getLogUrl() {
+        return RunnerUtils.getLink(descriptor, LINK_REL_VIEW_LOG);
     }
 
     /** {@inheritDoc} */
@@ -208,6 +209,13 @@ public class RunnerImpl implements Runner {
     @Override
     public String getRecipeUrl() {
         return getUrlByName(LINK_REL_RUNNER_RECIPE);
+    }
+
+    /** {@inheritDoc} */
+    @Nullable
+    @Override
+    public Link getStopUrl() {
+        return RunnerUtils.getLink(descriptor, LINK_REL_STOP);
     }
 
     @Nullable

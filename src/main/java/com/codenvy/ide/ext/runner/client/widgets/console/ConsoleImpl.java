@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.widgets.console;
 
+import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -244,7 +245,12 @@ public class ConsoleImpl extends Composite implements Console {
             output.remove(0);
         }
 
-        String logUrl = runner.getLogUrl();
+        Link logLink = runner.getLogUrl();
+        if (logLink == null) {
+            return;
+        }
+
+        String logUrl = logLink.getHref();
         if (logUrl == null) {
             return;
         }
