@@ -8,22 +8,20 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.widgets.runner;
+package com.codenvy.ide.ext.runner.client.widgets.tab;
 
 import com.codenvy.ide.api.mvp.View;
-import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
 
 /**
- * Provides methods which allow change visual representation of runner.
+ * Provides methods which allow change visual representation of tab.
  *
  * @author Dmitry Shnurenko
- * @author Valeriy Svydenko
  */
-@ImplementedBy(RunnerWidgetImpl.class)
-public interface RunnerWidget extends View<RunnerWidget.ActionDelegate> {
+@ImplementedBy(TabWidgetImpl.class)
+public interface TabWidget extends View<TabWidget.ActionDelegate> {
 
     /** Performs some actions when tab is selected. */
     void select();
@@ -32,21 +30,16 @@ public interface RunnerWidget extends View<RunnerWidget.ActionDelegate> {
     void unSelect();
 
     /**
-     * Updates runner view representation when runner state changed.
+     * Sets tab title.
      *
-     * @param runner
-     *         runner which was changed
+     * @param title
+     *         name of title which need set
      */
-    void update(@Nonnull Runner runner);
+    void setTitle(@Nonnull String title);
 
     interface ActionDelegate {
-        /**
-         * Performs some actions in response to user's choosing a runner.
-         *
-         * @param runner
-         *         runner that was chosen
-         */
-        void onRunnerSelected(@Nonnull Runner runner);
+        /** Performs some actions in response to user's clicking on the tab. */
+        void onMouseClicked();
     }
 
 }

@@ -17,9 +17,18 @@
 }
 
 .activeTab {
-    border-left: 1px solid #878787;
-    border-right: 1px solid #878787;
-    border-top: 1px solid #878787;
+    background: backgroundColor;
+    border-left: 1px solid #000000;
+    border-top: 1px solid #000000;
+    border-right: 1px solid #000000;
+}
+
+.activeTabText {
+    color: #ffffff;
+}
+
+.notActiveTabText {
+    color: #929292;
 }
 
 .consolePanel {
@@ -84,4 +93,44 @@
     font-size: 13px;
     font-family: "Helvetica Neue", "Myriad Pro", arial, Verdana, Verdana, sans-serif;
     color: #dbdbdb;
+}
+
+.runnerWidgetBorders {
+    background: #474747;
+    box-shadow: 0 1px 0 0 #4d4d4d inset;
+    border-left: 1px solid #000000;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+.greenColor {
+    fill: #56e33b;
+}
+
+.redColor {
+    fill: #ff3333;
+}
+
+.yellowColor {
+    fill: #ffba00;
+}
+
+.whiteColor {
+    fill: white;
+}
+
+.fontSizeTen {
+    font-family: " Helvetica Neue", Regular, sans-serif;
+    font-size: 10pt;
+}
+
+.fontSizeEleven {
+    font-family: " Helvetica Neue", Regular, sans-serif;
+    font-size: 11pt;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.5);
+}
+
+.fontSizeEight {
+    font-family: "Helvetica Neue", Regular, sans-serif;
+    font-size: 8pt;
 }

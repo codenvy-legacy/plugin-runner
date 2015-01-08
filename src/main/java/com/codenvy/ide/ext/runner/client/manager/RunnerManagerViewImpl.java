@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -26,6 +27,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -66,15 +68,15 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     //tab panel
     @UiField
-    FlowPanel consoleTab;
-    @UiField
-    FlowPanel terminalTab;
+    FlowPanel tabsPanel;
 
     //info panel
     @UiField
     Label appReference;
     @UiField
     Label timeout;
+    @UiField
+    Image moreInfo;
 
     //print area
     @UiField
@@ -91,6 +93,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private final Map<Runner, Console>      consoles;
     private final Map<Runner, Terminal>     terminals;
     private final Map<Runner, RunnerWidget> runnerWidgets;
+    private final TabWidget                 consoleTab;
+    private final TabWidget                 terminalTab;
 
     private String url;
 
@@ -101,7 +105,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                                  RunnerLocalizationConstant locale,
                                  Provider<RunnerWidget> runnerViewProvider,
                                  ConsoleFactory consoleFactory,
-                                 Provider<Terminal> terminalProvider) {
+                                 Provider<Terminal> terminalProvider,
+                                 TabWidget consoleTab,
+                                 TabWidget terminalTab) {
         super(partStackUIResources);
 
         this.resources = resources;
@@ -113,9 +119,17 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
         this.runnerWidgets = new HashMap<>();
+        this.consoleTab = consoleTab;
+        this.terminalTab = terminalTab;
 
         container.add(uiBinder.createAndBindUi(this));
+
+        consoleTab.setTitle(locale.runnerTabConsole());
+        terminalTab.setTitle(locale.runnerTabTerminal());
         titleLabel.setText(locale.runnersPanelTitle());
+
+        tabsPanel.add(consoleTab);
+        tabsPanel.add(terminalTab);
 
         initializePanelsEvents();
     }
@@ -149,25 +163,37 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             }
         }, ClickEvent.getType());
 
-        consoleTab.addDomHandler(new ClickHandler() {
+        consoleTab.setDelegate(new TabWidget.ActionDelegate() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onMouseClicked() {
                 delegate.onConsoleButtonClicked();
             }
-        }, ClickEvent.getType());
+        });
 
-        terminalTab.addDomHandler(new ClickHandler() {
+        terminalTab.setDelegate(new TabWidget.ActionDelegate() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onMouseClicked() {
                 delegate.onTerminalButtonClicked();
             }
-        }, ClickEvent.getType());
+        });
     }
 
     /** {@inheritDoc} */
     @Override
     public void onRunnerSelected(@Nonnull Runner runner) {
         delegate.onRunnerSelected(runner);
+
+        RunnerWidget widget = runnerWidgets.get(runner);
+
+        selectWidget(widget);
+    }
+
+    private void selectWidget(@Nonnull RunnerWidget selectWidget) {
+        for (RunnerWidget widget : runnerWidgets.values()) {
+            widget.unSelect();
+        }
+
+        selectWidget.select();
     }
 
     /** {@inheritDoc} */
@@ -190,10 +216,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void addRunner(@Nonnull Runner runner) {
         RunnerWidget runnerWidget = runnerViewProvider.get();
-        runnerWidgets.put(runner, runnerWidget);
-
         runnerWidget.update(runner);
         runnerWidget.setDelegate(this);
+
+        runnerWidgets.put(runner, runnerWidget);
+
+        selectWidget(runnerWidget);
 
         runnersPanel.add(runnerWidget);
 
@@ -307,8 +335,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void activateConsole(@Nonnull Runner runner) {
-        terminalTab.removeStyleName(resources.runnerCss().activeTab());
-        consoleTab.addStyleName(resources.runnerCss().activeTab());
+        consoleTab.select();
+        terminalTab.unSelect();
 
         Console console = consoles.get(runner);
         if (console == null) {
@@ -322,11 +350,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         console.scrollBottom();
     }
 
+
     /** {@inheritDoc} */
     @Override
     public void activateTerminal(@Nonnull Runner runner) {
-        consoleTab.removeStyleName(resources.runnerCss().activeTab());
-        terminalTab.addStyleName(resources.runnerCss().activeTab());
+        terminalTab.select();
+        consoleTab.unSelect();
 
         Terminal terminal = terminals.get(runner);
         if (terminal == null) {

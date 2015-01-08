@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.inject.Singleton;
 
@@ -29,8 +30,6 @@ public interface RunnerResources extends ClientBundle {
 
         String fullSize();
 
-        String activeTab();
-
         String consolePanel();
 
         String logLink();
@@ -44,7 +43,59 @@ public interface RunnerResources extends ClientBundle {
         String cancelButton();
 
         String fontStyle();
+
+        String runnerWidgetBorders();
+
+        String activeTab();
+
+        String activeTabText();
+
+        String notActiveTabText();
+
+        String greenColor();
+
+        String redColor();
+
+        String yellowColor();
+
+        String whiteColor();
+
+        String fontSizeEight();
+
+        String fontSizeTen();
+
+        String fontSizeEleven();
     }
+
+    @Source("images/runnerwidget/done.svg")
+    SVGResource runnerDoneImage();
+
+    @Source("images/runnerwidget/failed.svg")
+    SVGResource runnerFailedImage();
+
+    @Source("images/runnerwidget/in-progress.svg")
+    SVGResource runnerInProgressImage();
+
+    @Source("images/runnerwidget/in-queue.svg")
+    SVGResource runnerInQueueImage();
+
+    @Source("images/runnerwidget/timeout.svg")
+    SVGResource runnerTimeoutImage();
+
+    @Source("images/mainwidget/run.png")
+    ImageResource runButton();
+
+    @Source("images/mainwidget/recipe.png")
+    ImageResource recipeButton();
+
+    @Source("images/mainwidget/clean.png")
+    ImageResource cleanButton();
+
+    @Source("images/mainwidget/stop.png")
+    ImageResource stopButton();
+
+    @Source("images/mainwidget/more-icon.png")
+    ImageResource moreIcon();
 
     @Source("runner.css")
     RunnerCss runnerCss();

@@ -150,7 +150,7 @@ public interface Runner {
     /** The list of available states of a runner. */
     enum Status {
         RUNNING,
-        IN_PROGERESS,
+        IN_PROGRESS,
         IN_QUEUE,
         FAILED,
         TIMEOUT,

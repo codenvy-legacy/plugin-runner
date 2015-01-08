@@ -74,6 +74,7 @@ public class RunnerImpl implements Runner {
         this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + environmentName);
         this.ram = runOptions.getMemorySize();
         this.isConsoleActive = true;
+        this.status = Status.IN_PROGRESS;
 
         RUNNER_NUMBER++;
     }

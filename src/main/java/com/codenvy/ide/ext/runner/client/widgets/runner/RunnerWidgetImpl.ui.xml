@@ -13,56 +13,54 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
+    <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
+
     <ui:style>
         .runnerSize {
             cursor: pointer;
-            width: calc(100% - 1px);
-            height: 50px;
-            border-bottom: 1px solid #303030;
-            border-top: 1px solid #878787;
-            border-left: 1px solid #303030;
-        }
-
-        .runnerSize:active {
-            border-top: 1px solid #303030;
-            border-bottom: 1px solid #878787;
-            border-left: 1px solid #303030;
-        }
-
-        .floatLeft {
-            float: left;
-        }
-
-        .overflowHidden {
-            overflow: hidden;
+            width: 150px;
+            height: 35px;
+            margin-left: 5px;
         }
 
         .runnerName {
-            margin-top: 6px;
+            margin-top: 3px;
+        }
+
+        .ramLabel {
+            color: #1c9dee;
+            float: left;
         }
 
         .timeLabel {
-            margin-left: 15px;
+            color: #b6b6b6;
+            float: left;
+            margin-left: 5px;
+        }
+
+        .image {
+            margin-left: 3px;
+            margin-top: 10px;
         }
     </ui:style>
 
     <g:DockLayoutPanel unit="PX" addStyleNames="{style.runnerSize}">
-        <g:west size="40">
+        <g:west size="20">
             <g:FlowPanel>
-                <g:Image ui:field="image"/>
+                <g:SimpleLayoutPanel ui:field="image" addStyleNames="{style.image}"/>
             </g:FlowPanel>
         </g:west>
 
-        <g:north size="25">
-            <g:FlowPanel addStyleNames="{style.overflowHidden}">
-                <g:Label ui:field="runnerName" addStyleNames="{style.runnerName}"/>
+        <g:north size="20">
+            <g:FlowPanel>
+                <g:Label ui:field="runnerName" addStyleNames="{style.runnerName} {resources.runnerCss.fontSizeEleven}"/>
             </g:FlowPanel>
         </g:north>
 
         <g:center>
             <g:FlowPanel>
-                <g:Label ui:field="ram" addStyleNames="{style.floatLeft}"/>
-                <g:Label ui:field="startTime" addStyleNames="{style.floatLeft} {style.timeLabel}"/>
+                <g:Label ui:field="ram" addStyleNames="{style.ramLabel} {resources.runnerCss.fontSizeEight}"/>
+                <g:Label ui:field="startTime" addStyleNames="{style.timeLabel} {resources.runnerCss.fontSizeEight}"/>
             </g:FlowPanel>
         </g:center>
     </g:DockLayoutPanel>
