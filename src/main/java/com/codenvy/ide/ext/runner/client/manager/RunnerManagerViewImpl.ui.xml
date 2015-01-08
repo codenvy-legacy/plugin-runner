@@ -103,7 +103,7 @@
             margin-top: 1px;
         }
 
-        .mainArea {
+        .textArea {
             background: #303030;
             width: 100%;
             height: calc(100% - 1px);
@@ -182,7 +182,7 @@
 
                     <!--print panel-->
                     <g:center>
-                        <g:FlowPanel ui:field="mainArea" addStyleNames="{style.mainArea}"/>
+                        <g:FlowPanel ui:field="textArea" addStyleNames="{style.textArea}"/>
                     </g:center>
                 </g:DockLayoutPanel>
 

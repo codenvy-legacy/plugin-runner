@@ -80,7 +80,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     //print area
     @UiField
-    FlowPanel mainArea;
+    FlowPanel textArea;
 
     @UiField(provided = true)
     final RunnerResources            resources;
@@ -123,6 +123,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.terminalTab = terminalTab;
 
         container.add(uiBinder.createAndBindUi(this));
+
+        consoleTab.select();
 
         consoleTab.setTitle(locale.runnerTabConsole());
         terminalTab.setTitle(locale.runnerTabTerminal());
@@ -340,12 +342,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
         Console console = consoles.get(runner);
         if (console == null) {
-            mainArea.clear();
+            textArea.clear();
             return;
         }
 
-        mainArea.clear();
-        mainArea.add(console);
+        textArea.clear();
+        textArea.add(console);
 
         console.scrollBottom();
     }
@@ -365,8 +367,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             terminals.put(runner, terminal);
         }
 
-        mainArea.clear();
-        mainArea.add(terminal);
+        textArea.clear();
+        textArea.add(terminal);
     }
 
     @UiHandler("appReference")

@@ -163,7 +163,7 @@ public interface Runner {
         IN_QUEUE,
         FAILED,
         TIMEOUT,
-        IDLE,
+        STOPPED,
         DONE
     }
 

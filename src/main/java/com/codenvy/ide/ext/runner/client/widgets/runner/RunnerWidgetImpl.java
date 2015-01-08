@@ -41,12 +41,6 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     interface RunnerViewImplUiBinder extends UiBinder<Widget, RunnerWidgetImpl> {
     }
 
-    private final SVGImage inProgress;
-    private final SVGImage inQueue;
-    private final SVGImage failed;
-    private final SVGImage timeout;
-    private final SVGImage done;
-
     @UiField
     Label             runnerName;
     @UiField
@@ -59,6 +53,13 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     final RunnerResources resources;
 
     private final DateTimeFormat startDateFormatter;
+
+    private final SVGImage inProgress;
+    private final SVGImage inQueue;
+    private final SVGImage failed;
+    private final SVGImage timeout;
+    private final SVGImage done;
+    private final SVGImage stopped;
 
     private ActionDelegate delegate;
     private Runner         runner;
@@ -81,6 +82,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
         failed = new SVGImage(resources.runnerFailedImage());
         timeout = new SVGImage(resources.runnerTimeoutImage());
         done = new SVGImage(resources.runnerDoneImage());
+        stopped = new SVGImage(resources.runnerDoneImage());
 
         this.startDateFormatter = DateTimeFormat.getFormat("dd-MM-yy HH:mm");
     }
@@ -132,9 +134,15 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
                 image.getElement().setInnerHTML(timeout.toString());
                 break;
 
-            default:
+            case STOPPED:
+                stopped.addClassNameBaseVal(resources.runnerCss().redColor());
+                image.getElement().setInnerHTML(stopped.toString());
+
+            case DONE:
                 done.addClassNameBaseVal(resources.runnerCss().greenColor());
                 image.getElement().setInnerHTML(done.toString());
+
+            default:
         }
     }
 

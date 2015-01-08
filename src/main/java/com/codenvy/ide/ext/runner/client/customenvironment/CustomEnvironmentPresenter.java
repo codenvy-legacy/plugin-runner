@@ -16,7 +16,6 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.event.FileEvent;
 import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.api.projecttree.TreeSettings;
 import com.codenvy.ide.api.projecttree.generic.ProjectNode;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.collections.Collections;

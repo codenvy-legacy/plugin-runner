@@ -25,11 +25,14 @@
 
         .runnerName {
             margin-top: 3px;
+            margin-left: 6px;
+            float: left;
         }
 
         .ramLabel {
             color: #1c9dee;
             float: left;
+            margin-left: 6px;
         }
 
         .timeLabel {
