@@ -11,15 +11,27 @@
 package com.codenvy.ide.ext.runner.client.runneractions;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.recipe.ShowRecipeAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.run.RunAction;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
+import java.util.EnumMap;
+import java.util.Map;
+
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.CHECK_RAM;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_LOGS;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_RESOURCES;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_RUNNING_PROCESS;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.RUN;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_RECIPE;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 
 /**
  * It provides an possibility to create runner action by action type. It needs for simplifying work flow of using runner actions.
@@ -29,23 +41,25 @@ import javax.annotation.Nonnull;
 @Singleton
 public class ActionFactory {
 
-    private final Provider<RunAction>                 runActionProvider;
-    private final Provider<GetLogsAction>             getLogsActionProvider;
-    private final Provider<StopAction>                stopActionProvider;
-    private final Provider<GetResourceAction>         getResourceProvider;
-    private final Provider<GetRunningProcessesAction> runningProcessesActionProvider;
+    private final Map<ActionType, Provider<? extends RunnerAction>> providers;
 
     @Inject
     public ActionFactory(Provider<RunAction> runActionProvider,
                          Provider<GetLogsAction> getLogsActionProvider,
                          Provider<StopAction> stopActionProvider,
                          Provider<GetResourceAction> getResourceProvider,
-                         Provider<GetRunningProcessesAction> runningProcessesActionProvider) {
-        this.runActionProvider = runActionProvider;
-        this.getLogsActionProvider = getLogsActionProvider;
-        this.stopActionProvider = stopActionProvider;
-        this.getResourceProvider = getResourceProvider;
-        this.runningProcessesActionProvider = runningProcessesActionProvider;
+                         Provider<GetRunningProcessesAction> runningProcessesActionProvider,
+                         Provider<CheckRamAction> checkRamActionProvider,
+                         Provider<ShowRecipeAction> showRecipeActionProvider) {
+        providers = new EnumMap<>(ActionType.class);
+
+        providers.put(RUN, runActionProvider);
+        providers.put(STOP, stopActionProvider);
+        providers.put(GET_LOGS, getLogsActionProvider);
+        providers.put(GET_RESOURCES, getResourceProvider);
+        providers.put(GET_RUNNING_PROCESS, runningProcessesActionProvider);
+        providers.put(CHECK_RAM, checkRamActionProvider);
+        providers.put(SHOW_RECIPE, showRecipeActionProvider);
     }
 
     /**
@@ -59,36 +73,28 @@ public class ActionFactory {
      */
     @Nonnull
     public RunnerAction createAndPerform(@Nonnull ActionType actionType, @Nonnull Runner runner) {
-        RunnerAction action;
-
-        switch (actionType) {
-            case RUN:
-                action = runActionProvider.get();
-                break;
-
-            case GET_LOGS:
-                action = getLogsActionProvider.get();
-                break;
-
-            case STOP:
-                action = stopActionProvider.get();
-                break;
-
-            case GET_RESOURCES:
-                action = getResourceProvider.get();
-                break;
-
-            case GET_RUNNING_PROCESS:
-                action = runningProcessesActionProvider.get();
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Project type " + actionType + " isn't supported. Please contact developers.");
-        }
-
+        RunnerAction action = newInstance(actionType);
         action.perform(runner);
 
         return action;
+    }
+
+    /**
+     * Create a new instance of {@link RunnerAction} by a given type.
+     *
+     * @param actionType
+     *         type of action that needs to be created
+     * @return an instance of {@link RunnerAction}
+     */
+    @Nonnull
+    public RunnerAction newInstance(@Nonnull ActionType actionType) {
+        Provider<? extends RunnerAction> provider = providers.get(actionType);
+
+        if (provider == null) {
+            throw new UnsupportedOperationException("Project type " + actionType + " isn't supported. Please contact developers.");
+        }
+
+        return provider.get();
     }
 
 }

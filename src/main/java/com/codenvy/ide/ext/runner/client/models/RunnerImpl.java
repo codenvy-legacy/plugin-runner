@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.Objects;
 
+import static com.codenvy.api.runner.internal.Constants.LINK_REL_RUNNER_RECIPE;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
@@ -161,23 +162,21 @@ public class RunnerImpl implements Runner {
             return null;
         }
 
-        Link appLink = RunnerUtils.getLink(descriptor, LINK_REL_WEB_URL);
-        if (appLink == null) {
+        String appUrl = getUrlByName(LINK_REL_WEB_URL);
+        if (appUrl == null) {
             return null;
         }
 
-        return appLink.getHref() + getCodeServerParam();
+        return appUrl + getCodeServerParam();
     }
 
     @Nonnull
     private String getCodeServerParam() {
-        Link codeServerLink = RunnerUtils.getLink(descriptor, "code server");
-
-        if (codeServerLink == null) {
+        String codeServerHref = getUrlByName("code server");
+        if (codeServerHref == null) {
             return "";
         }
 
-        String codeServerHref = codeServerLink.getHref();
         int colon = codeServerHref.lastIndexOf(':');
 
         String hostParam = "?h=" + codeServerHref.substring(0, colon);
@@ -194,20 +193,26 @@ public class RunnerImpl implements Runner {
     @Nullable
     @Override
     public String getTerminalURL() {
-        Link link = RunnerUtils.getLink(descriptor, LINK_REL_SHELL_URL);
-
-        if (link == null) {
-            return null;
-        }
-
-        return link.getHref();
+        return getUrlByName(LINK_REL_SHELL_URL);
     }
 
     /** {@inheritDoc} */
     @Nullable
     @Override
     public String getLogUrl() {
-        Link link = RunnerUtils.getLink(descriptor, LINK_REL_VIEW_LOG);
+        return getUrlByName(LINK_REL_VIEW_LOG);
+    }
+
+    /** {@inheritDoc} */
+    @Nullable
+    @Override
+    public String getRecipeUrl() {
+        return getUrlByName(LINK_REL_RUNNER_RECIPE);
+    }
+
+    @Nullable
+    private String getUrlByName(@Nonnull String name) {
+        Link link = RunnerUtils.getLink(descriptor, name);
 
         if (link == null) {
             return null;

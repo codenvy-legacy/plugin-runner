@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.RUN;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_RECIPE;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 
 /**
@@ -47,6 +48,7 @@ import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
 
     private final RunnerManagerView         view;
+    private final RunnerAction              showRecipeAction;
     private final DtoFactory                dtoFactory;
     private final AppContext                appContext;
     private final ModelsFactory             modelsFactory;
@@ -67,6 +69,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.actionFactory = actionFactory;
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
+        this.showRecipeAction = actionFactory.newInstance(SHOW_RECIPE);
 
         this.runActions = new HashMap<>();
     }
@@ -107,7 +110,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRunButtonClicked() {
-
+        // TODO perform RunAction for selected runner
     }
 
     /** {@inheritDoc} */
@@ -130,7 +133,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onReceiptButtonClicked() {
-
+        showRecipeAction.perform(selectedRunner);
     }
 
     /** {@inheritDoc} */

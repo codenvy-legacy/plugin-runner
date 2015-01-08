@@ -44,16 +44,13 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status;
  * This action executes a request on the server side for getting runner processes by project name.
  *
  * @author Valeriy Svydenko
+ * @author Andrey Plotnikov
  */
 public class GetRunningProcessesAction extends AbstractAppLaunchAction {
-    private final RunnerServiceClient        service;
-    private final NotificationManager        notificationManager;
-    private final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
-    private final AsyncCallbackFactory       asyncCallbackFactory;
-    private final GetLogsAction              logsAction;
-    private final RunnerLocalizationConstant locale;
-    private final MessageBus                 messageBus;
-    private final String                     workspaceId;
+
+    private final RunnerServiceClient  service;
+    private final AsyncCallbackFactory asyncCallbackFactory;
+    private final String               workspaceId;
 
     @Inject
     public GetRunningProcessesAction(NotificationManager notificationManager,
@@ -80,12 +77,7 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
               dtoFactory,
               eventBus);
 
-        this.notificationManager = notificationManager;
         this.service = service;
-        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
-        this.logsAction = logsAction;
-        this.locale = locale;
-        this.messageBus = messageBus;
         this.workspaceId = workspaceId;
         this.asyncCallbackFactory = asyncCallbackFactory;
     }

@@ -67,13 +67,12 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
     /** WebSocket channel to get runner output. */
     public static final String OUTPUT_CHANNEL = "runner:output:";
 
-    /** WebSocket channel to get application's status. */
-    private static final String STATUS_CHANNEL = "runner:status:";
+    protected static final String PROCESS_STARTED_CHANNEL = "runner:process_started:";
 
+    /** WebSocket channel to get application's status. */
+    private static final String STATUS_CHANNEL     = "runner:status:";
     /** WebSocket channel to check application's health. */
     private static final String APP_HEALTH_CHANNEL = "runner:app_health:";
-
-    protected static final String PROCESS_STARTED_CHANNEL = "runner:process_started:";
 
     private static final String STATUS    = "status";
     private static final String URL       = "url";
@@ -81,20 +80,21 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
 
     private static final int TIMEOUT = 30_000;// 30 sec == 30 000 ms
 
-    private final NotificationManager        notificationManager;
-    private final RunnerManagerView          view;
-    private final RunnerManagerPresenter     presenter;
-    private final AppContext                 appContext;
-    private final RunnerLocalizationConstant locale;
-    private final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
-    private final HandlerFactory             handlerFactory;
-    private final MessageBus                 messageBus;
-    private final GetLogsAction              logsAction;
-    private final EventBus                   eventBus;
-    private final DtoFactory                 dtoFactory;
+    protected final GetLogsAction              logsAction;
+    protected final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
+    protected final NotificationManager        notificationManager;
+    protected final RunnerLocalizationConstant locale;
+    protected final RunnerManagerPresenter     presenter;
+    protected final MessageBus                 messageBus;
 
     protected CurrentProject project;
     protected Runner         runner;
+
+    private final RunnerManagerView view;
+    private final AppContext        appContext;
+    private final HandlerFactory    handlerFactory;
+    private final EventBus          eventBus;
+    private final DtoFactory        dtoFactory;
 
     private LogMessagesHandler                                runnerOutputHandler;
     private SubscriptionHandler<ApplicationProcessDescriptor> runnerStatusHandler;
@@ -102,8 +102,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
     // The server makes the limited quantity of tries checking application's health,
     // so we're waiting for some time (about 30 sec.) and assume that app health is OK.
     private Timer                                             changeAppAliveTimer;
-
-    private Notification notification;
+    private Notification                                      notification;
 
     protected AbstractAppLaunchAction(@Nonnull NotificationManager notificationManager,
                                       @Nonnull RunnerManagerPresenter presenter,

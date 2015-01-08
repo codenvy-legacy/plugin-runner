@@ -17,7 +17,6 @@ import com.codenvy.api.runner.dto.ResourcesDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
-import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
@@ -57,7 +56,6 @@ public class CheckRamAction implements RunnerAction {
     private final RunnerLocalizationConstant constant;
     private final RunAction                  runAction;
     private final NotificationManager        notificationManager;
-    private final Notification               notification;
 
     private RunnerConfiguration    runnerConfiguration;
     private CurrentProject         project;
@@ -70,7 +68,6 @@ public class CheckRamAction implements RunnerAction {
                           AppContext appContext,
                           DialogFactory dialogFactory,
                           NotificationManager notificationManager,
-                          Notification notification,
                           RunnerManagerPresenter presenter,
                           AsyncCallbackFactory asyncCallbackFactory,
                           RunnerLocalizationConstant constant,
@@ -82,7 +79,6 @@ public class CheckRamAction implements RunnerAction {
         this.runAction = runAction;
         this.dialogFactory = dialogFactory;
         this.notificationManager = notificationManager;
-        this.notification = notification;
         this.presenter = presenter;
         this.view = presenter.getView();
     }
@@ -226,8 +222,7 @@ public class CheckRamAction implements RunnerAction {
     }
 
     private void onFail(@Nonnull String message, @Nullable Throwable exception) {
-        notification.setMessage(message);
-        notificationManager.showNotification(notification);
+        notificationManager.showError(message);
 
         if (exception != null && exception.getMessage() != null) {
             view.printError(runner, message + ": " + exception.getMessage());

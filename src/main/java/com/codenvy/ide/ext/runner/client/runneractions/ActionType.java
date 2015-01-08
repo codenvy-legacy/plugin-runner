@@ -20,5 +20,7 @@ public enum ActionType {
     STOP,
     GET_LOGS,
     GET_RUNNING_PROCESS,
-    GET_RESOURCES
+    GET_RESOURCES,
+    CHECK_RAM,
+    SHOW_RECIPE
 }

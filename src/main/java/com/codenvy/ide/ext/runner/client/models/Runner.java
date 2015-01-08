@@ -95,6 +95,10 @@ public interface Runner {
     @Nullable
     String getLogUrl();
 
+    /** @return url where recipe (Docker) file is located */
+    @Nullable
+    String getRecipeUrl();
+
     /**
      * Changes application process descriptor.
      *

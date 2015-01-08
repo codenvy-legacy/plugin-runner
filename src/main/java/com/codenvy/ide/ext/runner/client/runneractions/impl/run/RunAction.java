@@ -40,10 +40,9 @@ import javax.annotation.Nonnull;
  * @author Valeriy Svydenko
  */
 public class RunAction extends AbstractAppLaunchAction {
-    private final RunnerServiceClient        service;
-    private final AsyncCallbackFactory       asyncCallbackFactory;
-    private final RunnerLocalizationConstant locale;
-    private final RunnerManagerPresenter     runnerManagerPresenter;
+
+    private final RunnerServiceClient  service;
+    private final AsyncCallbackFactory asyncCallbackFactory;
 
     @Inject
     public RunAction(RunnerServiceClient service,
@@ -72,8 +71,6 @@ public class RunAction extends AbstractAppLaunchAction {
 
         this.service = service;
         this.asyncCallbackFactory = asyncCallbackFactory;
-        this.locale = locale;
-        this.runnerManagerPresenter = runnerManagerPresenter;
     }
 
     /** {@inheritDoc} */
@@ -85,7 +82,7 @@ public class RunAction extends AbstractAppLaunchAction {
             return;
         }
 
-        runnerManagerPresenter.setActive();
+        presenter.setActive();
 
         service.run(project.getProjectDescription().getPath(), runner.getOptions(),
                     asyncCallbackFactory
