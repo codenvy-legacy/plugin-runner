@@ -189,7 +189,6 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
         ProjectNode project = new ProjectNode(null,
                                               currentProject.getProjectDescription(),
                                               null,
-                                              TreeSettings.DEFAULT,
                                               eventBus,
                                               projectServiceClient,
                                               dtoUnmarshallerFactory);
