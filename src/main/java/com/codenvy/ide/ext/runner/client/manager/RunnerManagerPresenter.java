@@ -89,7 +89,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         view.update(runner);
 
         if (runner.equals(selectedRunner)) {
-            view.setApplicationURl(selectedRunner.getApplicationURL());
+            view.setApplicationURl(runner.isAnyAppRunning() ? selectedRunner.getApplicationURL() : null);
         }
     }
 
