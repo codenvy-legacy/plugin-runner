@@ -109,7 +109,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
         runnerName.setText(runner.getTitle());
         //TODO need set memory size from runner options
         ram.setText(512 + " MB");
-        startTime.setText(startDateFormatter.format(new Date()));
+        startTime.setText(startDateFormatter.format(new Date(runner.getCreationTime())));
     }
 
     private void changeRunnerStatusIcon() {

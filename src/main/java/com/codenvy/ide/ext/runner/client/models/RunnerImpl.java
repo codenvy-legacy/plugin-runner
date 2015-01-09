@@ -44,6 +44,7 @@ public class RunnerImpl implements Runner {
 
     private ApplicationProcessDescriptor descriptor;
     private Status                       status;
+    private Date                         creationData;
     private int                          ram;
     private boolean                      isAlive;
     private boolean                      isAnyAppRunning;
@@ -78,6 +79,7 @@ public class RunnerImpl implements Runner {
         this.isConsoleActive = true;
         this.status = Status.IN_QUEUE;
 
+        creationData = new Date();
         RUNNER_NUMBER++;
     }
 
@@ -114,11 +116,9 @@ public class RunnerImpl implements Runner {
     }
 
     /** {@inheritDoc} */
-    @Nonnull
     @Override
-    public Date getCreationTime() {
-        Objects.requireNonNull(descriptor);
-        return new Date(descriptor.getCreationTime());
+    public long getCreationTime() {
+        return creationData.getTime();
     }
 
     /** {@inheritDoc} */

@@ -18,7 +18,6 @@ import com.codenvy.api.runner.dto.RunnerMetric;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Date;
 
 /**
  * It contains all necessary information for every Runner.
@@ -54,8 +53,7 @@ public interface Runner {
     void setRAM(@Nonnegative int ram);
 
     /** @return the date when this runner was launched */
-    @Nonnull
-    Date getCreationTime();
+    long getCreationTime();
 
     /** @return id of the environment */
     @Nonnull
