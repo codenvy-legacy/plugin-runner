@@ -45,6 +45,7 @@ import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.api.notification.Notification.Type.WARNING;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_PROGRESS;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
@@ -352,7 +353,7 @@ public abstract class AbstractAppLaunchAction implements RunnerAction {
                 changeAppAliveTimer.cancel();
 
                 runner.setAliveStatus(true);
-                runner.setStatus(RUNNING);
+                runner.setStatus(DONE);
 
                 presenter.update(runner);
 

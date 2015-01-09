@@ -137,6 +137,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
             case STOPPED:
                 stopped.addClassNameBaseVal(resources.runnerCss().redColor());
                 image.getElement().setInnerHTML(stopped.toString());
+                break;
 
             case DONE:
                 done.addClassNameBaseVal(resources.runnerCss().greenColor());

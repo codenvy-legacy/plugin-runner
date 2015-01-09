@@ -32,8 +32,8 @@ import javax.annotation.Nullable;
 
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 
 /**
  * Action for stopping current runner.
@@ -128,7 +128,7 @@ public class StopAction implements RunnerAction {
         if (runner.isStarted()) {
             notificationType = INFO;
 
-            runner.setStatus(DONE);
+            runner.setStatus(STOPPED);
             view.printInfo(runner, message);
         } else {
             // this mean that application has failed to start
