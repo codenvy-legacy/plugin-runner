@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.runneractions;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.GetResourceAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.recipe.ShowRecipeAction;

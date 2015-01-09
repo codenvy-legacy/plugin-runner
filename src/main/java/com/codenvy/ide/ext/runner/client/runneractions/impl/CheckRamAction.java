@@ -56,12 +56,12 @@ public class CheckRamAction implements RunnerAction {
     private final RunnerLocalizationConstant constant;
     private final RunAction                  runAction;
     private final NotificationManager        notificationManager;
+    private final RunnerManagerView          view;
+    private final RunnerManagerPresenter     presenter;
 
-    private RunnerConfiguration    runnerConfiguration;
-    private CurrentProject         project;
-    private Runner                 runner;
-    private RunnerManagerView      view;
-    private RunnerManagerPresenter presenter;
+    private RunnerConfiguration runnerConfiguration;
+    private CurrentProject      project;
+    private Runner              runner;
 
     @Inject
     public CheckRamAction(RunnerServiceClient service,

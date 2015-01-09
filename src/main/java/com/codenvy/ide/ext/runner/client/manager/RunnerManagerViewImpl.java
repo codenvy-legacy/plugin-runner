@@ -186,7 +186,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         delegate.onRunnerSelected(runner);
 
         RunnerWidget widget = runnerWidgets.get(runner);
-
         selectWidget(widget);
     }
 
@@ -202,13 +201,11 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void update(@Nonnull Runner runner) {
         Terminal terminal = terminals.get(runner);
-
         if (terminal != null) {
             terminal.update(runner);
         }
 
         RunnerWidget runnerWidget = runnerWidgets.get(runner);
-
         if (runnerWidget != null) {
             runnerWidget.update(runner);
         }
@@ -222,10 +219,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         runnerWidget.setDelegate(this);
 
         runnerWidgets.put(runner, runnerWidget);
+        runnersPanel.add(runnerWidget);
 
         selectWidget(runnerWidget);
-
-        runnersPanel.add(runnerWidget);
 
         Console console = consoleFactory.createConsole(runner);
         consoles.put(runner, console);

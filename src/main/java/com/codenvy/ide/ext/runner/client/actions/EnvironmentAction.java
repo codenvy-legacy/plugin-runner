@@ -36,9 +36,9 @@ public class EnvironmentAction extends ProjectAction {
     public EnvironmentAction(RunnerResources resources,
                              RunnerManagerPresenter managerPresenter,
                              DtoFactory dtoFactory,
-                             @Assisted("title") String title,
-                             @Assisted("description") String description,
-                             @Assisted("environmentName") String environmentName) {
+                             @Nonnull @Assisted("title") String title,
+                             @Nonnull @Assisted("description") String description,
+                             @Nonnull @Assisted("environmentName") String environmentName) {
         super(title, description, resources.environmentImage());
 
         this.managerPresenter = managerPresenter;

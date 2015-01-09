@@ -39,16 +39,17 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
  * @author Valeriy Svydenko
  */
 public class GetLogsAction implements RunnerAction {
+
     private final RunnerServiceClient        service;
     private final AppContext                 appContext;
     private final AsyncCallbackFactory       asyncCallbackFactory;
     private final RunnerLocalizationConstant constant;
     private final NotificationManager        notificationManager;
     private final Notification               notification;
+    private final RunnerManagerView          view;
+    private final RunnerManagerPresenter     presenter;
 
-    private RunnerManagerView      view;
-    private RunnerManagerPresenter presenter;
-    private Runner                 runner;
+    private Runner runner;
 
     @Inject
     public GetLogsAction(RunnerServiceClient service,
