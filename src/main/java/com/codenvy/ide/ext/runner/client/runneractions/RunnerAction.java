@@ -32,4 +32,20 @@ public interface RunnerAction {
     /** Stop all actions which were started for this action. Unsubscribe for all events and etc. */
     void stop();
 
+    /**
+     * Add a listener for detecting stop process of the current action.
+     *
+     * @param listener
+     *         listener that has to detect stop process
+     */
+    void setListener(@Nonnull StopActionListener listener);
+
+    /** Remove a listener that detects a stop process of action. */
+    void removeListener();
+
+    interface StopActionListener {
+        /** Perform any actions when an action was stopped. */
+        void onStopAction();
+    }
+
 }

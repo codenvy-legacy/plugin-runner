@@ -17,7 +17,7 @@ import com.codenvy.ide.api.editor.EditorPartPresenter;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.api.texteditor.HasReadOnlyProperty;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * @author Andrey Plotnikov
  */
-public class ShowRecipeAction implements RunnerAction {
+public class ShowRecipeAction extends AbstractRunnerAction {
 
     private final AppContext        appContext;
     private final RecipeFileFactory recipeFileFactory;
@@ -61,11 +61,4 @@ public class ShowRecipeAction implements RunnerAction {
             ((HasReadOnlyProperty)editor).setReadOnly(true);
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void stop() {
-        // do nothing
-    }
-
 }

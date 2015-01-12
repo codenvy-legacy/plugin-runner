@@ -11,7 +11,8 @@
 package com.codenvy.ide.ext.runner.client.inject.factories;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.run.LogMessagesHandler;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common.LogMessagesHandler;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common.LogMessagesHandler.ErrorHandler;
 
 import javax.annotation.Nonnull;
 
@@ -26,8 +27,10 @@ public interface HandlerFactory {
      *
      * @param runner
      *         runner that needs to be bound with a handler
+     * @param errorHandler
+     *         handler that delegate actions which need to perform when error happened
      * @return an instance of {@link LogMessagesHandler}
      */
     @Nonnull
-    LogMessagesHandler createLogMessageHandler(@Nonnull Runner runner);
+    LogMessagesHandler createLogMessageHandler(@Nonnull Runner runner, @Nonnull ErrorHandler errorHandler);
 }

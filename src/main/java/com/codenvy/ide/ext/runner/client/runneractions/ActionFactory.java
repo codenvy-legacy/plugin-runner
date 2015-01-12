@@ -14,10 +14,11 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetResourceAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.GetRunningProcessesAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.RunAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.subactions.OutputAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.recipe.ShowRecipeAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.run.RunAction;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -30,6 +31,7 @@ import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.CHECK_R
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_LOGS;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_RESOURCES;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_RUNNING_PROCESS;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.OUTPUT;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.RUN;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_RECIPE;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
@@ -51,7 +53,8 @@ public class ActionFactory {
                          Provider<GetResourceAction> getResourceProvider,
                          Provider<GetRunningProcessesAction> runningProcessesActionProvider,
                          Provider<CheckRamAction> checkRamActionProvider,
-                         Provider<ShowRecipeAction> showRecipeActionProvider) {
+                         Provider<ShowRecipeAction> showRecipeActionProvider,
+                         Provider<OutputAction> outputActionProvider) {
         providers = new EnumMap<>(ActionType.class);
 
         providers.put(RUN, runActionProvider);
@@ -61,6 +64,7 @@ public class ActionFactory {
         providers.put(GET_RUNNING_PROCESS, runningProcessesActionProvider);
         providers.put(CHECK_RAM, checkRamActionProvider);
         providers.put(SHOW_RECIPE, showRecipeActionProvider);
+        providers.put(OUTPUT, outputActionProvider);
     }
 
     /**

@@ -15,8 +15,8 @@ import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.run.RunAction;
+import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.RunAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.google.inject.Inject;
 
@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public class GetResourceAction implements RunnerAction {
+public class GetResourceAction extends AbstractRunnerAction {
 
     private final RunnerServiceClient  service;
     private final RunAction            runAction;
@@ -40,6 +40,8 @@ public class GetResourceAction implements RunnerAction {
         this.runAction = runAction;
         this.callbackFactory = callbackFactory;
         this.util = util;
+
+        addAction(runAction);
     }
 
     /** {@inheritDoc} */
@@ -48,7 +50,6 @@ public class GetResourceAction implements RunnerAction {
         service.getResources(callbackFactory.build(ResourcesDescriptor.class, new SuccessCallback<ResourcesDescriptor>() {
             @Override
             public void onSuccess(ResourcesDescriptor resourcesDescriptor) {
-
                 int totalMemory = Integer.valueOf(resourcesDescriptor.getTotalMemory());
                 int usedMemory = Integer.valueOf(resourcesDescriptor.getUsedMemory());
 
@@ -64,11 +65,4 @@ public class GetResourceAction implements RunnerAction {
             }
         }));
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void stop() {
-        runAction.stop();
-    }
-
 }

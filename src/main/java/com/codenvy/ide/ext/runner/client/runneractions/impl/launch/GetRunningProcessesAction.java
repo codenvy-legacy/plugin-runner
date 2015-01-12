@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl;
+package com.codenvy.ide.ext.runner.client.runneractions.impl.launch;
 
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
@@ -16,22 +16,21 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.collections.Array;
-import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.inject.factories.HandlerFactory;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.runneractions.ActionFactory;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
+import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.util.loging.Log;
-import com.codenvy.ide.websocket.MessageBus;
-import com.codenvy.ide.websocket.WebSocketException;
 import com.codenvy.ide.websocket.rest.SubscriptionHandler;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 
@@ -48,9 +47,14 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status;
  */
 public class GetRunningProcessesAction extends AbstractAppLaunchAction {
 
-    private final RunnerServiceClient  service;
-    private final AsyncCallbackFactory asyncCallbackFactory;
-    private final String               workspaceId;
+    private static final String PROCESS_STARTED_CHANNEL = "runner:process_started:";
+
+    private final RunnerServiceClient    service;
+    private final AsyncCallbackFactory   asyncCallbackFactory;
+    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
+    private final GetLogsAction          logsAction;
+    private final WebSocketUtil          webSocketUtil;
+    private final String                 workspaceId;
 
     @Inject
     public GetRunningProcessesAction(NotificationManager notificationManager,
@@ -59,25 +63,24 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
                                      AppContext appContext,
                                      RunnerManagerPresenter presenter,
                                      RunnerLocalizationConstant locale,
-                                     HandlerFactory handlerFactory,
-                                     MessageBus messageBus,
                                      GetLogsAction logsAction,
                                      AsyncCallbackFactory asyncCallbackFactory,
-                                     DtoFactory dtoFactory,
-                                     EventBus eventBus,
+                                     ActionFactory actionFactory,
+                                     RunnerActionFactory runnerActionFactory,
+                                     WebSocketUtil webSocketUtil,
                                      @Named("workspaceId") String workspaceId) {
         super(notificationManager,
               presenter,
               locale,
-              handlerFactory,
-              messageBus,
-              logsAction,
-              dtoUnmarshallerFactory,
               appContext,
-              dtoFactory,
-              eventBus);
+              actionFactory,
+              runnerActionFactory);
 
         this.service = service;
+        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
+        this.logsAction = logsAction;
+        addAction(logsAction);
+        this.webSocketUtil = webSocketUtil;
         this.workspaceId = workspaceId;
         this.asyncCallbackFactory = asyncCallbackFactory;
     }
@@ -136,12 +139,7 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
                 };
 
         String channel = PROCESS_STARTED_CHANNEL + workspaceId + ':' + project.getProjectDescription().getPath();
-
-        try {
-            messageBus.subscribe(channel, processStartedHandler);
-        } catch (WebSocketException e) {
-            Log.error(GetRunningProcessesAction.class, e);
-        }
+        webSocketUtil.subscribeHandler(channel, processStartedHandler);
     }
 
     private void prepareRunnerWithRunningApp(@Nonnull ApplicationProcessDescriptor processDescriptor) {

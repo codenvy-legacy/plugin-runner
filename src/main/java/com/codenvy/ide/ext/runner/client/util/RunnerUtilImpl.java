@@ -10,13 +10,23 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.util;
 
+import com.codenvy.ide.api.notification.Notification;
+import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
+import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
+import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 
 /**
  * Contains implementations of methods which are general for runner plugin classes.
@@ -30,11 +40,20 @@ public class RunnerUtilImpl implements RunnerUtil {
 
     private final DialogFactory              dialogFactory;
     private final RunnerLocalizationConstant locale;
+    private final RunnerManagerPresenter     presenter;
+    private final NotificationManager        notificationManager;
+    private final RunnerManagerView          view;
 
     @Inject
-    public RunnerUtilImpl(DialogFactory dialogFactory, RunnerLocalizationConstant locale) {
+    public RunnerUtilImpl(DialogFactory dialogFactory,
+                          RunnerLocalizationConstant locale,
+                          RunnerManagerPresenter presenter,
+                          NotificationManager notificationManager) {
         this.dialogFactory = dialogFactory;
         this.locale = locale;
+        this.presenter = presenter;
+        this.view = presenter.getView();
+        this.notificationManager = notificationManager;
     }
 
     /** {@inheritDoc} */
@@ -68,7 +87,37 @@ public class RunnerUtilImpl implements RunnerUtil {
     /** {@inheritDoc} */
     @Override
     public void showWarning(@Nonnull String warningMessage) {
-        dialogFactory.createMessageDialog("Warning", warningMessage, null).show();
+        dialogFactory.createMessageDialog(locale.titlesWarning(), warningMessage, null).show();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showError(@Nonnull Runner runner, @Nonnull String message, @Nullable Throwable exception) {
+        Notification notification = new Notification(message, ERROR, true);
+
+        showError(runner, message, exception, notification);
+
+        notificationManager.showNotification(notification);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showError(@Nonnull Runner runner,
+                          @Nonnull String message,
+                          @Nullable Throwable exception,
+                          @Nonnull Notification notification) {
+        runner.setAppLaunchStatus(false);
+        runner.setStatus(FAILED);
+
+        presenter.update(runner);
+
+        notification.update(message, ERROR, FINISHED, null, true);
+
+        if (exception != null && exception.getMessage() != null) {
+            view.printError(runner, message + ": " + exception.getMessage());
+        } else {
+            view.printError(runner, message);
+        }
     }
 
 }

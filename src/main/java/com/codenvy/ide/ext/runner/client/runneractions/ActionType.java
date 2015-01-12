@@ -22,5 +22,6 @@ public enum ActionType {
     GET_RUNNING_PROCESS,
     GET_RESOURCES,
     CHECK_RAM,
-    SHOW_RECIPE
+    SHOW_RECIPE,
+    OUTPUT
 }

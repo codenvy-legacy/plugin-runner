@@ -10,10 +10,13 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.util;
 
+import com.codenvy.ide.api.notification.Notification;
+import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The class contains methods which are general used.
@@ -41,5 +44,11 @@ public interface RunnerUtil {
      *         message which need to show
      */
     void showWarning(@Nonnull String warningMessage);
+
+    // TODO it seems need to rework this method. If don't need will add javadoc
+    void showError(@Nonnull Runner runner, @Nonnull String message, @Nullable Throwable exception);
+
+    // TODO it seems need to rework this method. If don't need will add javadoc
+    void showError(@Nonnull Runner runner, @Nonnull String message, @Nullable Throwable exception, @Nonnull Notification notification);
 
 }

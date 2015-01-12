@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.run;
+package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;

@@ -8,14 +8,12 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.run;
+package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.util.loging.Log;
-import com.codenvy.ide.websocket.MessageBus;
-import com.codenvy.ide.websocket.WebSocketException;
 import com.codenvy.ide.websocket.rest.SubscriptionHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
@@ -24,8 +22,6 @@ import com.google.inject.assistedinject.Assisted;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.codenvy.ide.ext.runner.client.runneractions.impl.AbstractAppLaunchAction.OUTPUT_CHANNEL;
 
 /**
  * This class listens for log messages from the server and process it. Logic of this class is slightly complicated since we can't guaranty
@@ -37,11 +33,11 @@ import static com.codenvy.ide.ext.runner.client.runneractions.impl.AbstractAppLa
  * @author Valeriy Svydenko
  */
 public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
-    private static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 5_000;
 
     private final RunnerManagerView        view;
-    private final MessageBus               messageBus;
     private final Runner                   runner;
+    private final ErrorHandler             errorHandler;
     private final Map<Integer, LogMessage> postponedMessages;
     private final Timer                    flushTimer;
 
@@ -49,14 +45,14 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
 
     @Inject
     public LogMessagesHandler(RunnerManagerPresenter runnerManagerPresenter,
-                              MessageBus messageBus,
                               LogMessageUnmarshaller unmarshaller,
-                              @Nonnull @Assisted Runner runner) {
+                              @Nonnull @Assisted Runner runner,
+                              @Nonnull @Assisted ErrorHandler errorHandler) {
         super(unmarshaller);
 
         this.runner = runner;
+        this.errorHandler = errorHandler;
         this.view = runnerManagerPresenter.getView();
-        this.messageBus = messageBus;
         this.postponedMessages = new HashMap<>();
 
         this.flushTimer = new Timer() {
@@ -116,7 +112,6 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
 
     private void printLine(@Nonnull LogMessage logMessage) {
         view.printMessage(runner, logMessage.getText());
-
         lastPrintedMessageNum = logMessage.getNumber();
     }
 
@@ -124,12 +119,11 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
     @Override
     protected void onErrorReceived(Throwable throwable) {
         Log.error(LogMessagesHandler.class, throwable);
+        errorHandler.onErrorHappened();
+    }
 
-        try {
-            messageBus.unsubscribe(OUTPUT_CHANNEL + runner.getProcessId(), this);
-        } catch (WebSocketException e) {
-            Log.error(LogMessagesHandler.class, e);
-        }
+    public interface ErrorHandler {
+        void onErrorHappened();
     }
 
 }

@@ -24,11 +24,11 @@ import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
@@ -40,12 +40,13 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
  *
  * @author Valeriy Svydenko
  */
-public class StopAction implements RunnerAction {
+public class StopAction extends AbstractRunnerAction {
     private final RunnerServiceClient        service;
     private final AppContext                 appContext;
     private final AsyncCallbackFactory       asyncCallbackFactory;
     private final RunnerLocalizationConstant constant;
     private final NotificationManager        notificationManager;
+    private final RunnerUtil                 runnerUtil;
     private final GetLogsAction              logsAction;
 
     private CurrentProject         project;
@@ -59,6 +60,7 @@ public class StopAction implements RunnerAction {
                       AsyncCallbackFactory asyncCallbackFactory,
                       RunnerLocalizationConstant constant,
                       NotificationManager notificationManager,
+                      RunnerUtil runnerUtil,
                       GetLogsAction logsAction,
                       RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
@@ -66,10 +68,13 @@ public class StopAction implements RunnerAction {
         this.asyncCallbackFactory = asyncCallbackFactory;
         this.constant = constant;
         this.notificationManager = notificationManager;
+        this.runnerUtil = runnerUtil;
         this.logsAction = logsAction;
 
         presenter = runnerManagerPresenter;
         view = runnerManagerPresenter.getView();
+
+        addAction(logsAction);
     }
 
     /** {@inheritDoc} */
@@ -86,7 +91,7 @@ public class StopAction implements RunnerAction {
 
         Link stopLink = runner.getStopUrl();
         if (stopLink == null) {
-            onFail(constant.applicationFailed(project.getProjectDescription().getName()), null);
+            runnerUtil.showError(runner, constant.applicationFailed(project.getProjectDescription().getName()), null);
             return;
         }
 
@@ -104,12 +109,15 @@ public class StopAction implements RunnerAction {
                                         public void onFailure(@Nonnull Throwable reason) {
                                             runner.setAppRunningStatus(false);
                                             runner.setProcessDescriptor(null);
+
                                             project.setIsRunningEnabled(true);
                                             project.setProcessDescriptor(null);
-                                            onFail(constant.applicationFailed(project.getProjectDescription().getName()), reason);
+
+                                            runnerUtil.showError(runner,
+                                                                 constant.applicationFailed(project.getProjectDescription().getName()),
+                                                                 reason);
                                         }
                                     }));
-
     }
 
     private void processStoppedMessage() {
@@ -143,27 +151,6 @@ public class StopAction implements RunnerAction {
         notificationManager.showNotification(notification);
 
         presenter.update(runner);
-    }
-
-    private void onFail(@Nonnull String message, @Nullable Throwable exception) {
-        notificationManager.showError(message);
-
-        if (exception != null && exception.getMessage() != null) {
-            view.printError(runner, message + ": " + exception.getMessage());
-        } else {
-            view.printError(runner, message);
-        }
-
-        runner.setAppLaunchStatus(false);
-        runner.setStatus(FAILED);
-
-        presenter.update(runner);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void stop() {
-        //do nothing
     }
 
 }

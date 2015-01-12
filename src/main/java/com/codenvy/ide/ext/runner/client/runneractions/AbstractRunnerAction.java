@@ -1,0 +1,76 @@
+/*******************************************************************************
+ * Copyright (c) 2012-2014 Codenvy, S.A.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Codenvy, S.A. - initial API and implementation
+ *******************************************************************************/
+package com.codenvy.ide.ext.runner.client.runneractions;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The abstract implementation of action. It provides general behaviour (e.g., add stop process listener, remove stop process listener,
+ * default implementation of stop process etc).
+ *
+ * @author Andrey Plotnikov
+ */
+public abstract class AbstractRunnerAction implements RunnerAction, RunnerAction.StopActionListener {
+
+    private final List<RunnerAction> actions;
+    private       StopActionListener listener;
+
+    protected AbstractRunnerAction() {
+        this.actions = new ArrayList<>();
+    }
+
+    /**
+     * Add a sub-action to this action. This means that this sub-action will be stopped when root action is stopping.
+     *
+     * @param action
+     *         sub-action that needs to be added
+     */
+    protected void addAction(@Nonnull RunnerAction action) {
+        actions.add(action);
+        action.setListener(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop() {
+        for (RunnerAction action : actions) {
+            action.removeListener();
+            action.stop();
+        }
+
+        if (listener == null) {
+            return;
+        }
+
+        listener.onStopAction();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setListener(@Nonnull StopActionListener listener) {
+        this.listener = listener;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void removeListener() {
+        listener = null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onStopAction() {
+        stop();
+    }
+
+}

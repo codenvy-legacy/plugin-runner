@@ -17,16 +17,14 @@ import com.codenvy.api.runner.dto.ResourcesDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
-import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.run.RunAction;
+import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.RunAction;
+import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.ui.dialogs.confirm.ConfirmDialog;
@@ -35,9 +33,6 @@ import com.google.inject.Inject;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 
 /**
  * This action executes a request on the server side for getting resources of project. These resources are used for running a runner with
@@ -48,16 +43,14 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
  * @author Roman Nikitenko
  * @author Valeriy Svydenko
  */
-public class CheckRamAction implements RunnerAction {
+public class CheckRamAction extends AbstractRunnerAction {
     private final RunnerServiceClient        service;
     private final AppContext                 appContext;
     private final AsyncCallbackFactory       asyncCallbackFactory;
     private final DialogFactory              dialogFactory;
     private final RunnerLocalizationConstant constant;
+    private final RunnerUtil                 runnerUtil;
     private final RunAction                  runAction;
-    private final NotificationManager        notificationManager;
-    private final RunnerManagerView          view;
-    private final RunnerManagerPresenter     presenter;
 
     private RunnerConfiguration runnerConfiguration;
     private CurrentProject      project;
@@ -67,25 +60,23 @@ public class CheckRamAction implements RunnerAction {
     public CheckRamAction(RunnerServiceClient service,
                           AppContext appContext,
                           DialogFactory dialogFactory,
-                          NotificationManager notificationManager,
-                          RunnerManagerPresenter presenter,
                           AsyncCallbackFactory asyncCallbackFactory,
                           RunnerLocalizationConstant constant,
+                          RunnerUtil runnerUtil,
                           RunAction runAction) {
         this.service = service;
         this.appContext = appContext;
         this.asyncCallbackFactory = asyncCallbackFactory;
         this.constant = constant;
+        this.runnerUtil = runnerUtil;
         this.runAction = runAction;
+        addAction(runAction);
         this.dialogFactory = dialogFactory;
-        this.notificationManager = notificationManager;
-        this.presenter = presenter;
-        this.view = presenter.getView();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void perform(@Nonnull Runner runner) {
+    public void perform(@Nonnull final Runner runner) {
         this.runner = runner;
 
         project = appContext.getCurrentProject();
@@ -103,7 +94,7 @@ public class CheckRamAction implements RunnerAction {
                                             new FailureCallback() {
                                                 @Override
                                                 public void onFailure(@Nonnull Throwable reason) {
-                                                    onFail(constant.getResourcesFailed(), reason);
+                                                    runnerUtil.showError(runner, constant.getResourcesFailed(), reason);
                                                 }
                                             }));
     }
@@ -221,32 +212,17 @@ public class CheckRamAction implements RunnerAction {
         messageDialog.show();
     }
 
-    private void onFail(@Nonnull String message, @Nullable Throwable exception) {
-        notificationManager.showError(message);
-
-        if (exception != null && exception.getMessage() != null) {
-            view.printError(runner, message + ": " + exception.getMessage());
-        } else {
-            view.printError(runner, message);
-        }
-
-        runner.setAppLaunchStatus(false);
-        runner.setStatus(FAILED);
-
-        presenter.update(runner);
-    }
-
     private boolean isSufficientMemory(@Nonnegative int totalMemory,
                                        @Nonnegative int usedMemory,
                                        @Nonnegative final int requiredMemory) {
         int availableMemory = totalMemory - usedMemory;
         if (totalMemory < requiredMemory) {
-            showWarning(constant.messagesTotalLessRequiredMemory(totalMemory, requiredMemory));
+            runnerUtil.showWarning(constant.messagesTotalLessRequiredMemory(totalMemory, requiredMemory));
             return false;
         }
 
         if (availableMemory < requiredMemory) {
-            showWarning(constant.messagesAvailableLessRequiredMemory(totalMemory, usedMemory, requiredMemory));
+            runnerUtil.showWarning(constant.messagesAvailableLessRequiredMemory(totalMemory, usedMemory, requiredMemory));
             return false;
         }
 
@@ -258,26 +234,16 @@ public class CheckRamAction implements RunnerAction {
                                             @Nonnegative final int overrideMemory) {
         int availableMemory = totalMemory - usedMemory;
         if (totalMemory < overrideMemory) {
-            showWarning(constant.messagesTotalLessOverrideMemory(overrideMemory, totalMemory));
+            runnerUtil.showWarning(constant.messagesTotalLessOverrideMemory(overrideMemory, totalMemory));
             return false;
         }
 
         if (availableMemory < overrideMemory) {
-            showWarning(constant.messagesAvailableLessOverrideMemory(overrideMemory, totalMemory, usedMemory));
+            runnerUtil.showWarning(constant.messagesAvailableLessOverrideMemory(overrideMemory, totalMemory, usedMemory));
             return false;
         }
 
         return true;
-    }
-
-    private void showWarning(@Nonnull String warning) {
-        dialogFactory.createMessageDialog(constant.titlesWarning(), warning, null).show();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void stop() {
-        //do nothing
     }
 
 }
