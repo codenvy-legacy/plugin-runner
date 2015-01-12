@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.launch;
 
-import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
@@ -23,6 +22,7 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.ActionFactory;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
+import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 
@@ -30,37 +30,24 @@ import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.OUTPUT;
 
 /**
- * The class provides general business logic of launch application.
- *
- * @author Artem Zatsarynnyy
- * @author Roman Nikitenko
- * @author Stéphane Daviet
- * @author Vitaliy Guliy
- * @author Stéphane Tournié
- * @author Sun Tan
- * @author Sergey Leschenko
  * @author Andrey Plotnikov
- * @author Valeriy Svydenko
  */
-public abstract class AbstractAppLaunchAction extends AbstractRunnerAction {
+public class LaunchAction extends AbstractRunnerAction {
 
-    protected final NotificationManager        notificationManager;
-    protected final RunnerLocalizationConstant locale;
+    private final NotificationManager        notificationManager;
+    private final RunnerLocalizationConstant locale;
+    private final AppContext                 appContext;
+    private final RunnerActionFactory        runnerActionFactory;
+    private final RunnerManagerView          view;
+    private final RunnerAction               outputAction;
 
-    protected CurrentProject project;
-    protected Runner         runner;
-
-    private final RunnerActionFactory runnerActionFactory;
-    private final RunnerManagerView   view;
-    private final AppContext          appContext;
-    private final RunnerAction        outputAction;
-
-    protected AbstractAppLaunchAction(@Nonnull NotificationManager notificationManager,
-                                      @Nonnull RunnerManagerPresenter presenter,
-                                      @Nonnull RunnerLocalizationConstant locale,
-                                      @Nonnull AppContext appContext,
-                                      @Nonnull ActionFactory actionFactory,
-                                      @Nonnull RunnerActionFactory runnerActionFactory) {
+    @Inject
+    public LaunchAction(NotificationManager notificationManager,
+                        RunnerManagerPresenter presenter,
+                        RunnerLocalizationConstant locale,
+                        AppContext appContext,
+                        ActionFactory actionFactory,
+                        RunnerActionFactory runnerActionFactory) {
         this.notificationManager = notificationManager;
         this.locale = locale;
         this.appContext = appContext;
@@ -71,14 +58,15 @@ public abstract class AbstractAppLaunchAction extends AbstractRunnerAction {
         addAction(outputAction);
     }
 
-    /**
-     * Configures run process.
-     *
-     * @param applicationProcessDescriptor
-     *         describes an application process
-     */
-    protected void onAppLaunched(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor) {
-        runner.setProcessDescriptor(applicationProcessDescriptor);
+    /** {@inheritDoc} */
+    @Override
+    public void perform(@Nonnull Runner runner) {
+        CurrentProject project = appContext.getCurrentProject();
+        if (project == null) {
+            return;
+        }
+
+        project.setIsRunningEnabled(false);
 
         String projectName = project.getProjectDescription().getName();
         String message = locale.environmentCooking(projectName);
@@ -88,21 +76,10 @@ public abstract class AbstractAppLaunchAction extends AbstractRunnerAction {
 
         view.printInfo(runner, locale.environmentCooking(projectName));
 
-        project.setProcessDescriptor(applicationProcessDescriptor);
-        project.setIsRunningEnabled(false);
-
         RunnerAction statusAction = runnerActionFactory.createStatusAction(notification);
         addAction(statusAction);
 
         statusAction.perform(runner);
         outputAction.perform(runner);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void perform(@Nonnull Runner runner) {
-        this.runner = runner;
-        project = appContext.getCurrentProject();
-    }
-
 }

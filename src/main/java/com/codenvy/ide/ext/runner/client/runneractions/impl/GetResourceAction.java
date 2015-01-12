@@ -16,7 +16,6 @@ import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.RunAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.google.inject.Inject;
 

@@ -23,7 +23,6 @@ import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.RunAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;

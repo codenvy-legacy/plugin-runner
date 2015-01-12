@@ -8,20 +8,20 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.launch;
+package com.codenvy.ide.ext.runner.client.runneractions.impl;
 
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.notification.NotificationManager;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.ActionFactory;
+import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.google.inject.Inject;
 
@@ -35,42 +35,39 @@ import javax.annotation.Nonnull;
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
  */
-public class RunAction extends AbstractAppLaunchAction {
+public class RunAction extends AbstractRunnerAction {
 
-    private final RunnerServiceClient    service;
-    private final AsyncCallbackFactory   asyncCallbackFactory;
-    private final RunnerManagerPresenter presenter;
-    private final RunnerUtil             runnerUtil;
+    private final RunnerServiceClient        service;
+    private final AppContext                 appContext;
+    private final AsyncCallbackFactory       asyncCallbackFactory;
+    private final RunnerLocalizationConstant locale;
+    private final RunnerManagerPresenter     presenter;
+    private final RunnerUtil                 runnerUtil;
+    private final LaunchAction               launchAction;
 
     @Inject
     public RunAction(RunnerServiceClient service,
                      AppContext appContext,
                      AsyncCallbackFactory asyncCallbackFactory,
                      RunnerLocalizationConstant locale,
-                     NotificationManager notificationManager,
                      RunnerManagerPresenter presenter,
-                     ActionFactory actionFactory,
-                     RunnerActionFactory runnerActionFactory,
-                     RunnerUtil runnerUtil) {
-
-        super(notificationManager,
-              presenter,
-              locale,
-              appContext,
-              actionFactory,
-              runnerActionFactory);
-
+                     RunnerUtil runnerUtil,
+                     LaunchAction launchAction) {
         this.service = service;
+        this.appContext = appContext;
         this.asyncCallbackFactory = asyncCallbackFactory;
+        this.locale = locale;
         this.presenter = presenter;
         this.runnerUtil = runnerUtil;
+        this.launchAction = launchAction;
+
+        addAction(launchAction);
     }
 
     /** {@inheritDoc} */
     @Override
     public void perform(@Nonnull final Runner runner) {
-        super.perform(runner);
-
+        final CurrentProject project = appContext.getCurrentProject();
         if (project == null) {
             return;
         }
@@ -83,7 +80,11 @@ public class RunAction extends AbstractAppLaunchAction {
                                    new SuccessCallback<ApplicationProcessDescriptor>() {
                                        @Override
                                        public void onSuccess(ApplicationProcessDescriptor descriptor) {
-                                           onAppLaunched(descriptor);
+                                           runner.setProcessDescriptor(descriptor);
+                                           // TODO it seems it isn't logical to set descriptor into project
+                                           project.setProcessDescriptor(descriptor);
+
+                                           launchAction.perform(runner);
                                        }
                                    }, new FailureCallback() {
                                         @Override

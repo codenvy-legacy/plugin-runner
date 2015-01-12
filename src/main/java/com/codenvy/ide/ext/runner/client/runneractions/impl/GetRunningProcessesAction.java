@@ -8,11 +8,13 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.launch;
+package com.codenvy.ide.ext.runner.client.runneractions.impl;
 
+import com.codenvy.api.runner.ApplicationStatus;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.collections.Array;
@@ -20,11 +22,9 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.ActionFactory;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
+import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.util.loging.Log;
@@ -45,51 +45,56 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status;
  * @author Valeriy Svydenko
  * @author Andrey Plotnikov
  */
-public class GetRunningProcessesAction extends AbstractAppLaunchAction {
+public class GetRunningProcessesAction extends AbstractRunnerAction {
 
     private static final String PROCESS_STARTED_CHANNEL = "runner:process_started:";
 
-    private final RunnerServiceClient    service;
-    private final AsyncCallbackFactory   asyncCallbackFactory;
-    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-    private final GetLogsAction          logsAction;
-    private final WebSocketUtil          webSocketUtil;
-    private final String                 workspaceId;
+    private final NotificationManager        notificationManager;
+    private final RunnerServiceClient        service;
+    private final AsyncCallbackFactory       asyncCallbackFactory;
+    private final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
+    private final AppContext                 appContext;
+    private final RunnerLocalizationConstant locale;
+    private final GetLogsAction              logsAction;
+    private final LaunchAction               launchAction;
+    private final WebSocketUtil              webSocketUtil;
+    private final String                     workspaceId;
+
+    private Runner         runner;
+    private CurrentProject project;
 
     @Inject
     public GetRunningProcessesAction(NotificationManager notificationManager,
                                      RunnerServiceClient service,
                                      DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                      AppContext appContext,
-                                     RunnerManagerPresenter presenter,
                                      RunnerLocalizationConstant locale,
                                      GetLogsAction logsAction,
                                      AsyncCallbackFactory asyncCallbackFactory,
-                                     ActionFactory actionFactory,
-                                     RunnerActionFactory runnerActionFactory,
                                      WebSocketUtil webSocketUtil,
+                                     LaunchAction launchAction,
                                      @Named("workspaceId") String workspaceId) {
-        super(notificationManager,
-              presenter,
-              locale,
-              appContext,
-              actionFactory,
-              runnerActionFactory);
-
+        this.notificationManager = notificationManager;
         this.service = service;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
+        this.appContext = appContext;
+        this.locale = locale;
         this.logsAction = logsAction;
-        addAction(logsAction);
+        this.launchAction = launchAction;
         this.webSocketUtil = webSocketUtil;
         this.workspaceId = workspaceId;
         this.asyncCallbackFactory = asyncCallbackFactory;
+
+        addAction(logsAction);
+        addAction(launchAction);
     }
 
     /** {@inheritDoc} */
     @Override
     public void perform(@Nonnull final Runner runner) {
-        super.perform(runner);
+        this.runner = runner;
 
+        project = appContext.getCurrentProject();
         if (project == null) {
             return;
         }
@@ -102,8 +107,7 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
                            @Override
                            public void onSuccess(Array<ApplicationProcessDescriptor> result) {
                                for (ApplicationProcessDescriptor processDescriptor : result.asIterable()) {
-                                   if (processDescriptor.getStatus() == NEW || processDescriptor.getStatus() == RUNNING) {
-
+                                   if (isNewOrRunningProcess(processDescriptor)) {
                                        prepareRunnerWithRunningApp(processDescriptor);
 
                                    }
@@ -118,17 +122,19 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
                        }));
     }
 
+    private boolean isNewOrRunningProcess(@Nonnull ApplicationProcessDescriptor processDescriptor) {
+        ApplicationStatus status = processDescriptor.getStatus();
+        return status == NEW || status == RUNNING;
+    }
+
     private void startCheckingNewProcesses() {
         SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler =
                 new SubscriptionHandler<ApplicationProcessDescriptor>(
                         dtoUnmarshallerFactory.newWSUnmarshaller(ApplicationProcessDescriptor.class)) {
                     @Override
                     protected void onMessageReceived(ApplicationProcessDescriptor processDescriptor) {
-                        if (!runner.isAnyAppLaunched() &&
-                            (processDescriptor.getStatus() == NEW || processDescriptor.getStatus() == RUNNING)) {
-
+                        if (!runner.isAnyAppLaunched() && isNewOrRunningProcess(processDescriptor)) {
                             prepareRunnerWithRunningApp(processDescriptor);
-
                         }
                     }
 
@@ -148,8 +154,11 @@ public class GetRunningProcessesAction extends AbstractAppLaunchAction {
         runner.setAppLaunchStatus(true);
         runner.setStatus(Status.RUNNING);
 
-        onAppLaunched(processDescriptor);
+        runner.setProcessDescriptor(processDescriptor);
+        // TODO it seems it isn't logical to set descriptor into project
+        project.setProcessDescriptor(processDescriptor);
 
+        launchAction.perform(runner);
         //TODO  isUserAction parameter is false
         logsAction.perform(runner);
 
