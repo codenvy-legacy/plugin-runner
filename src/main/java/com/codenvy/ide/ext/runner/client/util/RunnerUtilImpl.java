@@ -86,8 +86,8 @@ public class RunnerUtilImpl implements RunnerUtil {
 
     /** {@inheritDoc} */
     @Override
-    public void showWarning(@Nonnull String warningMessage) {
-        dialogFactory.createMessageDialog(locale.titlesWarning(), warningMessage, null).show();
+    public void showWarning(@Nonnull String message) {
+        dialogFactory.createMessageDialog(locale.titlesWarning(), message, null).show();
     }
 
     /** {@inheritDoc} */

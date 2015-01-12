@@ -40,15 +40,37 @@ public interface RunnerUtil {
     /**
      * Shows warning message using dialog factory.
      *
-     * @param warningMessage
+     * @param message
      *         message which need to show
      */
-    void showWarning(@Nonnull String warningMessage);
+    void showWarning(@Nonnull String message);
 
-    // TODO it seems need to rework this method. If don't need will add javadoc
+    /**
+     * Show error to user. It creates a new notification and shows it. Updates Multi-runner panel and print a message on the console for a
+     * given runner.
+     *
+     * @param runner
+     *         a runner that is bound with console where a message have to be shown
+     * @param message
+     *         message that needs to be shown
+     * @param exception
+     *         exception that happened
+     */
     void showError(@Nonnull Runner runner, @Nonnull String message, @Nullable Throwable exception);
 
-    // TODO it seems need to rework this method. If don't need will add javadoc
+    /**
+     * Show error to user. It updates a given notification, updates Multi-runner panel and print a message on the console for a
+     * given runner.
+     *
+     * @param runner
+     *         a runner that is bound with console where a message have to be shown
+     * @param message
+     *         message that needs to be shown
+     * @param exception
+     *         exception that happened
+     * @param notification
+     *         notification that needs to be updated with some message
+     */
     void showError(@Nonnull Runner runner, @Nonnull String message, @Nullable Throwable exception, @Nonnull Notification notification);
 
 }
