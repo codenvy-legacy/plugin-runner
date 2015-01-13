@@ -18,17 +18,19 @@ import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
+import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
+import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.ui.dialogs.confirm.ConfirmDialog;
 import com.codenvy.ide.ui.dialogs.message.MessageDialog;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -43,13 +45,13 @@ import javax.annotation.Nonnull;
  * @author Valeriy Svydenko
  */
 public class CheckRamAction extends AbstractRunnerAction {
-    private final RunnerServiceClient        service;
-    private final AppContext                 appContext;
-    private final AsyncCallbackFactory       asyncCallbackFactory;
-    private final DialogFactory              dialogFactory;
-    private final RunnerLocalizationConstant constant;
-    private final RunnerUtil                 runnerUtil;
-    private final RunAction                  runAction;
+    private final RunnerServiceClient                                 service;
+    private final AppContext                                          appContext;
+    private final DialogFactory                                       dialogFactory;
+    private final Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider;
+    private final RunnerLocalizationConstant                          constant;
+    private final RunnerUtil                                          runnerUtil;
+    private final RunAction                                           runAction;
 
     private RunnerConfiguration runnerConfiguration;
     private CurrentProject      project;
@@ -59,13 +61,13 @@ public class CheckRamAction extends AbstractRunnerAction {
     public CheckRamAction(RunnerServiceClient service,
                           AppContext appContext,
                           DialogFactory dialogFactory,
-                          AsyncCallbackFactory asyncCallbackFactory,
+                          Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
                           RunnerLocalizationConstant constant,
                           RunnerUtil runnerUtil,
                           RunAction runAction) {
         this.service = service;
         this.appContext = appContext;
-        this.asyncCallbackFactory = asyncCallbackFactory;
+        this.callbackBuilderProvider = callbackBuilderProvider;
         this.constant = constant;
         this.runnerUtil = runnerUtil;
         this.runAction = runAction;
@@ -83,19 +85,24 @@ public class CheckRamAction extends AbstractRunnerAction {
             return;
         }
 
-        service.getResources(asyncCallbackFactory
-                                     .build(ResourcesDescriptor.class, new SuccessCallback<ResourcesDescriptor>() {
-                                                @Override
-                                                public void onSuccess(ResourcesDescriptor resourcesDescriptor) {
-                                                    checkRamAndRunProject(resourcesDescriptor);
-                                                }
-                                            },
-                                            new FailureCallback() {
-                                                @Override
-                                                public void onFailure(@Nonnull Throwable reason) {
-                                                    runnerUtil.showError(runner, constant.getResourcesFailed(), reason);
-                                                }
-                                            }));
+        AsyncRequestCallback<ResourcesDescriptor> callback = callbackBuilderProvider
+                .get()
+                .unmarshaller(ResourcesDescriptor.class)
+                .success(new SuccessCallback<ResourcesDescriptor>() {
+                    @Override
+                    public void onSuccess(ResourcesDescriptor resourcesDescriptor) {
+                        checkRamAndRunProject(resourcesDescriptor);
+                    }
+                })
+                .failure(new FailureCallback() {
+                    @Override
+                    public void onFailure(@Nonnull Throwable reason) {
+                        runnerUtil.showError(runner, constant.getResourcesFailed(), reason);
+                    }
+                })
+                .build();
+
+        service.getResources(callback);
     }
 
     private void checkRamAndRunProject(@Nonnull ResourcesDescriptor resourcesDescriptor) {

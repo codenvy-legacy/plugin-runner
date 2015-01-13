@@ -12,12 +12,14 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl;
 
 import com.codenvy.api.runner.dto.ResourcesDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
-import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
+import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
+import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import javax.annotation.Nonnull;
 
@@ -28,16 +30,19 @@ import javax.annotation.Nonnull;
  */
 public class GetResourceAction extends AbstractRunnerAction {
 
-    private final RunnerServiceClient  service;
-    private final RunAction            runAction;
-    private final AsyncCallbackFactory callbackFactory;
-    private final RunnerUtil           util;
+    private final RunnerServiceClient                                 service;
+    private final RunAction                                           runAction;
+    private final Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider;
+    private final RunnerUtil                                          util;
 
     @Inject
-    public GetResourceAction(RunnerServiceClient service, RunAction runAction, AsyncCallbackFactory callbackFactory, RunnerUtil util) {
+    public GetResourceAction(RunnerServiceClient service,
+                             RunAction runAction,
+                             Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
+                             RunnerUtil util) {
         this.service = service;
         this.runAction = runAction;
-        this.callbackFactory = callbackFactory;
+        this.callbackBuilderProvider = callbackBuilderProvider;
         this.util = util;
 
         addAction(runAction);
@@ -46,22 +51,28 @@ public class GetResourceAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform(@Nonnull final Runner runner) {
-        service.getResources(callbackFactory.build(ResourcesDescriptor.class, new SuccessCallback<ResourcesDescriptor>() {
-            @Override
-            public void onSuccess(ResourcesDescriptor resourcesDescriptor) {
-                int totalMemory = Integer.valueOf(resourcesDescriptor.getTotalMemory());
-                int usedMemory = Integer.valueOf(resourcesDescriptor.getUsedMemory());
+        AsyncRequestCallback<ResourcesDescriptor> callback = callbackBuilderProvider
+                .get()
+                .unmarshaller(ResourcesDescriptor.class)
+                .success(new SuccessCallback<ResourcesDescriptor>() {
+                    @Override
+                    public void onSuccess(ResourcesDescriptor resourcesDescriptor) {
+                        int totalMemory = Integer.valueOf(resourcesDescriptor.getTotalMemory());
+                        int usedMemory = Integer.valueOf(resourcesDescriptor.getUsedMemory());
 
-                boolean isCorrectMemory = util.isRunnerMemoryCorrect(totalMemory, usedMemory);
+                        boolean isCorrectMemory = util.isRunnerMemoryCorrect(totalMemory, usedMemory);
 
-                if (!isCorrectMemory) {
-                    return;
-                }
+                        if (!isCorrectMemory) {
+                            return;
+                        }
 
-                runner.setRAM(totalMemory);
+                        runner.setRAM(totalMemory);
 
-                runAction.perform(runner);
-            }
-        }));
+                        runAction.perform(runner);
+                    }
+                })
+                .build();
+
+        service.getResources(callback);
     }
 }

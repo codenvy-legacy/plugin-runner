@@ -18,7 +18,7 @@ import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
+import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
@@ -26,7 +26,9 @@ import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
+import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import javax.annotation.Nonnull;
 
@@ -41,13 +43,13 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
  * @author Valeriy Svydenko
  */
 public class StopAction extends AbstractRunnerAction {
-    private final RunnerServiceClient        service;
-    private final AppContext                 appContext;
-    private final AsyncCallbackFactory       asyncCallbackFactory;
-    private final RunnerLocalizationConstant constant;
-    private final NotificationManager        notificationManager;
-    private final RunnerUtil                 runnerUtil;
-    private final GetLogsAction              logsAction;
+    private final RunnerServiceClient                                          service;
+    private final AppContext                                                   appContext;
+    private final Provider<AsyncCallbackBuilder<ApplicationProcessDescriptor>> callbackBuilderProvider;
+    private final RunnerLocalizationConstant                                   constant;
+    private final NotificationManager                                          notificationManager;
+    private final RunnerUtil                                                   runnerUtil;
+    private final GetLogsAction                                                logsAction;
 
     private CurrentProject         project;
     private Runner                 runner;
@@ -57,7 +59,7 @@ public class StopAction extends AbstractRunnerAction {
     @Inject
     public StopAction(RunnerServiceClient service,
                       AppContext appContext,
-                      AsyncCallbackFactory asyncCallbackFactory,
+                      Provider<AsyncCallbackBuilder<ApplicationProcessDescriptor>> callbackBuilderProvider,
                       RunnerLocalizationConstant constant,
                       NotificationManager notificationManager,
                       RunnerUtil runnerUtil,
@@ -65,7 +67,7 @@ public class StopAction extends AbstractRunnerAction {
                       RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
         this.appContext = appContext;
-        this.asyncCallbackFactory = asyncCallbackFactory;
+        this.callbackBuilderProvider = callbackBuilderProvider;
         this.constant = constant;
         this.notificationManager = notificationManager;
         this.runnerUtil = runnerUtil;
@@ -95,29 +97,32 @@ public class StopAction extends AbstractRunnerAction {
             return;
         }
 
-        service.stop(stopLink,
-                     asyncCallbackFactory
-                             .build(ApplicationProcessDescriptor.class,
-                                    new SuccessCallback<ApplicationProcessDescriptor>() {
-                                        @Override
-                                        public void onSuccess(ApplicationProcessDescriptor result) {
-                                            processStoppedMessage();
-                                        }
-                                    },
-                                    new FailureCallback() {
-                                        @Override
-                                        public void onFailure(@Nonnull Throwable reason) {
-                                            runner.setAppRunningStatus(false);
-                                            runner.setProcessDescriptor(null);
+        AsyncRequestCallback<ApplicationProcessDescriptor> callback = callbackBuilderProvider
+                .get()
+                .unmarshaller(ApplicationProcessDescriptor.class)
+                .success(new SuccessCallback<ApplicationProcessDescriptor>() {
+                    @Override
+                    public void onSuccess(ApplicationProcessDescriptor result) {
+                        processStoppedMessage();
+                    }
+                })
+                .failure(new FailureCallback() {
+                    @Override
+                    public void onFailure(@Nonnull Throwable reason) {
+                        runner.setAppRunningStatus(false);
+                        runner.setProcessDescriptor(null);
 
-                                            project.setIsRunningEnabled(true);
-                                            project.setProcessDescriptor(null);
+                        project.setIsRunningEnabled(true);
+                        project.setProcessDescriptor(null);
 
-                                            runnerUtil.showError(runner,
-                                                                 constant.applicationFailed(project.getProjectDescription().getName()),
-                                                                 reason);
-                                        }
-                                    }));
+                        runnerUtil.showError(runner,
+                                             constant.applicationFailed(project.getProjectDescription().getName()),
+                                             reason);
+                    }
+                })
+                .build();
+
+        service.stop(stopLink, callback);
     }
 
     private void processStoppedMessage() {

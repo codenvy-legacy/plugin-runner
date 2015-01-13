@@ -34,26 +34,10 @@ public class RunnerRequestCallback<T> extends RequestCallback<T> {
                                  @Nullable Unmarshallable<T> unmarshallable,
                                  @Nonnull SuccessCallback<T> successCallback,
                                  @Nullable FailureCallback failureCallback) {
-
-        this(notificationManager, unmarshallable, successCallback);
+        super(unmarshallable);
         this.notificationManager = notificationManager;
         this.successCallback = successCallback;
         this.failureCallback = failureCallback;
-    }
-
-    public RunnerRequestCallback(@Nonnull NotificationManager notificationManager,
-                                 @Nullable Unmarshallable<T> unmarshallable,
-                                 @Nonnull SuccessCallback<T> successCallback) {
-
-        this(unmarshallable, successCallback);
-        this.notificationManager = notificationManager;
-        this.successCallback = successCallback;
-    }
-
-    public RunnerRequestCallback(@Nullable Unmarshallable<T> unmarshallable, @Nonnull SuccessCallback<T> successCallback) {
-
-        super(unmarshallable);
-        this.successCallback = successCallback;
     }
 
     /** {@inheritDoc} */

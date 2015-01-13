@@ -19,17 +19,19 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackFactory;
+import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
+import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.ide.websocket.rest.SubscriptionHandler;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
 import javax.annotation.Nonnull;
@@ -49,16 +51,16 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
 
     private static final String PROCESS_STARTED_CHANNEL = "runner:process_started:";
 
-    private final NotificationManager        notificationManager;
-    private final RunnerServiceClient        service;
-    private final AsyncCallbackFactory       asyncCallbackFactory;
-    private final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
-    private final AppContext                 appContext;
-    private final RunnerLocalizationConstant locale;
-    private final GetLogsAction              logsAction;
-    private final LaunchAction               launchAction;
-    private final WebSocketUtil              webSocketUtil;
-    private final String                     workspaceId;
+    private final NotificationManager                                                 notificationManager;
+    private final RunnerServiceClient                                                 service;
+    private final DtoUnmarshallerFactory                                              dtoUnmarshallerFactory;
+    private final AppContext                                                          appContext;
+    private final RunnerLocalizationConstant                                          locale;
+    private final GetLogsAction                                                       logsAction;
+    private final Provider<AsyncCallbackBuilder<Array<ApplicationProcessDescriptor>>> callbackBuilderProvider;
+    private final LaunchAction                                                        launchAction;
+    private final WebSocketUtil                                                       webSocketUtil;
+    private final String                                                              workspaceId;
 
     private Runner         runner;
     private CurrentProject project;
@@ -70,7 +72,7 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                                      AppContext appContext,
                                      RunnerLocalizationConstant locale,
                                      GetLogsAction logsAction,
-                                     AsyncCallbackFactory asyncCallbackFactory,
+                                     Provider<AsyncCallbackBuilder<Array<ApplicationProcessDescriptor>>> callbackBuilderProvider,
                                      WebSocketUtil webSocketUtil,
                                      LaunchAction launchAction,
                                      @Named("workspaceId") String workspaceId) {
@@ -80,10 +82,10 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
         this.appContext = appContext;
         this.locale = locale;
         this.logsAction = logsAction;
+        this.callbackBuilderProvider = callbackBuilderProvider;
         this.launchAction = launchAction;
         this.webSocketUtil = webSocketUtil;
         this.workspaceId = workspaceId;
-        this.asyncCallbackFactory = asyncCallbackFactory;
 
         addAction(logsAction);
         addAction(launchAction);
@@ -101,25 +103,29 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
 
         startCheckingNewProcesses();
 
-        service.getRunningProcesses(project.getProjectDescription().getPath(), asyncCallbackFactory
-                .build(dtoUnmarshallerFactory.newArrayUnmarshaller(ApplicationProcessDescriptor.class),
-                       new SuccessCallback<Array<ApplicationProcessDescriptor>>() {
-                           @Override
-                           public void onSuccess(Array<ApplicationProcessDescriptor> result) {
-                               for (ApplicationProcessDescriptor processDescriptor : result.asIterable()) {
-                                   if (isNewOrRunningProcess(processDescriptor)) {
-                                       prepareRunnerWithRunningApp(processDescriptor);
+        AsyncRequestCallback<Array<ApplicationProcessDescriptor>> callback = callbackBuilderProvider
+                .get()
+                .unmarshaller(dtoUnmarshallerFactory.newArrayUnmarshaller(ApplicationProcessDescriptor.class))
+                .success(new SuccessCallback<Array<ApplicationProcessDescriptor>>() {
+                    @Override
+                    public void onSuccess(Array<ApplicationProcessDescriptor> result) {
+                        for (ApplicationProcessDescriptor processDescriptor : result.asIterable()) {
+                            if (isNewOrRunningProcess(processDescriptor)) {
+                                prepareRunnerWithRunningApp(processDescriptor);
 
-                                   }
-                               }
-                           }
-                       },
-                       new FailureCallback() {
-                           @Override
-                           public void onFailure(@Nonnull Throwable reason) {
-                               Log.error(GetRunningProcessesAction.class, reason);
-                           }
-                       }));
+                            }
+                        }
+                    }
+                })
+                .failure(new FailureCallback() {
+                    @Override
+                    public void onFailure(@Nonnull Throwable reason) {
+                        Log.error(GetRunningProcessesAction.class, reason);
+                    }
+                })
+                .build();
+
+        service.getRunningProcesses(project.getProjectDescription().getPath(), callback);
     }
 
     private boolean isNewOrRunningProcess(@Nonnull ApplicationProcessDescriptor processDescriptor) {

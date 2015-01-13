@@ -14,6 +14,7 @@ package com.codenvy.ide.ext.runner.client.callbacks;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.commons.exception.ServerException;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.Unmarshallable;
 
 import javax.annotation.Nonnull;
@@ -27,7 +28,7 @@ import javax.annotation.Nullable;
  * @author Dmitry Shnurenko
  * @author Andrey Plotnikov
  */
-public class RunnerAsyncRequestCallback<T> extends com.codenvy.ide.rest.AsyncRequestCallback<T> {
+public class RunnerAsyncRequestCallback<T> extends AsyncRequestCallback<T> {
 
     private final NotificationManager        notificationManager;
     private final RunnerLocalizationConstant locale;
@@ -36,33 +37,9 @@ public class RunnerAsyncRequestCallback<T> extends com.codenvy.ide.rest.AsyncReq
 
     public RunnerAsyncRequestCallback(@Nonnull NotificationManager notificationManager,
                                       @Nonnull RunnerLocalizationConstant locale,
-                                      @Nonnull SuccessCallback<T> successCallback) {
-
-        this(notificationManager, locale, successCallback, null);
-    }
-
-    public RunnerAsyncRequestCallback(@Nonnull NotificationManager notificationManager,
-                                      @Nonnull RunnerLocalizationConstant locale,
-                                      @Nullable Unmarshallable<T> unmarshaller,
-                                      @Nonnull SuccessCallback<T> successCallback) {
-
-        this(notificationManager, locale, unmarshaller, successCallback, null);
-    }
-
-    public RunnerAsyncRequestCallback(@Nonnull NotificationManager notificationManager,
-                                      @Nonnull RunnerLocalizationConstant locale,
-                                      @Nonnull SuccessCallback<T> successCallback,
-                                      @Nullable FailureCallback failureCallback) {
-
-        this(notificationManager, locale, null, successCallback, failureCallback);
-    }
-
-    public RunnerAsyncRequestCallback(@Nonnull NotificationManager notificationManager,
-                                      @Nonnull RunnerLocalizationConstant locale,
                                       @Nullable Unmarshallable<T> unmarshaller,
                                       @Nonnull SuccessCallback<T> successCallback,
                                       @Nullable FailureCallback failureCallback) {
-
         super(unmarshaller);
         this.notificationManager = notificationManager;
         this.locale = locale;
