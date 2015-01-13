@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.customenvironment;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ItemReference;
 import com.codenvy.ide.api.projecttree.TreeNode;
+import com.codenvy.ide.api.projecttree.TreeStructure;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.google.web.bindery.event.shared.EventBus;
@@ -31,12 +32,13 @@ public class EnvironmentScript extends FileNode {
 
     public EnvironmentScript(TreeNode<?> parent,
                              ItemReference data,
+                             TreeStructure treeStructure,
                              EventBus eventBus,
                              ProjectServiceClient projectServiceClient,
                              DtoUnmarshallerFactory dtoUnmarshallerFactory,
                              String environmentName) {
 
-        super(parent, data, eventBus, projectServiceClient, dtoUnmarshallerFactory);
+        super(parent, data, treeStructure, eventBus, projectServiceClient, dtoUnmarshallerFactory);
 
         this.environmentName = environmentName;
     }
@@ -45,7 +47,7 @@ public class EnvironmentScript extends FileNode {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return '[' + environmentName + "] " + data.getName();
+        return '[' + environmentName + "] " + getData().getName();
     }
 
 }
