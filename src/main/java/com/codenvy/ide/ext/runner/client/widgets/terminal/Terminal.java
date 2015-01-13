@@ -12,7 +12,6 @@ package com.codenvy.ide.ext.runner.client.widgets.terminal;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nullable;
 
@@ -22,7 +21,6 @@ import javax.annotation.Nullable;
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
  */
-@ImplementedBy(TerminalImpl.class)
 public interface Terminal extends IsWidget {
     /**
      * Updates widget components from a given runner.

@@ -32,7 +32,7 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/runnerwidget/failed.svg")
     SVGResource runnerFailedImage();
 
-    @Source("images/runnerwidget/in-progress.svg")
+    @Source("images/runnerwidget/running.svg")
     SVGResource runnerInProgressImage();
 
     @Source("images/runnerwidget/in-queue.svg")
@@ -44,8 +44,8 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/mainwidget/run.png")
     ImageResource runButton();
 
-    @Source("images/mainwidget/recipe.png")
-    ImageResource recipeButton();
+    @Source("images/mainwidget/docker.png")
+    ImageResource dockerButton();
 
     @Source("images/mainwidget/clean.png")
     ImageResource cleanButton();
@@ -122,6 +122,10 @@ public interface RunnerResources extends ClientBundle {
         String fontSizeTen();
 
         String fontSizeEleven();
+
+        String blueColor();
+
+        String opacityButton();
     }
 
 }

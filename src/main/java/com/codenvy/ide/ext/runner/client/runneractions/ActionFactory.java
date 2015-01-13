@@ -14,11 +14,11 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetResourceAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.RunAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.ShowDockerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.subactions.OutputAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.recipe.ShowRecipeAction;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -33,13 +33,14 @@ import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_RES
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.GET_RUNNING_PROCESS;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.OUTPUT;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.RUN;
-import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_RECIPE;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_DOCKER;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 
 /**
  * It provides an possibility to create runner action by action type. It needs for simplifying work flow of using runner actions.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 @Singleton
 public class ActionFactory {
@@ -53,7 +54,7 @@ public class ActionFactory {
                          Provider<GetResourceAction> getResourceProvider,
                          Provider<GetRunningProcessesAction> runningProcessesActionProvider,
                          Provider<CheckRamAction> checkRamActionProvider,
-                         Provider<ShowRecipeAction> showRecipeActionProvider,
+                         Provider<ShowDockerAction> showDockerActionProvider,
                          Provider<OutputAction> outputActionProvider) {
         providers = new EnumMap<>(ActionType.class);
 
@@ -63,7 +64,7 @@ public class ActionFactory {
         providers.put(GET_RESOURCES, getResourceProvider);
         providers.put(GET_RUNNING_PROCESS, runningProcessesActionProvider);
         providers.put(CHECK_RAM, checkRamActionProvider);
-        providers.put(SHOW_RECIPE, showRecipeActionProvider);
+        providers.put(SHOW_DOCKER, showDockerActionProvider);
         providers.put(OUTPUT, outputActionProvider);
     }
 

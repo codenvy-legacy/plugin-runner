@@ -207,7 +207,7 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Nullable
     @Override
-    public String getRecipeUrl() {
+    public String getDockerUrl() {
         return getUrlByName(LINK_REL_RUNNER_RECIPE);
     }
 

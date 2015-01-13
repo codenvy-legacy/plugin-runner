@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.RUN;
-import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_RECIPE;
+import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_DOCKER;
 import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 
 /**
@@ -48,7 +48,7 @@ import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
 
     private final RunnerManagerView         view;
-    private final RunnerAction              showRecipeAction;
+    private final RunnerAction              showDockerAction;
     private final DtoFactory                dtoFactory;
     private final AppContext                appContext;
     private final ModelsFactory             modelsFactory;
@@ -69,7 +69,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.actionFactory = actionFactory;
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
-        this.showRecipeAction = actionFactory.newInstance(SHOW_RECIPE);
+        this.showDockerAction = actionFactory.newInstance(SHOW_DOCKER);
 
         this.runActions = new HashMap<>();
     }
@@ -132,8 +132,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     /** {@inheritDoc} */
     @Override
-    public void onReceiptButtonClicked() {
-        showRecipeAction.perform(selectedRunner);
+    public void onDockerButtonClicked() {
+        showDockerAction.perform(selectedRunner);
     }
 
     /** {@inheritDoc} */

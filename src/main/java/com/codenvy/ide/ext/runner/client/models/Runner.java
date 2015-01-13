@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
  *
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 public interface Runner {
 
@@ -94,9 +95,9 @@ public interface Runner {
     @Nullable
     Link getLogUrl();
 
-    /** @return url where recipe (Docker) file is located */
+    /** @return url where docker file is located */
     @Nullable
-    String getRecipeUrl();
+    String getDockerUrl();
 
     /** @return url where the rest service for stopping runner is located */
     @Nullable

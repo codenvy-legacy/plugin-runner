@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.recipe;
+package com.codenvy.ide.ext.runner.client.runneractions.impl.docker;
 
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
@@ -23,18 +23,19 @@ import com.google.inject.Inject;
 import javax.annotation.Nonnull;
 
 /**
- * Action for opening recipe for a runner.
+ * Action for opening docker for a runner.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
-public class ShowRecipeAction extends AbstractRunnerAction {
+public class ShowDockerAction extends AbstractRunnerAction {
 
     private final AppContext        appContext;
-    private final RecipeFileFactory recipeFileFactory;
+    private final DockerFileFactory recipeFileFactory;
     private final EditorAgent       editorAgent;
 
     @Inject
-    public ShowRecipeAction(AppContext appContext, RecipeFileFactory recipeFileFactory, EditorAgent editorAgent) {
+    public ShowDockerAction(AppContext appContext, DockerFileFactory recipeFileFactory, EditorAgent editorAgent) {
         this.appContext = appContext;
         this.recipeFileFactory = recipeFileFactory;
         this.editorAgent = editorAgent;
@@ -48,7 +49,7 @@ public class ShowRecipeAction extends AbstractRunnerAction {
             return;
         }
 
-        String recipeUrl = runner.getRecipeUrl();
+        String recipeUrl = runner.getDockerUrl();
         if (recipeUrl == null) {
             return;
         }

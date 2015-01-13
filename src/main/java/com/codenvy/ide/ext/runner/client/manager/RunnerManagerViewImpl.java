@@ -14,14 +14,14 @@ import com.codenvy.ide.api.parts.PartStackUIResources;
 import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.inject.factories.ConsoleFactory;
+import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -31,7 +31,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
@@ -52,23 +51,14 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
     }
 
-    //runners panel
     @UiField
     FlowPanel runnersPanel;
-
-    //buttons panel
     @UiField
-    FlowPanel runPanel;
-    @UiField
-    FlowPanel stopPanel;
-    @UiField
-    FlowPanel cleanPanel;
-    @UiField
-    FlowPanel dockerPanel;
-
-    //tab panel
+    FlowPanel buttonsPanel;
     @UiField
     FlowPanel tabsPanel;
+    @UiField
+    FlowPanel textArea;
 
     //info panel
     @UiField
@@ -78,23 +68,23 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @UiField
     Image moreInfo;
 
-    //print area
-    @UiField
-    FlowPanel textArea;
-
     @UiField(provided = true)
     final RunnerResources            resources;
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final Provider<RunnerWidget>    runnerViewProvider;
-    private final ConsoleFactory            consoleFactory;
-    private final Provider<Terminal>        terminalProvider;
+    private final WidgetFactory             widgetFactory;
     private final Map<Runner, Console>      consoles;
     private final Map<Runner, Terminal>     terminals;
     private final Map<Runner, RunnerWidget> runnerWidgets;
-    private final TabWidget                 consoleTab;
-    private final TabWidget                 terminalTab;
+
+    private TabWidget consoleTab;
+    private TabWidget terminalTab;
+
+    private ButtonWidget run;
+    private ButtonWidget stop;
+    private ButtonWidget clean;
+    private ButtonWidget docker;
 
     private String url;
 
@@ -103,67 +93,28 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                                  RunnerManagerViewImplUiBinder uiBinder,
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locale,
-                                 Provider<RunnerWidget> runnerViewProvider,
-                                 ConsoleFactory consoleFactory,
-                                 Provider<Terminal> terminalProvider,
-                                 TabWidget consoleTab,
-                                 TabWidget terminalTab) {
+                                 WidgetFactory widgetFactory) {
         super(partStackUIResources);
 
         this.resources = resources;
         this.locale = locale;
-        this.runnerViewProvider = runnerViewProvider;
-        this.consoleFactory = consoleFactory;
-        this.terminalProvider = terminalProvider;
+        this.widgetFactory = widgetFactory;
+
+        titleLabel.setText(locale.runnersPanelTitle());
+        container.add(uiBinder.createAndBindUi(this));
 
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
         this.runnerWidgets = new HashMap<>();
-        this.consoleTab = consoleTab;
-        this.terminalTab = terminalTab;
 
-        container.add(uiBinder.createAndBindUi(this));
+        initializeTabs();
 
-        consoleTab.select();
-
-        consoleTab.setTitle(locale.runnerTabConsole());
-        terminalTab.setTitle(locale.runnerTabTerminal());
-        titleLabel.setText(locale.runnersPanelTitle());
-
-        tabsPanel.add(consoleTab);
-        tabsPanel.add(terminalTab);
-
-        initializePanelsEvents();
+        initializeButtons();
     }
 
-    private void initializePanelsEvents() {
-        runPanel.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                delegate.onRunButtonClicked();
-            }
-        }, ClickEvent.getType());
-
-        stopPanel.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                delegate.onStopButtonClicked();
-            }
-        }, ClickEvent.getType());
-
-        cleanPanel.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                delegate.onCleanConsoleButtonClicked();
-            }
-        }, ClickEvent.getType());
-
-        dockerPanel.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                delegate.onReceiptButtonClicked();
-            }
-        }, ClickEvent.getType());
+    private void initializeTabs() {
+        consoleTab = widgetFactory.createTab(locale.runnerTabConsole());
+        terminalTab = widgetFactory.createTab(locale.runnerTabTerminal());
 
         consoleTab.setDelegate(new TabWidget.ActionDelegate() {
             @Override
@@ -171,13 +122,62 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onConsoleButtonClicked();
             }
         });
-
         terminalTab.setDelegate(new TabWidget.ActionDelegate() {
             @Override
             public void onMouseClicked() {
                 delegate.onTerminalButtonClicked();
             }
         });
+
+        tabsPanel.add(consoleTab);
+        tabsPanel.add(terminalTab);
+
+        consoleTab.select();
+    }
+
+    private void initializeButtons() {
+        run = widgetFactory.createButton(resources.runButton());
+        stop = widgetFactory.createButton(resources.stopButton());
+        docker = widgetFactory.createButton(resources.dockerButton());
+        clean = widgetFactory.createButton(resources.cleanButton());
+
+        run.setDisable();
+        stop.setDisable();
+        clean.setDisable();
+        docker.setDisable();
+
+        run.setDelegate(new ButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onRunButtonClicked();
+            }
+        });
+
+        stop.setDelegate(new ButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onStopButtonClicked();
+            }
+        });
+
+        clean.setDelegate(new ButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onCleanConsoleButtonClicked();
+            }
+        });
+
+        docker.setDelegate(new ButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onDockerButtonClicked();
+            }
+        });
+
+        buttonsPanel.add(run);
+        buttonsPanel.add(stop);
+        buttonsPanel.add(clean);
+        buttonsPanel.add(docker);
     }
 
     /** {@inheritDoc} */
@@ -200,6 +200,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
+        changeButtonsState(runner);
+
         Terminal terminal = terminals.get(runner);
         if (terminal != null) {
             terminal.update(runner);
@@ -211,10 +213,47 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         }
     }
 
+    private void changeButtonsState(@Nonnull Runner runner) {
+        run.setEnable();
+        stop.setEnable();
+        clean.setEnable();
+        docker.setEnable();
+
+        switch (runner.getStatus()) {
+            case IN_PROGRESS:
+                run.setDisable();
+                break;
+
+            case IN_QUEUE:
+                run.setDisable();
+                docker.setDisable();
+                stop.setDisable();
+                break;
+
+            case FAILED:
+                stop.setDisable();
+                docker.setDisable();
+                break;
+
+            case TIMEOUT:
+                break;
+
+            case STOPPED:
+                stop.setDisable();
+                break;
+
+            case DONE:
+                run.setDisable();
+                break;
+
+            default:
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void addRunner(@Nonnull Runner runner) {
-        RunnerWidget runnerWidget = runnerViewProvider.get();
+        RunnerWidget runnerWidget = widgetFactory.createRunner();
         runnerWidget.update(runner);
         runnerWidget.setDelegate(this);
 
@@ -223,7 +262,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
         selectWidget(runnerWidget);
 
-        Console console = consoleFactory.createConsole(runner);
+        Console console = widgetFactory.createConsole(runner);
         consoles.put(runner, console);
         activateConsole(runner);
     }
@@ -357,7 +396,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
         Terminal terminal = terminals.get(runner);
         if (terminal == null) {
-            terminal = terminalProvider.get();
+            terminal = widgetFactory.createTerminal();
             terminal.update(runner);
 
             terminals.put(runner, terminal);

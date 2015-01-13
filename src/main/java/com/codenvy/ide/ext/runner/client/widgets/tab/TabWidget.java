@@ -11,16 +11,12 @@
 package com.codenvy.ide.ext.runner.client.widgets.tab;
 
 import com.codenvy.ide.api.mvp.View;
-import com.google.inject.ImplementedBy;
-
-import javax.annotation.Nonnull;
 
 /**
  * Provides methods which allow change visual representation of tab.
  *
  * @author Dmitry Shnurenko
  */
-@ImplementedBy(TabWidgetImpl.class)
 public interface TabWidget extends View<TabWidget.ActionDelegate> {
 
     /** Performs some actions when tab is selected. */
@@ -28,14 +24,6 @@ public interface TabWidget extends View<TabWidget.ActionDelegate> {
 
     /** Performs some actions when tab is unselected. */
     void unSelect();
-
-    /**
-     * Sets tab title.
-     *
-     * @param title
-     *         name of title which need set
-     */
-    void setTitle(@Nonnull String title);
 
     interface ActionDelegate {
         /** Performs some actions in response to user's clicking on the tab. */

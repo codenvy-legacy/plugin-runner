@@ -115,7 +115,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     private void changeRunnerStatusIcon() {
         switch (runner.getStatus()) {
             case IN_PROGRESS:
-                inProgress.addClassNameBaseVal(resources.runnerCss().greenColor());
+                inProgress.addClassNameBaseVal(resources.runnerCss().blueColor());
                 image.getElement().setInnerHTML(inProgress.toString());
                 break;
 
@@ -142,6 +142,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
             case DONE:
                 done.addClassNameBaseVal(resources.runnerCss().greenColor());
                 image.getElement().setInnerHTML(done.toString());
+                break;
 
             default:
         }

@@ -119,6 +119,10 @@
     fill: white;
 }
 
+.blueColor {
+    fill: #1c9dee;
+}
+
 .fontSizeTen {
     font-family: " Helvetica Neue", Regular, sans-serif;
     font-size: 10pt;
@@ -133,4 +137,8 @@
 .fontSizeEight {
     font-family: "Helvetica Neue", Regular, sans-serif;
     font-size: 8pt;
+}
+
+.opacityButton {
+    opacity: 0.4;
 }

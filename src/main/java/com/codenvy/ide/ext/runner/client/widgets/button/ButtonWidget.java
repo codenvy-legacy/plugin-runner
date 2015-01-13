@@ -8,21 +8,25 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions;
+package com.codenvy.ide.ext.runner.client.widgets.button;
+
+import com.codenvy.ide.api.mvp.View;
 
 /**
- * It contains a list of available types of runner actions. It needs for creating an action by type.
+ * Provides methods which allow change visual representation of button.
  *
- * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
  */
-public enum ActionType {
-    RUN,
-    STOP,
-    GET_LOGS,
-    GET_RUNNING_PROCESS,
-    GET_RESOURCES,
-    CHECK_RAM,
-    SHOW_DOCKER,
-    OUTPUT
+public interface ButtonWidget extends View<ButtonWidget.ActionDelegate> {
+
+    /** Changes state of the button on disable. */
+    void setDisable();
+
+    /** Changes state of the button on enable. */
+    void setEnable();
+
+    interface ActionDelegate {
+        /** Performs some actions in response to user's clicking on the button panel. */
+        void onButtonClicked();
+    }
 }

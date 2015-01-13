@@ -8,16 +8,17 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.widgets.tab;
+package com.codenvy.ide.ext.runner.client.widgets.button;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -26,62 +27,65 @@ import com.google.inject.assistedinject.Assisted;
 import javax.annotation.Nonnull;
 
 /**
- * Class provides view representation of tab.
+ * Class provides view representation of button.
  *
  * @author Dmitry Shnurenko
  */
-public class TabWidgetImpl extends Composite implements TabWidget {
+public class ButtonWidgetImpl extends Composite implements ButtonWidget {
 
     @Singleton
-    interface TabViewImplUiBinder extends UiBinder<Widget, TabWidgetImpl> {
+    interface ButtonWidgetImplUiBinder extends UiBinder<Widget, ButtonWidgetImpl> {
     }
 
     @UiField
-    Label     tabTitle;
+    FlowPanel buttonPanel;
     @UiField
-    FlowPanel tabPanel;
+    Image     image;
 
     @UiField(provided = true)
     final RunnerResources resources;
 
     private ActionDelegate delegate;
+    private boolean        isEnable;
 
     @Inject
-    public TabWidgetImpl(TabViewImplUiBinder uiBinder, RunnerResources resources, @Nonnull @Assisted String title) {
+    public ButtonWidgetImpl(ButtonWidgetImplUiBinder ourUiBinder, RunnerResources resources, @Nonnull @Assisted ImageResource image) {
         this.resources = resources;
 
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget(ourUiBinder.createAndBindUi(this));
 
-        this.tabTitle.setText(title);
+        this.image.setResource(image);
 
         addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                delegate.onMouseClicked();
+                if (isEnable) {
+                    delegate.onButtonClicked();
+                }
             }
         }, ClickEvent.getType());
     }
 
     /** {@inheritDoc} */
     @Override
-    public void select() {
-        tabTitle.addStyleName(resources.runnerCss().activeTabText());
-        addStyleName(resources.runnerCss().activeTab());
-        removeStyleName(resources.runnerCss().notActiveTabText());
+    public void setDisable() {
+        isEnable = false;
+
+        image.addStyleName(resources.runnerCss().opacityButton());
     }
 
     /** {@inheritDoc} */
     @Override
-    public void unSelect() {
-        tabTitle.removeStyleName(resources.runnerCss().activeTabText());
-        removeStyleName(resources.runnerCss().activeTab());
-        addStyleName(resources.runnerCss().notActiveTabText());
+    public void setEnable() {
+        isEnable = true;
+
+        image.removeStyleName(resources.runnerCss().opacityButton());
     }
+
 
     /** {@inheritDoc} */
     @Override
     public void setDelegate(@Nonnull ActionDelegate delegate) {
         this.delegate = delegate;
     }
-
 }

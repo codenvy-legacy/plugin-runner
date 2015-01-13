@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.recipe;
+package com.codenvy.ide.ext.runner.client.runneractions.impl.docker;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
@@ -24,16 +24,17 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.codenvy.ide.ext.runner.client.runneractions.impl.recipe.RecipeFile.GET_CONTENT;
+import static com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFile.GET_CONTENT;
 
 /**
- * The factory that provides an ability to create instances of {@link RecipeFile}. The main idea of this class is to simplify work flow of
- * using  {@link RecipeFile}.
+ * The factory that provides an ability to create instances of {@link DockerFile}. The main idea of this class is to simplify work flow of
+ * using  {@link DockerFile}.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 @Singleton
-public class RecipeFileFactory {
+public class DockerFileFactory {
 
     private final EventBus               eventBus;
     private final ProjectServiceClient   projectServiceClient;
@@ -41,7 +42,7 @@ public class RecipeFileFactory {
     private final DtoFactory             dtoFactory;
 
     @Inject
-    public RecipeFileFactory(EventBus eventBus,
+    public DockerFileFactory(EventBus eventBus,
                              ProjectServiceClient projectServiceClient,
                              DtoUnmarshallerFactory dtoUnmarshallerFactory,
                              DtoFactory dtoFactory) {
@@ -52,11 +53,11 @@ public class RecipeFileFactory {
     }
 
     /**
-     * Create a new instance of {@link RecipeFile} for a given href.
+     * Create a new instance of {@link DockerFile} for a given href.
      *
      * @param href
      *         URL where recipe file is located
-     * @return an instance of {@link RecipeFile}
+     * @return an instance of {@link DockerFile}
      */
     @Nonnull
     public FileNode newInstance(@Nonnull String href) {
@@ -71,6 +72,6 @@ public class RecipeFileFactory {
                                                  .withMediaType("text/x-dockerfile-config")
                                                  .withLinks(links);
 
-        return new RecipeFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem);
+        return new DockerFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem);
     }
 }

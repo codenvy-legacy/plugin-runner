@@ -12,7 +12,6 @@ package com.codenvy.ide.ext.runner.client.widgets.runner;
 
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
 
@@ -22,7 +21,6 @@ import javax.annotation.Nonnull;
  * @author Dmitry Shnurenko
  * @author Valeriy Svydenko
  */
-@ImplementedBy(RunnerWidgetImpl.class)
 public interface RunnerWidget extends View<RunnerWidget.ActionDelegate> {
 
     /** Performs some actions when tab is selected. */

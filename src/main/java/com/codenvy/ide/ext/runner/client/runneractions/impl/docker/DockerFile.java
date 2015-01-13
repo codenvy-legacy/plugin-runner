@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.recipe;
+package com.codenvy.ide.ext.runner.client.runneractions.impl.docker;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
@@ -33,13 +33,14 @@ import javax.annotation.Nonnull;
  *
  * @author Artem Zatsarynnyy
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
-public class RecipeFile extends FileNode {
+public class DockerFile extends FileNode {
 
     public static final String GET_CONTENT = "get content";
 
     @Inject
-    public RecipeFile(@Nonnull EventBus eventBus,
+    public DockerFile(@Nonnull EventBus eventBus,
                       @Nonnull ProjectServiceClient projectServiceClient,
                       @Nonnull DtoUnmarshallerFactory dtoUnmarshallerFactory,
                       @Nonnull ItemReference data) {
@@ -73,11 +74,11 @@ public class RecipeFile extends FileNode {
 
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    Log.error(RecipeFile.class, exception);
+                    Log.error(DockerFile.class, exception);
                 }
             });
         } catch (RequestException e) {
-            Log.error(RecipeFile.class, e);
+            Log.error(DockerFile.class, e);
         }
     }
 

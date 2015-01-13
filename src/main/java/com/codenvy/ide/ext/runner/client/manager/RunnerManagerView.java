@@ -179,8 +179,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
         /** Performs some actions in response to user's clicking on the 'Clean console' button. */
         void onCleanConsoleButtonClicked();
 
-        /** Performs some actions in response to user's clicking on the 'Receipt' button. */
-        void onReceiptButtonClicked();
+        /** Performs some actions in response to user's clicking on the 'Docker' button. */
+        void onDockerButtonClicked();
 
         /** Performs some actions in response to user's choosing to show runner console widget. */
         void onConsoleButtonClicked();

@@ -17,6 +17,9 @@
 
     <ui:style>
         .runnerSize {
+            overflow: hidden;
+            text-overflow: clip;
+            white-space: nowrap;
             cursor: pointer;
             width: 150px;
             height: 35px;
