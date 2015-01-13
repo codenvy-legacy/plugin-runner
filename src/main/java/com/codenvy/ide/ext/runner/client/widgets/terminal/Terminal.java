@@ -29,4 +29,20 @@ public interface Terminal extends IsWidget {
      *         runner where all parameters are located
      */
     void update(@Nullable Runner runner);
+
+    /**
+     * Changes visibility of the terminal.
+     *
+     * @param isVisible
+     *         <code>true</code> terminal is visible,<code>false</code> terminal isn't visible
+     */
+    void setTerminalVisible(boolean isVisible);
+
+    /**
+     * Changes visibility of the unavailable label.
+     *
+     * @param isVisible
+     *         <code>true</code> label is visible,<code>false</code> label isn't visible
+     */
+    void setUnavailableLabelVisible(boolean isVisible);
 }

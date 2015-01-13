@@ -20,11 +20,15 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class TerminalImplTest {
@@ -44,46 +48,70 @@ public class TerminalImplTest {
     }
 
     @Test
-    public void unavilableMessageShouldBeShownWhenApplicationIsNotRunning() throws Exception {
-        terminal.update(runner);
-
-        verify(terminal.unavailableLabel).setVisible(true);
-        verify(terminal.terminal).setVisible(false);
-
-        verify(element).removeAttribute("src");
-    }
-
-    @Test
-    public void unavilableMessageShouldBeShownWhenApplicationURLIsNull() throws Exception {
-        when(runner.isAnyAppRunning()).thenReturn(true);
-
-        terminal.update(runner);
-
-        verify(terminal.unavailableLabel).setVisible(true);
-        verify(terminal.terminal).setVisible(false);
-
-        verify(element).removeAttribute("src");
-    }
-
-    @Test
-    public void unavilableMessageShouldBeShownWhenRunnerIsNull() throws Exception {
+    public void terminalShouldBeHiddenIfRunnerIsNull() throws Exception {
         terminal.update(null);
 
         verify(terminal.unavailableLabel).setVisible(true);
-        verify(terminal.terminal).setVisible(false);
+        verify(element).removeAttribute("src");
     }
 
     @Test
-    public void terminalShouldBeShownWhenAllParameterAreExist() throws Exception {
+    public void terminalContentShouldBeUpdated() throws Exception {
         when(runner.isAnyAppRunning()).thenReturn(true);
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
 
         terminal.update(runner);
 
         verify(terminal.unavailableLabel).setVisible(false);
-        verify(terminal.terminal).setVisible(true);
 
-        verify(terminal.terminal).setUrl(SOME_TEXT);
+        when(runner.getTerminalURL()).thenReturn(SOME_TEXT + SOME_TEXT);
+
+        terminal.update(runner);
+
+        verify(terminal.terminal).setUrl(SOME_TEXT + SOME_TEXT);
+    }
+
+    @Test
+    public void unavailableLabelShouldBeShoved() throws Exception {
+        when(runner.isAnyAppRunning()).thenReturn(false);
+        when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
+
+        terminal.update(runner);
+
+        verify(element).removeAttribute("src");
+        verify(terminal.unavailableLabel).setVisible(true);
+
+        when(runner.getTerminalURL()).thenReturn(SOME_TEXT + SOME_TEXT);
+
+        terminal.update(runner);
+
+        verify(terminal.terminal, never()).setUrl(anyString());
+    }
+
+    @Test
+    public void terminalShouldNotBeUpdate() throws Exception {
+        when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
+        when(runner.isAnyAppRunning()).thenReturn(true);
+
+        terminal.update(runner);
+        terminal.update(runner);
+
+        verify(terminal.terminal, times(1)).setUrl(anyString());
+        verify(element, never()).removeAttribute("src");
+    }
+
+    @Test
+    public void terminalShouldBeVisible() throws Exception {
+        terminal.setTerminalVisible(true);
+
+        verify(terminal.terminal).setVisible(true);
+    }
+
+    @Test
+    public void unavailableLabelShouldBeVisible() throws Exception {
+        terminal.setUnavailableLabelVisible(true);
+
+        verify(terminal.unavailableLabel).setVisible(true);
     }
 
 }

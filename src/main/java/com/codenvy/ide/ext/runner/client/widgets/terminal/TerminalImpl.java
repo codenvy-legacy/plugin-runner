@@ -44,6 +44,8 @@ public class TerminalImpl extends Composite implements Terminal {
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
+    private String url;
+
     @Inject
     public TerminalImpl(RunnerResources resources, RunnerLocalizationConstant locale) {
         this.res = resources;
@@ -56,20 +58,25 @@ public class TerminalImpl extends Composite implements Terminal {
     @Override
     public void update(@Nullable Runner runner) {
         if (runner == null) {
-            setTerminalVisible(false, null);
+            updateTerminalContent(false, null);
 
             return;
         }
 
-        String url = runner.getTerminalURL();
-        boolean visible = runner.isAnyAppRunning() && url != null;
+        String newTerminalUrl = runner.getTerminalURL();
+        boolean isAnyAppRunning = runner.isAnyAppRunning();
 
-        setTerminalVisible(visible, url);
+        if (url != null && url.equals(newTerminalUrl) && isAnyAppRunning) {
+            return;
+        }
+
+        url = newTerminalUrl;
+
+        updateTerminalContent(isAnyAppRunning, url);
     }
 
-    private void setTerminalVisible(boolean isVisible, @Nullable String url) {
+    private void updateTerminalContent(boolean isVisible, @Nullable String url) {
         unavailableLabel.setVisible(!isVisible);
-        terminal.setVisible(isVisible);
 
         if (isVisible) {
             terminal.setUrl(url);
@@ -77,4 +84,17 @@ public class TerminalImpl extends Composite implements Terminal {
             terminal.getElement().removeAttribute("src");
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setTerminalVisible(boolean visible) {
+        terminal.setVisible(visible);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setUnavailableLabelVisible(boolean isVisible) {
+        unavailableLabel.setVisible(isVisible);
+    }
+
 }

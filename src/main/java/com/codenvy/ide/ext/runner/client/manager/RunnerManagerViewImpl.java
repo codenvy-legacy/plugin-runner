@@ -375,13 +375,17 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         consoleTab.select();
         terminalTab.unSelect();
 
+        for (Console console : consoles.values()) {
+            console.setVisible(false);
+        }
+
         Console console = consoles.get(runner);
         if (console == null) {
             textArea.clear();
             return;
         }
 
-        textArea.clear();
+        console.setVisible(true);
         textArea.add(console);
 
         console.scrollBottom();
@@ -394,16 +398,30 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         terminalTab.select();
         consoleTab.unSelect();
 
+        for (Console console : consoles.values()) {
+            console.setVisible(false);
+        }
+
+        for (Terminal terminal : terminals.values()) {
+            terminal.setTerminalVisible(false);
+            terminal.setUnavailableLabelVisible(false);
+        }
+
         Terminal terminal = terminals.get(runner);
         if (terminal == null) {
             terminal = widgetFactory.createTerminal();
             terminal.update(runner);
 
             terminals.put(runner, terminal);
+
+            textArea.add(terminal);
+        } else {
+            boolean isAnyAppRun = runner.isAnyAppRunning();
+
+            terminal.setTerminalVisible(isAnyAppRun);
+            terminal.setUnavailableLabelVisible(!isAnyAppRun);
         }
 
-        textArea.clear();
-        textArea.add(terminal);
     }
 
     @UiHandler("appReference")

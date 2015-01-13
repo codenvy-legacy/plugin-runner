@@ -100,4 +100,12 @@ public interface Console extends IsWidget {
     /** Removes all messages from widget. */
     void clear();
 
+    /**
+     * Changes visibility of the console.
+     *
+     * @param isVisible
+     *         <code>true</code> console is visible,<code>false</code> console isn't visible
+     */
+    void setVisible(boolean isVisible);
+
 }
