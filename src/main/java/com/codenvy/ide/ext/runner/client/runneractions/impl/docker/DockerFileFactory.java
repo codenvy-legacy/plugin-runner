@@ -14,6 +14,7 @@ import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ItemReference;
 import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -62,9 +63,16 @@ public class DockerFileFactory {
      * @param href
      *         URL where recipe file is located
      * @return an instance of {@link DockerFile}
+     * @throws IllegalStateException
+     *         when no project is opened
      */
     @Nonnull
     public FileNode newInstance(@Nonnull String href) {
+        CurrentProject currentProject = appContext.getCurrentProject();
+        if (currentProject == null) {
+            throw new IllegalStateException("No project is opened");
+        }
+
         Link link = dtoFactory.createDto(Link.class)
                               .withHref(href)
                               .withRel(GET_CONTENT);
@@ -76,7 +84,6 @@ public class DockerFileFactory {
                                                  .withMediaType("text/x-dockerfile-config")
                                                  .withLinks(links);
 
-        return new DockerFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem,
-                              appContext.getCurrentProject().getCurrentTree());
+        return new DockerFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem, currentProject.getCurrentTree());
     }
 }
