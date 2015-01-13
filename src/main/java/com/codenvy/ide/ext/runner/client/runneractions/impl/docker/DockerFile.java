@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl.docker;
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ItemReference;
+import com.codenvy.ide.api.projecttree.TreeStructure;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.util.loging.Log;
@@ -43,8 +44,9 @@ public class DockerFile extends FileNode {
     public DockerFile(@Nonnull EventBus eventBus,
                       @Nonnull ProjectServiceClient projectServiceClient,
                       @Nonnull DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                      @Nonnull ItemReference data) {
-        super(null, data, eventBus, projectServiceClient, dtoUnmarshallerFactory);
+                      @Nonnull ItemReference data,
+                      @Nonnull TreeStructure treeStructure) {
+        super(null, data, treeStructure, eventBus, projectServiceClient, dtoUnmarshallerFactory);
     }
 
     /** {@inheritDoc} */
@@ -56,7 +58,7 @@ public class DockerFile extends FileNode {
     /** {@inheritDoc} */
     @Override
     public void getContent(AsyncCallback<String> callback) {
-        for (Link link : data.getLinks()) {
+        for (Link link : getData().getLinks()) {
             if (GET_CONTENT.equals(link.getRel())) {
                 sendRequest(callback, link.getHref());
                 break;

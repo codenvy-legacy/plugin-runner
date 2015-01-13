@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl.docker;
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ItemReference;
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -40,16 +41,19 @@ public class DockerFileFactory {
     private final ProjectServiceClient   projectServiceClient;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
     private final DtoFactory             dtoFactory;
+    private final AppContext             appContext;
 
     @Inject
     public DockerFileFactory(EventBus eventBus,
                              ProjectServiceClient projectServiceClient,
                              DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                             DtoFactory dtoFactory) {
+                             DtoFactory dtoFactory,
+                             AppContext appContext) {
         this.eventBus = eventBus;
         this.projectServiceClient = projectServiceClient;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
+        this.appContext = appContext;
     }
 
     /**
@@ -72,6 +76,7 @@ public class DockerFileFactory {
                                                  .withMediaType("text/x-dockerfile-config")
                                                  .withLinks(links);
 
-        return new DockerFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem);
+        return new DockerFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem,
+                              appContext.getCurrentProject().getCurrentTree());
     }
 }

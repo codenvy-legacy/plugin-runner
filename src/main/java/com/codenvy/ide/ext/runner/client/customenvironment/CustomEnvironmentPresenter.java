@@ -194,6 +194,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
 
         eventBus.fireEvent(new FileEvent(new EnvironmentScript(project,
                                                                item,
+                                                               currentProject.getCurrentTree(),
                                                                eventBus,
                                                                projectServiceClient,
                                                                dtoUnmarshallerFactory,
