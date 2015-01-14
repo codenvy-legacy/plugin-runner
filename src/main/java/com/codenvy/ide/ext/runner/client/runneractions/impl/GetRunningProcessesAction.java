@@ -62,8 +62,10 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
     private final WebSocketUtil                                                       webSocketUtil;
     private final String                                                              workspaceId;
 
-    private Runner         runner;
-    private CurrentProject project;
+    private String                                            channel;
+    private SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler;
+    private Runner                                            runner;
+    private CurrentProject                                    project;
 
     @Inject
     public GetRunningProcessesAction(NotificationManager notificationManager,
@@ -134,23 +136,22 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
     }
 
     private void startCheckingNewProcesses() {
-        SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler =
-                new SubscriptionHandler<ApplicationProcessDescriptor>(
-                        dtoUnmarshallerFactory.newWSUnmarshaller(ApplicationProcessDescriptor.class)) {
-                    @Override
-                    protected void onMessageReceived(ApplicationProcessDescriptor processDescriptor) {
-                        if (!runner.isAnyAppLaunched() && isNewOrRunningProcess(processDescriptor)) {
-                            prepareRunnerWithRunningApp(processDescriptor);
-                        }
-                    }
+        processStartedHandler = new SubscriptionHandler<ApplicationProcessDescriptor>(
+                dtoUnmarshallerFactory.newWSUnmarshaller(ApplicationProcessDescriptor.class)) {
+            @Override
+            protected void onMessageReceived(ApplicationProcessDescriptor processDescriptor) {
+                if (!runner.isAnyAppLaunched() && isNewOrRunningProcess(processDescriptor)) {
+                    prepareRunnerWithRunningApp(processDescriptor);
+                }
+            }
 
-                    @Override
-                    protected void onErrorReceived(Throwable exception) {
-                        Log.error(GetRunningProcessesAction.class, exception);
-                    }
-                };
+            @Override
+            protected void onErrorReceived(Throwable exception) {
+                Log.error(GetRunningProcessesAction.class, exception);
+            }
+        };
 
-        String channel = PROCESS_STARTED_CHANNEL + workspaceId + ':' + project.getProjectDescription().getPath();
+        channel = PROCESS_STARTED_CHANNEL + workspaceId + ':' + project.getProjectDescription().getPath();
         webSocketUtil.subscribeHandler(channel, processStartedHandler);
     }
 
@@ -170,6 +171,21 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
 
         Notification notification = new Notification(locale.projectRunningNow(project.getProjectDescription().getName()), INFO, true);
         notificationManager.showNotification(notification);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop() {
+        if (channel == null || processStartedHandler == null) {
+            return;
+        }
+
+        webSocketUtil.unSubscribeHandler(channel, processStartedHandler);
+
+        super.stop();
+
+        channel = null;
+        processStartedHandler = null;
     }
 
 }

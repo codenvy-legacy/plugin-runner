@@ -110,13 +110,19 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRunButtonClicked() {
-        // TODO perform RunAction for selected runner
+        RunnerAction runnerAction = runActions.get(selectedRunner);
+        if (runnerAction == null) {
+            return;
+        }
+
+        runnerAction.perform(selectedRunner);
+        update(selectedRunner);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onStopButtonClicked() {
-        RunnerAction runAction = runActions.remove(selectedRunner);
+        RunnerAction runAction = runActions.get(selectedRunner);
         if (runAction != null) {
             runAction.stop();
         }
