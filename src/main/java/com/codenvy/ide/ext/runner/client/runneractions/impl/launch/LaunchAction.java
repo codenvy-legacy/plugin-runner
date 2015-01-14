@@ -20,14 +20,12 @@ import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
-import com.codenvy.ide.ext.runner.client.runneractions.ActionFactory;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
-import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.OUTPUT;
 
 /**
  * @author Andrey Plotnikov
@@ -46,7 +44,6 @@ public class LaunchAction extends AbstractRunnerAction {
                         RunnerManagerPresenter presenter,
                         RunnerLocalizationConstant locale,
                         AppContext appContext,
-                        ActionFactory actionFactory,
                         RunnerActionFactory runnerActionFactory) {
         this.notificationManager = notificationManager;
         this.locale = locale;
@@ -54,7 +51,7 @@ public class LaunchAction extends AbstractRunnerAction {
         this.runnerActionFactory = runnerActionFactory;
         this.view = presenter.getView();
 
-        outputAction = actionFactory.newInstance(OUTPUT);
+        outputAction = runnerActionFactory.createOutput();
         addAction(outputAction);
     }
 
@@ -76,7 +73,7 @@ public class LaunchAction extends AbstractRunnerAction {
 
         view.printInfo(runner, locale.environmentCooking(projectName));
 
-        RunnerAction statusAction = runnerActionFactory.createStatusAction(notification);
+        RunnerAction statusAction = runnerActionFactory.createStatus(notification);
         addAction(statusAction);
 
         statusAction.perform(runner);

@@ -21,6 +21,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -63,7 +64,7 @@ public class StopAction extends AbstractRunnerAction {
                       RunnerLocalizationConstant constant,
                       NotificationManager notificationManager,
                       RunnerUtil runnerUtil,
-                      GetLogsAction logsAction,
+                      RunnerActionFactory actionFactory,
                       RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
         this.appContext = appContext;
@@ -71,7 +72,7 @@ public class StopAction extends AbstractRunnerAction {
         this.constant = constant;
         this.notificationManager = notificationManager;
         this.runnerUtil = runnerUtil;
-        this.logsAction = logsAction;
+        this.logsAction = actionFactory.createGetLogs();
 
         presenter = runnerManagerPresenter;
         view = runnerManagerPresenter.getView();

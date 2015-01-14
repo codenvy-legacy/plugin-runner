@@ -31,13 +31,13 @@ import javax.annotation.Nonnull;
 public class ShowDockerAction extends AbstractRunnerAction {
 
     private final AppContext        appContext;
-    private final DockerFileFactory recipeFileFactory;
+    private final DockerFileFactory dockerFileFactory;
     private final EditorAgent       editorAgent;
 
     @Inject
-    public ShowDockerAction(AppContext appContext, DockerFileFactory recipeFileFactory, EditorAgent editorAgent) {
+    public ShowDockerAction(AppContext appContext, DockerFileFactory dockerFileFactory, EditorAgent editorAgent) {
         this.appContext = appContext;
-        this.recipeFileFactory = recipeFileFactory;
+        this.dockerFileFactory = dockerFileFactory;
         this.editorAgent = editorAgent;
     }
 
@@ -54,7 +54,7 @@ public class ShowDockerAction extends AbstractRunnerAction {
             return;
         }
 
-        FileNode recipeFile = recipeFileFactory.newInstance(recipeUrl);
+        FileNode recipeFile = dockerFileFactory.newInstance(recipeUrl);
         editorAgent.openEditor(recipeFile);
 
         EditorPartPresenter editor = editorAgent.getOpenedEditors().get(recipeFile.getPath());

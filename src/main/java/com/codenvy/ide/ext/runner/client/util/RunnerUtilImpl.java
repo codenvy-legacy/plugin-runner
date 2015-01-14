@@ -58,15 +58,13 @@ public class RunnerUtilImpl implements RunnerUtil {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isRunnerMemoryCorrect(@Nonnegative int totalMemory, @Nonnegative int usedMemory) {
-        int availableMemory = totalMemory - usedMemory;
-
+    public boolean isRunnerMemoryCorrect(@Nonnegative int totalMemory, @Nonnegative int usedMemory, @Nonnegative int availableMemory) {
         if (usedMemory < 0 || totalMemory < 0 || availableMemory < 0) {
             showWarning(locale.messagesIncorrectValue());
             return false;
         }
 
-        if (usedMemory < 0 || usedMemory % 128 != 0) {
+        if (usedMemory % 128 != 0) {
             showWarning(locale.ramSizeMustBeMultipleOf(MULTIPLE_RAM_SIZE));
             return false;
         }

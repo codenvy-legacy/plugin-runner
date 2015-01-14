@@ -21,6 +21,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
@@ -64,15 +65,16 @@ public class CheckRamAction extends AbstractRunnerAction {
                           Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
                           RunnerLocalizationConstant constant,
                           RunnerUtil runnerUtil,
-                          RunAction runAction) {
+                          RunnerActionFactory actionFactory) {
         this.service = service;
         this.appContext = appContext;
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.constant = constant;
         this.runnerUtil = runnerUtil;
-        this.runAction = runAction;
-        addAction(runAction);
+        this.runAction = actionFactory.createRun();
         this.dialogFactory = dialogFactory;
+
+        addAction(runAction);
     }
 
     /** {@inheritDoc} */

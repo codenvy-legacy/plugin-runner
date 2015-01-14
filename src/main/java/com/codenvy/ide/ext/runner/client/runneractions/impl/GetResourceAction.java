@@ -14,6 +14,7 @@ import com.codenvy.api.runner.dto.ResourcesDescriptor;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
@@ -37,11 +38,11 @@ public class GetResourceAction extends AbstractRunnerAction {
 
     @Inject
     public GetResourceAction(RunnerServiceClient service,
-                             RunAction runAction,
+                             RunnerActionFactory actionFactory,
                              Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
                              RunnerUtil util) {
         this.service = service;
-        this.runAction = runAction;
+        this.runAction = actionFactory.createRun();
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.util = util;
 
@@ -59,8 +60,9 @@ public class GetResourceAction extends AbstractRunnerAction {
                     public void onSuccess(ResourcesDescriptor resourcesDescriptor) {
                         int totalMemory = Integer.valueOf(resourcesDescriptor.getTotalMemory());
                         int usedMemory = Integer.valueOf(resourcesDescriptor.getUsedMemory());
+                        int availableMemory = totalMemory - usedMemory;
 
-                        boolean isCorrectMemory = util.isRunnerMemoryCorrect(totalMemory, usedMemory);
+                        boolean isCorrectMemory = util.isRunnerMemoryCorrect(totalMemory, usedMemory, availableMemory);
 
                         if (!isCorrectMemory) {
                             return;

@@ -22,6 +22,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
@@ -73,19 +74,18 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                                      DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                      AppContext appContext,
                                      RunnerLocalizationConstant locale,
-                                     GetLogsAction logsAction,
                                      Provider<AsyncCallbackBuilder<Array<ApplicationProcessDescriptor>>> callbackBuilderProvider,
                                      WebSocketUtil webSocketUtil,
-                                     LaunchAction launchAction,
+                                     RunnerActionFactory actionFactory,
                                      @Named("workspaceId") String workspaceId) {
         this.notificationManager = notificationManager;
         this.service = service;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.appContext = appContext;
         this.locale = locale;
-        this.logsAction = logsAction;
+        this.logsAction = actionFactory.createGetLogs();
+        this.launchAction = actionFactory.createLaunch();
         this.callbackBuilderProvider = callbackBuilderProvider;
-        this.launchAction = launchAction;
         this.webSocketUtil = webSocketUtil;
         this.workspaceId = workspaceId;
 

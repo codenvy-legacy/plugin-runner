@@ -74,13 +74,20 @@ public class RunnerImpl implements Runner {
     @AssistedInject
     public RunnerImpl(@Nonnull @Assisted RunOptions runOptions, @Nullable @Assisted String environmentName) {
         this.runOptions = runOptions;
-        this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + environmentName);
+        this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + getCorrectName(environmentName));
         this.ram = runOptions.getMemorySize();
         this.isConsoleActive = true;
         this.status = Status.IN_QUEUE;
 
         creationData = new Date();
         RUNNER_NUMBER++;
+    }
+
+    @Nonnull
+    private String getCorrectName(@Nonnull String environmentName) {
+        int lastIndex = environmentName.lastIndexOf("/") + 1;
+
+        return environmentName.substring(lastIndex, environmentName.length());
     }
 
     /** {@inheritDoc} */

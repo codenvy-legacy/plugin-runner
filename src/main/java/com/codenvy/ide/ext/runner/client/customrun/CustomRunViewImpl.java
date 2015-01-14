@@ -31,7 +31,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -40,10 +39,17 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumMap;
+
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_1024;
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_2048;
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_256;
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_512;
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.OTHER_MEMORY;
 
 /**
  * The Class provides graphical implementation of dialog window to change settings of custom environments.
@@ -57,13 +63,6 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     }
 
     private static final CustomRunViewImplUiBinder UI_BINDER = GWT.create(CustomRunViewImplUiBinder.class);
-
-    private static final String MEMORY_128   = "128MB";
-    private static final String MEMORY_256   = "256MB";
-    private static final String MEMORY_512   = "512MB";
-    private static final String MEMORY_1024  = "1GB";
-    private static final String MEMORY_2048  = "2GB";
-    private static final String OTHER_MEMORY = "Other (MB):";
 
     @UiField
     Label       noEnvLabel;
@@ -80,21 +79,29 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     @UiField
     TextArea    descriptionField;
     @UiField
-    RadioButton radioButOther;
-    @UiField
     TextBox     otherValueMemory;
+
+    //radio buttons
     @UiField
-    FlowPanel   memoryPanel1;
+    RadioButton memory128;
     @UiField
-    FlowPanel   memoryPanel2;
+    RadioButton memory256;
+    @UiField
+    RadioButton memory512;
+    @UiField
+    RadioButton memory1024;
+    @UiField
+    RadioButton memory2048;
+    @UiField
+    RadioButton otherMemory;
 
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
     @UiField(provided = true)
     final RunnerResources            resources;
 
-    private final List<RadioButton>     radioButtons;
-    private final RunnerEnvironmentTree rootNode;
+    private final EnumMap<MemorySize, RadioButton> buttonsMap;
+    private final RunnerEnvironmentTree            rootNode;
 
     private ActionDelegate actionDelegate;
     private Tree<Object>   tree;
@@ -114,7 +121,6 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
         setTitle(locale.customRunnerTitle());
 
         rootNode = dtoFactory.createDto(RunnerEnvironmentTree.class);
-        radioButtons = new ArrayList<>();
 
         tree = Tree.create(resources, runnerDataAdapter, runnerRenderer);
         treeContainer.setWidget(noEnvLabel);
@@ -166,10 +172,20 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
             }
         });
 
-        for (int i = 0; i < memoryPanel1.getWidgetCount(); i++) {
-            radioButtons.add((RadioButton)memoryPanel1.getWidget(i));
-            radioButtons.add((RadioButton)memoryPanel2.getWidget(i));
-        }
+        buttonsMap = new EnumMap<>(MemorySize.class);
+
+        memory128.setText(MEMORY_128.toString());
+        memory256.setText(MEMORY_256.toString());
+        memory512.setText(MEMORY_512.toString());
+        memory1024.setText(MEMORY_1024.toString());
+        memory2048.setText(MEMORY_2048.toString());
+
+        buttonsMap.put(MEMORY_128, memory128);
+        buttonsMap.put(MEMORY_256, memory256);
+        buttonsMap.put(MEMORY_512, memory512);
+        buttonsMap.put(MEMORY_1024, memory1024);
+        buttonsMap.put(MEMORY_2048, memory2048);
+        buttonsMap.put(OTHER_MEMORY, otherMemory);
 
         createButtons();
     }
@@ -197,41 +213,14 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
 
     /** {@inheritDoc} */
     @Override
-    public void setEnabledRadioButtons(int workspaceRam) {
-        for (RadioButton radioButton : radioButtons) {
-            int runnerMemory = getMemoryValue(radioButton.getText());
+    public void setEnabledRadioButtons(@Nonnegative int workspaceRam) {
+        for (RadioButton radioButton : buttonsMap.values()) {
+            int runnerMemory = MemorySize.getItemByValue(radioButton.getText()).getValue();
 
             radioButton.setEnabled(runnerMemory > 0 && runnerMemory <= workspaceRam);
         }
 
-        radioButOther.setEnabled(true);
-    }
-
-    private int getMemoryValue(@Nonnull String memorySize) {
-        switch (memorySize) {
-            case MEMORY_128:
-                return 128;
-            case MEMORY_256:
-                return 256;
-            case MEMORY_512:
-                return 512;
-            case MEMORY_1024:
-                return 1024;
-            case MEMORY_2048:
-                return 2048;
-            case OTHER_MEMORY:
-                return getIntegerValue(otherValueMemory.getText());
-            default:
-                return 256;
-        }
-    }
-
-    private int getIntegerValue(@Nonnull String ramValue) {
-        try {
-            return Integer.parseInt(ramValue);
-        } catch (NumberFormatException exception) {
-            return -1;
-        }
+        otherMemory.setEnabled(true);
     }
 
     /** {@inheritDoc} */
@@ -263,55 +252,46 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     /** {@inheritDoc} */
     @Override
     public int getRunnerMemorySize() {
-        for (RadioButton radioButton : radioButtons) {
+        for (RadioButton radioButton : buttonsMap.values()) {
             if (radioButton.getValue()) {
-                return getMemoryValue(radioButton.getText());
+                return checkAndGetMemory(radioButton.getText());
             }
         }
         return 0;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setRunnerMemorySize(@Nonnull String memorySize) {
-        resetRadioButtons();
-        otherValueMemory.setText("");
+    private int checkAndGetMemory(@Nonnull String memory) {
+        MemorySize memorySize = MemorySize.getItemByValue(memory);
 
-        int index;
-        switch (memorySize) {
-            case MEMORY_128:
-                index = 0;
-                break;
-            case MEMORY_1024:
-                index = 1;
-                break;
-            case MEMORY_256:
-                index = 2;
-                break;
-            case MEMORY_2048:
-                index = 3;
-                break;
-            case MEMORY_512:
-                index = 4;
-                break;
-            default:
-                index = 5; //index = 5 corresponds to 'Other'- radioButton
-                otherValueMemory.setText(memorySize);
-        }
+        boolean isOtherRadioButton = OTHER_MEMORY.equals(memorySize);
 
-        radioButtons.get(index).setValue(true);
+        return isOtherRadioButton ? getIntegerValue(otherValueMemory.getText()) : memorySize.getValue();
     }
 
-    private void resetRadioButtons() {
-        for (RadioButton radioButton : radioButtons) {
+    private int getIntegerValue(@Nonnull String memoryValue) {
+        try {
+            return Integer.parseInt(memoryValue);
+        } catch (NumberFormatException exception) {
+            return -1;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void chooseMemorySizeRadioButton(@Nonnull MemorySize memorySize) {
+        for (RadioButton radioButton : buttonsMap.values()) {
             radioButton.setValue(false);
         }
+
+        otherValueMemory.setText("");
+
+        buttonsMap.get(memorySize).setValue(true);
     }
 
     /** {@inheritDoc} */
     @Override
     public int getTotalMemorySize() {
-        return getIntegerValue(memoryTotal.getText());
+        return getIntegerValue(memoryTotal.getValue());
     }
 
     /** {@inheritDoc} */
@@ -323,7 +303,7 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     /** {@inheritDoc} */
     @Override
     public int getAvailableMemorySize() {
-        return getIntegerValue(memoryAvailable.getText());
+        return getIntegerValue(memoryAvailable.getValue());
     }
 
     /** {@inheritDoc} */
@@ -375,7 +355,7 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
         this.actionDelegate = actionDelegate;
     }
 
-    @UiHandler("radioButOther")
+    @UiHandler("otherMemory")
     void otherValueHandler(@SuppressWarnings("UnusedParameters") ValueChangeEvent<Boolean> event) {
         otherValueMemory.setFocus(true);
     }

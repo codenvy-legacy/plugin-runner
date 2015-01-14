@@ -95,22 +95,22 @@
         </g:north>
 
         <g:north size="25">
-            <g:FlowPanel ui:field="memoryPanel1" visible="true" addStyleNames="{style.radioButton}">
+            <g:FlowPanel visible="true" addStyleNames="{style.radioButton}">
                 <!--when the text of RadioButton change is necessary to make changes
                 in the method parseRadioButMemoryValue() of CustomRunViewImpl.class-->
-                <g:RadioButton name="runnerMemory" text="128MB" width="75px" addStyleNames="{style.floatLeft}"/>
-                <g:RadioButton name="runnerMemory" text="256MB" width="75px" addStyleNames="{style.floatLeft}"/>
-                <g:RadioButton name="runnerMemory" text="512MB" width="75px" addStyleNames="{style.floatLeft}"/>
+                <g:RadioButton ui:field="memory128" name="runnerMemory" width="75px" addStyleNames="{style.floatLeft}"/>
+                <g:RadioButton ui:field="memory256" name="runnerMemory" width="75px" addStyleNames="{style.floatLeft}"/>
+                <g:RadioButton ui:field="memory512" name="runnerMemory" width="75px" addStyleNames="{style.floatLeft}"/>
             </g:FlowPanel>
         </g:north>
 
         <g:north size="25">
-            <g:FlowPanel ui:field="memoryPanel2" visible="true" addStyleNames="{style.radioButton}">
+            <g:FlowPanel visible="true" addStyleNames="{style.radioButton}">
                 <!--when the text of RadioButton change is necessary to make changes
                 in the method parseRadioButMemoryValue() of CustomRunViewImpl.class-->
-                <g:RadioButton name="runnerMemory" text="1GB" width="75px" addStyleNames="{style.floatLeft}"/>
-                <g:RadioButton name="runnerMemory" text="2GB" width="75px" addStyleNames="{style.floatLeft}"/>
-                <g:RadioButton name="runnerMemory" text="Other (MB):" ui:field="radioButOther" width="110px"
+                <g:RadioButton ui:field="memory1024" name="runnerMemory" width="75px" addStyleNames="{style.floatLeft}"/>
+                <g:RadioButton ui:field="memory2048" name="runnerMemory" width="75px" addStyleNames="{style.floatLeft}"/>
+                <g:RadioButton ui:field="otherMemory" name="runnerMemory" text="Other (MB):" width="110px"
                                addStyleNames="{style.floatLeft}"/>
                 <g:TextBox ui:field="otherValueMemory" height="12px" width="40px" maxLength="4" addStyleNames="{style.gwt-TextBox}
                                                                                                                {style.floatLeft}"/>

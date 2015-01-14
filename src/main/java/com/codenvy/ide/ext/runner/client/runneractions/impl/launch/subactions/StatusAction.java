@@ -78,9 +78,8 @@ public class StatusAction extends AbstractRunnerAction {
                         EventBus eventBus,
                         RunnerLocalizationConstant locale,
                         RunnerManagerPresenter presenter,
-                        GetLogsAction logsAction,
                         RunnerUtil runnerUtil,
-                        RunnerActionFactory runnerActionFactory,
+                        RunnerActionFactory actionFactory,
                         @Nonnull @Assisted Notification notification) {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
@@ -90,11 +89,11 @@ public class StatusAction extends AbstractRunnerAction {
         this.locale = locale;
         this.presenter = presenter;
         this.view = presenter.getView();
-        this.logsAction = logsAction;
         this.runnerUtil = runnerUtil;
         this.notification = notification;
 
-        checkHealthStatusAction = runnerActionFactory.createCheckHealthStatusAction(notification);
+        this.logsAction = actionFactory.createGetLogs();
+        this.checkHealthStatusAction = actionFactory.createCheckHealthStatus(notification);
 
         addAction(checkHealthStatusAction);
         addAction(logsAction);

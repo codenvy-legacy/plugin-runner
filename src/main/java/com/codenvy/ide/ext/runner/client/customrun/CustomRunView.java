@@ -15,6 +15,7 @@ import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
 import com.google.inject.ImplementedBy;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -34,12 +35,12 @@ public interface CustomRunView extends View<CustomRunView.ActionDelegate> {
     void close();
 
     /**
-     * Sets enabled radio button which matches input value parameter.
+     * Sets enable radio buttons which have memory value less then total memory value for current user.
      *
-     * @param workspaceRam
-     *         ram value for which need enables radio button
+     * @param totalMemory
+     *         total memory value for current user
      */
-    void setEnabledRadioButtons(int workspaceRam);
+    void setEnabledRadioButtons(@Nonnegative int totalMemory);
 
     /**
      * Sets description of custom run environment in special place on view.
@@ -73,12 +74,12 @@ public interface CustomRunView extends View<CustomRunView.ActionDelegate> {
     int getRunnerMemorySize();
 
     /**
-     * Sets runner memory size in special place on view.
+     * Resets state of all radio buttons and sets runner memory size radio button which matches current memory size.
      *
      * @param memorySize
      *         value of memory size
      */
-    void setRunnerMemorySize(@Nonnull String memorySize);
+    void chooseMemorySizeRadioButton(@Nonnull MemorySize memorySize);
 
     /**
      * Returns total memory size from spacial place on view.

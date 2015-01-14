@@ -21,17 +21,14 @@
             height: 30px;
             margin-top: 2px;
             cursor: pointer;
-            border-bottom: 1px dashed #616060;
         }
 
         .innerPanel:active {
-            border-bottom: 1px solid #313335;
         }
 
         .outerPanel {
             width: 25px;
             height: 33px;
-            border-bottom: 1px dashed #616060;
         }
 
         .buttonImage {

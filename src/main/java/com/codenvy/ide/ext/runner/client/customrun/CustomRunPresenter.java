@@ -45,8 +45,6 @@ import java.util.Map;
  */
 public class CustomRunPresenter implements CustomRunView.ActionDelegate {
 
-    private static final String DEFAULT_MEMORY_SIZE = "256MB";
-
     private final CustomRunView              view;
     private final AppContext                 appContext;
     private final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
@@ -153,7 +151,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
                 view.setEnabledRadioButtons(totalMemory);
                 view.setTotalMemorySize(String.valueOf(totalMemory));
                 view.setAvailableMemorySize(String.valueOf(totalMemory - usedMemory));
-                view.setRunnerMemorySize(String.valueOf(DEFAULT_MEMORY_SIZE));
+                view.chooseMemorySizeRadioButton(MemorySize.MEMORY_256);
             }
 
             @Override
@@ -185,7 +183,9 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
             saveOptions();
         }
 
-        boolean isMemoryCorrect = util.isRunnerMemoryCorrect(view.getTotalMemorySize(), view.getRunnerMemorySize());
+        boolean isMemoryCorrect = util.isRunnerMemoryCorrect(view.getTotalMemorySize(),
+                                                             view.getRunnerMemorySize(),
+                                                             view.getAvailableMemorySize());
 
         if (isMemoryCorrect) {
             RunOptions runOptions = dtoFactory.createDto(RunOptions.class);

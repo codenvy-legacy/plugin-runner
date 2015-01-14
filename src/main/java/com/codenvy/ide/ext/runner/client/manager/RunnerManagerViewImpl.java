@@ -22,6 +22,7 @@ import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -113,71 +114,77 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     }
 
     private void initializeTabs() {
-        consoleTab = widgetFactory.createTab(locale.runnerTabConsole());
-        terminalTab = widgetFactory.createTab(locale.runnerTabTerminal());
-
-        consoleTab.setDelegate(new TabWidget.ActionDelegate() {
+        TabWidget.ActionDelegate consoleDelegate = new TabWidget.ActionDelegate() {
             @Override
             public void onMouseClicked() {
                 delegate.onConsoleButtonClicked();
             }
-        });
-        terminalTab.setDelegate(new TabWidget.ActionDelegate() {
+        };
+        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate);
+        consoleTab.select();
+
+        TabWidget.ActionDelegate terminalDelegate = new TabWidget.ActionDelegate() {
             @Override
             public void onMouseClicked() {
                 delegate.onTerminalButtonClicked();
             }
-        });
+        };
+        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate);
+    }
 
-        tabsPanel.add(consoleTab);
-        tabsPanel.add(terminalTab);
+    @Nonnull
+    private TabWidget createTab(@Nonnull String tabName, @Nonnull TabWidget.ActionDelegate actionDelegate) {
+        TabWidget tab = widgetFactory.createTab(tabName);
+        tab.setDelegate(actionDelegate);
 
-        consoleTab.select();
+        tabsPanel.add(tab);
+
+        return tab;
     }
 
     private void initializeButtons() {
-        run = widgetFactory.createButton(resources.runButton());
-        stop = widgetFactory.createButton(resources.stopButton());
-        docker = widgetFactory.createButton(resources.dockerButton());
-        clean = widgetFactory.createButton(resources.cleanButton());
-
-        run.setDisable();
-        stop.setDisable();
-        clean.setDisable();
-        docker.setDisable();
-
-        run.setDelegate(new ButtonWidget.ActionDelegate() {
+        ButtonWidget.ActionDelegate runDelegate = new ButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
                 delegate.onRunButtonClicked();
             }
-        });
+        };
+        run = createButton(resources.runButton(), runDelegate);
 
-        stop.setDelegate(new ButtonWidget.ActionDelegate() {
+        ButtonWidget.ActionDelegate stopDelegate = new ButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
                 delegate.onStopButtonClicked();
             }
-        });
+        };
+        stop = createButton(resources.stopButton(), stopDelegate);
 
-        clean.setDelegate(new ButtonWidget.ActionDelegate() {
+        ButtonWidget.ActionDelegate cleanDelegate = new ButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
                 delegate.onCleanConsoleButtonClicked();
             }
-        });
+        };
+        clean = createButton(resources.cleanButton(), cleanDelegate);
 
-        docker.setDelegate(new ButtonWidget.ActionDelegate() {
+        ButtonWidget.ActionDelegate dockerDelegate = new ButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
                 delegate.onDockerButtonClicked();
             }
-        });
+        };
+        docker = createButton(resources.dockerButton(), dockerDelegate);
+    }
 
-        buttonsPanel.add(run);
-        buttonsPanel.add(stop);
-        buttonsPanel.add(clean);
-        buttonsPanel.add(docker);
+    @Nonnull
+    private ButtonWidget createButton(@Nonnull ImageResource icon, @Nonnull ButtonWidget.ActionDelegate delegate) {
+        ButtonWidget button = widgetFactory.createButton(icon);
+        button.setDelegate(delegate);
+        button.setDisable();
+
+        buttonsPanel.add(button);
+
+        return button;
     }
 
     /** {@inheritDoc} */
@@ -333,7 +340,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         }
 
         console.printDocker(line);
-
     }
 
     /** {@inheritDoc} */

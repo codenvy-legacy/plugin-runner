@@ -17,9 +17,11 @@ import com.codenvy.ide.api.parts.PartPresenter;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.ActionFactory;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.RunAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
@@ -29,10 +31,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.RUN;
-import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.SHOW_DOCKER;
-import static com.codenvy.ide.ext.runner.client.runneractions.ActionType.STOP;
 
 /**
  * The class provides much business logic:
@@ -52,14 +50,14 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final DtoFactory                dtoFactory;
     private final AppContext                appContext;
     private final ModelsFactory             modelsFactory;
-    private final ActionFactory             actionFactory;
+    private final RunnerActionFactory       actionFactory;
     private final Map<Runner, RunnerAction> runActions;
 
     private Runner selectedRunner;
 
     @Inject
     public RunnerManagerPresenter(RunnerManagerView view,
-                                  ActionFactory actionFactory,
+                                  RunnerActionFactory actionFactory,
                                   ModelsFactory modelsFactory,
                                   AppContext appContext,
                                   DtoFactory dtoFactory) {
@@ -69,7 +67,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.actionFactory = actionFactory;
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
-        this.showDockerAction = actionFactory.newInstance(SHOW_DOCKER);
+        this.showDockerAction = actionFactory.createShowDocker();
 
         this.runActions = new HashMap<>();
     }
@@ -127,7 +125,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             runAction.stop();
         }
 
-        actionFactory.createAndPerform(STOP, selectedRunner);
+        StopAction stopAction = actionFactory.createStop();
+        stopAction.perform(selectedRunner);
     }
 
     /** {@inheritDoc} */
@@ -183,7 +182,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         view.addRunner(selectedRunner);
 
-        RunnerAction runnerAction = actionFactory.createAndPerform(RUN, selectedRunner);
+        RunAction runnerAction = actionFactory.createRun();
+        runnerAction.perform(selectedRunner);
 
         runActions.put(selectedRunner, runnerAction);
 

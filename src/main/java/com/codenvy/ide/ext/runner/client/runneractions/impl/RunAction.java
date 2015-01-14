@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
@@ -54,14 +55,14 @@ public class RunAction extends AbstractRunnerAction {
                      RunnerManagerPresenter presenter,
                      Provider<AsyncCallbackBuilder<ApplicationProcessDescriptor>> callbackBuilderProvider,
                      RunnerUtil runnerUtil,
-                     LaunchAction launchAction) {
+                     RunnerActionFactory actionFactory) {
         this.service = service;
         this.appContext = appContext;
         this.locale = locale;
         this.presenter = presenter;
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.runnerUtil = runnerUtil;
-        this.launchAction = launchAction;
+        this.launchAction = actionFactory.createLaunch();
 
         addAction(launchAction);
     }

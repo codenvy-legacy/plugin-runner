@@ -33,9 +33,11 @@ public interface RunnerUtil {
      *         total memory value which accessed current user
      * @param usedMemory
      *         value of memory which used by runner
+     * @param availableMemory
+     *         value of available runner memory
      * @return <code>true</code> memory values are correct,<code>false</code> memory values are incorrect
      */
-    boolean isRunnerMemoryCorrect(@Nonnegative int totalMemory, @Nonnegative int usedMemory);
+    boolean isRunnerMemoryCorrect(@Nonnegative int totalMemory, @Nonnegative int usedMemory, @Nonnegative int availableMemory);
 
     /**
      * Shows warning message using dialog factory.
