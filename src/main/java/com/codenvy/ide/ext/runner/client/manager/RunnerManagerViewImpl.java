@@ -242,7 +242,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 docker.setDisable();
                 break;
 
-            case TIMEOUT:
+            case RUNNING:
+                run.setDisable();
                 break;
 
             case STOPPED:
