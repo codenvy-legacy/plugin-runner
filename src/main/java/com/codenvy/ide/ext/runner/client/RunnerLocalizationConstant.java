@@ -203,4 +203,22 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("runners.panel.title")
     String runnersPanelTitle();
+
+    @Key("tooltip.header")
+    String tooltipHeader();
+
+    @Key("tooltip.body.started")
+    String tooltipBodyStarted();
+
+    @Key("tooltip.body.finished")
+    String tooltipBodyFinished();
+
+    @Key("tooltip.body.timeout")
+    String tooltipBodyTimeout();
+
+    @Key("tooltip.body.time.active")
+    String tooltipBodyTimeActive();
+
+    @Key("tooltip.body.ram")
+    String tooltipBodyRam();
 }

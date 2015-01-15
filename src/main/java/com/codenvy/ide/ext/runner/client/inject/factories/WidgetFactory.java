@@ -16,6 +16,7 @@ import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
+import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.resources.client.ImageResource;
 
 import javax.annotation.Nonnull;
@@ -72,5 +73,13 @@ public interface WidgetFactory {
      */
     @Nonnull
     Terminal createTerminal();
+
+    /**
+     * Creates more info popup widget.
+     *
+     * @return an instance of{@link MoreInfo}
+     */
+    @Nonnull
+    MoreInfo createMoreInfo();
 
 }

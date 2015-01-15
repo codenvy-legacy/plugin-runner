@@ -160,6 +160,14 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void activateTerminal(@Nonnull Runner runner);
 
+    /**
+     * Shows special popup panel which displays additional information about runner.
+     *
+     * @param runner
+     *         runner for which need display additional info
+     */
+    void showMoreInfoPopup(@Nonnull Runner runner);
+
     interface ActionDelegate extends BaseActionDelegate {
 
         /**
@@ -187,6 +195,9 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's choosing to show runner terminal widget. */
         void onTerminalButtonClicked();
+
+        /** Performs some actions in response to user's over mouse on timeout label. */
+        void onMoreInfoBtnMouseOver();
     }
 
 }

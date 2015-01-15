@@ -28,6 +28,8 @@ import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidgetImpl;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.TerminalImpl;
+import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
+import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfoImpl;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 
@@ -55,6 +57,7 @@ public class RunnerGinModule extends AbstractGinModule {
                                              .implement(RunnerWidget.class, RunnerWidgetImpl.class)
                                              .implement(ButtonWidget.class, ButtonWidgetImpl.class)
                                              .implement(TabWidget.class, TabWidgetImpl.class)
+                                             .implement(MoreInfo.class, MoreInfoImpl.class)
                                              .build(WidgetFactory.class));
     }
 }

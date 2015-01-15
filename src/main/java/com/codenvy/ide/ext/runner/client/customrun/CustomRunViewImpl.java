@@ -43,6 +43,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
+import java.util.Map;
 
 import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_1024;
 import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
@@ -100,8 +101,8 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     @UiField(provided = true)
     final RunnerResources            resources;
 
-    private final EnumMap<MemorySize, RadioButton> buttonsMap;
-    private final RunnerEnvironmentTree            rootNode;
+    private final Map<MemorySize, RadioButton> buttonsMap;
+    private final RunnerEnvironmentTree        rootNode;
 
     private ActionDelegate actionDelegate;
     private Tree<Object>   tree;

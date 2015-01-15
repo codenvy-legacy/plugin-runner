@@ -24,6 +24,7 @@
         }
 
         .innerPanel:active {
+            opacity: 0.4;
         }
 
         .outerPanel {

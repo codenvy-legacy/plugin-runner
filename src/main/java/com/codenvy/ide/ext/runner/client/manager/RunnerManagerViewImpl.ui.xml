@@ -60,12 +60,13 @@
 
         .timeoutLabel {
             color: #dbdbdb;
-            margin-right: 120px;
+            margin-right: 12px;
             float: right;
             margin-top: 2px;
         }
 
         .timeLabel {
+            color: #0090e4;
             margin-right: 12px;
             float: right;
             margin-top: 1px;
@@ -78,6 +79,7 @@
         }
 
         .moreIcon {
+            cursor: pointer;
             float: right;
             margin-top: 4px;
             margin-right: 6px;
@@ -107,7 +109,7 @@
                     <!--app info panel-->
                     <g:south size="20">
                         <g:FlowPanel addStyleNames="{style.appInfoPanel}">
-                            <g:FlowPanel>
+                            <g:FlowPanel ui:field="moreInfoPanel">
                                 <g:Label text="{locale.runnerLabelApplicationInfo}" addStyleNames="{style.applicationLabel}
                                                                                                    {resources.runnerCss.fontSizeTen}"/>
                                 <g:Label ui:field="appReference" addStyleNames="{style.appRefLabel}
@@ -115,11 +117,11 @@
                             </g:FlowPanel>
 
                             <g:FlowPanel>
-                                <g:Image ui:field="moreInfo" resource="{resources.moreIcon}" addStyleNames="{style.moreIcon}"/>
+                                <g:Image ui:field="moreInfoImage" resource="{resources.moreIcon}" addStyleNames="{style.moreIcon}"/>
+                                <g:Label ui:field="timeout" text="07m 21s" addStyleNames="{style.timeLabel}
+                                                                           {resources.runnerCss.fontSizeTen}"/>
                                 <g:Label text="{locale.runnerLabelTimeoutInfo}" addStyleNames="{style.timeoutLabel}
                                                                                                {resources.runnerCss.fontSizeTen}"/>
-                                <g:Label ui:field="timeout" addStyleNames="{style.timeLabel}
-                                                                           {resources.runnerCss.fontSizeTen}"/>
                             </g:FlowPanel>
                         </g:FlowPanel>
                     </g:south>

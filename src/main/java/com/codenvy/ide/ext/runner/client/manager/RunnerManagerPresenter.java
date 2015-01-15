@@ -159,6 +159,12 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     /** {@inheritDoc} */
     @Override
+    public void onMoreInfoBtnMouseOver() {
+        view.showMoreInfoPopup(selectedRunner);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void launchRunner() {
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {

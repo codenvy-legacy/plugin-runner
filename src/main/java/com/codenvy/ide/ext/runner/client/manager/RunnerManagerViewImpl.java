@@ -21,7 +21,10 @@ import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
+import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -30,6 +33,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -47,6 +51,9 @@ import java.util.Map;
  */
 public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView,
                                                                                                  RunnerWidget.ActionDelegate {
+    private static final String GWT_POPUP_STANDARD_STYLE = "gwt-PopupPanel";
+    private static final int    SHIFT_LEFT               = 100;
+    private static final int    SHIFT_TOP                = 130;
 
     @Singleton
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
@@ -65,9 +72,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @UiField
     Label appReference;
     @UiField
-    Label timeout;
+    Label timeout; //TODO need set value of timer in this label. Now timeout value is hardcoded
     @UiField
-    Image moreInfo;
+    Image moreInfoImage;
 
     @UiField(provided = true)
     final RunnerResources            resources;
@@ -78,6 +85,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private final Map<Runner, Console>      consoles;
     private final Map<Runner, Terminal>     terminals;
     private final Map<Runner, RunnerWidget> runnerWidgets;
+    private final PopupPanel                popupPanel;
+    private final MoreInfo                  moreInfoWidget;
 
     private TabWidget consoleTab;
     private TabWidget terminalTab;
@@ -94,7 +103,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                                  RunnerManagerViewImplUiBinder uiBinder,
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locale,
-                                 WidgetFactory widgetFactory) {
+                                 WidgetFactory widgetFactory,
+                                 PopupPanel popupPanel) {
         super(partStackUIResources);
 
         this.resources = resources;
@@ -107,6 +117,11 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
         this.runnerWidgets = new HashMap<>();
+        this.moreInfoWidget = widgetFactory.createMoreInfo();
+
+        this.popupPanel = popupPanel;
+        this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
+        this.popupPanel.add(moreInfoWidget);
 
         initializeTabs();
 
@@ -431,8 +446,34 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void showMoreInfoPopup(@Nonnull Runner runner) {
+        moreInfoWidget.update(runner);
+
+        int x = timeout.getAbsoluteLeft() - SHIFT_LEFT;
+        int y = timeout.getAbsoluteTop() - SHIFT_TOP;
+
+        popupPanel.setPopupPosition(x, y);
+        popupPanel.show();
+    }
+
     @UiHandler("appReference")
     public void onAppReferenceClicked(@SuppressWarnings("UnusedParameters") ClickEvent clickEvent) {
         Window.open(url, "_blank", "");
+    }
+
+    @UiHandler("moreInfoImage")
+    public void onMoreInfoMouseOver(@SuppressWarnings("UnusedParameters") MouseOverEvent event) {
+        moreInfoImage.addStyleName(resources.runnerCss().opacityButton());
+
+        delegate.onMoreInfoBtnMouseOver();
+    }
+
+    @UiHandler("moreInfoImage")
+    public void onMoreInfoMouseOut(@SuppressWarnings("UnusedParameters") MouseOutEvent event) {
+        moreInfoImage.removeStyleName(resources.runnerCss().opacityButton());
+
+        popupPanel.hide();
     }
 }
