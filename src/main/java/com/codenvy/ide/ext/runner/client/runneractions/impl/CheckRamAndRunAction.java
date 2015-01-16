@@ -37,15 +37,15 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 /**
- * This action executes a request on the server side for getting resources of project. These resources are used for running a runner with
- * the custom memory size.
+ * This action executes a request on the server side for getting resources of project. These resources are used for checking RAM and
+ * running a runner with the custom memory size. Action uses {@link RunAction}
  *
  * @author Artem Zatsarynnyy
  * @author Andrey Parfonov
  * @author Roman Nikitenko
  * @author Valeriy Svydenko
  */
-public class CheckRamAction extends AbstractRunnerAction {
+public class CheckRamAndRunAction extends AbstractRunnerAction {
     private final RunnerServiceClient                                 service;
     private final AppContext                                          appContext;
     private final DialogFactory                                       dialogFactory;
@@ -59,13 +59,13 @@ public class CheckRamAction extends AbstractRunnerAction {
     private Runner              runner;
 
     @Inject
-    public CheckRamAction(RunnerServiceClient service,
-                          AppContext appContext,
-                          DialogFactory dialogFactory,
-                          Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
-                          RunnerLocalizationConstant constant,
-                          RunnerUtil runnerUtil,
-                          RunnerActionFactory actionFactory) {
+    public CheckRamAndRunAction(RunnerServiceClient service,
+                                AppContext appContext,
+                                DialogFactory dialogFactory,
+                                Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
+                                RunnerLocalizationConstant constant,
+                                RunnerUtil runnerUtil,
+                                RunnerActionFactory actionFactory) {
         this.service = service;
         this.appContext = appContext;
         this.callbackBuilderProvider = callbackBuilderProvider;
@@ -122,13 +122,11 @@ public class CheckRamAction extends AbstractRunnerAction {
         if (overrideMemory > 0) {
             if (!isOverrideMemoryCorrect(totalMemory, usedMemory, overrideMemory)) {
                 runner.setAppLaunchStatus(false);
-
                 return;
             }
 
             if (overrideMemory < requiredMemory) {
                 runProjectWithRequiredMemory(requiredMemory, overrideMemory);
-
                 return;
             }
 
@@ -158,24 +156,6 @@ public class CheckRamAction extends AbstractRunnerAction {
         initializeRunnerConfiguration(projectDescriptor);
 
         return runner.getRAM();
-
-        //TODO check is this code needs for us
-                                                    /*else {
-                                                        if (runners != null) {
-                                                            runnerConfiguration = runners.getConfigs().get(runners.getDefault());
-                                                        }
-                                                        if (preferencesManager != null &&
-                                                            preferencesManager.getValue(PREFS_RUNNER_RAM_SIZE_DEFAUL) !=
-                                                            null) {
-                                                            try {
-                                                                overrideMemory =
-                                                                        Integer.parseInt(preferencesManager.getValue(
-                                                                                RunnerExtension.PREFS_RUNNER_RAM_SIZE_DEFAULT));
-                                                            } catch (NumberFormatException e) {
-                                                                //do nothing
-                                                            }
-                                                        }
-                                                    }*/
     }
 
     private void initializeRunnerConfiguration(@Nonnull ProjectDescriptor projectDescriptor) {

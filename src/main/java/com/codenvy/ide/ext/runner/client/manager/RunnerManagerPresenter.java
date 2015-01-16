@@ -20,7 +20,7 @@ import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.RunAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -45,13 +45,13 @@ import java.util.Map;
 @Singleton
 public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
 
-    private final RunnerManagerView         view;
-    private final RunnerAction              showDockerAction;
-    private final DtoFactory                dtoFactory;
-    private final AppContext                appContext;
-    private final ModelsFactory             modelsFactory;
-    private final RunnerActionFactory       actionFactory;
-    private final Map<Runner, RunnerAction> runActions;
+    private final RunnerManagerView                 view;
+    private final RunnerAction                      showDockerAction;
+    private final DtoFactory                        dtoFactory;
+    private final AppContext                        appContext;
+    private final ModelsFactory                     modelsFactory;
+    private final RunnerActionFactory               actionFactory;
+    private final Map<Runner, CheckRamAndRunAction> checkRamAndRunActions;
 
     private Runner selectedRunner;
 
@@ -69,7 +69,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.appContext = appContext;
         this.showDockerAction = actionFactory.createShowDocker();
 
-        this.runActions = new HashMap<>();
+        this.checkRamAndRunActions = new HashMap<>();
     }
 
     /** @return the GWT widget that is controlled by the presenter */
@@ -108,21 +108,21 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRunButtonClicked() {
-        RunnerAction runnerAction = runActions.get(selectedRunner);
-        if (runnerAction == null) {
+        CheckRamAndRunAction checkRamAndRunAction = checkRamAndRunActions.get(selectedRunner);
+        if (checkRamAndRunAction == null) {
             return;
         }
 
-        runnerAction.perform(selectedRunner);
+        checkRamAndRunAction.perform(selectedRunner);
         update(selectedRunner);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onStopButtonClicked() {
-        RunnerAction runAction = runActions.get(selectedRunner);
-        if (runAction != null) {
-            runAction.stop();
+        CheckRamAndRunAction checkRamAndRunAction = checkRamAndRunActions.get(selectedRunner);
+        if (checkRamAndRunAction != null) {
+            checkRamAndRunAction.stop();
         }
 
         StopAction stopAction = actionFactory.createStop();
@@ -188,10 +188,10 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         view.addRunner(selectedRunner);
 
-        RunAction runnerAction = actionFactory.createRun();
-        runnerAction.perform(selectedRunner);
+        CheckRamAndRunAction checkRamAndRunAction = actionFactory.createCheckRamAndRun();
+        checkRamAndRunAction.perform(selectedRunner);
 
-        runActions.put(selectedRunner, runnerAction);
+        checkRamAndRunActions.put(selectedRunner, checkRamAndRunAction);
 
         update(selectedRunner);
     }

@@ -11,9 +11,8 @@
 package com.codenvy.ide.ext.runner.client.inject.factories;
 
 import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.GetResourceAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.RunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
@@ -29,7 +28,8 @@ import javax.annotation.Nonnull;
  * The factory for creating sub-actions for Launch action.
  *
  * @author Andrey Plotnikov
- * @@author Dmitry Shnurenko
+ * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public interface RunnerActionFactory {
 
@@ -65,17 +65,13 @@ public interface RunnerActionFactory {
     @Nonnull
     LaunchAction createLaunch();
 
-    /** @return an instance of {@link CheckRamAction} */
+    /** @return an instance of {@link CheckRamAndRunAction} */
     @Nonnull
-    CheckRamAction createCheckRam();
+    CheckRamAndRunAction createCheckRamAndRun();
 
     /** @return an instance of {@link GetLogsAction} */
     @Nonnull
     GetLogsAction createGetLogs();
-
-    /** @return an instance of {@link GetResourceAction} */
-    @Nonnull
-    GetResourceAction getResource();
 
     /** @return an instance of {@link GetRunningProcessesAction} */
     @Nonnull
