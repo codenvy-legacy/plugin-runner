@@ -15,6 +15,9 @@ import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.api.runner.dto.RunnerMetric;
 import com.codenvy.api.runner.gwt.client.utils.RunnerUtils;
+import com.codenvy.ide.util.StringUtils;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
@@ -24,6 +27,7 @@ import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.Objects;
 
+import static com.codenvy.api.runner.ApplicationStatus.NEW;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_RUNNER_RECIPE;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_STOP;
@@ -126,6 +130,90 @@ public class RunnerImpl implements Runner {
     @Override
     public long getCreationTime() {
         return creationData.getTime();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nonnull
+    public String getTimeout() {
+        RunnerMetric timeoutMetric = getRunnerMetricByName(RunnerMetric.TERMINATION_TIME);
+
+        if (timeoutMetric != null) {
+            return getTimeOut(timeoutMetric);
+        }
+
+        RunnerMetric lifeTimeMetric = getRunnerMetricByName(RunnerMetric.LIFETIME);
+
+        if (lifeTimeMetric != null && NEW.equals(descriptor.getStatus())) {
+            return getLifeTime(lifeTimeMetric);
+        }
+
+        return "";
+    }
+
+    @Nonnull
+    private String getTimeOut(@Nonnull RunnerMetric timeoutMetric) {
+        String timeout = timeoutMetric.getValue();
+
+        if (RunnerMetric.ALWAYS_ON.equals(timeout)) {
+            return timeout;
+        }
+
+        if (timeout == null) {
+            return "";
+        }
+
+        double terminationTime = NumberFormat.getDecimalFormat().parse(timeout);
+        double terminationTimeout = terminationTime - System.currentTimeMillis();
+
+        if (terminationTimeout <= 0) {
+            return "";
+        }
+
+        return StringUtils.timeMlsToHumanReadable((long)terminationTimeout);
+    }
+
+    @Nonnull
+    private String getLifeTime(@Nonnull RunnerMetric lifeTimeMetric) {
+        String lifeTimeValue = lifeTimeMetric.getValue();
+
+        if (RunnerMetric.ALWAYS_ON.equals(lifeTimeValue)) {
+            return lifeTimeValue;
+        }
+
+        if (lifeTimeValue == null) {
+            return "";
+        }
+        double lifeTime = NumberFormat.getDecimalFormat().parse(lifeTimeValue);
+
+        return StringUtils.timeMlsToHumanReadable((long)lifeTime);
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String getTotalTime() {
+        return StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationData.getTime()) / 1000);
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String getStopTime() {
+        RunnerMetric stopTimeMetric = getRunnerMetricByName(RunnerMetric.STOP_TIME);
+
+        if (stopTimeMetric == null) {
+            return "";
+        }
+
+        String stopTime = stopTimeMetric.getValue();
+
+        if (stopTime == null) {
+            return "";
+        }
+        double stopTimeMls = NumberFormat.getDecimalFormat().parse(stopTime);
+
+        return DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss").format(new Date((long)stopTimeMls));
     }
 
     /** {@inheritDoc} */
@@ -285,9 +373,8 @@ public class RunnerImpl implements Runner {
         return descriptor.getProcessId();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public RunnerMetric getRunnerMetricByName(@Nonnull String name) {
+    @Nullable
+    private RunnerMetric getRunnerMetricByName(@Nonnull String name) {
         if (descriptor == null) {
             return null;
         }

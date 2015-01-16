@@ -47,11 +47,13 @@
 
         .firstPanel {
             float: left;
+            width: 100%;
             margin-top: 3px;
         }
 
         .secondPanel {
             float: left;
+            width: 100%;
         }
 
         .arrow::after {

@@ -61,7 +61,7 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        this.startDateFormatter = DateTimeFormat.getFormat("dd-MM-yy HH:mm");
+        this.startDateFormatter = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss");
     }
 
     /** {@inheritDoc} */
@@ -69,10 +69,15 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
     public void update(@Nonnull Runner runner) {
         started.setText(startDateFormatter.format(new Date(runner.getCreationTime())));
 
-        //TODO need understand what time value to set
-        finished.setText("--/--/--");
-        timeout.setText("08m 25s");
-        activeTime.setText("01m 35s");
+        String stopTime = runner.getStopTime();
+
+        finished.setText(stopTime.isEmpty() ? "--/--/--" : stopTime);
+
+        boolean isAlive = runner.isAlive();
+
+        timeout.setText(isAlive ? runner.getTimeout() : "--/--/--");
+        activeTime.setText(isAlive ? runner.getTotalTime() : "--/--/--");
+
         //TODO need set memory size from runner options
         ram.setText("256MB");
     }

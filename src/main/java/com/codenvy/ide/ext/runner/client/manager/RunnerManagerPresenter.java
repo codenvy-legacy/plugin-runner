@@ -23,6 +23,7 @@ import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -45,6 +46,8 @@ import java.util.Map;
 @Singleton
 public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
 
+    private static final int INTERVAL = 1_000; //1 sec
+
     private final RunnerManagerView                 view;
     private final RunnerAction                      showDockerAction;
     private final DtoFactory                        dtoFactory;
@@ -52,11 +55,12 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final ModelsFactory                     modelsFactory;
     private final RunnerActionFactory               actionFactory;
     private final Map<Runner, CheckRamAndRunAction> checkRamAndRunActions;
+    private final Timer                             runnerTimer;
 
     private Runner selectedRunner;
 
     @Inject
-    public RunnerManagerPresenter(RunnerManagerView view,
+    public RunnerManagerPresenter(final RunnerManagerView view,
                                   RunnerActionFactory actionFactory,
                                   ModelsFactory modelsFactory,
                                   AppContext appContext,
@@ -70,6 +74,20 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.showDockerAction = actionFactory.createShowDocker();
 
         this.checkRamAndRunActions = new HashMap<>();
+
+        this.runnerTimer = new Timer() {
+            @Override
+            public void run() {
+                boolean isRunnerAlive = selectedRunner.isAlive();
+
+                view.setTimeout(isRunnerAlive ? selectedRunner.getTimeout() : "--/--/--");
+
+                view.updateMoreInfoPopup(selectedRunner);
+
+                this.schedule(INTERVAL);
+            }
+        };
+
     }
 
     /** @return the GWT widget that is controlled by the presenter */
@@ -127,6 +145,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         StopAction stopAction = actionFactory.createStop();
         stopAction.perform(selectedRunner);
+
+        view.updateMoreInfoPopup(selectedRunner);
     }
 
     /** {@inheritDoc} */
@@ -186,6 +206,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private void launchRunner(@Nonnull Runner runner) {
         selectedRunner = runner;
 
+        runnerTimer.schedule(INTERVAL);
         view.addRunner(selectedRunner);
 
         CheckRamAndRunAction checkRamAndRunAction = actionFactory.createCheckRamAndRun();

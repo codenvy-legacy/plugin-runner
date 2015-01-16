@@ -13,7 +13,6 @@ package com.codenvy.ide.ext.runner.client.models;
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
-import com.codenvy.api.runner.dto.RunnerMetric;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -55,6 +54,18 @@ public interface Runner {
 
     /** @return the date when this runner was launched */
     long getCreationTime();
+
+    /** @return string representation of runner timeout */
+    @Nonnull
+    String getTimeout();
+
+    /** @return string representation of runner active time */
+    @Nonnull
+    String getTotalTime();
+
+    /** @return string representation of time when runner was stopped */
+    @Nonnull
+    String getStopTime();
 
     /** @return id of the environment */
     @Nonnull
@@ -146,10 +157,6 @@ public interface Runner {
 
     /** @return id of process that was bound with this runner */
     long getProcessId();
-
-    /** @return metric of runner's stats by name */
-    @Nullable
-    RunnerMetric getRunnerMetricByName(@Nonnull String name);
 
     /** @return options of a runner */
     @Nonnull

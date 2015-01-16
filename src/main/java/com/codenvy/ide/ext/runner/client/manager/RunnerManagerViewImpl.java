@@ -299,8 +299,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void setTimeout(@Nonnull String timeout) {
-
+    public void setTimeout(@Nonnull String timeoutValue) {
+        timeout.setText(timeoutValue);
     }
 
     /** {@inheritDoc} */
@@ -456,6 +456,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
         popupPanel.setPopupPosition(x, y);
         popupPanel.show();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateMoreInfoPopup(@Nonnull Runner runner) {
+        moreInfoWidget.update(runner);
     }
 
     @UiHandler("appReference")

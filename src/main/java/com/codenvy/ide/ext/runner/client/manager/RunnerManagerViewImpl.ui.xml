@@ -118,7 +118,7 @@
 
                             <g:FlowPanel>
                                 <g:Image ui:field="moreInfoImage" resource="{resources.moreIcon}" addStyleNames="{style.moreIcon}"/>
-                                <g:Label ui:field="timeout" text="07m 21s" addStyleNames="{style.timeLabel}
+                                <g:Label ui:field="timeout" addStyleNames="{style.timeLabel}
                                                                            {resources.runnerCss.fontSizeTen}"/>
                                 <g:Label text="{locale.runnerLabelTimeoutInfo}" addStyleNames="{style.timeoutLabel}
                                                                                                {resources.runnerCss.fontSizeTen}"/>

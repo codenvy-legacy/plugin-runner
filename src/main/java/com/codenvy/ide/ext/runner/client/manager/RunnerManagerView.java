@@ -168,6 +168,14 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void showMoreInfoPopup(@Nonnull Runner runner);
 
+    /**
+     * Updates special popup window which contains info about current runner.
+     *
+     * @param runner
+     *         runner for which need update info
+     */
+    void updateMoreInfoPopup(@Nonnull Runner runner);
+
     interface ActionDelegate extends BaseActionDelegate {
 
         /**

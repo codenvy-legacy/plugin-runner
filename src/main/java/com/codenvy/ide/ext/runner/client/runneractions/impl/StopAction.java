@@ -104,7 +104,7 @@ public class StopAction extends AbstractRunnerAction {
                 .success(new SuccessCallback<ApplicationProcessDescriptor>() {
                     @Override
                     public void onSuccess(ApplicationProcessDescriptor result) {
-                        processStoppedMessage();
+                        processStoppedMessage(result);
                     }
                 })
                 .failure(new FailureCallback() {
@@ -126,10 +126,11 @@ public class StopAction extends AbstractRunnerAction {
         service.stop(stopLink, callback);
     }
 
-    private void processStoppedMessage() {
+    private void processStoppedMessage(@Nonnull ApplicationProcessDescriptor descriptor) {
         runner.setAppRunningStatus(false);
         runner.setAppLaunchStatus(false);
         runner.setAliveStatus(false);
+        runner.setProcessDescriptor(descriptor);
 
         project.setIsRunningEnabled(true);
         project.setProcessDescriptor(null);
