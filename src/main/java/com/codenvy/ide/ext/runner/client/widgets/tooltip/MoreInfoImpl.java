@@ -29,6 +29,7 @@ import java.util.Date;
  * Class provides view representation of panel which contains additional information about runner.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class MoreInfoImpl extends Composite implements MoreInfo {
 
@@ -78,7 +79,6 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
         timeout.setText(isAlive ? runner.getTimeout() : "--/--/--");
         activeTime.setText(isAlive ? runner.getTotalTime() : "--/--/--");
 
-        //TODO need set memory size from runner options
-        ram.setText("256MB");
+        ram.setText(runner.getRAM() + "MB");
     }
 }

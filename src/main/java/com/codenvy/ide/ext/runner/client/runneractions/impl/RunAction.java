@@ -84,7 +84,7 @@ public class RunAction extends AbstractRunnerAction {
                     @Override
                     public void onSuccess(ApplicationProcessDescriptor descriptor) {
                         runner.setProcessDescriptor(descriptor);
-                        // TODO it seems it isn't logical to set descriptor into project
+                        runner.setRAM(descriptor.getMemorySize());
                         project.setProcessDescriptor(descriptor);
 
                         launchAction.perform(runner);
