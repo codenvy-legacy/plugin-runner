@@ -68,16 +68,12 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
-        started.setText(startDateFormatter.format(new Date(runner.getCreationTime())));
+        String startedTime = startDateFormatter.format(new Date(runner.getCreationTime()));
 
-        String stopTime = runner.getStopTime();
-
-        finished.setText(stopTime.isEmpty() ? "--/--/--" : stopTime);
-
-        boolean isAlive = runner.isAlive();
-
-        timeout.setText(isAlive ? runner.getTimeout() : "--/--/--");
-        activeTime.setText(isAlive ? runner.getTotalTime() : "--/--/--");
+        started.setText(startedTime);
+        finished.setText(runner.getStopTime());
+        timeout.setText(runner.getTimeout());
+        activeTime.setText(runner.getTotalTime());
 
         ram.setText(runner.getRAM() + "MB");
     }

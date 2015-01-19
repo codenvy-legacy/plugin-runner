@@ -55,6 +55,9 @@ public interface Runner {
     /** @return the date when this runner was launched */
     long getCreationTime();
 
+    /** Sets current time as runner creation time. It needs when we restart runner to display correct runner active time. */
+    void resetCreationTime();
+
     /** @return string representation of runner timeout */
     @Nonnull
     String getTimeout();

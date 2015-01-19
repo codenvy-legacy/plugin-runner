@@ -40,6 +40,7 @@ import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
  */
 public class RunnerImpl implements Runner {
 
+    private static final String TIMER_STUB    = "--/--/--";
     private static final String RUNNER_NAME   = "Runner ";
     private static       int    RUNNER_NUMBER = 1;
 
@@ -48,7 +49,7 @@ public class RunnerImpl implements Runner {
 
     private ApplicationProcessDescriptor descriptor;
     private Status                       status;
-    private Date                         creationData;
+    private long                         creationTime;
     private int                          ram;
     private boolean                      isAlive;
     private boolean                      isAnyAppRunning;
@@ -83,7 +84,7 @@ public class RunnerImpl implements Runner {
         this.isConsoleActive = true;
         this.status = Status.IN_QUEUE;
 
-        creationData = new Date();
+        creationTime = System.currentTimeMillis();
         RUNNER_NUMBER++;
     }
 
@@ -129,13 +130,23 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Override
     public long getCreationTime() {
-        return creationData.getTime();
+        return creationTime;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void resetCreationTime() {
+        this.creationTime = System.currentTimeMillis();
     }
 
     /** {@inheritDoc} */
     @Override
     @Nonnull
     public String getTimeout() {
+        if (!isAlive) {
+            return TIMER_STUB;
+        }
+
         RunnerMetric timeoutMetric = getRunnerMetricByName(RunnerMetric.TERMINATION_TIME);
 
         if (timeoutMetric != null) {
@@ -193,13 +204,17 @@ public class RunnerImpl implements Runner {
     @Nonnull
     @Override
     public String getTotalTime() {
-        return StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationData.getTime()) / 1000);
+        return isAlive ? StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationTime) / 1000) : TIMER_STUB;
     }
 
     /** {@inheritDoc} */
     @Nonnull
     @Override
     public String getStopTime() {
+        if (isAlive) {
+            return TIMER_STUB;
+        }
+
         RunnerMetric stopTimeMetric = getRunnerMetricByName(RunnerMetric.STOP_TIME);
 
         if (stopTimeMetric == null) {

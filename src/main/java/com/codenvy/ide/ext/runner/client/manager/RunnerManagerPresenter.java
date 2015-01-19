@@ -78,16 +78,18 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.runnerTimer = new Timer() {
             @Override
             public void run() {
-                boolean isRunnerAlive = selectedRunner.isAlive();
-
-                view.setTimeout(isRunnerAlive ? selectedRunner.getTimeout() : "--/--/--");
-
-                view.updateMoreInfoPopup(selectedRunner);
+                updateRunnerTimer();
 
                 this.schedule(INTERVAL);
             }
         };
 
+    }
+
+    private void updateRunnerTimer(){
+        view.setTimeout(selectedRunner.getTimeout());
+
+        view.updateMoreInfoPopup(selectedRunner);
     }
 
     /** @return the GWT widget that is controlled by the presenter */
@@ -115,6 +117,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.selectedRunner = runner;
 
         update(selectedRunner);
+        updateRunnerTimer();
 
         if (runner.isConsoleActive()) {
             view.activateConsole(selectedRunner);
@@ -133,6 +136,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         checkRamAndRunAction.perform(selectedRunner);
         update(selectedRunner);
+
+        selectedRunner.resetCreationTime();
     }
 
     /** {@inheritDoc} */
@@ -206,13 +211,15 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private void launchRunner(@Nonnull Runner runner) {
         selectedRunner = runner;
 
-        runnerTimer.schedule(INTERVAL);
         view.addRunner(selectedRunner);
 
         CheckRamAndRunAction checkRamAndRunAction = actionFactory.createCheckRamAndRun();
         checkRamAndRunAction.perform(selectedRunner);
 
         checkRamAndRunActions.put(selectedRunner, checkRamAndRunAction);
+
+        runner.resetCreationTime();
+        runnerTimer.schedule(INTERVAL);
 
         update(selectedRunner);
     }
