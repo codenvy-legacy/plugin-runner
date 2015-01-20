@@ -90,12 +90,14 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     /** {@inheritDoc} */
     @Override
     public void select() {
+        removeStyleName(resources.runnerCss().runnerShadow());
         addStyleName(resources.runnerCss().runnerWidgetBorders());
     }
 
     /** {@inheritDoc} */
     @Override
     public void unSelect() {
+        addStyleName(resources.runnerCss().runnerShadow());
         removeStyleName(resources.runnerCss().runnerWidgetBorders());
     }
 

@@ -17,12 +17,13 @@
 
     <ui:style>
         .runnerSize {
+            direction: ltr;
+            width: calc(100% + 1px);
+            height: 35px;
+            cursor: pointer;
             overflow: hidden;
             text-overflow: clip;
             white-space: nowrap;
-            cursor: pointer;
-            width: 150px;
-            height: 35px;
             margin-left: 5px;
         }
 

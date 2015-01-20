@@ -19,14 +19,24 @@
     <ui:with field="locale" type="com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant"/>
 
     <ui:style>
-        .runnerPanels {
-            border-right: 1px solid #000000;
+        .scrollPanel {
+            height: 100%;
+            width: 100%;
             background: #313131;
+            direction: rtl;
+        }
+
+        .runnerPanels {
+            width: calc(100% + 1px);
+            height: 178px;
+            margin-left: 5px;
+            background: #313131;
+            border-right: 1px solid #000000 !important;
         }
 
         .buttonsPanel {
             width: 25px;
-            border-left: 4px solid #474747;
+            border-left: 4px solid #4d4d4d;
             background: #313131;
             border-right: 1px solid #000000;
         }
@@ -87,57 +97,56 @@
         }
     </ui:style>
 
-    <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
+    <g:SplitLayoutPanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize}">
         <!--runners panel-->
-        <g:west size="150">
-            <g:FlowPanel ui:field="runnersPanel" addStyleNames="{style.runnerPanels}"/>
-        </g:west>
-
-        <!--buttons panel-->
-        <g:west size="30">
-            <g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}"/>
+        <g:west size="160">
+            <g:ScrollPanel ui:field="scrollPanel" addStyleNames="{style.scrollPanel}">
+                <g:FlowPanel ui:field="runnersPanel" addStyleNames="{style.runnerPanels}"/>
+            </g:ScrollPanel>
         </g:west>
 
         <g:center>
-            <g:FlowPanel>
+            <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
 
-                <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
-                    <!--tabs panel-->
-                    <g:north size="25">
-                        <g:FlowPanel ui:field="tabsPanel" addStyleNames="{style.tabsPanel}"/>
-                    </g:north>
+                <!--buttons panel-->
+                <g:west size="30">
+                    <g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}"/>
+                </g:west>
 
-                    <!--app info panel-->
-                    <g:south size="20">
-                        <g:FlowPanel addStyleNames="{style.appInfoPanel}">
-                            <g:FlowPanel ui:field="moreInfoPanel">
-                                <g:Label text="{locale.runnerLabelApplicationInfo}" addStyleNames="{style.applicationLabel}
+                <!--tabs panel-->
+                <g:north size="25">
+                    <g:FlowPanel ui:field="tabsPanel" addStyleNames="{style.tabsPanel}"/>
+                </g:north>
+
+                <!--app info panel-->
+                <g:south size="20">
+                    <g:FlowPanel addStyleNames="{style.appInfoPanel}">
+                        <g:FlowPanel ui:field="moreInfoPanel">
+                            <g:Label text="{locale.runnerLabelApplicationInfo}" addStyleNames="{style.applicationLabel}
                                                                                                    {resources.runnerCss.fontSizeTen}"/>
-                                <g:Label ui:field="appReference" addStyleNames="{style.appRefLabel}
+                            <g:Label ui:field="appReference" addStyleNames="{style.appRefLabel}
                                                                                 {resources.runnerCss.fontSizeTen}"/>
-                            </g:FlowPanel>
-
-                            <g:FlowPanel>
-                                <g:Image ui:field="moreInfoImage" resource="{resources.moreIcon}" addStyleNames="{style.moreIcon}"/>
-
-                                <g:FlowPanel addStyleNames="{style.timeLabel}">
-                                    <g:Label ui:field="timeout" addStyleNames="{resources.runnerCss.fontSizeTen}"/>
-                                </g:FlowPanel>
-
-                                <g:Label text="{locale.runnerLabelTimeoutInfo}" addStyleNames="{style.timeoutLabel}
-                                                                                               {resources.runnerCss.fontSizeTen}"/>
-                            </g:FlowPanel>
                         </g:FlowPanel>
-                    </g:south>
 
-                    <!--print panel-->
-                    <g:center>
-                        <g:FlowPanel ui:field="textArea" addStyleNames="{style.textArea}"/>
-                    </g:center>
-                </g:DockLayoutPanel>
+                        <g:FlowPanel>
+                            <g:Image ui:field="moreInfoImage" resource="{resources.moreIcon}" addStyleNames="{style.moreIcon}"/>
 
-            </g:FlowPanel>
+                            <g:FlowPanel addStyleNames="{style.timeLabel}">
+                                <g:Label ui:field="timeout" addStyleNames="{resources.runnerCss.fontSizeTen}"/>
+                            </g:FlowPanel>
+
+                            <g:Label text="{locale.runnerLabelTimeoutInfo}" addStyleNames="{style.timeoutLabel}
+                                                                                               {resources.runnerCss.fontSizeTen}"/>
+                        </g:FlowPanel>
+                    </g:FlowPanel>
+                </g:south>
+
+                <!--print panel-->
+                <g:center>
+                    <g:FlowPanel ui:field="textArea" addStyleNames="{style.textArea}"/>
+                </g:center>
+            </g:DockLayoutPanel>
         </g:center>
-    </g:DockLayoutPanel>
+    </g:SplitLayoutPanel>
 
 </ui:UiBinder>

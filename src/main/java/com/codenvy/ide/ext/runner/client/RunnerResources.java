@@ -126,6 +126,10 @@ public interface RunnerResources extends ClientBundle {
         String blueColor();
 
         String opacityButton();
+
+        String splitter();
+
+        String runnerShadow();
     }
 
 }

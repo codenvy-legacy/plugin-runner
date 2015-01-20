@@ -34,6 +34,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -52,15 +54,25 @@ import java.util.Map;
 public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView,
                                                                                                  RunnerWidget.ActionDelegate {
     private static final String GWT_POPUP_STANDARD_STYLE = "gwt-PopupPanel";
-    private static final int    SHIFT_LEFT               = 100;
-    private static final int    SHIFT_TOP                = 130;
+    private static final String SPLITTER_STYLE_NAME      = "gwt-SplitLayoutPanel-HDragger";
+
+    private static final int SHIFT_LEFT     = 100;
+    private static final int SHIFT_TOP      = 130;
+    private static final int SPLITTER_WIDTH = 2;
 
     @Singleton
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
     }
 
+    @UiField(provided = true)
+    SplitLayoutPanel mainPanel;
+
+    //runners panel
     @UiField
-    FlowPanel runnersPanel;
+    FlowPanel   runnersPanel;
+    @UiField
+    ScrollPanel scrollPanel;
+
     @UiField
     FlowPanel buttonsPanel;
     @UiField
@@ -72,7 +84,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @UiField
     Label appReference;
     @UiField
-    Label timeout; //TODO need set value of timer in this label. Now timeout value is hardcoded
+    Label timeout;
     @UiField
     Image moreInfoImage;
 
@@ -110,9 +122,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.resources = resources;
         this.locale = locale;
         this.widgetFactory = widgetFactory;
+        this.mainPanel = new SplitLayoutPanel(SPLITTER_WIDTH);
 
         titleLabel.setText(locale.runnersPanelTitle());
         container.add(uiBinder.createAndBindUi(this));
+
+        this.mainPanel.setWidgetMinSize(scrollPanel, 170);
 
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
@@ -123,9 +138,25 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
         this.popupPanel.add(moreInfoWidget);
 
+        changeSplitterStyle();
+
         initializeTabs();
 
         initializeButtons();
+    }
+
+    private void changeSplitterStyle() {
+        int widgetCount = mainPanel.getWidgetCount();
+
+        for (int i = 0; i < widgetCount; i++) {
+            Widget widget = mainPanel.getWidget(i);
+            String styleName = widget.getStyleName();
+
+            if (SPLITTER_STYLE_NAME.equals(styleName)) {
+                widget.removeStyleName(styleName);
+                widget.addStyleName(resources.runnerCss().splitter());
+            }
+        }
     }
 
     private void initializeTabs() {

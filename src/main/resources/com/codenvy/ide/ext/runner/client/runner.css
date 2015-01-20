@@ -21,6 +21,7 @@
     border-left: 1px solid #000000;
     border-top: 1px solid #000000;
     border-right: 1px solid #000000;
+    border-bottom: 1px solid backgroundColor;
 }
 
 .activeTabText {
@@ -96,11 +97,15 @@
 }
 
 .runnerWidgetBorders {
-    background: #474747;
-    box-shadow: 0 1px 0 0 #4d4d4d inset;
+    background: #4d4d4d;
+    box-shadow: 1px 0 0 0 #4d4d4d;
     border-left: 1px solid #000000;
     border-top: 1px solid #000000;
     border-bottom: 1px solid #000000;
+}
+
+.runnerShadow {
+    box-shadow: 1px 0 0 0 #000000;
 }
 
 .greenColor {
@@ -141,4 +146,9 @@
 
 .opacityButton {
     opacity: 0.4;
+}
+
+.splitter {
+    background: #4d4d4d;
+    cursor: col-resize;
 }
