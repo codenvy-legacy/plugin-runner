@@ -33,6 +33,10 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.codenvy.ide.ext.runner.client.models.Runner.APP_DEFAULT_MEMORY_SIZE;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
+
 /**
  * The class provides much business logic:
  * 1. Provides possibility to launch/start a new runner. It means execute request on the server (communication with server part) and change
@@ -86,7 +90,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     }
 
-    private void updateRunnerTimer(){
+    private void updateRunnerTimer() {
         view.setTimeout(selectedRunner.getTimeout());
 
         view.updateMoreInfoPopup(selectedRunner);
@@ -129,15 +133,19 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRunButtonClicked() {
-        CheckRamAndRunAction checkRamAndRunAction = checkRamAndRunActions.get(selectedRunner);
-        if (checkRamAndRunAction == null) {
-            return;
+        if (FAILED.equals(selectedRunner.getStatus()) || STOPPED.equals(selectedRunner.getStatus())) {
+            CheckRamAndRunAction checkRamAndRunAction = checkRamAndRunActions.get(selectedRunner);
+            if (checkRamAndRunAction == null) {
+                return;
+            }
+
+            checkRamAndRunAction.perform(selectedRunner);
+
+            update(selectedRunner);
+            selectedRunner.resetCreationTime();
+        } else {
+            launchRunner();
         }
-
-        checkRamAndRunAction.perform(selectedRunner);
-        update(selectedRunner);
-
-        selectedRunner.resetCreationTime();
     }
 
     /** {@inheritDoc} */
@@ -197,7 +205,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
-                                          .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")));
+                                          .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")))
+                                          .withMemorySize(APP_DEFAULT_MEMORY_SIZE);
 
         launchRunner(modelsFactory.createRunner(runOptions));
     }

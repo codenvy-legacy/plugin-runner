@@ -273,10 +273,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         docker.setEnable();
 
         switch (runner.getStatus()) {
-            case IN_PROGRESS:
-                run.setDisable();
-                break;
-
             case IN_QUEUE:
                 run.setDisable();
                 docker.setDisable();
@@ -288,16 +284,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 docker.setDisable();
                 break;
 
-            case RUNNING:
-                run.setDisable();
-                break;
-
             case STOPPED:
                 stop.setDisable();
-                break;
-
-            case DONE:
-                run.setDisable();
                 break;
 
             default:

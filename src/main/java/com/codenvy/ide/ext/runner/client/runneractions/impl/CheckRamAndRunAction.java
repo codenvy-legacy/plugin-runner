@@ -227,7 +227,7 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
         }
 
         if (availableMemory < overrideMemory) {
-            runnerUtil.showWarning(constant.messagesAvailableLessOverrideMemory(overrideMemory, totalMemory, usedMemory));
+            runnerUtil.showError(runner, constant.messagesAvailableLessOverrideMemory(overrideMemory, totalMemory, usedMemory), null);
             return false;
         }
 
