@@ -35,6 +35,7 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.api.notification.Notification.Type.WARNING;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
+import static com.codenvy.ide.ext.runner.client.util.TimeInterval.THIRTY_SEC;
 
 /**
  * The action that checks status of runner. It pings runner every 30 second and the client side knows that the runner is alive.
@@ -49,8 +50,6 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
     private static final String STATUS    = "status";
     private static final String URL       = "url";
     private static final String OK_STATUS = "OK";
-
-    private static final int TIMEOUT = 30_000; // 30 sec == 30 000 ms
 
     private final AppContext                 appContext;
     private final RunnerLocalizationConstant locale;
@@ -107,7 +106,7 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
                 view.printWarn(runner, notificationMessage);
             }
         };
-        changeAppAliveTimer.schedule(TIMEOUT);
+        changeAppAliveTimer.schedule(THIRTY_SEC.getValue());
 
         webSocketChannel = APP_HEALTH_CHANNEL + runner.getProcessId();
         runnerHealthHandler = new SubscriptionHandler<String>(new StringUnmarshallerWS()) {

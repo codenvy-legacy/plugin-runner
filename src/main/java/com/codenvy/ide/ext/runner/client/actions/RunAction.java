@@ -11,8 +11,7 @@
 package com.codenvy.ide.ext.runner.client.actions;
 
 import com.codenvy.ide.api.action.ActionEvent;
-import com.codenvy.ide.api.action.ProjectAction;
-import com.codenvy.ide.api.app.CurrentProject;
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
@@ -25,25 +24,18 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public class RunAction extends ProjectAction {
+public class RunAction extends AbstractRunnerActions {
 
     private final RunnerManagerPresenter runnerManagerPresenter;
 
     @Inject
     public RunAction(RunnerManagerPresenter runnerManagerPresenter,
                      RunnerLocalizationConstant locale,
+                     AppContext appContext,
                      RunnerResources resources) {
-        super(locale.actionRun(), locale.actionRunDescription(), resources.runAppImage());
+        super(appContext, locale.actionRun(), locale.actionRunDescription(), resources.runAppImage());
 
         this.runnerManagerPresenter = runnerManagerPresenter;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void updateProjectAction(@Nonnull final ActionEvent event) {
-        CurrentProject currentProject = appContext.getCurrentProject();
-
-        event.getPresentation().setEnabledAndVisible(currentProject != null);
     }
 
     /** {@inheritDoc} */

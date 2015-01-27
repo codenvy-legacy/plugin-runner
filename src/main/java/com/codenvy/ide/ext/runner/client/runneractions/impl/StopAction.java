@@ -95,6 +95,9 @@ public class StopAction extends AbstractRunnerAction {
         Link stopLink = runner.getStopUrl();
         if (stopLink == null) {
             runnerUtil.showError(runner, constant.applicationFailed(project.getProjectDescription().getName()), null);
+
+            runner.setStatus(STOPPED);
+            presenter.update(runner);
             return;
         }
 

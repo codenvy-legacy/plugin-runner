@@ -63,7 +63,7 @@ public interface RunnerLocalizationConstant extends Messages {
     String messagesTotalLessOverrideMemory(@Nonnegative int overrideRAM, @Nonnegative int totalRAM);
 
     @Key("messages.availableLessOverrideMemory")
-    String messagesAvailableLessOverrideMemory(@Nonnegative int overrideRAM, @Nonnegative int totalRAM, @Nonnegative int usedRAM);
+    String messagesAvailableLessOverrideMemory();
 
     @Key("messages.overrideMemory")
     String messagesOverrideMemory();
@@ -188,7 +188,7 @@ public interface RunnerLocalizationConstant extends Messages {
     String messageFailRememberOptions();
 
     @Key("messages.un.multiple.ram.value")
-    String ramSizeMustBeMultipleOf(@Nonnull String multiple);
+    String ramSizeMustBeMultipleOf(@Nonnegative int multiple);
 
     @Key("messages.incorrect.value")
     String messagesIncorrectValue();
@@ -221,4 +221,22 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("tooltip.body.ram")
     String tooltipBodyRam();
+
+    @Key("runner.tab.history")
+    String runnerTabHistory();
+
+    @Key("runner.tab.templates")
+    String runnerTabTemplates();
+
+    @Key("action.manager.available.environments")
+    String actionManagerAvailableEnvironments();
+
+    @Key("upl.app.waiting.for.boot")
+    String uplAppWaitingForBoot();
+
+    @Key("url.app.runner.stopped")
+    String urlAppRunnerStopped();
+
+    @Key("url.app.running")
+    String urlAppRunning();
 }

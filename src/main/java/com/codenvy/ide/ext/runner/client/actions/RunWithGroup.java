@@ -29,15 +29,15 @@ public class RunWithGroup extends DefaultActionGroup {
 
     @Inject
     public RunWithGroup(RunnerLocalizationConstant locale,
-                        RunnerResources resources,
                         ActionManager actionManager,
-                        AppContext appContext) {
-
+                        AppContext appContext,
+                        RunnerResources resources) {
         super(locale.actionGroupRunWith(), true, actionManager);
-        this.appContext = appContext;
 
         getTemplatePresentation().setDescription(locale.actionGroupRunWithDescription());
         getTemplatePresentation().setSVGIcon(resources.runWithImage());
+
+        this.appContext = appContext;
     }
 
     /** {@inheritDoc} */

@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.codenvy.ide.ext.runner.client.util.TimeInterval.FIVE_SEC;
+
 /**
  * This class listens for log messages from the server and process it. Logic of this class is slightly complicated since we can't guaranty
  * correct order of messages and delivery it from the server over WebSocket connection. So messages may be received in shuffled order and
@@ -33,7 +35,6 @@ import java.util.Map;
  * @author Valeriy Svydenko
  */
 public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
-    private static final int TIMEOUT = 5_000;
 
     private final RunnerManagerView        view;
     private final Runner                   runner;
@@ -77,7 +78,7 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
 
         printNextPostponedMessages();
 
-        flushTimer.schedule(TIMEOUT);
+        flushTimer.schedule(FIVE_SEC.getValue());
     }
 
     /** Print all messages from buffer for the moment and stop handling. */

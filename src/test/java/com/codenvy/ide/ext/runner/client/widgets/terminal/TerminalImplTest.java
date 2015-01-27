@@ -102,7 +102,7 @@ public class TerminalImplTest {
 
     @Test
     public void terminalShouldBeVisible() throws Exception {
-        terminal.setTerminalVisible(true);
+        terminal.setVisible(true);
 
         verify(terminal.terminal).setVisible(true);
     }

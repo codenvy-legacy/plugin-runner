@@ -15,6 +15,7 @@ import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
+import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.resources.client.ImageResource;
@@ -82,4 +83,11 @@ public interface WidgetFactory {
     @Nonnull
     MoreInfo createMoreInfo();
 
+    /**
+     * Creates templates widget, which need to display environments for current runner.
+     *
+     * @return an instance of{@link com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget}
+     */
+    @Nonnull
+    TemplatesWidget createTemplates();
 }

@@ -16,7 +16,7 @@
     <ui:with field='res' type='com.codenvy.ide.ext.runner.client.RunnerResources'/>
 
     <ui:style>
-        .scrollPanel {
+        .mainPanel {
             padding-left: 7px;
             padding-bottom: 5px;
             padding-top: 5px;
@@ -28,9 +28,10 @@
         }
     </ui:style>
 
-    <g:ScrollPanel ui:field="panel"
-                   addStyleNames="{style.scrollPanel} {style.fontStyle} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
-        <g:FlowPanel ui:field="output"/>
-    </g:ScrollPanel>
+    <g:FlowPanel ui:field="mainPanel" addStyleNames="{style.mainPanel} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
+        <g:ScrollPanel ui:field="panel" addStyleNames="{style.fontStyle} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
+            <g:FlowPanel ui:field="output"/>
+        </g:ScrollPanel>
+    </g:FlowPanel>
 
 </ui:UiBinder>

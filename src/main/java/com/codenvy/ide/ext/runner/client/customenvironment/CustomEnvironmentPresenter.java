@@ -21,6 +21,8 @@ import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.collections.Collections;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
+import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
@@ -58,6 +60,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
     private final CustomEnvironmentView      view;
     private final EnvironmentNameValidator   nameValidator;
     private final RunnerResources            resources;
+    private final RunnerAction               getEnvironmentsAction;
 
     private String         selectedEnvironmentName;
     private CurrentProject currentProject;
@@ -74,6 +77,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                                          RunnerLocalizationConstant locale,
                                          DialogFactory dialogFactory,
                                          RunnerResources resources,
+                                         RunnerActionFactory actionFactory,
                                          @Named("envFolderPath") String envFolderPath) {
         this.view = view;
         this.view.setDelegate(this);
@@ -89,6 +93,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
         this.dialogFactory = dialogFactory;
         this.nameValidator = nameValidator;
         this.resources = resources;
+        this.getEnvironmentsAction = actionFactory.createGetEnvironments();
 
         updateView();
     }
@@ -117,6 +122,10 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                                             @Override
                                             public void accepted(String value) {
                                                 createEnvironment(value);
+
+                                                //set null value because we don't need runner to get environments
+                                                //noinspection ConstantConditions
+                                                getEnvironmentsAction.perform(null);
                                             }
                                         }, null).withValidator(nameValidator).show();
     }
@@ -280,6 +289,10 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                 selectedEnvironmentName = null;
                 updateView();
                 refreshEnvironmentsList();
+
+                //set null value because we don't need runner to get environments
+                //noinspection ConstantConditions
+                getEnvironmentsAction.perform(null);
             }
 
             @Override

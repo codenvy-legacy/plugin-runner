@@ -33,6 +33,7 @@ import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_STOP;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
+import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
 
 /**
  * @author Andrey Plotnikov
@@ -204,7 +205,7 @@ public class RunnerImpl implements Runner {
     @Nonnull
     @Override
     public String getTotalTime() {
-        return isAlive ? StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationTime) / 1000) : TIMER_STUB;
+        return isAlive ? StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationTime) / ONE_SEC.getValue()) : TIMER_STUB;
     }
 
     /** {@inheritDoc} */

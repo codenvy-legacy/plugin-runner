@@ -110,7 +110,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
 
         runnerName.setText(runner.getTitle());
 
-        ram.setText(runner.getRAM() + " MB");
+        ram.setText(runner.getRAM() + "MB");
         startTime.setText(startDateFormatter.format(new Date(runner.getCreationTime())));
     }
 

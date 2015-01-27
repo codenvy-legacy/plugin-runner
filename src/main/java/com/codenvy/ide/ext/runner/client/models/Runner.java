@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
  * @author Dmitry Shnurenko
  */
 public interface Runner {
-    /** Default size of memory for application in megabytes. Value that is provided by this property may be overridden by user settings. */
-    public static final int APP_DEFAULT_MEMORY_SIZE = 512;
 
     /**
      * Returns boolean flag which allows define is console active or not for current runner.

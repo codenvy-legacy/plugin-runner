@@ -10,12 +10,16 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
+import com.codenvy.ide.api.event.ProjectActionEvent;
+import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.parts.PartPresenter;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.ide.dto.DtoFactory;
+import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -27,15 +31,17 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.models.Runner.APP_DEFAULT_MEMORY_SIZE;
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_512;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
+import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
 
 /**
  * The class provides much business logic:
@@ -48,34 +54,39 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
  * @author Valeriy Svydenko
  */
 @Singleton
-public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate {
-
-    private static final int INTERVAL = 1_000; //1 sec
+public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate, ProjectActionHandler {
 
     private final RunnerManagerView                 view;
     private final RunnerAction                      showDockerAction;
+    private final RunnerAction                      getEnvironmentsAction;
     private final DtoFactory                        dtoFactory;
     private final AppContext                        appContext;
     private final ModelsFactory                     modelsFactory;
     private final RunnerActionFactory               actionFactory;
     private final Map<Runner, CheckRamAndRunAction> checkRamAndRunActions;
     private final Timer                             runnerTimer;
+    private final RunnerLocalizationConstant        locale;
 
-    private Runner selectedRunner;
+    private Runner            selectedRunner;
+    private RunnerEnvironment selectedEnvironment;
 
     @Inject
     public RunnerManagerPresenter(final RunnerManagerView view,
                                   RunnerActionFactory actionFactory,
                                   ModelsFactory modelsFactory,
                                   AppContext appContext,
-                                  DtoFactory dtoFactory) {
+                                  DtoFactory dtoFactory,
+                                  EventBus eventBus,
+                                  RunnerLocalizationConstant locale) {
         this.view = view;
         this.view.setDelegate(this);
+        this.locale = locale;
         this.dtoFactory = dtoFactory;
         this.actionFactory = actionFactory;
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
         this.showDockerAction = actionFactory.createShowDocker();
+        this.getEnvironmentsAction = actionFactory.createGetEnvironments();
 
         this.checkRamAndRunActions = new HashMap<>();
 
@@ -84,10 +95,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             public void run() {
                 updateRunnerTimer();
 
-                this.schedule(INTERVAL);
+                this.schedule(ONE_SEC.getValue());
             }
         };
 
+        eventBus.addHandler(ProjectActionEvent.TYPE, this);
     }
 
     private void updateRunnerTimer() {
@@ -111,7 +123,28 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         view.update(runner);
 
         if (runner.equals(selectedRunner)) {
-            view.setApplicationURl(runner.isAnyAppRunning() ? selectedRunner.getApplicationURL() : null);
+            changeURLDependingOnState(selectedRunner);
+        }
+    }
+
+    private void changeURLDependingOnState(@Nonnull Runner runner) {
+
+        switch (runner.getStatus()) {
+            case IN_PROGRESS:
+                view.setApplicationURl(locale.uplAppWaitingForBoot());
+                break;
+            case IN_QUEUE:
+                view.setApplicationURl(locale.uplAppWaitingForBoot());
+                break;
+            case STOPPED:
+                view.setApplicationURl(locale.urlAppRunnerStopped());
+                break;
+            case FAILED:
+                view.setApplicationURl(null);
+                break;
+            default:
+                String url = runner.getApplicationURL();
+                view.setApplicationURl(url == null ? locale.urlAppRunning() : url);
         }
     }
 
@@ -132,7 +165,24 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     /** {@inheritDoc} */
     @Override
+    public void onEnvironmentSelected(@Nonnull RunnerEnvironment selectedEnvironment) {
+        this.selectedEnvironment = selectedEnvironment;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void onRunButtonClicked() {
+        if (selectedEnvironment != null) {
+            Map<String, String> options = selectedEnvironment.getOptions();
+            String environmentName = selectedEnvironment.getId();
+
+            RunOptions runOptions = dtoFactory.createDto(RunOptions.class).withOptions(options);
+
+            launchRunner(runOptions, environmentName);
+
+            return;
+        }
+
         if (FAILED.equals(selectedRunner.getStatus()) || STOPPED.equals(selectedRunner.getStatus())) {
             CheckRamAndRunAction checkRamAndRunAction = checkRamAndRunActions.get(selectedRunner);
             if (checkRamAndRunAction == null) {
@@ -198,6 +248,21 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     /** {@inheritDoc} */
     @Override
+    public void onHistoryButtonClicked() {
+        selectedEnvironment = null;
+
+        view.activateHistory();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onTemplatesButtonClicked() {
+        //noinspection ConstantConditions
+        getEnvironmentsAction.perform(null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void launchRunner() {
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
@@ -206,7 +271,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
                                           .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")))
-                                          .withMemorySize(APP_DEFAULT_MEMORY_SIZE);
+                                          .withMemorySize(MEMORY_512.getValue());
 
         launchRunner(modelsFactory.createRunner(runOptions));
     }
@@ -219,8 +284,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     private void launchRunner(@Nonnull Runner runner) {
         selectedRunner = runner;
+        selectedEnvironment = null;
 
+        view.activateHistory();
         view.addRunner(selectedRunner);
+        update(selectedRunner);
 
         CheckRamAndRunAction checkRamAndRunAction = actionFactory.createCheckRamAndRun();
         checkRamAndRunAction.perform(selectedRunner);
@@ -228,7 +296,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         checkRamAndRunActions.put(selectedRunner, checkRamAndRunAction);
 
         runner.resetCreationTime();
-        runnerTimer.schedule(INTERVAL);
+        runnerTimer.schedule(ONE_SEC.getValue());
 
         update(selectedRunner);
     }
@@ -269,4 +337,15 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         return null;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
+        view.activateHistory();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onProjectClosed(@Nonnull ProjectActionEvent projectActionEvent) {
+        partStack.hidePart(this);
+    }
 }

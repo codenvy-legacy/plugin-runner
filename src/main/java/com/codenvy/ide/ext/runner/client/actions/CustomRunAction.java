@@ -11,8 +11,7 @@
 package com.codenvy.ide.ext.runner.client.actions;
 
 import com.codenvy.ide.api.action.ActionEvent;
-import com.codenvy.ide.api.action.ProjectAction;
-import com.codenvy.ide.api.app.CurrentProject;
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.customrun.CustomRunPresenter;
@@ -24,23 +23,18 @@ import com.google.inject.Inject;
  * @author Artem Zatsarynnyy
  * @author Dmitry Shnurenko
  */
-public class CustomRunAction extends ProjectAction {
+public class CustomRunAction extends AbstractRunnerActions {
 
     private final CustomRunPresenter customRunPresenter;
 
     @Inject
-    public CustomRunAction(RunnerLocalizationConstant locale, RunnerResources resources, CustomRunPresenter customRunPresenter) {
-        super(locale.actionCustomRun(), locale.actionCustomRunDescription(), resources.runAppImage());
+    public CustomRunAction(RunnerLocalizationConstant locale,
+                           CustomRunPresenter customRunPresenter,
+                           AppContext appContext,
+                           RunnerResources resources) {
+        super(appContext, locale.actionCustomRun(), locale.actionCustomRunDescription(), resources.runAppImage());
 
         this.customRunPresenter = customRunPresenter;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void updateProjectAction(ActionEvent event) {
-        CurrentProject currentProject = appContext.getCurrentProject();
-
-        event.getPresentation().setEnabledAndVisible(currentProject != null);
     }
 
     /** {@inheritDoc} */

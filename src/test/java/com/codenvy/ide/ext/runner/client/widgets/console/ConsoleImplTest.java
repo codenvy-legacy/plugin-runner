@@ -75,34 +75,6 @@ public class ConsoleImplTest {
     }
 
     @Test
-    public void dockerMessageShouldBePrinted() throws Exception {
-        console.printDocker(SOME_TEXT);
-
-        verify(console.output).add(any(HTML.class));
-    }
-
-    @Test
-    public void dockerErrorMessageShouldBePrinted() throws Exception {
-        console.printDockerError(SOME_TEXT);
-
-        verify(console.output).add(any(HTML.class));
-    }
-
-    @Test
-    public void stdoutMessageShouldBePrinted() throws Exception {
-        console.printStdOut(SOME_TEXT);
-
-        verify(console.output).add(any(HTML.class));
-    }
-
-    @Test
-    public void stderrMessageShouldBePrinted() throws Exception {
-        console.printStdErr(SOME_TEXT);
-
-        verify(console.output).add(any(HTML.class));
-    }
-
-    @Test
     public void messageShouldBeCleanedWhenTheAmountIs1000AndLogUrlIsAbsent() throws Exception {
         when(console.output.getWidgetCount()).thenReturn(1000);
 

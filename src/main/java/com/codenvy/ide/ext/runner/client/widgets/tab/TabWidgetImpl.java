@@ -64,7 +64,9 @@ public class TabWidgetImpl extends Composite implements TabWidget {
 
     /** {@inheritDoc} */
     @Override
-    public void select() {
+    public void select(@Nonnull Background background) {
+        getElement().getStyle().setBackgroundColor(background.toString());
+
         tabTitle.addStyleName(resources.runnerCss().activeTabText());
         addStyleName(resources.runnerCss().activeTab());
         removeStyleName(resources.runnerCss().notActiveTabText());
@@ -73,6 +75,8 @@ public class TabWidgetImpl extends Composite implements TabWidget {
     /** {@inheritDoc} */
     @Override
     public void unSelect() {
+        getElement().getStyle().clearBackgroundColor();
+
         tabTitle.removeStyleName(resources.runnerCss().activeTabText());
         removeStyleName(resources.runnerCss().activeTab());
         addStyleName(resources.runnerCss().notActiveTabText());

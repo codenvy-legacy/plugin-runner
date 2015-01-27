@@ -10,10 +10,13 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.ImplementedBy;
+import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,6 +28,7 @@ import javax.annotation.Nullable;
  * @author Dmitry Shnurenko
  * @author Valeriy Svydenko
  */
+@Singleton
 @ImplementedBy(RunnerManagerViewImpl.class)
 public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate> {
 
@@ -47,10 +51,10 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     /**
      * Shows application url on the view.
      *
-     * @param url
-     *         url that needs to be shown
+     * @param applicationUrl
+     *         url which needs set
      */
-    void setApplicationURl(@Nullable String url);
+    void setApplicationURl(@Nullable String applicationUrl);
 
     /**
      * Shows timeout on the view.
@@ -104,39 +108,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void printWarn(@Nonnull Runner runner, @Nonnull String line);
 
     /**
-     * Prints a given line with docker content in the console for a given runner.
-     * Printed line will look like this: [DOCKER] some string
-     *
-     * @param runner
-     *         runner that needs to contain a given line
-     * @param line
-     *         line that needs to be printed
-     */
-    void printDocker(@Nonnull Runner runner, @Nonnull String line);
-
-    /**
-     * Prints a given line with stand out content in the console for a given runner.
-     * Printed line will look like this: [STDOUT] some string
-     *
-     * @param runner
-     *         runner that needs to contain a given line
-     * @param line
-     *         line that needs to be printed
-     */
-    void printStdOut(@Nonnull Runner runner, @Nonnull String line);
-
-    /**
-     * Prints a given line with stand error content in the console for a given runner.
-     * Printed line will look like this: [STDERR] some string
-     *
-     * @param runner
-     *         runner that needs to contain a given line
-     * @param line
-     *         line that needs to be printed
-     */
-    void printStdErr(@Nonnull Runner runner, @Nonnull String line);
-
-    /**
      * Clean console for a given runner.
      *
      * @param runner
@@ -159,6 +130,17 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      *         runner that bound with terminal widget
      */
     void activateTerminal(@Nonnull Runner runner);
+
+    /** Shows history widget which contains all created runners. */
+    void activateHistory();
+
+    /**
+     * Shows templates which are available for runner.
+     *
+     * @param environmentTree
+     *         available environments tree
+     */
+    void showTemplates(@Nonnull RunnerEnvironmentTree environmentTree);
 
     /**
      * Shows special popup panel which displays additional information about runner.
@@ -186,6 +168,8 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
          */
         void onRunnerSelected(@Nonnull Runner runner);
 
+        void onEnvironmentSelected(@Nonnull RunnerEnvironment selectedEnvironment);
+
         /** Performs some actions in response to user's clicking on the 'Run' button. */
         void onRunButtonClicked();
 
@@ -206,6 +190,12 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's over mouse on timeout label. */
         void onMoreInfoBtnMouseOver();
+
+        /** Performs some actions in response to user's choosing to show history of runners. */
+        void onHistoryButtonClicked();
+
+        /** Performs some actions in response to user's choosing to runner's templates. */
+        void onTemplatesButtonClicked();
     }
 
 }

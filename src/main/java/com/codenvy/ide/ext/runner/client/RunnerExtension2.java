@@ -44,12 +44,6 @@ public class RunnerExtension2 { //TODO need rename
     private static final String GROUP_RUN_WITH   = "RunWithGroup";
 
     @Inject
-    public RunnerExtension2(RunnerResources resources) {
-
-        resources.runnerCss().ensureInjected();
-    }
-
-    @Inject
     public void setUpRunnerConsole(WorkspaceAgent workspaceAgent,
                                    RunnerManagerPresenter runnerManagerPresenter) {
 
@@ -61,7 +55,9 @@ public class RunnerExtension2 { //TODO need rename
                                 RunAction runAction,
                                 EditRunnerAction editRunnerAction,
                                 RunWithGroup runWithGroup,
-                                CustomRunAction customRunAction) {
+                                CustomRunAction customRunAction,
+                                RunnerResources resources) {
+        resources.runnerCss().ensureInjected();
 
         //add actions in main toolbar
         DefaultActionGroup mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);

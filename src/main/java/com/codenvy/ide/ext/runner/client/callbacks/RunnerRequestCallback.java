@@ -25,9 +25,9 @@ import javax.annotation.Nullable;
  */
 public class RunnerRequestCallback<T> extends RequestCallback<T> {
 
-    private FailureCallback     failureCallback;
-    private SuccessCallback<T>  successCallback;
-    private NotificationManager notificationManager;
+    private final FailureCallback     failureCallback;
+    private final SuccessCallback<T>  successCallback;
+    private final NotificationManager notificationManager;
 
     public RunnerRequestCallback(@Nonnull NotificationManager notificationManager,
                                  @Nullable Unmarshallable<T> unmarshallable,

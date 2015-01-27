@@ -87,7 +87,7 @@ public class TerminalImpl extends Composite implements Terminal {
 
     /** {@inheritDoc} */
     @Override
-    public void setTerminalVisible(boolean visible) {
+    public void setVisible(boolean visible) {
         terminal.setVisible(visible);
     }
 

@@ -58,44 +58,8 @@ public interface Console extends IsWidget {
      */
     void printWarn(@Nonnull String line);
 
-    /**
-     * Prints Docker message with a given content.
-     * Printed line will look like this: [DOCKER] some string
-     *
-     * @param line
-     *         line that needs to be printed
-     */
-    void printDocker(@Nonnull String line);
-
-    /**
-     * Prints Docker error message with a given content.
-     * Printed line will look like this: [DOCKER] [ERROR] some string
-     *
-     * @param line
-     *         line that needs to be printed
-     */
-    void printDockerError(@Nonnull String line);
-
-    /**
-     * Prints STDOUT message with a given content.
-     * Printed line will look like this: [STDOUT] some string
-     *
-     * @param line
-     *         line that needs to be printed
-     */
-    void printStdOut(@Nonnull String line);
-
     /** Scroll to bottom of the view. */
     void scrollBottom();
-
-    /**
-     * Prints STDERR message with a given content.
-     * Printed line will look like this: [STDERR] some string
-     *
-     * @param line
-     *         line that needs to be printed
-     */
-    void printStdErr(@Nonnull String line);
 
     /** Removes all messages from widget. */
     void clear();

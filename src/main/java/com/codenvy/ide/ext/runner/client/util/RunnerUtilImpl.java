@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 
 import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
+import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 
 /**
@@ -35,8 +36,6 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
  */
 @Singleton
 public class RunnerUtilImpl implements RunnerUtil {
-
-    private static final String MULTIPLE_RAM_SIZE = "128";
 
     private final DialogFactory              dialogFactory;
     private final RunnerLocalizationConstant locale;
@@ -65,7 +64,7 @@ public class RunnerUtilImpl implements RunnerUtil {
         }
 
         if (usedMemory % 128 != 0) {
-            showWarning(locale.ramSizeMustBeMultipleOf(MULTIPLE_RAM_SIZE));
+            showWarning(locale.ramSizeMustBeMultipleOf(MEMORY_128.getValue()));
             return false;
         }
 

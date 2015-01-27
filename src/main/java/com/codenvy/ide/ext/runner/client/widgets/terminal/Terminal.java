@@ -36,7 +36,7 @@ public interface Terminal extends IsWidget {
      * @param isVisible
      *         <code>true</code> terminal is visible,<code>false</code> terminal isn't visible
      */
-    void setTerminalVisible(boolean isVisible);
+    void setVisible(boolean isVisible);
 
     /**
      * Changes visibility of the unavailable label.

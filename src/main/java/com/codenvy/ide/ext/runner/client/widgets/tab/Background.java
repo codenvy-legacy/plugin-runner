@@ -10,31 +10,26 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.widgets.tab;
 
-import com.codenvy.ide.api.mvp.View;
-
 import javax.annotation.Nonnull;
 
 /**
- * Provides methods which allow change visual representation of tab.
+ * Enum contains values of background color.
  *
  * @author Dmitry Shnurenko
  */
-public interface TabWidget extends View<TabWidget.ActionDelegate> {
+public enum Background {
+    BLACK("#313335"), GREY("#474747");
 
-    /**
-     * Performs some actions when tab is selected.
-     *
-     * @param background
-     *         parameter which need to set correct background color
-     */
-    void select(@Nonnull Background background);
+    private final String color;
 
-    /** Performs some actions when tab is unselected. */
-    void unSelect();
-
-    interface ActionDelegate {
-        /** Performs some actions in response to user's clicking on the tab. */
-        void onMouseClicked();
+    Background(@Nonnull String color) {
+        this.color = color;
     }
 
+    /** @return value of background color */
+    @Override
+    @Nonnull
+    public String toString() {
+        return color;
+    }
 }

@@ -75,6 +75,8 @@ public class ConsoleImpl extends Composite implements Console {
     ScrollPanel panel;
     @UiField
     FlowPanel   output;
+    @UiField
+    FlowPanel   mainPanel;
     @UiField(provided = true)
     final RunnerResources res;
 
@@ -130,30 +132,6 @@ public class ConsoleImpl extends Composite implements Console {
     @Override
     public void printWarn(@Nonnull String line) {
         print(buildSafeHtmlMessage(WARN, WARN_COLOR, WARN + ' ' + line));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printDocker(@Nonnull String line) {
-        print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, DOCKER + ' ' + line));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printDockerError(@Nonnull String line) {
-        print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, ERROR, ERROR_COLOR, DOCKER + ' ' + ERROR + ' ' + line));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printStdOut(@Nonnull String line) {
-        print(buildSafeHtmlMessage(STDOUT, STDOUT_COLOR, STDOUT + ' ' + line));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printStdErr(@Nonnull String line) {
-        print(buildSafeHtmlMessage(STDERR, STDERR_COLOR, STDERR + ' ' + line));
     }
 
     /**

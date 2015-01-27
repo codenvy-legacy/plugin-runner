@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.parts.PartStackUIResources;
 import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
@@ -20,30 +22,36 @@ import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
+import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.BLACK;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.GREY;
 
 /**
  * Class provides view representation of runner panel.
@@ -52,7 +60,13 @@ import java.util.Map;
  * @author Valeriy Svydenko
  */
 public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView,
-                                                                                                 RunnerWidget.ActionDelegate {
+                                                                                                 RunnerWidget.ActionDelegate,
+                                                                                                 TemplatesWidget.ActionDelegate {
+    interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
+    }
+
+    private static final RunnerManagerViewImplUiBinder UI_BINDER = GWT.create(RunnerManagerViewImplUiBinder.class);
+
     private static final String GWT_POPUP_STANDARD_STYLE = "gwt-PopupPanel";
     private static final String SPLITTER_STYLE_NAME      = "gwt-SplitLayoutPanel-HDragger";
 
@@ -60,18 +74,17 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private static final int SHIFT_TOP      = 130;
     private static final int SPLITTER_WIDTH = 2;
 
-    @Singleton
-    interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
-    }
-
     @UiField(provided = true)
     SplitLayoutPanel mainPanel;
 
+    @UiField
+    FlowPanel historyTemplatePanel;
+
     //runners panel
     @UiField
-    FlowPanel   runnersPanel;
+    FlowPanel       runnersPanel;
     @UiField
-    ScrollPanel scrollPanel;
+    DockLayoutPanel runnersContainer;
 
     @UiField
     FlowPanel buttonsPanel;
@@ -82,11 +95,13 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     //info panel
     @UiField
-    Label appReference;
+    Label     appReference;
     @UiField
-    Label timeout;
+    FlowPanel moreInfoPanel;
     @UiField
-    Image moreInfoImage;
+    Label     timeout;
+    @UiField
+    Image     image;
 
     @UiField(provided = true)
     final RunnerResources            resources;
@@ -102,17 +117,19 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     private TabWidget consoleTab;
     private TabWidget terminalTab;
+    private TabWidget historyTab;
+    private TabWidget templatesTab;
 
     private ButtonWidget run;
     private ButtonWidget stop;
     private ButtonWidget clean;
     private ButtonWidget docker;
 
-    private String url;
+    private TemplatesWidget templatesWidget;
+    private String          url;
 
     @Inject
     public RunnerManagerViewImpl(PartStackUIResources partStackUIResources,
-                                 RunnerManagerViewImplUiBinder uiBinder,
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locale,
                                  WidgetFactory widgetFactory,
@@ -125,9 +142,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.mainPanel = new SplitLayoutPanel(SPLITTER_WIDTH);
 
         titleLabel.setText(locale.runnersPanelTitle());
-        container.add(uiBinder.createAndBindUi(this));
+        container.add(UI_BINDER.createAndBindUi(this));
 
-        this.mainPanel.setWidgetMinSize(scrollPanel, 170);
+        this.mainPanel.setWidgetMinSize(runnersContainer, 165);
 
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
@@ -138,11 +155,36 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
         this.popupPanel.add(moreInfoWidget);
 
+        this.templatesWidget = widgetFactory.createTemplates();
+        this.templatesWidget.setDelegate(this);
+
+        addMoreInfoPanelHandler();
+
         changeSplitterStyle();
 
         initializeTabs();
 
         initializeButtons();
+    }
+
+    private void addMoreInfoPanelHandler() {
+        moreInfoPanel.addDomHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(MouseOverEvent event) {
+                image.addStyleName(resources.runnerCss().opacityButton());
+
+                delegate.onMoreInfoBtnMouseOver();
+            }
+        }, MouseOverEvent.getType());
+
+        moreInfoPanel.addDomHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                image.removeStyleName(resources.runnerCss().opacityButton());
+
+                popupPanel.hide();
+            }
+        }, MouseOutEvent.getType());
     }
 
     private void changeSplitterStyle() {
@@ -166,8 +208,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onConsoleButtonClicked();
             }
         };
-        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate);
-        consoleTab.select();
+        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate, tabsPanel);
+        consoleTab.select(GREY);
 
         TabWidget.ActionDelegate terminalDelegate = new TabWidget.ActionDelegate() {
             @Override
@@ -175,11 +217,28 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onTerminalButtonClicked();
             }
         };
-        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate);
+        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate, tabsPanel);
+
+        TabWidget.ActionDelegate historyDelegate = new TabWidget.ActionDelegate() {
+            @Override
+            public void onMouseClicked() {
+                delegate.onHistoryButtonClicked();
+            }
+        };
+        historyTab = createTab(locale.runnerTabHistory(), historyDelegate, historyTemplatePanel);
+        historyTab.select(BLACK);
+
+        TabWidget.ActionDelegate templatesDelegate = new TabWidget.ActionDelegate() {
+            @Override
+            public void onMouseClicked() {
+                delegate.onTemplatesButtonClicked();
+            }
+        };
+        templatesTab = createTab(locale.runnerTabTemplates(), templatesDelegate, historyTemplatePanel);
     }
 
     @Nonnull
-    private TabWidget createTab(@Nonnull String tabName, @Nonnull TabWidget.ActionDelegate actionDelegate) {
+    private TabWidget createTab(@Nonnull String tabName, @Nonnull TabWidget.ActionDelegate actionDelegate, @Nonnull FlowPanel tabsPanel) {
         TabWidget tab = widgetFactory.createTab(tabName);
         tab.setDelegate(actionDelegate);
 
@@ -231,6 +290,16 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         buttonsPanel.add(button);
 
         return button;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onEnvironmentSelected(@Nullable RunnerEnvironment environment) {
+        if (environment == null) {
+            return;
+        }
+
+        delegate.onEnvironmentSelected(environment);
     }
 
     /** {@inheritDoc} */
@@ -311,9 +380,14 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void setApplicationURl(@Nullable String url) {
-        this.url = url;
-        appReference.setText(url);
+    public void setApplicationURl(@Nullable String applicationUrl) {
+        url = null;
+
+        if (applicationUrl != null && applicationUrl.startsWith("http")) {
+            url = applicationUrl;
+        }
+
+        appReference.setText(applicationUrl);
     }
 
     /** {@inheritDoc} */
@@ -368,39 +442,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void printDocker(@Nonnull Runner runner, @Nonnull String line) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.printDocker(line);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printStdOut(@Nonnull Runner runner, @Nonnull String line) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.printStdOut(line);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printStdErr(@Nonnull Runner runner, @Nonnull String line) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.printStdErr(line);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void clearConsole(@Nonnull Runner runner) {
         Console console = consoles.get(runner);
         if (console == null) {
@@ -413,8 +454,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void activateConsole(@Nonnull Runner runner) {
-        consoleTab.select();
+        consoleTab.select(GREY);
         terminalTab.unSelect();
+
+        for (Terminal terminal : terminals.values()) {
+            terminal.setVisible(false);
+        }
 
         for (Console console : consoles.values()) {
             console.setVisible(false);
@@ -436,7 +481,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void activateTerminal(@Nonnull Runner runner) {
-        terminalTab.select();
+        terminalTab.select(GREY);
         consoleTab.unSelect();
 
         for (Console console : consoles.values()) {
@@ -444,7 +489,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         }
 
         for (Terminal terminal : terminals.values()) {
-            terminal.setTerminalVisible(false);
+            terminal.setVisible(false);
             terminal.setUnavailableLabelVisible(false);
         }
 
@@ -459,10 +504,35 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         } else {
             boolean isAnyAppRun = runner.isAnyAppRunning();
 
-            terminal.setTerminalVisible(isAnyAppRun);
+            terminal.setVisible(isAnyAppRun);
             terminal.setUnavailableLabelVisible(!isAnyAppRun);
         }
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void activateHistory() {
+        templatesTab.unSelect();
+        historyTab.select(BLACK);
+
+        runnersPanel.clear();
+
+        for (RunnerWidget widget : runnerWidgets.values()) {
+            runnersPanel.add(widget);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showTemplates(@Nonnull RunnerEnvironmentTree environmentTree) {
+        templatesTab.select(BLACK);
+        historyTab.unSelect();
+
+        templatesWidget.addEnvironments(environmentTree);
+
+        runnersPanel.clear();
+        runnersPanel.add(templatesWidget);
     }
 
     /** {@inheritDoc} */
@@ -485,20 +555,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     @UiHandler("appReference")
     public void onAppReferenceClicked(@SuppressWarnings("UnusedParameters") ClickEvent clickEvent) {
-        Window.open(url, "_blank", "");
-    }
-
-    @UiHandler("moreInfoImage")
-    public void onMoreInfoMouseOver(@SuppressWarnings("UnusedParameters") MouseOverEvent event) {
-        moreInfoImage.addStyleName(resources.runnerCss().opacityButton());
-
-        delegate.onMoreInfoBtnMouseOver();
-    }
-
-    @UiHandler("moreInfoImage")
-    public void onMoreInfoMouseOut(@SuppressWarnings("UnusedParameters") MouseOutEvent event) {
-        moreInfoImage.removeStyleName(resources.runnerCss().opacityButton());
-
-        popupPanel.hide();
+        if (url != null) {
+            Window.open(url, "_blank", "");
+        }
     }
 }
