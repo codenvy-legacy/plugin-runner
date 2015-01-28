@@ -39,15 +39,19 @@ import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 @Extension(title = "Runner", version = "1.0.0")
 public class RunnerExtension2 { //TODO need rename
 
-    public static final  String RUN_APP_ID       = "runApp";
-    public static final  String GROUP_RUN_WITH_2 = "runWithGroup2"; //TODO need rename it when old runner extension will be deleted
-    private static final String GROUP_RUN_WITH   = "RunWithGroup";
+    public static final String RUN_APP_ID       = "runApp";
+    public static final String GROUP_RUN_WITH_2 = "runWithGroup2"; //TODO need rename it when old runner extension will be deleted
+    public static final String GROUP_RUN_WITH   = "RunWithGroup";
+    public static final String BUILDER_PART_ID  = "Builder";
 
     @Inject
-    public void setUpRunnerConsole(WorkspaceAgent workspaceAgent,
-                                   RunnerManagerPresenter runnerManagerPresenter) {
+    public RunnerExtension2(RunnerResources resources) {
+        resources.runnerCss().ensureInjected();
+    }
 
-        workspaceAgent.openPart(runnerManagerPresenter, PartStackType.INFORMATION, new Constraints(Anchor.AFTER, "Builder"));
+    @Inject
+    public void setUpRunnerConsole(WorkspaceAgent workspaceAgent, RunnerManagerPresenter runnerManagerPresenter) {
+        workspaceAgent.openPart(runnerManagerPresenter, PartStackType.INFORMATION, new Constraints(Anchor.AFTER, BUILDER_PART_ID));
     }
 
     @Inject
@@ -55,10 +59,7 @@ public class RunnerExtension2 { //TODO need rename
                                 RunAction runAction,
                                 EditRunnerAction editRunnerAction,
                                 RunWithGroup runWithGroup,
-                                CustomRunAction customRunAction,
-                                RunnerResources resources) {
-        resources.runnerCss().ensureInjected();
-
+                                CustomRunAction customRunAction) {
         //add actions in main toolbar
         DefaultActionGroup mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
         DefaultActionGroup runToolbarGroup = new DefaultActionGroup(GROUP_RUN_TOOLBAR, false, actionManager);
