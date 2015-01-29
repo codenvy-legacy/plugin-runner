@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.widgets.tab;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -20,7 +21,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.google.inject.assistedinject.Assisted;
 
 import javax.annotation.Nonnull;
@@ -30,11 +30,12 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public class TabWidgetImpl extends Composite implements TabWidget {
+public class TabWidgetImpl extends Composite implements TabWidget, ClickHandler {
 
-    @Singleton
     interface TabViewImplUiBinder extends UiBinder<Widget, TabWidgetImpl> {
     }
+
+    private static final TabViewImplUiBinder UI_BINDER = GWT.create(TabViewImplUiBinder.class);
 
     @UiField
     Label     tabTitle;
@@ -47,19 +48,14 @@ public class TabWidgetImpl extends Composite implements TabWidget {
     private ActionDelegate delegate;
 
     @Inject
-    public TabWidgetImpl(TabViewImplUiBinder uiBinder, RunnerResources resources, @Nonnull @Assisted String title) {
+    public TabWidgetImpl(RunnerResources resources, @Nonnull @Assisted String title) {
         this.resources = resources;
 
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget(UI_BINDER.createAndBindUi(this));
 
         this.tabTitle.setText(title);
 
-        addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                delegate.onMouseClicked();
-            }
-        }, ClickEvent.getType());
+        addDomHandler(this, ClickEvent.getType());
     }
 
     /** {@inheritDoc} */
@@ -86,6 +82,12 @@ public class TabWidgetImpl extends Composite implements TabWidget {
     @Override
     public void setDelegate(@Nonnull ActionDelegate delegate) {
         this.delegate = delegate;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onClick(ClickEvent event) {
+        delegate.onMouseClicked();
     }
 
 }
