@@ -36,7 +36,8 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
     interface MoreInfoPopupImplUiBinder extends UiBinder<Widget, MoreInfoImpl> {
     }
 
-    private static final MoreInfoPopupImplUiBinder UI_BINDER = GWT.create(MoreInfoPopupImplUiBinder.class);
+    public static final  DateTimeFormat            DATE_TIME_FORMAT = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss");
+    private static final MoreInfoPopupImplUiBinder UI_BINDER        = GWT.create(MoreInfoPopupImplUiBinder.class);
 
     @UiField
     Label started;
@@ -54,22 +55,18 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final DateTimeFormat startDateFormatter;
-
     @Inject
     public MoreInfoImpl(RunnerResources resources, RunnerLocalizationConstant locale) {
         this.resources = resources;
         this.locale = locale;
 
         initWidget(UI_BINDER.createAndBindUi(this));
-
-        this.startDateFormatter = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss");
     }
 
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Runner runner) {
-        String startedTime = startDateFormatter.format(new Date(runner.getCreationTime()));
+        String startedTime = DATE_TIME_FORMAT.format(new Date(runner.getCreationTime()));
 
         started.setText(startedTime);
         finished.setText(runner.getStopTime());

@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.widgets.runner;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -22,7 +23,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import org.vectomatic.dom.svg.ui.SVGImage;
 
@@ -35,11 +35,13 @@ import java.util.Date;
  * @author Dmitry Shnurenko
  * @author Valeriy Svydenko
  */
-public class RunnerWidgetImpl extends Composite implements RunnerWidget {
+public class RunnerWidgetImpl extends Composite implements RunnerWidget, ClickHandler {
 
-    @Singleton
     interface RunnerViewImplUiBinder extends UiBinder<Widget, RunnerWidgetImpl> {
     }
+
+    public static final  DateTimeFormat         DATE_TIME_FORMAT = DateTimeFormat.getFormat("dd-MM-yy HH:mm");
+    private static final RunnerViewImplUiBinder UI_BINDER        = GWT.create(RunnerViewImplUiBinder.class);
 
     @UiField
     Label             runnerName;
@@ -52,8 +54,6 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     @UiField(provided = true)
     final RunnerResources resources;
 
-    private final DateTimeFormat startDateFormatter;
-
     private final SVGImage inProgress;
     private final SVGImage inQueue;
     private final SVGImage failed;
@@ -65,17 +65,12 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     private Runner         runner;
 
     @Inject
-    public RunnerWidgetImpl(RunnerViewImplUiBinder ourUiBinder, RunnerResources resources) {
+    public RunnerWidgetImpl(RunnerResources resources) {
         this.resources = resources;
 
-        initWidget(ourUiBinder.createAndBindUi(this));
+        initWidget(UI_BINDER.createAndBindUi(this));
 
-        addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                delegate.onRunnerSelected(runner);
-            }
-        }, ClickEvent.getType());
+        addDomHandler(this, ClickEvent.getType());
 
         inProgress = new SVGImage(resources.runnerInProgressImage());
         inQueue = new SVGImage(resources.runnerInQueueImage());
@@ -83,8 +78,6 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
         timeout = new SVGImage(resources.runnerTimeoutImage());
         done = new SVGImage(resources.runnerDoneImage());
         stopped = new SVGImage(resources.runnerDoneImage());
-
-        this.startDateFormatter = DateTimeFormat.getFormat("dd-MM-yy HH:mm");
     }
 
     /** {@inheritDoc} */
@@ -111,7 +104,7 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
         runnerName.setText(runner.getTitle());
 
         ram.setText(runner.getRAM() + "MB");
-        startTime.setText(startDateFormatter.format(new Date(runner.getCreationTime())));
+        startTime.setText(DATE_TIME_FORMAT.format(new Date(runner.getCreationTime())));
     }
 
     private void changeRunnerStatusIcon() {
@@ -154,6 +147,12 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget {
     @Override
     public void setDelegate(ActionDelegate delegate) {
         this.delegate = delegate;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onClick(ClickEvent event) {
+        delegate.onRunnerSelected(runner);
     }
 
 }

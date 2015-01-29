@@ -11,7 +11,6 @@
 package com.codenvy.ide.ext.runner.client.widgets.tooltip;
 
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Test;
@@ -22,6 +21,7 @@ import org.mockito.Mock;
 import java.util.Date;
 
 import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
+import static com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfoImpl.DATE_TIME_FORMAT;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +41,7 @@ public class MoreInfoImplTest {
     @Test
     public void contentShouldBeUpdated() throws Exception {
         Date currentDate = new Date();
-        String expectedFormat = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss").format(currentDate);
+        String expectedFormat = DATE_TIME_FORMAT.format(currentDate);
 
         when(runner.getCreationTime()).thenReturn(currentDate.getTime());
         when(runner.getStopTime()).thenReturn(SOME_TEXT);
