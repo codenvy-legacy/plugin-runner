@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions;
 
+import com.codenvy.ide.ext.runner.client.models.Runner;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
  * default implementation of stop process etc).
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public abstract class AbstractRunnerAction implements RunnerAction, RunnerAction.StopActionListener {
 
@@ -71,6 +74,18 @@ public abstract class AbstractRunnerAction implements RunnerAction, RunnerAction
     @Override
     public void onStopAction() {
         stop();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void perform() {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void perform(@Nonnull final Runner runner) {
+        throw new UnsupportedOperationException("Not supported");
     }
 
 }

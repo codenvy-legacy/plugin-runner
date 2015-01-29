@@ -372,6 +372,10 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void addRunner(@Nonnull Runner runner) {
+        if (runnerWidgets.get(runner) != null) {
+            return;
+        }
+
         RunnerWidget runnerWidget = widgetFactory.createRunner();
         runnerWidget.update(runner);
         runnerWidget.setDelegate(this);

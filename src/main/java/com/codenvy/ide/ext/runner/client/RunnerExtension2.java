@@ -60,6 +60,7 @@ public class RunnerExtension2 { //TODO need rename
                                 EditRunnerAction editRunnerAction,
                                 RunWithGroup runWithGroup,
                                 CustomRunAction customRunAction) {
+
         //add actions in main toolbar
         DefaultActionGroup mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
         DefaultActionGroup runToolbarGroup = new DefaultActionGroup(GROUP_RUN_TOOLBAR, false, actionManager);

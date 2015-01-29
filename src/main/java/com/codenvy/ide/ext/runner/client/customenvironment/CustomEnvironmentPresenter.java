@@ -42,6 +42,7 @@ import javax.annotation.Nonnull;
  *
  * @author Artem Zatsarynnyy
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionDelegate {
 
@@ -123,9 +124,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                                             public void accepted(String value) {
                                                 createEnvironment(value);
 
-                                                //set null value because we don't need runner to get environments
-                                                //noinspection ConstantConditions
-                                                getEnvironmentsAction.perform(null);
+                                                getEnvironmentsAction.perform();
                                             }
                                         }, null).withValidator(nameValidator).show();
     }
@@ -290,9 +289,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                 updateView();
                 refreshEnvironmentsList();
 
-                //set null value because we don't need runner to get environments
-                //noinspection ConstantConditions
-                getEnvironmentsAction.perform(null);
+                getEnvironmentsAction.perform();
             }
 
             @Override

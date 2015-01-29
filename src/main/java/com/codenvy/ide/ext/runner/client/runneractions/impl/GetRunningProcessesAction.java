@@ -23,9 +23,9 @@ import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -40,7 +40,6 @@ import javax.annotation.Nonnull;
 import static com.codenvy.api.runner.ApplicationStatus.NEW;
 import static com.codenvy.api.runner.ApplicationStatus.RUNNING;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status;
 
 /**
  * This action executes a request on the server side for getting runner processes by project name.
@@ -59,13 +58,12 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
     private final RunnerLocalizationConstant                                          locale;
     private final GetLogsAction                                                       logsAction;
     private final Provider<AsyncCallbackBuilder<Array<ApplicationProcessDescriptor>>> callbackBuilderProvider;
-    private final LaunchAction                                                        launchAction;
     private final WebSocketUtil                                                       webSocketUtil;
+    private final RunnerManagerPresenter                                              runnerManagerPresenter;
     private final String                                                              workspaceId;
 
     private String                                            channel;
     private SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler;
-    private Runner                                            runner;
     private CurrentProject                                    project;
 
     @Inject
@@ -77,6 +75,7 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                                      Provider<AsyncCallbackBuilder<Array<ApplicationProcessDescriptor>>> callbackBuilderProvider,
                                      WebSocketUtil webSocketUtil,
                                      RunnerActionFactory actionFactory,
+                                     RunnerManagerPresenter runnerManagerPresenter,
                                      @Named("workspaceId") String workspaceId) {
         this.notificationManager = notificationManager;
         this.service = service;
@@ -84,20 +83,17 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
         this.appContext = appContext;
         this.locale = locale;
         this.logsAction = actionFactory.createGetLogs();
-        this.launchAction = actionFactory.createLaunch();
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.webSocketUtil = webSocketUtil;
+        this.runnerManagerPresenter = runnerManagerPresenter;
         this.workspaceId = workspaceId;
 
         addAction(logsAction);
-        addAction(launchAction);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void perform(@Nonnull final Runner runner) {
-        this.runner = runner;
-
+    public void perform() {
         project = appContext.getCurrentProject();
         if (project == null) {
             return;
@@ -114,7 +110,6 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                         for (ApplicationProcessDescriptor processDescriptor : result.asIterable()) {
                             if (isNewOrRunningProcess(processDescriptor)) {
                                 prepareRunnerWithRunningApp(processDescriptor);
-
                             }
                         }
                     }
@@ -140,7 +135,7 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                 dtoUnmarshallerFactory.newWSUnmarshaller(ApplicationProcessDescriptor.class)) {
             @Override
             protected void onMessageReceived(ApplicationProcessDescriptor processDescriptor) {
-                if (!runner.isAlive() && isNewOrRunningProcess(processDescriptor)) {
+                if (!runnerManagerPresenter.isRunnerExist(processDescriptor.getProcessId()) && isNewOrRunningProcess(processDescriptor)) {
                     prepareRunnerWithRunningApp(processDescriptor);
                 }
             }
@@ -151,20 +146,17 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
             }
         };
 
-        channel = PROCESS_STARTED_CHANNEL + workspaceId + ':' + project.getProjectDescription().getPath();
+        channel = PROCESS_STARTED_CHANNEL + workspaceId + ':' + project.getProjectDescription().getPath() + ':' +
+                  appContext.getCurrentUser().getProfile().getId();
         webSocketUtil.subscribeHandler(channel, processStartedHandler);
     }
 
     private void prepareRunnerWithRunningApp(@Nonnull ApplicationProcessDescriptor processDescriptor) {
+        Runner runner = runnerManagerPresenter.addRunner(processDescriptor);
         runner.setAliveStatus(true); // set true here because we don't get information
-        runner.setStatus(Status.RUNNING);
+        runner.setStartedStatus(true);
+        runner.setStatus(Runner.Status.RUNNING);
 
-        runner.setProcessDescriptor(processDescriptor);
-        // TODO it seems it isn't logical to set descriptor into project
-        project.setProcessDescriptor(processDescriptor);
-
-        launchAction.perform(runner);
-        //TODO  isUserAction parameter is false
         logsAction.perform(runner);
 
         Notification notification = new Notification(locale.projectRunningNow(project.getProjectDescription().getName()), INFO, true);

@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
  * The general representation of runner manager action. It provides different actions which were bound to this action.
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public interface RunnerAction {
 
@@ -28,6 +29,9 @@ public interface RunnerAction {
      *         runner that execute this action
      */
     void perform(@Nonnull Runner runner);
+
+    /** Perform any actions which were bound to this action. */
+    void perform();
 
     /** Stop all actions which were started for this action. Unsubscribe for all events and etc. */
     void stop();

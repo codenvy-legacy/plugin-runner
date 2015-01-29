@@ -88,6 +88,8 @@ public class RunAction extends AbstractRunnerAction {
                         runner.setStartedStatus(true);
                         project.setProcessDescriptor(descriptor);
 
+                        presenter.addRunnerId(descriptor.getProcessId());
+
                         launchAction.perform(runner);
                     }
                 })

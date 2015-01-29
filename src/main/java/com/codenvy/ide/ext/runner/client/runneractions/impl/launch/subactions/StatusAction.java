@@ -42,11 +42,13 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_PROGRESS;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 
 /**
  * The action that checks status of a runner and changes it on UI part.
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class StatusAction extends AbstractRunnerAction {
     /** WebSocket channel to get application's status. */
@@ -95,7 +97,6 @@ public class StatusAction extends AbstractRunnerAction {
         this.logsAction = actionFactory.createGetLogs();
         this.checkHealthStatusAction = actionFactory.createCheckHealthStatus(notification);
 
-        addAction(checkHealthStatusAction);
         addAction(logsAction);
     }
 
@@ -140,6 +141,8 @@ public class StatusAction extends AbstractRunnerAction {
         };
 
         webSocketUtil.subscribeHandler(webSocketChannel, runnerStatusHandler);
+
+        notification.setStatus(FINISHED);
     }
 
     private void onApplicationStatusUpdated(@Nonnull ApplicationProcessDescriptor descriptor) {
@@ -155,6 +158,10 @@ public class StatusAction extends AbstractRunnerAction {
                 processFailedMessage();
                 break;
 
+            case STOPPED:
+                processStoppedMessage();
+                break;
+
             case CANCELLED:
                 processCancelledMessage();
                 break;
@@ -168,6 +175,25 @@ public class StatusAction extends AbstractRunnerAction {
         }
 
         eventBus.fireEvent(new RunnerApplicationStatusEvent(descriptor, appContext, descriptor.getStatus()));
+    }
+
+    private void processStoppedMessage() {
+        runner.setStatus(STOPPED);
+        runner.setAliveStatus(false);
+
+        view.updateMoreInfoPopup(runner);
+        view.update(runner);
+
+        project.setIsRunningEnabled(true);
+
+        String projectName = project.getProjectDescription().getName();
+        String message = locale.applicationStopped(projectName);
+        notification.update(message, INFO, FINISHED, null, true);
+
+        view.printInfo(runner, message);
+
+        presenter.stopRunAction(runner);
+        stop();
     }
 
     private void processRunningMessage() {
@@ -234,6 +260,7 @@ public class StatusAction extends AbstractRunnerAction {
 
         webSocketUtil.unSubscribeHandler(webSocketChannel, runnerStatusHandler);
 
+        checkHealthStatusAction.stop();
         super.stop();
 
         webSocketChannel = null;

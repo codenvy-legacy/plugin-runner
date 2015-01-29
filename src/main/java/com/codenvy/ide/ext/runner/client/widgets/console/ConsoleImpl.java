@@ -96,23 +96,26 @@ public class ConsoleImpl extends Composite implements Console {
 
     /** {@inheritDoc} */
     @Override
-    public void printMessage(@Nonnull String message) {
-        if (message.startsWith(INFO)) {
-            print(buildSafeHtmlMessage(INFO, INFO_COLOR, message));
-        } else if (message.startsWith(ERROR)) {
-            print(buildSafeHtmlMessage(ERROR, ERROR_COLOR, message));
-        } else if (message.startsWith(WARN)) {
-            print(buildSafeHtmlMessage(WARN, WARN_COLOR, message));
-        } else if (message.startsWith(DOCKER + " " + ERROR)) {
-            print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, ERROR, ERROR_COLOR, message));
-        } else if (message.startsWith(DOCKER)) {
-            print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, message));
-        } else if (message.startsWith(STDOUT)) {
-            print(buildSafeHtmlMessage(STDOUT, STDOUT_COLOR, message));
-        } else if (message.startsWith(STDERR)) {
-            print(buildSafeHtmlMessage(STDERR, STDERR_COLOR, message));
-        } else {
-            print(buildSafeHtmlMessage(message));
+    public void printMessage(@Nonnull String text) {
+        //The message from server can be include a few lines of console
+        for (String message : text.split("\n")) {
+            if (message.startsWith(INFO)) {
+                print(buildSafeHtmlMessage(INFO, INFO_COLOR, message));
+            } else if (message.startsWith(ERROR)) {
+                print(buildSafeHtmlMessage(ERROR, ERROR_COLOR, message));
+            } else if (message.startsWith(WARN)) {
+                print(buildSafeHtmlMessage(WARN, WARN_COLOR, message));
+            } else if (message.startsWith(DOCKER + " " + ERROR)) {
+                print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, ERROR, ERROR_COLOR, message));
+            } else if (message.startsWith(DOCKER)) {
+                print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, message));
+            } else if (message.startsWith(STDOUT)) {
+                print(buildSafeHtmlMessage(STDOUT, STDOUT_COLOR, message));
+            } else if (message.startsWith(STDERR)) {
+                print(buildSafeHtmlMessage(STDERR, STDERR_COLOR, message));
+            } else {
+                print(buildSafeHtmlMessage(message));
+            }
         }
     }
 

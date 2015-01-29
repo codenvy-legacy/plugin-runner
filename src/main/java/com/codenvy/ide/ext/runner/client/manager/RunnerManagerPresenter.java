@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
@@ -25,7 +26,9 @@ import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -36,9 +39,12 @@ import com.google.web.bindery.event.shared.EventBus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_512;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
@@ -56,16 +62,19 @@ import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
 @Singleton
 public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate, ProjectActionHandler {
 
-    private final RunnerManagerView                 view;
-    private final RunnerAction                      showDockerAction;
-    private final RunnerAction                      getEnvironmentsAction;
-    private final DtoFactory                        dtoFactory;
-    private final AppContext                        appContext;
-    private final ModelsFactory                     modelsFactory;
-    private final RunnerActionFactory               actionFactory;
-    private final Map<Runner, CheckRamAndRunAction> checkRamAndRunActions;
-    private final Timer                             runnerTimer;
-    private final RunnerLocalizationConstant        locale;
+    private final RunnerManagerView          view;
+    private final RunnerAction               showDockerAction;
+    private final RunnerAction               getEnvironmentsAction;
+    private final DtoFactory                 dtoFactory;
+    private final AppContext                 appContext;
+    private final ModelsFactory              modelsFactory;
+    private final RunnerActionFactory        actionFactory;
+    private final Map<Runner, RunnerAction>  runnerActions;
+    private final Timer                      runnerTimer;
+    private final RunnerLocalizationConstant locale;
+
+    private Set<Long>                 runnersId;
+    private GetRunningProcessesAction getRunningProcessAction;
 
     private Runner            selectedRunner;
     private RunnerEnvironment selectedEnvironment;
@@ -88,7 +97,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.showDockerAction = actionFactory.createShowDocker();
         this.getEnvironmentsAction = actionFactory.createGetEnvironments();
 
-        this.checkRamAndRunActions = new HashMap<>();
+        this.runnerActions = new HashMap<>();
 
         this.runnerTimer = new Timer() {
             @Override
@@ -100,6 +109,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         };
 
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
+        runnersId = new HashSet<>();
     }
 
     private void updateRunnerTimer() {
@@ -109,6 +119,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     }
 
     /** @return the GWT widget that is controlled by the presenter */
+    @Nonnull
     public RunnerManagerView getView() {
         return view;
     }
@@ -184,15 +195,15 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         if (FAILED.equals(selectedRunner.getStatus()) || STOPPED.equals(selectedRunner.getStatus())) {
-            CheckRamAndRunAction checkRamAndRunAction = checkRamAndRunActions.get(selectedRunner);
+            RunnerAction checkRamAndRunAction = runnerActions.get(selectedRunner);
             if (checkRamAndRunAction == null) {
-                return;
+                launchRunner(selectedRunner);
+            } else {
+                checkRamAndRunAction.perform(selectedRunner);
+
+                update(selectedRunner);
+                selectedRunner.resetCreationTime();
             }
-
-            checkRamAndRunAction.perform(selectedRunner);
-
-            update(selectedRunner);
-            selectedRunner.resetCreationTime();
         } else {
             launchRunner();
         }
@@ -201,15 +212,25 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onStopButtonClicked() {
-        CheckRamAndRunAction checkRamAndRunAction = checkRamAndRunActions.get(selectedRunner);
-        if (checkRamAndRunAction != null) {
-            checkRamAndRunAction.stop();
-        }
+        stopRunAction(selectedRunner);
 
         StopAction stopAction = actionFactory.createStop();
         stopAction.perform(selectedRunner);
 
         view.updateMoreInfoPopup(selectedRunner);
+    }
+
+    /**
+     * Stops launch and run actions.
+     *
+     * @param runner
+     *         runner which performs actions
+     */
+    public void stopRunAction(@Nonnull Runner runner) {
+        RunnerAction checkRamAndRunAction = runnerActions.get(runner);
+        if (checkRamAndRunAction != null) {
+            checkRamAndRunAction.stop();
+        }
     }
 
     /** {@inheritDoc} */
@@ -257,8 +278,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onTemplatesButtonClicked() {
-        //noinspection ConstantConditions
-        getEnvironmentsAction.perform(null);
+        getEnvironmentsAction.perform();
     }
 
     /** {@inheritDoc} */
@@ -293,7 +313,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         CheckRamAndRunAction checkRamAndRunAction = actionFactory.createCheckRamAndRun();
         checkRamAndRunAction.perform(runner);
 
-        checkRamAndRunActions.put(runner, checkRamAndRunAction);
+        runnerActions.put(runner, checkRamAndRunAction);
 
         runner.resetCreationTime();
         runnerTimer.schedule(ONE_SEC.getValue());
@@ -340,11 +360,85 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Override
     public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
         view.activateHistory();
+
+        getRunningProcessAction = actionFactory.createGetRunningProcess();
+
+        CurrentProject currentProject = appContext.getCurrentProject();
+        if (currentProject == null) {
+            return;
+        }
+
+        getRunningProcessAction.perform();
+
+        runnerTimer.schedule(ONE_SEC.getValue());
     }
 
     /** {@inheritDoc} */
     @Override
     public void onProjectClosed(@Nonnull ProjectActionEvent projectActionEvent) {
         partStack.hidePart(this);
+
+        for (Runner runner : runnerActions.keySet()) {
+            if (runner.isAlive()) {
+                runner.setAliveStatus(false);
+
+                stopRunAction(runner);
+            }
+        }
+
+        getRunningProcessAction.stop();
     }
+
+    /**
+     * Adds already running runner.
+     *
+     * @param processDescriptor
+     *         The descriptor of new runner
+     * @return instance of new runner
+     */
+    @Nonnull
+    public Runner addRunner(@Nonnull ApplicationProcessDescriptor processDescriptor) {
+        RunOptions runOptions = dtoFactory.createDto(RunOptions.class);
+        Runner runner = modelsFactory.createRunner(runOptions);
+        runnersId.add(processDescriptor.getProcessId());
+
+        runner.setProcessDescriptor(processDescriptor);
+        runner.setAliveStatus(true);
+
+        view.addRunner(runner);
+
+        runner.setStatus(DONE);
+
+        onRunnerSelected(runner);
+
+        runnerTimer.schedule(ONE_SEC.getValue());
+
+        LaunchAction launchAction = actionFactory.createLaunch();
+        runnerActions.put(runner, launchAction);
+
+        launchAction.perform(runner);
+
+        return runner;
+    }
+
+    /**
+     * Adds id of new running runner.
+     *
+     * @param runnerId
+     *         process id of runner
+     */
+    public void addRunnerId(@Nonnull Long runnerId) {
+        runnersId.add(runnerId);
+    }
+
+    /**
+     * Returns <code>true</code> if runner with current ID was already create, <code>false</code> runner does not exist* *
+     *
+     * @param runnerId
+     *         ID of runner
+     */
+    public boolean isRunnerExist(@Nonnull Long runnerId) {
+        return runnersId.contains(runnerId);
+    }
+
 }

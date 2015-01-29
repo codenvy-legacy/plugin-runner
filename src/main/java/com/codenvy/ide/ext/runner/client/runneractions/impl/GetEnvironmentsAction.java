@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
  * for displaying on special Templates widget {@link com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget}
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class GetEnvironmentsAction extends AbstractRunnerAction {
 
@@ -68,7 +69,7 @@ public class GetEnvironmentsAction extends AbstractRunnerAction {
 
     /** {@inheritDoc} */
     @Override
-    public void perform(@Nonnull Runner runner) {
+    public void perform() {
         CurrentProject project = appContext.getCurrentProject();
 
         if (project == null) {
@@ -127,4 +128,5 @@ public class GetEnvironmentsAction extends AbstractRunnerAction {
 
         runnerService.getRunners(callback);
     }
+
 }
