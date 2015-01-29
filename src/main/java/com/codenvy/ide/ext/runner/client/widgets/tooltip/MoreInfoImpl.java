@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.widgets.tooltip;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -20,7 +21,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.Date;
@@ -33,9 +33,10 @@ import java.util.Date;
  */
 public class MoreInfoImpl extends Composite implements MoreInfo {
 
-    @Singleton
     interface MoreInfoPopupImplUiBinder extends UiBinder<Widget, MoreInfoImpl> {
     }
+
+    private static final MoreInfoPopupImplUiBinder UI_BINDER = GWT.create(MoreInfoPopupImplUiBinder.class);
 
     @UiField
     Label started;
@@ -56,11 +57,11 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
     private final DateTimeFormat startDateFormatter;
 
     @Inject
-    public MoreInfoImpl(MoreInfoPopupImplUiBinder uiBinder, RunnerResources resources, RunnerLocalizationConstant locale) {
+    public MoreInfoImpl(RunnerResources resources, RunnerLocalizationConstant locale) {
         this.resources = resources;
         this.locale = locale;
 
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget(UI_BINDER.createAndBindUi(this));
 
         this.startDateFormatter = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss");
     }
