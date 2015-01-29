@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.widgets.button;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -21,7 +22,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.google.inject.assistedinject.Assisted;
 
 import javax.annotation.Nonnull;
@@ -31,11 +31,12 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public class ButtonWidgetImpl extends Composite implements ButtonWidget {
+public class ButtonWidgetImpl extends Composite implements ButtonWidget, ClickHandler {
 
-    @Singleton
     interface ButtonWidgetImplUiBinder extends UiBinder<Widget, ButtonWidgetImpl> {
     }
+
+    private static final ButtonWidgetImplUiBinder UI_BINDER = GWT.create(ButtonWidgetImplUiBinder.class);
 
     @UiField
     FlowPanel buttonPanel;
@@ -49,21 +50,14 @@ public class ButtonWidgetImpl extends Composite implements ButtonWidget {
     private boolean        isEnable;
 
     @Inject
-    public ButtonWidgetImpl(ButtonWidgetImplUiBinder ourUiBinder, RunnerResources resources, @Nonnull @Assisted ImageResource image) {
+    public ButtonWidgetImpl(RunnerResources resources, @Nonnull @Assisted ImageResource image) {
         this.resources = resources;
 
-        initWidget(ourUiBinder.createAndBindUi(this));
+        initWidget(UI_BINDER.createAndBindUi(this));
 
         this.image.setResource(image);
 
-        addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (isEnable) {
-                    delegate.onButtonClicked();
-                }
-            }
-        }, ClickEvent.getType());
+        addDomHandler(this, ClickEvent.getType());
     }
 
     /** {@inheritDoc} */
@@ -82,10 +76,17 @@ public class ButtonWidgetImpl extends Composite implements ButtonWidget {
         image.removeStyleName(resources.runnerCss().opacityButton());
     }
 
-
     /** {@inheritDoc} */
     @Override
     public void setDelegate(@Nonnull ActionDelegate delegate) {
         this.delegate = delegate;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onClick(ClickEvent event) {
+        if (isEnable) {
+            delegate.onButtonClicked();
+        }
     }
 }
