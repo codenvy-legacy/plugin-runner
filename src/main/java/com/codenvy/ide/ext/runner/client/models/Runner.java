@@ -64,7 +64,7 @@ public interface Runner {
 
     /** @return string representation of runner active time */
     @Nonnull
-    String getTotalTime();
+    String getActiveTime();
 
     /** @return string representation of time when runner was stopped */
     @Nonnull
@@ -76,6 +76,14 @@ public interface Runner {
 
     /** @return <code>true</code> if this runner has already been started, <code>false</code> it hasn't */
     boolean isStarted();
+
+    /**
+     * Sets started runner status. This status need to start runner time active right runner was started.
+     *
+     * @param isStarted
+     *         <code>true</code> runner is started,<code>false</code> runner is stopped
+     */
+    void setStartedStatus(boolean isStarted);
 
     /**
      * Returns title of runner. This value uses for unique identifier every runner on UI components.

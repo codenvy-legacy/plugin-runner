@@ -17,18 +17,18 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public enum TabHeight {
+public enum Tab {
     LEFT_PANEL("19px"), RIGHT_PANEL("20px");
 
-    private final String tabHeight;
+    private final String height;
 
-    TabHeight(@Nonnull String tabHeight) {
-        this.tabHeight = tabHeight;
+    Tab(@Nonnull String height) {
+        this.height = height;
     }
 
-    /** @return string value of tab height */
-    @Override
-    public String toString() {
-        return tabHeight;
+    /** @return string value of height. */
+    @Nonnull
+    public String getHeight() {
+        return height;
     }
 }

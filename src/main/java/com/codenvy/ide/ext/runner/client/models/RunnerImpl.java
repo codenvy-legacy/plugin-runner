@@ -54,6 +54,7 @@ public class RunnerImpl implements Runner {
     private int                          ram;
     private boolean                      isAlive;
     private boolean                      isConsoleActive;
+    private boolean                      isStarted;
 
     /**
      * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
@@ -192,7 +193,7 @@ public class RunnerImpl implements Runner {
         }
 
         if (lifeTimeValue == null) {
-            return "";
+            return TIMER_STUB;
         }
         double lifeTime = NumberFormat.getDecimalFormat().parse(lifeTimeValue);
 
@@ -202,8 +203,9 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Nonnull
     @Override
-    public String getTotalTime() {
-        return isAlive ? StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationTime) / ONE_SEC.getValue()) : TIMER_STUB;
+    public String getActiveTime() {
+        return isStarted ? StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationTime) / ONE_SEC.getValue())
+                         : TIMER_STUB;
     }
 
     /** {@inheritDoc} */
@@ -240,8 +242,13 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Override
     public boolean isStarted() {
-        Objects.requireNonNull(descriptor);
-        return descriptor.getStartTime() != -1;
+        return isStarted;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setStartedStatus(boolean isStarted) {
+        this.isStarted = isStarted;
     }
 
     /** {@inheritDoc} */

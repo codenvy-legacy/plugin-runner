@@ -21,7 +21,7 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
-import com.codenvy.ide.ext.runner.client.widgets.tab.TabHeight;
+import com.codenvy.ide.ext.runner.client.widgets.tab.Tab;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
@@ -53,6 +53,8 @@ import java.util.Map;
 
 import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.BLACK;
 import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.GREY;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.Tab.LEFT_PANEL;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.Tab.RIGHT_PANEL;
 
 /**
  * Class provides view representation of runner panel.
@@ -209,7 +211,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onConsoleButtonClicked();
             }
         };
-        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate, tabsPanel, TabHeight.LEFT_PANEL.toString());
+        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate, tabsPanel, LEFT_PANEL);
         consoleTab.select(GREY);
 
         TabWidget.ActionDelegate terminalDelegate = new TabWidget.ActionDelegate() {
@@ -218,7 +220,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onTerminalButtonClicked();
             }
         };
-        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate, tabsPanel, TabHeight.LEFT_PANEL.toString());
+        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate, tabsPanel, LEFT_PANEL);
 
         TabWidget.ActionDelegate historyDelegate = new TabWidget.ActionDelegate() {
             @Override
@@ -226,7 +228,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onHistoryButtonClicked();
             }
         };
-        historyTab = createTab(locale.runnerTabHistory(), historyDelegate, historyTemplatePanel, TabHeight.RIGHT_PANEL.toString());
+        historyTab = createTab(locale.runnerTabHistory(), historyDelegate, historyTemplatePanel, RIGHT_PANEL);
         historyTab.select(BLACK);
 
         TabWidget.ActionDelegate templatesDelegate = new TabWidget.ActionDelegate() {
@@ -235,20 +237,20 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onTemplatesButtonClicked();
             }
         };
-        templatesTab = createTab(locale.runnerTabTemplates(), templatesDelegate, historyTemplatePanel, TabHeight.RIGHT_PANEL.toString());
+        templatesTab = createTab(locale.runnerTabTemplates(), templatesDelegate, historyTemplatePanel, RIGHT_PANEL);
     }
 
     @Nonnull
     private TabWidget createTab(@Nonnull String tabName,
                                 @Nonnull TabWidget.ActionDelegate actionDelegate,
                                 @Nonnull FlowPanel tabsPanel,
-                                @Nonnull String tabHeight) {
-        TabWidget tab = widgetFactory.createTab(tabName, tabHeight);
-        tab.setDelegate(actionDelegate);
+                                @Nonnull Tab tab) {
+        TabWidget tabWidget = widgetFactory.createTab(tabName, tab);
+        tabWidget.setDelegate(actionDelegate);
 
-        tabsPanel.add(tab);
+        tabsPanel.add(tabWidget);
 
-        return tab;
+        return tabWidget;
     }
 
     private void initializeButtons() {
@@ -337,6 +339,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         if (runnerWidget != null) {
             runnerWidget.update(runner);
         }
+
+        moreInfoWidget.update(runner);
     }
 
     private void changeButtonsState(@Nonnull Runner runner) {

@@ -71,7 +71,7 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
         started.setText(startedTime);
         finished.setText(runner.getStopTime());
         timeout.setText(runner.getTimeout());
-        activeTime.setText(runner.getTotalTime());
+        activeTime.setText(runner.getActiveTime());
 
         ram.setText(runner.getRAM() + "MB");
     }

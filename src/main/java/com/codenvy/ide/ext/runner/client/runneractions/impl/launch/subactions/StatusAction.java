@@ -187,6 +187,7 @@ public class StatusAction extends AbstractRunnerAction {
 
     private void processFailedMessage() {
         runner.setAliveStatus(false);
+        runner.setStartedStatus(false);
         runner.setStatus(FAILED);
 
         presenter.update(runner);
@@ -206,6 +207,7 @@ public class StatusAction extends AbstractRunnerAction {
 
     private void processCancelledMessage() {
         runner.setAliveStatus(false);
+        runner.setStartedStatus(false);
         runner.setStatus(FAILED);
 
         presenter.update(runner);

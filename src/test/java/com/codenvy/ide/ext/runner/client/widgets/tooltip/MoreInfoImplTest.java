@@ -46,7 +46,7 @@ public class MoreInfoImplTest {
         when(runner.getCreationTime()).thenReturn(currentDate.getTime());
         when(runner.getStopTime()).thenReturn(SOME_TEXT);
         when(runner.getTimeout()).thenReturn(SOME_TEXT);
-        when(runner.getTotalTime()).thenReturn(SOME_TEXT);
+        when(runner.getActiveTime()).thenReturn(SOME_TEXT);
         when(runner.getRAM()).thenReturn(MEMORY_128.getValue());
 
         widget.update(runner);

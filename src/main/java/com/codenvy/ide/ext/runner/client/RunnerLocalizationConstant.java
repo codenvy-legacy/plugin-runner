@@ -239,4 +239,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("url.app.running")
     String urlAppRunning();
+
+    @Key("tooltip.runner.panel")
+    String tooltipRunnerPanel();
 }

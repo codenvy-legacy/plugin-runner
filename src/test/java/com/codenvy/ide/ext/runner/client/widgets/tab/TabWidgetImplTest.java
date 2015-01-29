@@ -35,17 +35,20 @@ public class TabWidgetImplTest {
 
     @Mock(answer = RETURNS_DEEP_STUBS)
     private RunnerResources resources;
+    @Mock
+    private Tab             tab;
     private TabWidgetImpl   widget;
 
     @Before
     public void setUp() throws Exception {
-        widget = new TabWidgetImpl(resources, SOME_TEXT, SOME_TEXT);
+        widget = new TabWidgetImpl(resources, SOME_TEXT, tab);
         when(resources.runnerCss().activeTabText()).thenReturn(SOME_TEXT);
     }
 
     @Test
-    public void titleShouldBeSet() throws Exception {
+    public void constructorShouldBeVerified() throws Exception {
         verify(widget.tabTitle).setText(SOME_TEXT);
+        verify(tab).getHeight();
     }
 
     @Test

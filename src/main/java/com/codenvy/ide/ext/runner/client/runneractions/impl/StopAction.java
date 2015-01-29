@@ -158,6 +158,7 @@ public class StopAction extends AbstractRunnerAction {
         Notification notification = new Notification(message, notificationType);
         notificationManager.showNotification(notification);
 
+        runner.setStartedStatus(false);
         presenter.update(runner);
     }
 

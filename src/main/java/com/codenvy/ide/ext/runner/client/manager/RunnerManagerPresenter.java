@@ -287,13 +287,13 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         selectedEnvironment = null;
 
         view.activateHistory();
-        view.addRunner(selectedRunner);
-        update(selectedRunner);
+        view.addRunner(runner);
+        update(runner);
 
         CheckRamAndRunAction checkRamAndRunAction = actionFactory.createCheckRamAndRun();
-        checkRamAndRunAction.perform(selectedRunner);
+        checkRamAndRunAction.perform(runner);
 
-        checkRamAndRunActions.put(selectedRunner, checkRamAndRunAction);
+        checkRamAndRunActions.put(runner, checkRamAndRunAction);
 
         runner.resetCreationTime();
         runnerTimer.schedule(ONE_SEC.getValue());
@@ -333,8 +333,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Nullable
     @Override
     public String getTitleToolTip() {
-        // TODO tooltip like in old version
-        return null;
+        return locale.tooltipRunnerPanel();
     }
 
     /** {@inheritDoc} */
