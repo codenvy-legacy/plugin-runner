@@ -117,7 +117,7 @@ public class StatusAction extends AbstractRunnerAction {
             /** {@inheritDoc} */
             @Override
             protected void onErrorReceived(Throwable exception) {
-                runner.setAppRunningStatus(false);
+                runner.setAliveStatus(false);
 
                 if (exception instanceof ServerException && ((ServerException)exception).getHTTPStatus() == 500) {
                     ServiceError e = dtoFactory.createDtoFromJson(exception.getMessage(), ServiceError.class);
@@ -172,7 +172,7 @@ public class StatusAction extends AbstractRunnerAction {
 
     private void processRunningMessage() {
         runner.setStatus(RUNNING);
-        runner.setAppRunningStatus(true);
+        runner.setAliveStatus(true);
 
         presenter.update(runner);
 
@@ -186,8 +186,6 @@ public class StatusAction extends AbstractRunnerAction {
     }
 
     private void processFailedMessage() {
-        runner.setAppLaunchStatus(false);
-        runner.setAppRunningStatus(false);
         runner.setAliveStatus(false);
         runner.setStatus(FAILED);
 
@@ -207,8 +205,6 @@ public class StatusAction extends AbstractRunnerAction {
     }
 
     private void processCancelledMessage() {
-        runner.setAppLaunchStatus(false);
-        runner.setAppRunningStatus(false);
         runner.setAliveStatus(false);
         runner.setStatus(FAILED);
 

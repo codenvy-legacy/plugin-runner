@@ -39,7 +39,7 @@ public class TabWidgetImplTest {
 
     @Before
     public void setUp() throws Exception {
-        widget = new TabWidgetImpl(resources, SOME_TEXT);
+        widget = new TabWidgetImpl(resources, SOME_TEXT, SOME_TEXT);
         when(resources.runnerCss().activeTabText()).thenReturn(SOME_TEXT);
     }
 

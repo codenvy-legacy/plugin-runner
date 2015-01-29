@@ -18,13 +18,12 @@
     <ui:style>
         .runnerSize {
             direction: ltr;
-            width: calc(100% + 1px);
+            width: 100%;
             height: 35px;
             cursor: pointer;
             overflow: hidden;
             text-overflow: clip;
             white-space: nowrap;
-            margin-left: 5px;
         }
 
         .runnerName {
@@ -46,7 +45,7 @@
         }
 
         .image {
-            margin-left: 3px;
+            margin-left: 7px;
             margin-top: 10px;
         }
     </ui:style>

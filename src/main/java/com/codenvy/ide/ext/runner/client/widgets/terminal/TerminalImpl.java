@@ -64,7 +64,7 @@ public class TerminalImpl extends Composite implements Terminal {
         }
 
         String newTerminalUrl = runner.getTerminalURL();
-        boolean isAnyAppRunning = runner.isAnyAppRunning();
+        boolean isAnyAppRunning = runner.isAlive();
 
         if (url != null && url.equals(newTerminalUrl) && isAnyAppRunning) {
             return;

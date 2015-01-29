@@ -113,7 +113,7 @@ public class StopAction extends AbstractRunnerAction {
                 .failure(new FailureCallback() {
                     @Override
                     public void onFailure(@Nonnull Throwable reason) {
-                        runner.setAppRunningStatus(false);
+                        runner.setAliveStatus(false);
                         runner.setProcessDescriptor(null);
 
                         project.setIsRunningEnabled(true);
@@ -130,8 +130,6 @@ public class StopAction extends AbstractRunnerAction {
     }
 
     private void processStoppedMessage(@Nonnull ApplicationProcessDescriptor descriptor) {
-        runner.setAppRunningStatus(false);
-        runner.setAppLaunchStatus(false);
         runner.setAliveStatus(false);
         runner.setProcessDescriptor(descriptor);
 

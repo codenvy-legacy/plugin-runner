@@ -21,6 +21,7 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.widgets.tab.TabHeight;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
@@ -208,7 +209,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onConsoleButtonClicked();
             }
         };
-        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate, tabsPanel);
+        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate, tabsPanel, TabHeight.LEFT_PANEL.toString());
         consoleTab.select(GREY);
 
         TabWidget.ActionDelegate terminalDelegate = new TabWidget.ActionDelegate() {
@@ -217,7 +218,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onTerminalButtonClicked();
             }
         };
-        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate, tabsPanel);
+        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate, tabsPanel, TabHeight.LEFT_PANEL.toString());
 
         TabWidget.ActionDelegate historyDelegate = new TabWidget.ActionDelegate() {
             @Override
@@ -225,7 +226,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onHistoryButtonClicked();
             }
         };
-        historyTab = createTab(locale.runnerTabHistory(), historyDelegate, historyTemplatePanel);
+        historyTab = createTab(locale.runnerTabHistory(), historyDelegate, historyTemplatePanel, TabHeight.RIGHT_PANEL.toString());
         historyTab.select(BLACK);
 
         TabWidget.ActionDelegate templatesDelegate = new TabWidget.ActionDelegate() {
@@ -234,12 +235,15 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onTemplatesButtonClicked();
             }
         };
-        templatesTab = createTab(locale.runnerTabTemplates(), templatesDelegate, historyTemplatePanel);
+        templatesTab = createTab(locale.runnerTabTemplates(), templatesDelegate, historyTemplatePanel, TabHeight.RIGHT_PANEL.toString());
     }
 
     @Nonnull
-    private TabWidget createTab(@Nonnull String tabName, @Nonnull TabWidget.ActionDelegate actionDelegate, @Nonnull FlowPanel tabsPanel) {
-        TabWidget tab = widgetFactory.createTab(tabName);
+    private TabWidget createTab(@Nonnull String tabName,
+                                @Nonnull TabWidget.ActionDelegate actionDelegate,
+                                @Nonnull FlowPanel tabsPanel,
+                                @Nonnull String tabHeight) {
+        TabWidget tab = widgetFactory.createTab(tabName, tabHeight);
         tab.setDelegate(actionDelegate);
 
         tabsPanel.add(tab);
@@ -502,7 +506,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
             textArea.add(terminal);
         } else {
-            boolean isAnyAppRun = runner.isAnyAppRunning();
+            boolean isAnyAppRun = runner.isAlive();
 
             terminal.setVisible(isAnyAppRun);
             terminal.setUnavailableLabelVisible(!isAnyAppRun);

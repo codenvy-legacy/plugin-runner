@@ -57,7 +57,7 @@ public class TerminalImplTest {
 
     @Test
     public void terminalContentShouldBeUpdated() throws Exception {
-        when(runner.isAnyAppRunning()).thenReturn(true);
+        when(runner.isAlive()).thenReturn(true);
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
 
         terminal.update(runner);
@@ -73,7 +73,7 @@ public class TerminalImplTest {
 
     @Test
     public void unavailableLabelShouldBeShoved() throws Exception {
-        when(runner.isAnyAppRunning()).thenReturn(false);
+        when(runner.isAlive()).thenReturn(false);
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
 
         terminal.update(runner);
@@ -91,7 +91,7 @@ public class TerminalImplTest {
     @Test
     public void terminalShouldNotBeUpdate() throws Exception {
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
-        when(runner.isAnyAppRunning()).thenReturn(true);
+        when(runner.isAlive()).thenReturn(true);
 
         terminal.update(runner);
         terminal.update(runner);

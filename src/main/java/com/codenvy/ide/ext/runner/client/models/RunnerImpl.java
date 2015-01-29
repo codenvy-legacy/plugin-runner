@@ -41,7 +41,7 @@ import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
  */
 public class RunnerImpl implements Runner {
 
-    private static final String TIMER_STUB    = "--/--/--";
+    private static final String TIMER_STUB    = "--:--:--";
     private static final String RUNNER_NAME   = "Runner ";
     private static       int    RUNNER_NUMBER = 1;
 
@@ -53,8 +53,6 @@ public class RunnerImpl implements Runner {
     private long                         creationTime;
     private int                          ram;
     private boolean                      isAlive;
-    private boolean                      isAnyAppRunning;
-    private boolean                      isAnyAppLaunched;
     private boolean                      isConsoleActive;
 
     /**
@@ -160,7 +158,7 @@ public class RunnerImpl implements Runner {
             return getLifeTime(lifeTimeMetric);
         }
 
-        return "";
+        return TIMER_STUB;
     }
 
     @Nonnull
@@ -172,14 +170,14 @@ public class RunnerImpl implements Runner {
         }
 
         if (timeout == null) {
-            return "";
+            return TIMER_STUB;
         }
 
         double terminationTime = NumberFormat.getDecimalFormat().parse(timeout);
         double terminationTimeout = terminationTime - System.currentTimeMillis();
 
         if (terminationTimeout <= 0) {
-            return "";
+            return TIMER_STUB;
         }
 
         return StringUtils.timeMlsToHumanReadable((long)terminationTimeout);
@@ -219,13 +217,13 @@ public class RunnerImpl implements Runner {
         RunnerMetric stopTimeMetric = getRunnerMetricByName(RunnerMetric.STOP_TIME);
 
         if (stopTimeMetric == null) {
-            return "";
+            return TIMER_STUB;
         }
 
         String stopTime = stopTimeMetric.getValue();
 
         if (stopTime == null) {
-            return "";
+            return TIMER_STUB;
         }
         double stopTimeMls = NumberFormat.getDecimalFormat().parse(stopTime);
 
@@ -356,30 +354,6 @@ public class RunnerImpl implements Runner {
     @Override
     public void setAliveStatus(boolean isAlive) {
         this.isAlive = isAlive;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isAnyAppLaunched() {
-        return isAnyAppLaunched;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setAppLaunchStatus(boolean isAnyAppLaunched) {
-        this.isAnyAppLaunched = isAnyAppLaunched;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isAnyAppRunning() {
-        return isAnyAppRunning;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setAppRunningStatus(boolean isAnyAppRunning) {
-        this.isAnyAppRunning = isAnyAppRunning;
     }
 
     /** {@inheritDoc} */

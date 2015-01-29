@@ -115,13 +115,13 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
         int requiredMemory = runnerConfiguration != null ? runnerConfiguration.getRam() : 0;
 
         if (!isSufficientMemory(totalMemory, usedMemory, requiredMemory)) {
-            runner.setAppLaunchStatus(false);
+            runner.setAliveStatus(false);
             return;
         }
 
         if (overrideMemory > 0) {
             if (!isOverrideMemoryCorrect(totalMemory, usedMemory, overrideMemory)) {
-                runner.setAppLaunchStatus(false);
+                runner.setAliveStatus(false);
                 return;
             }
 

@@ -136,28 +136,6 @@ public interface Runner {
      */
     void setAliveStatus(boolean isAlive);
 
-    /** @return <code>true<code/> if any application launched, <code>false</> it isn't */
-    boolean isAnyAppLaunched();
-
-    /**
-     * Changes launch status of a runner.
-     *
-     * @param isAnyAppLaunched
-     *         new launch status of a runner. If any application launched than status must be <code>true<code/>
-     */
-    void setAppLaunchStatus(boolean isAnyAppLaunched);
-
-    /** @return <code>true<code/> if any application running, <code>false</> it isn't */
-    boolean isAnyAppRunning();
-
-    /**
-     * Changes running status of a runner.
-     *
-     * @param isAnyAppRunning
-     *         new running status of a runner. If any application is running than status must be <code>true<code/>
-     */
-    void setAppRunningStatus(boolean isAnyAppRunning);
-
     /** @return id of process that was bound with this runner */
     long getProcessId();
 

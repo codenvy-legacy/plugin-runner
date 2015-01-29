@@ -19,6 +19,7 @@ import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.inject.assistedinject.Assisted;
 
 import javax.annotation.Nonnull;
 
@@ -44,10 +45,12 @@ public interface WidgetFactory {
      *
      * @param title
      *         title which need set to widget's special place
+     * @param tabHeight
+     *         height which need set to tab
      * @return an instance of {@link TabWidget}
      */
     @Nonnull
-    TabWidget createTab(@Nonnull String title);
+    TabWidget createTab(@Nonnull @Assisted("title") String title, @Nonnull @Assisted("tabHeight") String tabHeight);
 
     /**
      * Creates runner widget.

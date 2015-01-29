@@ -140,7 +140,7 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                 dtoUnmarshallerFactory.newWSUnmarshaller(ApplicationProcessDescriptor.class)) {
             @Override
             protected void onMessageReceived(ApplicationProcessDescriptor processDescriptor) {
-                if (!runner.isAnyAppLaunched() && isNewOrRunningProcess(processDescriptor)) {
+                if (!runner.isAlive() && isNewOrRunningProcess(processDescriptor)) {
                     prepareRunnerWithRunningApp(processDescriptor);
                 }
             }
@@ -157,8 +157,6 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
 
     private void prepareRunnerWithRunningApp(@Nonnull ApplicationProcessDescriptor processDescriptor) {
         runner.setAliveStatus(true); // set true here because we don't get information
-        runner.setAppRunningStatus(true); // about app health in case we open already run app
-        runner.setAppLaunchStatus(true);
         runner.setStatus(Status.RUNNING);
 
         runner.setProcessDescriptor(processDescriptor);

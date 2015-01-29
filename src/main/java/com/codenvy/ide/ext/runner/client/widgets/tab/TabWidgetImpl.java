@@ -48,11 +48,14 @@ public class TabWidgetImpl extends Composite implements TabWidget, ClickHandler 
     private ActionDelegate delegate;
 
     @Inject
-    public TabWidgetImpl(RunnerResources resources, @Nonnull @Assisted String title) {
+    public TabWidgetImpl(RunnerResources resources,
+                         @Nonnull @Assisted("title") String title,
+                         @Nonnull @Assisted("tabHeight") String tabHeight) {
         this.resources = resources;
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
+        setHeight(tabHeight);
         this.tabTitle.setText(title);
 
         addDomHandler(this, ClickEvent.getType());

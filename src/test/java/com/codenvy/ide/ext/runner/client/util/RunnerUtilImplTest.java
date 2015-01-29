@@ -173,7 +173,7 @@ public class RunnerUtilImplTest {
     }
 
     private void verifyShowError() {
-        verify(runner).setAppLaunchStatus(false);
+        verify(runner).setAliveStatus(false);
         verify(runner).setStatus(FAILED);
         verify(presenter).update(runner);
 
