@@ -29,7 +29,7 @@ public interface Console extends IsWidget {
      * @param message
      *         message that needs to be printed
      */
-    void printMessage(@Nonnull String message);
+    void print(@Nonnull String message);
 
     /**
      * Prints Info message with a given content.

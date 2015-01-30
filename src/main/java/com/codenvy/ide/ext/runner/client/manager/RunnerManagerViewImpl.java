@@ -416,7 +416,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             return;
         }
 
-        console.printMessage(line);
+        console.print(line);
     }
 
     /** {@inheritDoc} */

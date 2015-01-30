@@ -18,8 +18,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -30,9 +28,15 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
 
 import javax.annotation.Nonnull;
+
+import static com.codenvy.ide.ext.runner.client.widgets.console.MessageType.DOCKER;
+import static com.codenvy.ide.ext.runner.client.widgets.console.MessageType.ERROR;
+import static com.codenvy.ide.ext.runner.client.widgets.console.MessageType.INFO;
+import static com.codenvy.ide.ext.runner.client.widgets.console.MessageType.WARNING;
 
 /**
  * @author Artem Zatsarynnyy
@@ -51,26 +55,6 @@ public class ConsoleImpl extends Composite implements Console {
     private static final int MAX_CONSOLE_LINES  = 1_000;
     private static final int CLEAR_CONSOLE_LINE = 100;
 
-    private static final String PRE_STYLE = "style='margin:0px;'";
-
-    private static final String INFO       = "[INFO]";
-    private static final String INFO_COLOR = "lightgreen";
-
-    private static final String WARN       = "[WARNING]";
-    private static final String WARN_COLOR = "#FFBA00";
-
-    private static final String ERROR       = "[ERROR]";
-    private static final String ERROR_COLOR = "#F62217";
-
-    private static final String DOCKER       = "[DOCKER]";
-    private static final String DOCKER_COLOR = "#00B7EC";
-
-    private static final String STDOUT       = "[STDOUT]";
-    private static final String STDOUT_COLOR = "lightgreen";
-
-    private static final String STDERR       = "[STDERR]";
-    private static final String STDERR_COLOR = "#F62217";
-
     @UiField
     ScrollPanel panel;
     @UiField
@@ -81,14 +65,17 @@ public class ConsoleImpl extends Composite implements Console {
     final RunnerResources res;
 
     private final RunnerLocalizationConstant locale;
+    private final Provider<MessageBuilder>   messageBuilderProvider;
     private final Runner                     runner;
 
     @Inject
     public ConsoleImpl(RunnerResources resources,
                        RunnerLocalizationConstant locale,
+                       Provider<MessageBuilder> messageBuilderProvider,
                        @Nonnull @Assisted Runner runner) {
         this.res = resources;
         this.locale = locale;
+        this.messageBuilderProvider = messageBuilderProvider;
         this.runner = runner;
 
         initWidget(UI_BINDER.createAndBindUi(this));
@@ -96,113 +83,52 @@ public class ConsoleImpl extends Composite implements Console {
 
     /** {@inheritDoc} */
     @Override
-    public void printMessage(@Nonnull String text) {
+    public void print(@Nonnull String text) {
         //The message from server can be include a few lines of console
         for (String message : text.split("\n")) {
-            if (message.startsWith(INFO)) {
-                print(buildSafeHtmlMessage(INFO, INFO_COLOR, message));
-            } else if (message.startsWith(ERROR)) {
-                print(buildSafeHtmlMessage(ERROR, ERROR_COLOR, message));
-            } else if (message.startsWith(WARN)) {
-                print(buildSafeHtmlMessage(WARN, WARN_COLOR, message));
-            } else if (message.startsWith(DOCKER + " " + ERROR)) {
-                print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, ERROR, ERROR_COLOR, message));
-            } else if (message.startsWith(DOCKER)) {
-                print(buildSafeHtmlMessage(DOCKER, DOCKER_COLOR, message));
-            } else if (message.startsWith(STDOUT)) {
-                print(buildSafeHtmlMessage(STDOUT, STDOUT_COLOR, message));
-            } else if (message.startsWith(STDERR)) {
-                print(buildSafeHtmlMessage(STDERR, STDERR_COLOR, message));
-            } else {
-                print(buildSafeHtmlMessage(message));
+            if (message.isEmpty()) {
+                // don't print empty message
+                continue;
             }
+
+            MessageType messageType = MessageType.detect(message);
+            MessageBuilder messageBuilder = messageBuilderProvider.get()
+                                                                  .message(message)
+                                                                  .type(messageType);
+
+            if (DOCKER.equals(messageType) && message.startsWith(DOCKER.getPrefix() + ' ' + ERROR.getPrefix())) {
+                messageBuilder.type(ERROR);
+            }
+
+            print(messageBuilder.build());
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public void printInfo(@Nonnull String line) {
-        print(buildSafeHtmlMessage(INFO, INFO_COLOR, INFO + ' ' + line));
+        MessageBuilder messageBuilder = messageBuilderProvider.get()
+                                                              .type(INFO)
+                                                              .message(INFO.getPrefix() + ' ' + line);
+        print(messageBuilder.build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void printError(@Nonnull String line) {
-        print(buildSafeHtmlMessage(ERROR, ERROR_COLOR, ERROR + ' ' + line));
+        MessageBuilder messageBuilder = messageBuilderProvider.get()
+                                                              .type(ERROR)
+                                                              .message(ERROR.getPrefix() + ' ' + line);
+        print(messageBuilder.build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void printWarn(@Nonnull String line) {
-        print(buildSafeHtmlMessage(WARN, WARN_COLOR, WARN + ' ' + line));
-    }
-
-    /**
-     * Return sanitized message (with all restricted HTML-tags escaped) in SafeHtml.
-     *
-     * @param type
-     *         message type (e.g. INFO, ERROR etc.)
-     * @param color
-     *         color constant
-     * @param message
-     *         message to print
-     * @return message in SafeHtml
-     */
-    @Nonnull
-    private SafeHtml buildSafeHtmlMessage(@Nonnull String type, @Nonnull String color, @Nonnull String message) {
-        return new SafeHtmlBuilder().appendHtmlConstant("<pre " + PRE_STYLE + '>')
-                                    .appendHtmlConstant("[<span style='color:" + color + ";'>")
-                                    .appendHtmlConstant("<b>" + type.replaceAll("[\\[\\]]", "") + "</b></span>]")
-                                    .append(SimpleHtmlSanitizer.sanitizeHtml(message.substring((type).length())))
-                                    .appendHtmlConstant("</pre>")
-                                    .toSafeHtml();
-    }
-
-    /**
-     * Return sanitized message (with all restricted HTML-tags escaped) in SafeHtml. Use for two-words message types,
-     * e.g. [DOCKER] [ERROR].
-     *
-     * @param type
-     *         message type (e.g. DOCKER)
-     * @param color
-     *         color constant
-     * @param subtype
-     *         message subtype (e.g. ERROR)
-     * @param subcolor
-     *         color constant
-     * @param message
-     *         message to print
-     * @return message in SafeHtml
-     */
-    @Nonnull
-    private SafeHtml buildSafeHtmlMessage(@Nonnull String type,
-                                          @Nonnull String color,
-                                          @Nonnull String subtype,
-                                          @Nonnull String subcolor,
-                                          @Nonnull String message) {
-        return new SafeHtmlBuilder().appendHtmlConstant("<pre " + PRE_STYLE + '>')
-                                    .appendHtmlConstant("[<span style='color:" + color + ";'>")
-                                    .appendHtmlConstant("<b>" + type.replaceAll("[\\[\\]]", "") + "</b></span>]")
-                                    .appendHtmlConstant(" [<span style='color:" + subcolor + ";'>")
-                                    .appendHtmlConstant("<b>" + subtype.replaceAll("[\\[\\]]", "") + "</b></span>]")
-                                    .append(SimpleHtmlSanitizer.sanitizeHtml(message.substring((type + ' ' + subtype).length())))
-                                    .appendHtmlConstant("</pre>")
-                                    .toSafeHtml();
-    }
-
-    /**
-     * Return sanitized message (with all restricted HTML-tags escaped) in SafeHtml
-     *
-     * @param message
-     *         message to print
-     * @return message in SafeHtml
-     */
-    private SafeHtml buildSafeHtmlMessage(@Nonnull String message) {
-        return new SafeHtmlBuilder()
-                .appendHtmlConstant("<pre " + PRE_STYLE + ">")
-                .append(SimpleHtmlSanitizer.sanitizeHtml(message))
-                .appendHtmlConstant("</pre>")
-                .toSafeHtml();
+        MessageBuilder messageBuilder = messageBuilderProvider.get()
+                                                              .type(WARNING)
+                                                              .message(WARNING.getPrefix() + ' ' + line);
+        print(messageBuilder.build());
     }
 
     private void print(@Nonnull SafeHtml message) {

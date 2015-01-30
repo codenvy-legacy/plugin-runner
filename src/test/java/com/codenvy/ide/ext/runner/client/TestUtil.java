@@ -12,12 +12,16 @@ package com.codenvy.ide.ext.runner.client;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * The class contains methods which are used in several test classes.
  *
  * @author Dmitry Shnurenko
+ * @author Andrey Plotnikov
  */
 public class TestUtil {
 
@@ -58,4 +62,20 @@ public class TestUtil {
 
         return field.get(object);
     }
+
+    /**
+     * Returns string content representation by following path.
+     *
+     * @param clazz
+     *         class which uses this method
+     * @param path
+     *         path to content which need read
+     * @return string representation of content which located by current path
+     */
+    @Nonnull
+    public static String getContentByPath(@Nonnull Class clazz, @Nonnull String path) throws IOException {
+        String file = clazz.getResource(path).getFile();
+        return new String(Files.readAllBytes(Paths.get(file)));
+    }
+
 }
