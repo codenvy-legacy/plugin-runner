@@ -195,11 +195,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         if (FAILED.equals(selectedRunner.getStatus()) || STOPPED.equals(selectedRunner.getStatus())) {
-            RunnerAction checkRamAndRunAction = runnerActions.get(selectedRunner);
-            if (checkRamAndRunAction == null) {
+            RunnerAction runnerAction = runnerActions.get(selectedRunner);
+            if (runnerAction == null || runnerAction instanceof LaunchAction) {
                 launchRunner(selectedRunner);
             } else {
-                checkRamAndRunAction.perform(selectedRunner);
+                runnerAction.perform(selectedRunner);
 
                 update(selectedRunner);
                 selectedRunner.resetCreationTime();
