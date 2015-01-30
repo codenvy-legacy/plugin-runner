@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.inject.factories;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
+import com.codenvy.ide.ext.runner.client.widgets.console.FullLogMessageWidget;
 import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.Tab;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
@@ -55,7 +56,7 @@ public interface WidgetFactory {
     /**
      * Creates runner widget.
      *
-     * @return an instance of{@link RunnerWidget}
+     * @return an instance of {@link RunnerWidget}
      */
     @Nonnull
     RunnerWidget createRunner();
@@ -73,7 +74,7 @@ public interface WidgetFactory {
     /**
      * Creates terminal widget.
      *
-     * @return an instance of{@link Terminal}
+     * @return an instance of {@link Terminal}
      */
     @Nonnull
     Terminal createTerminal();
@@ -81,7 +82,7 @@ public interface WidgetFactory {
     /**
      * Creates more info popup widget.
      *
-     * @return an instance of{@link MoreInfo}
+     * @return an instance of {@link MoreInfo}
      */
     @Nonnull
     MoreInfo createMoreInfo();
@@ -89,8 +90,19 @@ public interface WidgetFactory {
     /**
      * Creates templates widget, which need to display environments for current runner.
      *
-     * @return an instance of{@link com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget}
+     * @return an instance of {@link TemplatesWidget}
      */
     @Nonnull
     TemplatesWidget createTemplates();
+
+    /**
+     * Creates message widget that need to be displayed in the console.
+     *
+     * @param logUrl
+     *         url where full log is located
+     * @return an instance of {@link FullLogMessageWidget}
+     */
+    @Nonnull
+    FullLogMessageWidget createFullLogMessage(@Nonnull String logUrl);
+
 }

@@ -11,8 +11,8 @@
 package com.codenvy.ide.ext.runner.client.widgets.console;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
-import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTML;
@@ -60,13 +60,13 @@ public class ConsoleImplTest {
 
     // constructor field
     @Mock(answer = RETURNS_DEEP_STUBS)
-    private RunnerResources            resources;
+    private RunnerResources          resources;
     @Mock
-    private RunnerLocalizationConstant locale;
+    private Runner                   runner;
     @Mock
-    private Runner                     runner;
+    private Provider<MessageBuilder> messageBuilderProvider;
     @Mock
-    private Provider<MessageBuilder>   messageBuilderProvider;
+    private WidgetFactory            widgetFactory;
 
     @InjectMocks
     private ConsoleImpl console;
@@ -145,6 +145,9 @@ public class ConsoleImplTest {
     public void messageShouldBeCleanedWhenTheAmountIs1000AndLogUrlIsExist() throws Exception {
         when(console.output.getWidgetCount()).thenReturn(1000);
 
+        FullLogMessageWidget messageWidget = mock(FullLogMessageWidget.class);
+        when(widgetFactory.createFullLogMessage(anyString())).thenReturn(messageWidget);
+
         Link logLink = mock(Link.class);
         when(logLink.getHref()).thenReturn(SOME_TEXT);
 
@@ -155,13 +158,11 @@ public class ConsoleImplTest {
         verify(messageBuilder).type(INFO);
         verify(messageBuilder).message(INFO.getPrefix() + ' ' + SOME_TEXT);
 
+        verify(widgetFactory).createFullLogMessage(anyString());
+
         verify(console.output, times(100)).remove(0);
-        verify(console.output).insert(any(HTML.class), eq(0));
+        verify(console.output).insert(messageWidget, 0);
         verify(console.output).add(any(HTML.class));
-
-        verify(locale).fullLogTraceConsoleLink();
-
-        verify(resources.runnerCss()).logLink();
     }
 
     @Test

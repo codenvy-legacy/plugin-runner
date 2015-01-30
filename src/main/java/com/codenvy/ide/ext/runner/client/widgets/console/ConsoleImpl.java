@@ -11,17 +11,14 @@
 package com.codenvy.ide.ext.runner.client.widgets.console;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
-import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -33,6 +30,8 @@ import com.google.inject.assistedinject.Assisted;
 
 import javax.annotation.Nonnull;
 
+import static com.codenvy.ide.ext.runner.client.widgets.console.Lines.CLEANED;
+import static com.codenvy.ide.ext.runner.client.widgets.console.Lines.MAXIMUM;
 import static com.codenvy.ide.ext.runner.client.widgets.console.MessageType.DOCKER;
 import static com.codenvy.ide.ext.runner.client.widgets.console.MessageType.ERROR;
 import static com.codenvy.ide.ext.runner.client.widgets.console.MessageType.INFO;
@@ -52,9 +51,6 @@ public class ConsoleImpl extends Composite implements Console {
 
     private static final ConsoleImplUiBinder UI_BINDER = GWT.create(ConsoleImplUiBinder.class);
 
-    private static final int MAX_CONSOLE_LINES  = 1_000;
-    private static final int CLEAR_CONSOLE_LINE = 100;
-
     @UiField
     ScrollPanel panel;
     @UiField
@@ -64,18 +60,18 @@ public class ConsoleImpl extends Composite implements Console {
     @UiField(provided = true)
     final RunnerResources res;
 
-    private final RunnerLocalizationConstant locale;
-    private final Provider<MessageBuilder>   messageBuilderProvider;
-    private final Runner                     runner;
+    private final Provider<MessageBuilder> messageBuilderProvider;
+    private final WidgetFactory            widgetFactory;
+    private final Runner                   runner;
 
     @Inject
     public ConsoleImpl(RunnerResources resources,
-                       RunnerLocalizationConstant locale,
                        Provider<MessageBuilder> messageBuilderProvider,
+                       WidgetFactory widgetFactory,
                        @Nonnull @Assisted Runner runner) {
         this.res = resources;
-        this.locale = locale;
         this.messageBuilderProvider = messageBuilderProvider;
+        this.widgetFactory = widgetFactory;
         this.runner = runner;
 
         initWidget(UI_BINDER.createAndBindUi(this));
@@ -143,12 +139,12 @@ public class ConsoleImpl extends Composite implements Console {
     }
 
     private void cleanOverHeadLinesIfAny() {
-        if (output.getWidgetCount() < MAX_CONSOLE_LINES) {
+        if (output.getWidgetCount() < MAXIMUM.getValue()) {
             return;
         }
 
         // remove first 10% of current lines on screen
-        for (int i = 0; i < CLEAR_CONSOLE_LINE; i++) {
+        for (int i = 0; i < CLEANED.getValue(); i++) {
             output.remove(0);
         }
 
@@ -163,23 +159,7 @@ public class ConsoleImpl extends Composite implements Console {
         }
 
         // print link to full logs in top of console
-        HTML html = new HTML();
-        html.addStyleName(res.runnerCss().logLink());
-
-        Element text = DOM.createSpan();
-        text.setInnerHTML(locale.fullLogTraceConsoleLink());
-
-        Anchor link = new Anchor();
-        link.setHref(logUrl);
-        link.setText(logUrl);
-        link.setTitle(logUrl);
-        link.setTarget("_blank");
-        link.getElement().getStyle().setColor("#61b7ef");
-
-        html.getElement().appendChild(text);
-        html.getElement().appendChild(link.getElement());
-
-        output.insert(html, 0);
+        output.insert(widgetFactory.createFullLogMessage(logUrl), 0);
     }
 
     /** {@inheritDoc} */
