@@ -71,7 +71,7 @@ public class LaunchAction extends AbstractRunnerAction {
         Notification notification = new Notification(message, PROGRESS, true);
         notificationManager.showNotification(notification);
 
-        view.printInfo(runner, locale.environmentCooking(projectName));
+        view.printInfo(runner, message);
 
         RunnerAction statusAction = runnerActionFactory.createStatus(notification);
         addAction(statusAction);
