@@ -51,6 +51,7 @@ public class RunnerImpl implements Runner {
     private ApplicationProcessDescriptor descriptor;
     private Status                       status;
     private long                         creationTime;
+    private int                          ram;
     private boolean                      isAlive;
     private boolean                      isConsoleActive;
     private boolean                      isStarted;
@@ -78,6 +79,7 @@ public class RunnerImpl implements Runner {
     @AssistedInject
     public RunnerImpl(@Nonnull @Assisted RunOptions runOptions, @Nullable @Assisted String environmentName) {
         this.runOptions = runOptions;
+        this.ram = runOptions.getMemorySize();
         this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + getCorrectName(environmentName));
         this.isConsoleActive = true;
         this.status = Status.IN_QUEUE;
@@ -114,13 +116,13 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Override
     public int getRAM() {
-        return descriptor == null ? runOptions.getMemorySize() : descriptor.getMemorySize();
+        return ram;
     }
 
     /** {@inheritDoc} */
     @Override
     public void setRAM(@Nonnegative int ram) {
-        runOptions.setMemorySize(ram);
+        this.ram = ram;
     }
 
     /** {@inheritDoc} */

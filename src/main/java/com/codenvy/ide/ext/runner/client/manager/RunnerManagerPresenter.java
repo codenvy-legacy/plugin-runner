@@ -403,6 +403,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         runnersId.add(processDescriptor.getProcessId());
 
         runner.setProcessDescriptor(processDescriptor);
+        runner.setRAM(processDescriptor.getMemorySize());
         runner.setAliveStatus(true);
 
         view.addRunner(runner);
