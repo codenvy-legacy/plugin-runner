@@ -34,13 +34,13 @@ import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.api.notification.Notification.Type.WARNING;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
 import static com.codenvy.ide.ext.runner.client.util.TimeInterval.THIRTY_SEC;
 
 /**
  * The action that checks status of runner. It pings runner every 30 second and the client side knows that the runner is alive.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 public class CheckHealthStatusAction extends AbstractRunnerAction {
 
@@ -94,9 +94,6 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
             /** {@inheritDoc} */
             @Override
             public void run() {
-                runner.setAliveStatus(true);
-                runner.setStatus(RUNNING);
-
                 presenter.update(runner);
 
                 String projectName = project.getProjectDescription().getName();
@@ -125,7 +122,6 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
 
                 changeAppAliveTimer.cancel();
 
-                runner.setAliveStatus(true);
                 runner.setStatus(DONE);
 
                 presenter.update(runner);

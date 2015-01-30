@@ -394,9 +394,11 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void setApplicationURl(@Nullable String applicationUrl) {
         url = null;
+        appReference.removeStyleName(resources.runnerCss().cursor());
 
         if (applicationUrl != null && applicationUrl.startsWith("http")) {
             url = applicationUrl;
+            appReference.addStyleName(resources.runnerCss().cursor());
         }
 
         appReference.setText(applicationUrl);

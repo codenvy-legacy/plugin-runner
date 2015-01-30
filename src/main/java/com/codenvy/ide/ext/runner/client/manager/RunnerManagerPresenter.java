@@ -380,7 +380,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         for (Runner runner : runnerActions.keySet()) {
             if (runner.isAlive()) {
-                runner.setAliveStatus(false);
+                runner.setStatus(STOPPED);
 
                 stopRunAction(runner);
             }
@@ -404,11 +404,10 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         runner.setProcessDescriptor(processDescriptor);
         runner.setRAM(processDescriptor.getMemorySize());
-        runner.setAliveStatus(true);
+        runner.setStatus(DONE);
+        runner.resetCreationTime();
 
         view.addRunner(runner);
-
-        runner.setStatus(DONE);
 
         onRunnerSelected(runner);
 

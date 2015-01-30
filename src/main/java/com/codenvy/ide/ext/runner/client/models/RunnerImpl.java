@@ -33,11 +33,17 @@ import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_STOP;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
 
 /**
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 public class RunnerImpl implements Runner {
 
@@ -52,9 +58,7 @@ public class RunnerImpl implements Runner {
     private Status                       status;
     private long                         creationTime;
     private int                          ram;
-    private boolean                      isAlive;
     private boolean                      isConsoleActive;
-    private boolean                      isStarted;
 
     /**
      * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
@@ -134,14 +138,19 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Override
     public void resetCreationTime() {
-        this.creationTime = System.currentTimeMillis();
+        if (FAILED.equals(status) || STOPPED.equals(status) || IN_QUEUE.equals(status)) {
+            creationTime = System.currentTimeMillis();
+            return;
+        }
+
+        creationTime = descriptor == null ? System.currentTimeMillis() : descriptor.getCreationTime();
     }
 
     /** {@inheritDoc} */
     @Override
     @Nonnull
     public String getTimeout() {
-        if (!isAlive) {
+        if (!(DONE.equals(status) || RUNNING.equals(status))) {
             return TIMER_STUB;
         }
 
@@ -202,7 +211,7 @@ public class RunnerImpl implements Runner {
     @Nonnull
     @Override
     public String getActiveTime() {
-        return isStarted ? StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationTime) / ONE_SEC.getValue())
+        return isAlive() ? StringUtils.timeSecToHumanReadable((System.currentTimeMillis() - creationTime) / ONE_SEC.getValue())
                          : TIMER_STUB;
     }
 
@@ -210,7 +219,7 @@ public class RunnerImpl implements Runner {
     @Nonnull
     @Override
     public String getStopTime() {
-        if (isAlive) {
+        if (isAlive()) {
             return TIMER_STUB;
         }
 
@@ -235,18 +244,6 @@ public class RunnerImpl implements Runner {
     @Override
     public String getEnvironmentId() {
         return runOptions.getEnvironmentId();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isStarted() {
-        return isStarted;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setStartedStatus(boolean isStarted) {
-        this.isStarted = isStarted;
     }
 
     /** {@inheritDoc} */
@@ -332,6 +329,25 @@ public class RunnerImpl implements Runner {
         return RunnerUtils.getLink(descriptor, LINK_REL_STOP);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isAlive() {
+        switch (status) {
+            case IN_QUEUE:
+                return true;
+            case IN_PROGRESS:
+                return true;
+            case RUNNING:
+                return true;
+            case TIMEOUT:
+                return true;
+            case DONE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @Nullable
     private String getUrlByName(@Nonnull String name) {
         Link link = RunnerUtils.getLink(descriptor, name);
@@ -347,18 +363,6 @@ public class RunnerImpl implements Runner {
     @Override
     public void setProcessDescriptor(@Nullable ApplicationProcessDescriptor descriptor) {
         this.descriptor = descriptor;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isAlive() {
-        return isAlive;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setAliveStatus(boolean isAlive) {
-        this.isAlive = isAlive;
     }
 
     /** {@inheritDoc} */

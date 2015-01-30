@@ -103,7 +103,6 @@ public class RunnerUtilImpl implements RunnerUtil {
                           @Nonnull String message,
                           @Nullable Throwable exception,
                           @Nonnull Notification notification) {
-        runner.setAliveStatus(false);
         runner.setStatus(FAILED);
 
         presenter.update(runner);

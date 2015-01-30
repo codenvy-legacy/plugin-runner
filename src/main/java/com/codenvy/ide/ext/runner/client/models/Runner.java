@@ -55,7 +55,10 @@ public interface Runner {
     /** @return the date when this runner was launched */
     long getCreationTime();
 
-    /** Sets current time as runner creation time. It needs when we restart runner to display correct runner active time. */
+    /**
+     * Sets system time as runner creation time when runner description is null and sets creation time from descriptor when it isn't null.
+     * It needs when we restart runner or reload browser page to display correct runner creation and active time.
+     */
     void resetCreationTime();
 
     /** @return string representation of runner timeout */
@@ -73,17 +76,6 @@ public interface Runner {
     /** @return id of the environment */
     @Nonnull
     String getEnvironmentId();
-
-    /** @return <code>true</code> if this runner has already been started, <code>false</code> it hasn't */
-    boolean isStarted();
-
-    /**
-     * Sets started runner status. This status need to start runner time active right runner was started.
-     *
-     * @param isStarted
-     *         <code>true</code> runner is started,<code>false</code> runner is stopped
-     */
-    void setStartedStatus(boolean isStarted);
 
     /**
      * Returns title of runner. This value uses for unique identifier every runner on UI components.
@@ -126,23 +118,18 @@ public interface Runner {
     Link getStopUrl();
 
     /**
+     * @return <code>true</code> when status is IN_PROGRESS,RUNNING,DONE,IN_QUEUE,TIMEOUT
+     * <code>false</code> when status is STOPPED, FAILED
+     */
+    boolean isAlive();
+
+    /**
      * Changes application process descriptor.
      *
      * @param descriptor
      *         application process descriptor that needs to set
      */
     void setProcessDescriptor(@Nullable ApplicationProcessDescriptor descriptor);
-
-    /** @return <code>true</code> if this runner is alive, <code>false</code> it isn't */
-    boolean isAlive();
-
-    /**
-     * Changes alive status of a runner.
-     *
-     * @param isAlive
-     *         new alive status of a runner
-     */
-    void setAliveStatus(boolean isAlive);
 
     /** @return id of process that was bound with this runner */
     long getProcessId();

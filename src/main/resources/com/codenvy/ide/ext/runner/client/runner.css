@@ -151,3 +151,7 @@
     background: #474747;
     cursor: col-resize;
 }
+
+.cursor {
+    cursor: pointer;
+}

@@ -49,6 +49,7 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
  *
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 public class StatusAction extends AbstractRunnerAction {
     /** WebSocket channel to get application's status. */
@@ -118,7 +119,7 @@ public class StatusAction extends AbstractRunnerAction {
             /** {@inheritDoc} */
             @Override
             protected void onErrorReceived(Throwable exception) {
-                runner.setAliveStatus(false);
+                runner.setStatus(FAILED);
 
                 if (exception instanceof ServerException && ((ServerException)exception).getHTTPStatus() == 500) {
                     ServiceError e = dtoFactory.createDtoFromJson(exception.getMessage(), ServiceError.class);
@@ -179,7 +180,6 @@ public class StatusAction extends AbstractRunnerAction {
 
     private void processStoppedMessage() {
         runner.setStatus(STOPPED);
-        runner.setAliveStatus(false);
 
         view.updateMoreInfoPopup(runner);
         view.update(runner);
@@ -198,7 +198,6 @@ public class StatusAction extends AbstractRunnerAction {
 
     private void processRunningMessage() {
         runner.setStatus(RUNNING);
-        runner.setAliveStatus(true);
 
         presenter.update(runner);
 
@@ -212,8 +211,6 @@ public class StatusAction extends AbstractRunnerAction {
     }
 
     private void processFailedMessage() {
-        runner.setAliveStatus(false);
-        runner.setStartedStatus(false);
         runner.setStatus(FAILED);
 
         presenter.update(runner);
@@ -232,8 +229,6 @@ public class StatusAction extends AbstractRunnerAction {
     }
 
     private void processCancelledMessage() {
-        runner.setAliveStatus(false);
-        runner.setStartedStatus(false);
         runner.setStatus(FAILED);
 
         presenter.update(runner);

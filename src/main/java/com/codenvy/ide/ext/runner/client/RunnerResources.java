@@ -130,6 +130,8 @@ public interface RunnerResources extends ClientBundle {
         String splitter();
 
         String runnerShadow();
+
+        String cursor();
     }
 
 }

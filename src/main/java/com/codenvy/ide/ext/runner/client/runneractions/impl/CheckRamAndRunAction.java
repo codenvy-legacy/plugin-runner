@@ -36,6 +36,8 @@ import com.google.inject.Provider;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+
 /**
  * This action executes a request on the server side for getting resources of project. These resources are used for checking RAM and
  * running a runner with the custom memory size. Action uses {@link RunAction}
@@ -44,6 +46,7 @@ import javax.annotation.Nonnull;
  * @author Andrey Parfonov
  * @author Roman Nikitenko
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 public class CheckRamAndRunAction extends AbstractRunnerAction {
     private final RunnerServiceClient                                 service;
@@ -115,13 +118,13 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
         int requiredMemory = runnerConfiguration != null ? runnerConfiguration.getRam() : 0;
 
         if (!isSufficientMemory(totalMemory, usedMemory, requiredMemory)) {
-            runner.setAliveStatus(false);
+            runner.setStatus(FAILED);
             return;
         }
 
         if (overrideMemory > 0) {
             if (!isOverrideMemoryCorrect(totalMemory, usedMemory, overrideMemory)) {
-                runner.setAliveStatus(false);
+                runner.setStatus(FAILED);
                 return;
             }
 

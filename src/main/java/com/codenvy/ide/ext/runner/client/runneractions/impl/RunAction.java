@@ -30,6 +30,8 @@ import com.google.inject.Provider;
 
 import javax.annotation.Nonnull;
 
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_PROGRESS;
+
 /**
  * This action executes a request on the server side for running a runner. Then it adds handlers for listening WebSocket messages from
  * different events from the server.
@@ -37,6 +39,7 @@ import javax.annotation.Nonnull;
  * @author Roman Nikitenko
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 public class RunAction extends AbstractRunnerAction {
 
@@ -85,7 +88,7 @@ public class RunAction extends AbstractRunnerAction {
                     public void onSuccess(ApplicationProcessDescriptor descriptor) {
                         runner.setProcessDescriptor(descriptor);
                         runner.setRAM(descriptor.getMemorySize());
-                        runner.setStartedStatus(true);
+                        runner.setStatus(IN_PROGRESS);
                         project.setProcessDescriptor(descriptor);
 
                         presenter.addRunnerId(descriptor.getProcessId());

@@ -35,13 +35,16 @@ import javax.annotation.Nonnull;
 
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 
 /**
  * Action for stopping current runner.
  *
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 public class StopAction extends AbstractRunnerAction {
     private final RunnerServiceClient                                          service;
@@ -113,7 +116,7 @@ public class StopAction extends AbstractRunnerAction {
                 .failure(new FailureCallback() {
                     @Override
                     public void onFailure(@Nonnull Throwable reason) {
-                        runner.setAliveStatus(false);
+                        runner.setStatus(FAILED);
                         runner.setProcessDescriptor(null);
 
                         project.setIsRunningEnabled(true);
@@ -130,7 +133,6 @@ public class StopAction extends AbstractRunnerAction {
     }
 
     private void processStoppedMessage(@Nonnull ApplicationProcessDescriptor descriptor) {
-        runner.setAliveStatus(false);
         runner.setProcessDescriptor(descriptor);
 
         project.setIsRunningEnabled(true);
@@ -141,7 +143,9 @@ public class StopAction extends AbstractRunnerAction {
 
         Notification.Type notificationType;
 
-        if (runner.isStarted()) {
+        Runner.Status runnerStatus = runner.getStatus();
+
+        if (RUNNING.equals(runnerStatus) || DONE.equals(runnerStatus)) {
             notificationType = INFO;
 
             runner.setStatus(STOPPED);
@@ -158,7 +162,6 @@ public class StopAction extends AbstractRunnerAction {
         Notification notification = new Notification(message, notificationType);
         notificationManager.showNotification(notification);
 
-        runner.setStartedStatus(false);
         presenter.update(runner);
     }
 

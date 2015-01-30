@@ -46,6 +46,7 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
  *
  * @author Valeriy Svydenko
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 public class GetRunningProcessesAction extends AbstractRunnerAction {
 
@@ -153,9 +154,6 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
 
     private void prepareRunnerWithRunningApp(@Nonnull ApplicationProcessDescriptor processDescriptor) {
         Runner runner = runnerManagerPresenter.addRunner(processDescriptor);
-        runner.setAliveStatus(true); // set true here because we don't get information
-        runner.setStartedStatus(true);
-        runner.setStatus(Runner.Status.RUNNING);
 
         logsAction.perform(runner);
 
