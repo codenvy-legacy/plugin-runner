@@ -242,4 +242,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("tooltip.runner.panel")
     String tooltipRunnerPanel();
+
+    @Key("selectRunnerPage.memoryRecommendedLabel")
+    String selectRunnerPageMemoryRecommendedLabel();
 }

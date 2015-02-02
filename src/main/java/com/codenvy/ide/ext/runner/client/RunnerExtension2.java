@@ -17,14 +17,19 @@ import com.codenvy.ide.api.constraints.Constraints;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.api.parts.PartStackType;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
+import com.codenvy.ide.api.projecttype.wizard.ProjectTypeWizardRegistry;
+import com.codenvy.ide.api.projecttype.wizard.ProjectWizard;
 import com.codenvy.ide.ext.runner.client.actions.CustomRunAction;
 import com.codenvy.ide.ext.runner.client.actions.EditRunnerAction;
 import com.codenvy.ide.ext.runner.client.actions.RunAction;
 import com.codenvy.ide.ext.runner.client.actions.RunWithGroup;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import com.codenvy.ide.ext.runner.client.wizard.SelectRunnerPagePresenter;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
+import static com.codenvy.api.project.shared.Constants.BLANK_ID;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
@@ -45,8 +50,19 @@ public class RunnerExtension2 { //TODO need rename
     public static final String BUILDER_PART_ID  = "Builder";
 
     @Inject
-    public RunnerExtension2(RunnerResources resources) {
+    public RunnerExtension2(RunnerResources resources,
+                            ProjectTypeWizardRegistry wizardRegistry,
+                            Provider<SelectRunnerPagePresenter> runnerPagePresenter) {
+
         resources.runnerCss().ensureInjected();
+
+        ProjectWizard wizard = wizardRegistry.getWizard(BLANK_ID);
+        if (wizard == null) {
+            return;
+        }
+
+        wizard.addPage(runnerPagePresenter);
+        wizardRegistry.addWizard(BLANK_ID, wizard);
     }
 
     @Inject
