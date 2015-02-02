@@ -8,9 +8,8 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.customrun;
+package com.codenvy.ide.ext.runner.client.properties.common;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 /**
@@ -18,44 +17,43 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public enum MemorySize {
-    MEMORY_128(128), MEMORY_256(256), MEMORY_512(512), MEMORY_1024(1024), MEMORY_2048(2048), OTHER_MEMORY(-1);
+public enum RAM {
+    _128(128), _256(256), _512(512), _1024(1024), _2048(2048), OTHER(-1);
 
-    private final int memorySize;
+    private final int size;
 
-    MemorySize(@Nonnegative int memorySize) {
-        this.memorySize = memorySize;
+    RAM(int size) {
+        this.size = size;
     }
 
     /**
-     * Returns an instance of {@link MemorySize} using special memory string value.
+     * Returns an instance of {@link RAM} using special memory string value.
      *
      * @param inputMemory
-     *         value of string for which need return {@link MemorySize} enum
-     * @return an instance {@link MemorySize}
+     *         value of string for which need return {@link RAM} enum
+     * @return an instance {@link RAM}
      */
     @Nonnull
-    public static MemorySize getItemByValue(@Nonnull String inputMemory) {
-        for (MemorySize size : MemorySize.values()) {
+    public static RAM detect(@Nonnull String inputMemory) {
+        for (RAM size : RAM.values()) {
             if (inputMemory.equals(size.toString())) {
                 return size;
             }
         }
 
-        return OTHER_MEMORY;
+        return OTHER;
     }
 
     /** @return integer value of enum. */
-    @Nonnegative
     public int getValue() {
-        return memorySize;
+        return size;
     }
 
     /** {@inheritDoc} */
     @Nonnull
     @Override
     public String toString() {
-        return memorySize + "MB";
+        return size + "MB";
     }
 
 }

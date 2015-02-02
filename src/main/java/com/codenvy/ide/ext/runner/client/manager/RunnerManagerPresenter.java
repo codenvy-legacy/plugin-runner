@@ -43,7 +43,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_512;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._512;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
@@ -291,7 +291,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
                                           .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")))
-                                          .withMemorySize(MEMORY_512.getValue());
+                                          .withMemorySize(_512.getValue());
 
         launchRunner(modelsFactory.createRunner(runOptions));
     }

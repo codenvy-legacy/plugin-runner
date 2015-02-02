@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.customrun;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
+import com.codenvy.ide.ext.runner.client.properties.common.RAM;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnegative;
@@ -76,10 +77,10 @@ public interface CustomRunView extends View<CustomRunView.ActionDelegate> {
     /**
      * Resets state of all radio buttons and sets runner memory size radio button which matches current memory size.
      *
-     * @param memorySize
+     * @param ram
      *         value of memory size
      */
-    void chooseMemorySizeRadioButton(@Nonnull MemorySize memorySize);
+    void chooseMemorySizeRadioButton(@Nonnull RAM ram);
 
     /**
      * Returns total memory size from spacial place on view.

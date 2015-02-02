@@ -25,7 +25,7 @@ import org.mockito.Mock;
 
 import java.util.Date;
 
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
 import static com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidgetImpl.DATE_TIME_FORMAT;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.anyString;
@@ -61,7 +61,7 @@ public class RunnerWidgetImplTest {
         expectedFormat = DATE_TIME_FORMAT.format(currentDate);
 
         when(runner.getTitle()).thenReturn(SOME_TEXT);
-        when(runner.getRAM()).thenReturn(MEMORY_128.getValue());
+        when(runner.getRAM()).thenReturn(_128.getValue());
         when(runner.getCreationTime()).thenReturn(currentDate.getTime());
 
         imageElement = mock(Element.class);
@@ -115,7 +115,7 @@ public class RunnerWidgetImplTest {
         widget.update(runner);
 
         verify(widget.runnerName).setText(SOME_TEXT);
-        verify(widget.ram).setText(MEMORY_128.toString());
+        verify(widget.ram).setText(_128.toString());
         verify(widget.startTime).setText(expectedFormat);
 
         verify(resources.runnerCss()).blueColor();
@@ -129,7 +129,7 @@ public class RunnerWidgetImplTest {
         widget.update(runner);
 
         verify(widget.runnerName).setText(SOME_TEXT);
-        verify(widget.ram).setText(MEMORY_128.toString());
+        verify(widget.ram).setText(_128.toString());
         verify(widget.startTime).setText(expectedFormat);
 
         verify(resources.runnerCss()).yellowColor();
@@ -143,7 +143,7 @@ public class RunnerWidgetImplTest {
         widget.update(runner);
 
         verify(widget.runnerName).setText(SOME_TEXT);
-        verify(widget.ram).setText(MEMORY_128.toString());
+        verify(widget.ram).setText(_128.toString());
         verify(widget.startTime).setText(expectedFormat);
 
         verify(resources.runnerCss()).redColor();
@@ -157,7 +157,7 @@ public class RunnerWidgetImplTest {
         widget.update(runner);
 
         verify(widget.runnerName).setText(SOME_TEXT);
-        verify(widget.ram).setText(MEMORY_128.toString());
+        verify(widget.ram).setText(_128.toString());
         verify(widget.startTime).setText(expectedFormat);
 
         verify(resources.runnerCss()).whiteColor();
@@ -171,7 +171,7 @@ public class RunnerWidgetImplTest {
         widget.update(runner);
 
         verify(widget.runnerName).setText(SOME_TEXT);
-        verify(widget.ram).setText(MEMORY_128.toString());
+        verify(widget.ram).setText(_128.toString());
         verify(widget.startTime).setText(expectedFormat);
 
         verify(resources.runnerCss()).redColor();
@@ -185,7 +185,7 @@ public class RunnerWidgetImplTest {
         widget.update(runner);
 
         verify(widget.runnerName).setText(SOME_TEXT);
-        verify(widget.ram).setText(MEMORY_128.toString());
+        verify(widget.ram).setText(_128.toString());
         verify(widget.startTime).setText(expectedFormat);
 
         verify(resources.runnerCss()).greenColor();
@@ -199,7 +199,7 @@ public class RunnerWidgetImplTest {
         widget.update(runner);
 
         verify(widget.runnerName).setText(SOME_TEXT);
-        verify(widget.ram).setText(MEMORY_128.toString());
+        verify(widget.ram).setText(_128.toString());
         verify(widget.startTime).setText(expectedFormat);
 
         verify(imageElement, never()).setInnerHTML(anyString());

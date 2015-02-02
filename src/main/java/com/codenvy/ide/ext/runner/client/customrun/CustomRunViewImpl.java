@@ -18,6 +18,7 @@ import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.properties.common.RAM;
 import com.codenvy.ide.ui.tree.Tree;
 import com.codenvy.ide.ui.tree.TreeNodeElement;
 import com.codenvy.ide.ui.window.Window;
@@ -45,12 +46,12 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_1024;
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_2048;
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_256;
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_512;
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.OTHER_MEMORY;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM.OTHER;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._1024;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._2048;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._256;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._512;
 
 /**
  * The Class provides graphical implementation of dialog window to change settings of custom environments.
@@ -101,8 +102,8 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     @UiField(provided = true)
     final RunnerResources            resources;
 
-    private final Map<MemorySize, RadioButton> buttonsMap;
-    private final RunnerEnvironmentTree        rootNode;
+    private final Map<RAM, RadioButton> buttonsMap;
+    private final RunnerEnvironmentTree rootNode;
 
     private ActionDelegate actionDelegate;
     private Tree<Object>   tree;
@@ -173,20 +174,20 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
             }
         });
 
-        buttonsMap = new EnumMap<>(MemorySize.class);
+        buttonsMap = new EnumMap<>(RAM.class);
 
-        memory128.setText(MEMORY_128.toString());
-        memory256.setText(MEMORY_256.toString());
-        memory512.setText(MEMORY_512.toString());
-        memory1024.setText(MEMORY_1024.toString());
-        memory2048.setText(MEMORY_2048.toString());
+        memory128.setText(_128.toString());
+        memory256.setText(_256.toString());
+        memory512.setText(_512.toString());
+        memory1024.setText(_1024.toString());
+        memory2048.setText(_2048.toString());
 
-        buttonsMap.put(MEMORY_128, memory128);
-        buttonsMap.put(MEMORY_256, memory256);
-        buttonsMap.put(MEMORY_512, memory512);
-        buttonsMap.put(MEMORY_1024, memory1024);
-        buttonsMap.put(MEMORY_2048, memory2048);
-        buttonsMap.put(OTHER_MEMORY, otherMemory);
+        buttonsMap.put(_128, memory128);
+        buttonsMap.put(_256, memory256);
+        buttonsMap.put(_512, memory512);
+        buttonsMap.put(_1024, memory1024);
+        buttonsMap.put(_2048, memory2048);
+        buttonsMap.put(OTHER, otherMemory);
 
         createButtons();
     }
@@ -216,7 +217,7 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     @Override
     public void setEnabledRadioButtons(@Nonnegative int workspaceRam) {
         for (RadioButton radioButton : buttonsMap.values()) {
-            int runnerMemory = MemorySize.getItemByValue(radioButton.getText()).getValue();
+            int runnerMemory = RAM.detect(radioButton.getText()).getValue();
 
             radioButton.setEnabled(runnerMemory > 0 && runnerMemory <= workspaceRam);
         }
@@ -262,11 +263,11 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     }
 
     private int checkAndGetMemory(@Nonnull String memory) {
-        MemorySize memorySize = MemorySize.getItemByValue(memory);
+        RAM ram = RAM.detect(memory);
 
-        boolean isOtherRadioButton = OTHER_MEMORY.equals(memorySize);
+        boolean isOtherRadioButton = OTHER.equals(ram);
 
-        return isOtherRadioButton ? getIntegerValue(otherValueMemory.getText()) : memorySize.getValue();
+        return isOtherRadioButton ? getIntegerValue(otherValueMemory.getText()) : ram.getValue();
     }
 
     private int getIntegerValue(@Nonnull String memoryValue) {
@@ -279,14 +280,14 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
 
     /** {@inheritDoc} */
     @Override
-    public void chooseMemorySizeRadioButton(@Nonnull MemorySize memorySize) {
+    public void chooseMemorySizeRadioButton(@Nonnull RAM ram) {
         for (RadioButton radioButton : buttonsMap.values()) {
             radioButton.setValue(false);
         }
 
         otherValueMemory.setText("");
 
-        buttonsMap.get(memorySize).setValue(true);
+        buttonsMap.get(ram).setValue(true);
     }
 
     /** {@inheritDoc} */

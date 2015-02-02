@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 
 import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 
 /**
@@ -63,8 +63,8 @@ public class RunnerUtilImpl implements RunnerUtil {
             return false;
         }
 
-        if (usedMemory % MEMORY_128.getValue() != 0) {
-            showWarning(locale.ramSizeMustBeMultipleOf(MEMORY_128.getValue()));
+        if (usedMemory % _128.getValue() != 0) {
+            showWarning(locale.ramSizeMustBeMultipleOf(_128.getValue()));
             return false;
         }
 

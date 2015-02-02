@@ -33,7 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import javax.annotation.Nonnegative;
 
-import static com.codenvy.ide.ext.runner.client.customrun.MemorySize.MEMORY_128;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -119,12 +119,12 @@ public class RunnerUtilImplTest {
 
     @Test
     public void errorMessageShouldBeShownWhenMemoryNotMultiple128() throws Exception {
-        when(locale.ramSizeMustBeMultipleOf(MEMORY_128.getValue())).thenReturn(SOME_TEXT);
+        when(locale.ramSizeMustBeMultipleOf(_128.getValue())).thenReturn(SOME_TEXT);
 
         boolean isCorrect = util.isRunnerMemoryCorrect(125, 123, 125);
 
         verifyShowWarning();
-        verify(locale).ramSizeMustBeMultipleOf(MEMORY_128.getValue());
+        verify(locale).ramSizeMustBeMultipleOf(_128.getValue());
 
         assertThat(isCorrect, is(false));
     }
