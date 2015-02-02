@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  */
 public class OutputAction extends AbstractRunnerAction implements LogMessagesHandler.ErrorHandler {
     /** WebSocket channel to get runner output. */
-    private static final String OUTPUT_CHANNEL = "runner:output:";
+    public static final String OUTPUT_CHANNEL = "runner:output:";
 
     private final HandlerFactory handlerFactory;
     private final WebSocketUtil  webSocketUtil;

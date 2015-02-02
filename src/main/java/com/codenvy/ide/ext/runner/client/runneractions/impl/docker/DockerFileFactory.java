@@ -38,6 +38,10 @@ import static com.codenvy.ide.ext.runner.client.runneractions.impl.docker.Docker
 @Singleton
 public class DockerFileFactory {
 
+    public static final String NAME = "Runner Recipe";
+    public static final String PATH = "runner_recipe";
+    public static final String TYPE = "text/x-dockerfile-config";
+
     private final EventBus               eventBus;
     private final ProjectServiceClient   projectServiceClient;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
@@ -79,9 +83,9 @@ public class DockerFileFactory {
         List<Link> links = Arrays.asList(link);
 
         ItemReference recipeFileItem = dtoFactory.createDto(ItemReference.class)
-                                                 .withName("Runner Recipe")
-                                                 .withPath("runner_recipe")
-                                                 .withMediaType("text/x-dockerfile-config")
+                                                 .withName(NAME)
+                                                 .withPath(PATH)
+                                                 .withMediaType(TYPE)
                                                  .withLinks(links);
 
         return new DockerFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem, currentProject.getCurrentTree());
