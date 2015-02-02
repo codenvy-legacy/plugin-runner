@@ -63,7 +63,7 @@ public class RunnerUtilImpl implements RunnerUtil {
             return false;
         }
 
-        if (usedMemory % 128 != 0) {
+        if (usedMemory % MEMORY_128.getValue() != 0) {
             showWarning(locale.ramSizeMustBeMultipleOf(MEMORY_128.getValue()));
             return false;
         }

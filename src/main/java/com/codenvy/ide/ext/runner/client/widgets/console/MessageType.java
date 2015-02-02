@@ -54,28 +54,10 @@ public enum MessageType {
      */
     @Nonnull
     public static MessageType detect(@Nonnull String content) {
-        if (content.startsWith(INFO.getPrefix())) {
-            return INFO;
-        }
-
-        if (content.startsWith(ERROR.getPrefix())) {
-            return ERROR;
-        }
-
-        if (content.startsWith(WARNING.getPrefix())) {
-            return WARNING;
-        }
-
-        if (content.startsWith(DOCKER.getPrefix())) {
-            return DOCKER;
-        }
-
-        if (content.startsWith(STDOUT.getPrefix())) {
-            return STDOUT;
-        }
-
-        if (content.startsWith(STDERR.getPrefix())) {
-            return STDERR;
+        for (MessageType type : MessageType.values()) {
+            if (content.startsWith(type.getPrefix())) {
+                return type;
+            }
         }
 
         throw new IllegalStateException("You tried to detect unknown message. Please, check your message. Your message: " + content);

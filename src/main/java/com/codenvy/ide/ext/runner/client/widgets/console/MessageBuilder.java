@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * The builder that simplifies work flow of using {@link SimpleHtmlSanitizer} class for avoiding hackers attacks.
@@ -26,8 +27,8 @@ import java.util.Iterator;
  */
 public class MessageBuilder {
 
-    private final EnumSet<MessageType> types;
-    private       String               message;
+    private final Set<MessageType> types;
+    private       String           message;
 
     @Inject
     public MessageBuilder() {
