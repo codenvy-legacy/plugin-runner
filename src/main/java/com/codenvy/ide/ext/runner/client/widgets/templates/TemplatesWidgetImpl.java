@@ -10,120 +10,192 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.widgets.templates;
 
-import elemental.events.KeyboardEvent;
-import elemental.events.MouseEvent;
-
-import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
-import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
-import com.codenvy.ide.dto.DtoFactory;
-import com.codenvy.ide.ext.runner.client.customrun.RunnerDataAdapter;
-import com.codenvy.ide.ext.runner.client.customrun.RunnerRenderer;
-import com.codenvy.ide.ui.tree.Tree;
-import com.codenvy.ide.ui.tree.TreeNodeElement;
-import com.codenvy.ide.util.input.SignalEvent;
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.widgets.general.RunnerItems;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.CPP;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.GO;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.JAVA;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.JAVASCRIPT;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.PHP;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.PYTHON;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.RUBY;
 
 /**
- * The Class provides graphical implementation of runner environments which are represented as environment's tree.
+ * The Class provides graphical implementation of runner environments.
  *
  * @author Dmitry Shnurenko
  */
-public class TemplatesWidgetImpl extends Composite implements TemplatesWidget {
+@Singleton
+public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, RunnerItems.ActionDelegate<RunnerEnvironment> {
+
     interface TemplatesViewImplUiBinder extends UiBinder<Widget, TemplatesWidgetImpl> {
     }
 
     private static final TemplatesViewImplUiBinder UI_BINDER = GWT.create(TemplatesViewImplUiBinder.class);
 
     @UiField
-    FlowPanel treeContainer;
+    FlowPanel environmentsPanel;
 
-    private final RunnerEnvironmentTree rootNode;
-    private final Tree<Object>          tree;
+    //type
+    @UiField
+    FlowPanel allButton;
+    @UiField
+    FlowPanel java;
+    @UiField
+    FlowPanel cpp;
+    @UiField
+    FlowPanel go;
+    @UiField
+    FlowPanel javascript;
+    @UiField
+    FlowPanel php;
+    @UiField
+    FlowPanel python;
+    @UiField
+    FlowPanel ruby;
 
-    private ActionDelegate actionDelegate;
+    //scope
+    @UiField
+    Image systemScope;
+    @UiField
+    Image projectScope;
+
+    @UiField(provided = true)
+    final RunnerResources            resources;
+    @UiField(provided = true)
+    final RunnerLocalizationConstant locale;
+
+
+    private final List<RunnerItems> environments;
+    private final WidgetFactory     widgetFactory;
+
+    private ActionDelegate delegate;
 
     @Inject
-    public TemplatesWidgetImpl(com.codenvy.ide.Resources resources,
-                               DtoFactory dtoFactory,
-                               RunnerDataAdapter runnerDataAdapter,
-                               RunnerRenderer runnerRenderer) {
+    public TemplatesWidgetImpl(RunnerResources resources, RunnerLocalizationConstant locale, WidgetFactory widgetFactory) {
+        this.resources = resources;
+        this.locale = locale;
+        this.widgetFactory = widgetFactory;
+
         initWidget(UI_BINDER.createAndBindUi(this));
 
-        rootNode = dtoFactory.createDto(RunnerEnvironmentTree.class);
+        this.environments = new ArrayList<>();
 
-        tree = Tree.create(resources, runnerDataAdapter, runnerRenderer);
-        tree.getModel().setRoot(rootNode);
+        initializeActions();
+    }
 
-        tree.setTreeEventHandler(new Tree.Listener<Object>() {
+    private void initializeActions() {
+        allButton.addDomHandler(new ClickHandler() {
             @Override
-            public void onNodeAction(TreeNodeElement<Object> treeNodeElement) {
+            public void onClick(ClickEvent event) {
+                delegate.onAllTypeButtonClicked();
             }
+        }, ClickEvent.getType());
 
+        addTypeBtnHandler(java, JAVA);
+        addTypeBtnHandler(go, GO);
+        addTypeBtnHandler(cpp, CPP);
+        addTypeBtnHandler(javascript, JAVASCRIPT);
+        addTypeBtnHandler(php, PHP);
+        addTypeBtnHandler(python, PYTHON);
+        addTypeBtnHandler(ruby, RUBY);
+
+        systemScope.addDomHandler(new ClickHandler() {
             @Override
-            public void onNodeClosed(TreeNodeElement<Object> treeNodeElement) {
+            public void onClick(ClickEvent event) {
+                delegate.onSystemScopeButtonClicked();
             }
+        }, ClickEvent.getType());
 
+        projectScope.addDomHandler(new ClickHandler() {
             @Override
-            public void onNodeContextMenu(int i, int i2, TreeNodeElement<Object> treeNodeElement) {
+            public void onClick(ClickEvent event) {
+                delegate.onProjectScopeButtonClicked();
             }
+        }, ClickEvent.getType());
+    }
 
+    private void addTypeBtnHandler(@Nonnull final FlowPanel panel, @Nonnull final EnvironmentType environmentType) {
+        panel.addDomHandler(new ClickHandler() {
             @Override
-            public void onNodeDragStart(TreeNodeElement<Object> treeNodeElement, MouseEvent mouseEvent) {
+            public void onClick(ClickEvent event) {
+                delegate.onLangTypeButtonClicked(environmentType);
             }
-
-            @Override
-            public void onNodeDragDrop(TreeNodeElement<Object> treeNodeElement, MouseEvent mouseEvent) {
-            }
-
-            @Override
-            public void onNodeExpanded(TreeNodeElement<Object> treeNodeElement) {
-            }
-
-            @Override
-            public void onNodeSelected(TreeNodeElement<Object> treeNodeElement, SignalEvent signalEvent) {
-                Object data = treeNodeElement.getData();
-
-                boolean isLeaf = data instanceof RunnerEnvironmentLeaf;
-
-                actionDelegate.onEnvironmentSelected(isLeaf ? ((RunnerEnvironmentLeaf)data).getEnvironment() : null);
-            }
-
-            @Override
-            public void onRootContextMenu(int i, int i2) {
-            }
-
-            @Override
-            public void onRootDragDrop(MouseEvent mouseEvent) {
-            }
-
-            @Override
-            public void onKeyboard(KeyboardEvent keyboardEvent) {
-            }
-        });
+        }, ClickEvent.getType());
     }
 
     /** {@inheritDoc} */
     @Override
-    public void addEnvironments(@Nonnull RunnerEnvironmentTree environmentTree) {
-        rootNode.getNodes().clear();
+    public void onRunnerEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
+        delegate.onEnvironmentSelected(environment);
+    }
 
-        rootNode.getNodes().add(environmentTree);
-        tree.renderTree(1);
+    /** {@inheritDoc} */
+    @Override
+    public void addEnvironment(@Nonnull RunnerEnvironment environment) {
+        final RunnerItems<RunnerEnvironment> environmentWidget = widgetFactory.createEnvironment();
+        environmentWidget.setDelegate(new RunnerItems.ActionDelegate<RunnerEnvironment>() {
+            @Override
+            public void onRunnerEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
+                delegate.onEnvironmentSelected(environment);
 
-        treeContainer.add(tree);
+                selectEnvironment(environmentWidget);
+            }
+        });
+
+        environmentWidget.update(environment);
+        environments.add(environmentWidget);
+
+        environmentsPanel.add(environmentWidget);
+
+        selectFirstEnvironment();
+    }
+
+    private void selectFirstEnvironment() {
+        for (RunnerItems environment : environments) {
+            environment.unSelect();
+        }
+
+        environments.get(0).select();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void clear() {
+        environments.clear();
+        environmentsPanel.clear();
+    }
+
+    private void selectEnvironment(@Nonnull RunnerItems selectedWidget) {
+        for (RunnerItems widget : environments) {
+            widget.unSelect();
+        }
+
+        selectedWidget.select();
     }
 
     /** {@inheritDoc} */
     @Override
     public void setDelegate(@Nonnull ActionDelegate actionDelegate) {
-        this.actionDelegate = actionDelegate;
+        this.delegate = actionDelegate;
     }
 }

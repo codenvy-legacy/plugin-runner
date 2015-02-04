@@ -11,23 +11,33 @@
 package com.codenvy.ide.ext.runner.client.runneractions.impl;
 
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
+import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType;
+import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
+
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.CPP;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.GO;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.JAVA;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.JAVASCRIPT;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.PHP;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.PYTHON;
+import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.RUBY;
 
 /**
  * This action executes a request on the server side for getting environments of project and runner. These environments are used
@@ -36,85 +46,59 @@ import javax.annotation.Nonnull;
  * @author Dmitry Shnurenko
  * @author Valeriy Svydenko
  */
+@Singleton
 public class GetEnvironmentsAction extends AbstractRunnerAction {
 
-    private final RunnerManagerView                                     view;
+    private final TemplatesWidget                                       templatesWidget;
     private final AppContext                                            appContext;
     private final ProjectServiceClient                                  projectService;
     private final RunnerServiceClient                                   runnerService;
     private final NotificationManager                                   notificationManager;
     private final Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider;
     private final RunnerLocalizationConstant                            locale;
-    private final RunnerEnvironmentTree                                 tree;
+
+    private CurrentProject currentProject;
 
     @Inject
-    public GetEnvironmentsAction(RunnerManagerView view,
+    public GetEnvironmentsAction(TemplatesWidget templatesWidget,
                                  AppContext appContext,
                                  ProjectServiceClient projectService,
                                  RunnerServiceClient runnerService,
                                  NotificationManager notificationManager,
                                  Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider,
-                                 RunnerLocalizationConstant locale,
-                                 DtoFactory dtoFactory) {
-        this.view = view;
+                                 RunnerLocalizationConstant locale) {
+        this.templatesWidget = templatesWidget;
         this.appContext = appContext;
         this.projectService = projectService;
         this.runnerService = runnerService;
         this.notificationManager = notificationManager;
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.locale = locale;
-        this.tree = dtoFactory.createDto(RunnerEnvironmentTree.class).withDisplayName(locale.actionManagerAvailableEnvironments());
     }
 
     /** {@inheritDoc} */
     @Override
     public void perform() {
-        CurrentProject project = appContext.getCurrentProject();
+        currentProject = appContext.getCurrentProject();
 
-        if (project == null) {
+        if (currentProject == null) {
             return;
         }
 
-        AsyncRequestCallback<RunnerEnvironmentTree> callback = callbackBuilderProvider
-                .get()
-                .unmarshaller(RunnerEnvironmentTree.class)
-                .success(new SuccessCallback<RunnerEnvironmentTree>() {
-                    @Override
-                    public void onSuccess(RunnerEnvironmentTree result) {
+        getProjectEnvironments();
 
-                        if (!result.getLeaves().isEmpty()) {
-                            tree.addNode(result);
-                        }
-
-                        getSystemEnvironments();
-                    }
-                })
-                .failure(new FailureCallback() {
-                    @Override
-                    public void onFailure(@Nonnull Throwable reason) {
-                        notificationManager.showError(locale.customRunnerGetEnvironmentFailed());
-                    }
-                })
-                .build();
-
-        String path = project.getProjectDescription().getPath();
-
-        projectService.getRunnerEnvironments(path, callback);
-
-        //clean environments tree
-        tree.setNodes(null);
+        getSystemEnvironments();
     }
 
-    private void getSystemEnvironments() {
+    public void getLanguageEnvironments(@Nonnull final EnvironmentType environmentType) {
         AsyncRequestCallback<RunnerEnvironmentTree> callback = callbackBuilderProvider
                 .get()
                 .unmarshaller(RunnerEnvironmentTree.class)
                 .success(new SuccessCallback<RunnerEnvironmentTree>() {
                     @Override
                     public void onSuccess(RunnerEnvironmentTree result) {
-                        tree.addNode(result);
 
-                        view.showTemplates(tree);
+                        getEnvironmentsByType(environmentType, result);
                     }
                 })
                 .failure(new FailureCallback() {
@@ -126,6 +110,98 @@ public class GetEnvironmentsAction extends AbstractRunnerAction {
                 .build();
 
         runnerService.getRunners(callback);
+    }
+
+    private void getEnvironmentsByType(@Nonnull EnvironmentType type, @Nonnull RunnerEnvironmentTree tree) {
+        switch (type) {
+            case JAVA:
+                getEnvironments(tree.getNode(JAVA.toString()));
+                break;
+            case CPP:
+                getEnvironments(tree.getNode(CPP.toString()));
+                break;
+            case GO:
+                getEnvironments(tree.getNode(GO.toString()));
+                break;
+            case JAVASCRIPT:
+                getEnvironments(tree.getNode(JAVASCRIPT.toString()));
+                break;
+            case PHP:
+                getEnvironments(tree.getNode(PHP.toString()));
+                break;
+            case PYTHON:
+                getEnvironments(tree.getNode(PYTHON.toString()));
+                break;
+            case RUBY:
+                getEnvironments(tree.getNode(RUBY.toString()));
+                break;
+
+            default:
+        }
+    }
+
+    public void getProjectEnvironments() {
+        AsyncRequestCallback<RunnerEnvironmentTree> callback = callbackBuilderProvider
+                .get()
+                .unmarshaller(RunnerEnvironmentTree.class)
+                .success(new SuccessCallback<RunnerEnvironmentTree>() {
+                    @Override
+                    public void onSuccess(RunnerEnvironmentTree result) {
+                        for (RunnerEnvironmentLeaf environment : result.getLeaves()) {
+                            templatesWidget.addEnvironment(environment.getEnvironment());
+                        }
+                    }
+                })
+                .failure(new FailureCallback() {
+                    @Override
+                    public void onFailure(@Nonnull Throwable reason) {
+                        notificationManager.showError(locale.customRunnerGetEnvironmentFailed());
+                    }
+                })
+                .build();
+
+        String path = currentProject.getProjectDescription().getPath();
+
+        projectService.getRunnerEnvironments(path, callback);
+    }
+
+    public void getSystemEnvironments() {
+        AsyncRequestCallback<RunnerEnvironmentTree> callback = callbackBuilderProvider
+                .get()
+                .unmarshaller(RunnerEnvironmentTree.class)
+                .success(new SuccessCallback<RunnerEnvironmentTree>() {
+                    @Override
+                    public void onSuccess(RunnerEnvironmentTree result) {
+                        getEnvironments(result);
+                    }
+                })
+                .failure(new FailureCallback() {
+                    @Override
+                    public void onFailure(@Nonnull Throwable reason) {
+                        notificationManager.showError(locale.customRunnerGetEnvironmentFailed());
+                    }
+                })
+                .build();
+
+        runnerService.getRunners(callback);
+    }
+
+    private void getEnvironments(@Nonnull RunnerEnvironmentTree environmentTree) {
+        if (!environmentTree.getLeaves().isEmpty()) {
+            for (RunnerEnvironmentLeaf environment : environmentTree.getLeaves()) {
+                templatesWidget.addEnvironment(environment.getEnvironment());
+            }
+        }
+
+        for (RunnerEnvironmentTree tree : environmentTree.getNodes()) {
+            if (tree.getNodes().isEmpty()) {
+                for (RunnerEnvironmentLeaf environment : tree.getLeaves()) {
+                    templatesWidget.addEnvironment(environment.getEnvironment());
+                }
+            } else {
+                getEnvironments(tree);
+            }
+        }
     }
 
 }

@@ -43,10 +43,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._512;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._512;
 import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
 
 /**
@@ -142,10 +142,10 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         switch (runner.getStatus()) {
             case IN_PROGRESS:
-                view.setApplicationURl(locale.urlAppWaitingForBoot());
+                view.setApplicationURl(locale.uplAppWaitingForBoot());
                 break;
             case IN_QUEUE:
-                view.setApplicationURl(locale.urlAppWaitingForBoot());
+                view.setApplicationURl(locale.uplAppWaitingForBoot());
                 break;
             case STOPPED:
                 view.setApplicationURl(locale.urlAppRunnerStopped());
@@ -272,13 +272,15 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     public void onHistoryButtonClicked() {
         selectedEnvironment = null;
 
-        view.activateHistory();
+        view.activateHistoryTab();
     }
 
     /** {@inheritDoc} */
     @Override
     public void onTemplatesButtonClicked() {
         getEnvironmentsAction.perform();
+
+        view.activeTemplatesTab();
     }
 
     /** {@inheritDoc} */
@@ -306,7 +308,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         selectedRunner = runner;
         selectedEnvironment = null;
 
-        view.activateHistory();
+        view.activateHistoryTab();
         view.addRunner(runner);
         update(runner);
 
@@ -359,7 +361,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
-        view.activateHistory();
+        view.activateHistoryTab();
 
         getRunningProcessAction = actionFactory.createGetRunningProcess();
 

@@ -11,34 +11,49 @@
 package com.codenvy.ide.ext.runner.client.widgets.templates;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
-import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
+import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Provides methods which allow display runner environments on special widget.
  *
  * @author Dmitry Shnurenko
  */
+@ImplementedBy(TemplatesWidgetImpl.class)
 public interface TemplatesWidget extends View<TemplatesWidget.ActionDelegate> {
 
     /**
-     * Shows special widget on which displayed available runner environments.
+     * Adds environment on templates panel and.
      *
-     * @param environmentTree
-     *         environments tree which are available for runner
+     * @param environment
+     *         runner which was added
      */
-    void addEnvironments(@Nonnull RunnerEnvironmentTree environmentTree);
+    void addEnvironment(@Nonnull RunnerEnvironment environment);
+
+    /** Clears panel with environments */
+    void clear();
 
     interface ActionDelegate {
+
         /**
-         * Performs some actions in response to user's choosing an environment.
+         * Performs some actions when user click on environment.
          *
          * @param environment
-         *         environment that was chosen
+         *         selected environment
          */
-        void onEnvironmentSelected(@Nullable RunnerEnvironment environment);
+        void onEnvironmentSelected(@Nonnull RunnerEnvironment environment);
+
+        /** Performs some actions when user click on all type button. */
+        void onAllTypeButtonClicked();
+
+        void onLangTypeButtonClicked(@Nonnull EnvironmentType languageType);
+
+        /** Performs some actions when user click on project scope button. */
+        void onProjectScopeButtonClicked();
+
+        /** Performs some actions when user click on system scope button. */
+        void onSystemScopeButtonClicked();
     }
 }

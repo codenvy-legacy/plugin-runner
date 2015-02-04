@@ -8,51 +8,28 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.widgets.runner;
+package com.codenvy.ide.ext.runner.client.widgets.history.runner;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.codenvy.ide.ext.runner.client.widgets.general.GeneralWidget;
+import com.codenvy.ide.ext.runner.client.widgets.general.RunnerItems;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
-import java.util.Date;
 
 /**
- * Class provides view representation of runner.
+ * The class contains methods which allow change view representation of runner.
  *
  * @author Dmitry Shnurenko
- * @author Valeriy Svydenko
  */
-public class RunnerWidgetImpl extends Composite implements RunnerWidget, ClickHandler {
+public class RunnerWidget implements RunnerItems<Runner> {
 
-    interface RunnerViewImplUiBinder extends UiBinder<Widget, RunnerWidgetImpl> {
-    }
-
-    public static final  DateTimeFormat         DATE_TIME_FORMAT = DateTimeFormat.getFormat("dd-MM-yy HH:mm");
-    private static final RunnerViewImplUiBinder UI_BINDER        = GWT.create(RunnerViewImplUiBinder.class);
-
-    @UiField
-    Label             runnerName;
-    @UiField
-    Label             ram;
-    @UiField
-    Label             startTime;
-    @UiField
-    SimpleLayoutPanel image;
-    @UiField(provided = true)
-    final RunnerResources resources;
+    private final GeneralWidget   generalWidget;
+    private final RunnerResources resources;
 
     private final SVGImage inProgress;
     private final SVGImage inQueue;
@@ -61,16 +38,13 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget, ClickHa
     private final SVGImage done;
     private final SVGImage stopped;
 
-    private ActionDelegate delegate;
-    private Runner         runner;
+    private Runner                 runner;
+    private ActionDelegate<Runner> delegate;
 
     @Inject
-    public RunnerWidgetImpl(RunnerResources resources) {
+    public RunnerWidget(GeneralWidget generalWidget, RunnerResources resources) {
+        this.generalWidget = generalWidget;
         this.resources = resources;
-
-        initWidget(UI_BINDER.createAndBindUi(this));
-
-        addDomHandler(this, ClickEvent.getType());
 
         inProgress = new SVGImage(resources.runnerInProgressImage());
         inQueue = new SVGImage(resources.runnerInQueueImage());
@@ -78,20 +52,25 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget, ClickHa
         timeout = new SVGImage(resources.runnerTimeoutImage());
         done = new SVGImage(resources.runnerDoneImage());
         stopped = new SVGImage(resources.runnerDoneImage());
+
+        generalWidget.setDelegate(new GeneralWidget.ActionDelegate() {
+            @Override
+            public void onWidgetClicked() {
+                delegate.onRunnerEnvironmentSelected(runner);
+            }
+        });
     }
 
     /** {@inheritDoc} */
     @Override
     public void select() {
-        removeStyleName(resources.runnerCss().runnerShadow());
-        addStyleName(resources.runnerCss().runnerWidgetBorders());
+        generalWidget.select();
     }
 
     /** {@inheritDoc} */
     @Override
     public void unSelect() {
-        addStyleName(resources.runnerCss().runnerShadow());
-        removeStyleName(resources.runnerCss().runnerWidgetBorders());
+        generalWidget.unSelect();
     }
 
     /** {@inheritDoc} */
@@ -101,42 +80,41 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget, ClickHa
 
         changeRunnerStatusIcon();
 
-        runnerName.setText(runner.getTitle());
-
-        ram.setText(runner.getRAM() + "MB");
-        startTime.setText(DATE_TIME_FORMAT.format(new Date(runner.getCreationTime())));
+        generalWidget.setName(runner.getTitle());
+        generalWidget.setDescription(runner.getRAM() + "MB");
+        generalWidget.setStartTime(runner.getCreationTime());
     }
 
     private void changeRunnerStatusIcon() {
         switch (runner.getStatus()) {
             case IN_PROGRESS:
                 inProgress.addClassNameBaseVal(resources.runnerCss().blueColor());
-                image.getElement().setInnerHTML(inProgress.toString());
+                generalWidget.setImage(inProgress);
                 break;
 
             case IN_QUEUE:
                 inQueue.addClassNameBaseVal(resources.runnerCss().yellowColor());
-                image.getElement().setInnerHTML(inQueue.toString());
+                generalWidget.setImage(inQueue);
                 break;
 
             case FAILED:
                 failed.addClassNameBaseVal(resources.runnerCss().redColor());
-                image.getElement().setInnerHTML(failed.toString());
+                generalWidget.setImage(failed);
                 break;
 
             case TIMEOUT:
                 timeout.addClassNameBaseVal(resources.runnerCss().whiteColor());
-                image.getElement().setInnerHTML(timeout.toString());
+                generalWidget.setImage(timeout);
                 break;
 
             case STOPPED:
                 stopped.addClassNameBaseVal(resources.runnerCss().redColor());
-                image.getElement().setInnerHTML(stopped.toString());
+                generalWidget.setImage(stopped);
                 break;
 
             case DONE:
                 done.addClassNameBaseVal(resources.runnerCss().greenColor());
-                image.getElement().setInnerHTML(done.toString());
+                generalWidget.setImage(done);
                 break;
 
             default:
@@ -145,14 +123,13 @@ public class RunnerWidgetImpl extends Composite implements RunnerWidget, ClickHa
 
     /** {@inheritDoc} */
     @Override
-    public void setDelegate(ActionDelegate delegate) {
+    public void setDelegate(@Nonnull ActionDelegate<Runner> delegate) {
         this.delegate = delegate;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onClick(ClickEvent event) {
-        delegate.onRunnerSelected(runner);
+    public Widget asWidget() {
+        return generalWidget.asWidget();
     }
-
 }

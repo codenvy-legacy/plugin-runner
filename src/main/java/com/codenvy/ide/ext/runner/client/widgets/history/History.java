@@ -8,43 +8,39 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.widgets.runner;
+package com.codenvy.ide.ext.runner.client.widgets.history;
 
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
+import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
 
 /**
- * Provides methods which allow change visual representation of runner.
+ * Provides methods which allow change history panel.
  *
  * @author Dmitry Shnurenko
- * @author Valeriy Svydenko
  */
-public interface RunnerWidget extends View<RunnerWidget.ActionDelegate> {
-
-    /** Performs some actions when tab is selected. */
-    void select();
-
-    /** Performs some actions when tab is unselected. */
-    void unSelect();
+@ImplementedBy(HistoryImpl.class)
+public interface History extends View<History.ActionDelegate> {
 
     /**
-     * Updates runner view representation when runner state changed.
+     * Adds runner on panel and update runner's state.
      *
      * @param runner
-     *         runner which was changed
+     *         runner which was added
      */
-    void update(@Nonnull Runner runner);
+    void addRunner(@Nonnull Runner runner, @Nonnull RunnerWidget runnerWidget);
 
     interface ActionDelegate {
-        /**
-         * Performs some actions in response to user's choosing a runner.
-         *
-         * @param runner
-         *         runner that was chosen
-         */
-        void onRunnerSelected(@Nonnull Runner runner);
-    }
 
+        /**
+         * Performs some actions when user clicks on runner.
+         *
+         * @param selectedRunner
+         *         runner which was selected
+         */
+        void onRunnerSelected(@Nonnull Runner selectedRunner);
+    }
 }

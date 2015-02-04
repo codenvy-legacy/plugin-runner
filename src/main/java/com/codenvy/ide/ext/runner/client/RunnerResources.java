@@ -56,6 +56,18 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/mainwidget/more-icon.png")
     ImageResource moreIcon();
 
+    @Source("images/templates/scope-project.png")
+    ImageResource scopeProject();
+
+    @Source("images/templates/scope-system.png")
+    ImageResource scopeSystem();
+
+    @Source("images/templates/scope-user.png")
+    ImageResource scopeUser();
+
+    @Source("images/templates/scope-workspace.png")
+    ImageResource scopeWorkspace();
+
     @Source("images/run.svg")
     SVGResource runAppImage();
 

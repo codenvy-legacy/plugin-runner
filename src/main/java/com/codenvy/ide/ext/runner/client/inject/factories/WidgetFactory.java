@@ -14,10 +14,10 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.console.FullLogMessageWidget;
-import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.Tab;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
-import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
+import com.codenvy.ide.ext.runner.client.widgets.templates.environment.EnvironmentWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.resources.client.ImageResource;
@@ -62,6 +62,14 @@ public interface WidgetFactory {
     RunnerWidget createRunner();
 
     /**
+     * Creates environment widget.
+     *
+     * @return an instance of {@link EnvironmentWidget}
+     */
+    @Nonnull
+    EnvironmentWidget createEnvironment();
+
+    /**
      * Creates a console widget for a given runner.
      *
      * @param runner
@@ -86,14 +94,6 @@ public interface WidgetFactory {
      */
     @Nonnull
     MoreInfo createMoreInfo();
-
-    /**
-     * Creates templates widget, which need to display environments for current runner.
-     *
-     * @return an instance of {@link TemplatesWidget}
-     */
-    @Nonnull
-    TemplatesWidget createTemplates();
 
     /**
      * Creates message widget that need to be displayed in the console.

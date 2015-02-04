@@ -132,15 +132,10 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void activateTerminal(@Nonnull Runner runner);
 
     /** Shows history widget which contains all created runners. */
-    void activateHistory();
+    void activateHistoryTab();
 
-    /**
-     * Shows templates which are available for runner.
-     *
-     * @param environmentTree
-     *         available environments tree
-     */
-    void showTemplates(@Nonnull RunnerEnvironmentTree environmentTree);
+    /** Shows templates which are available for runner. */
+    void activeTemplatesTab();
 
     /**
      * Shows special popup panel which displays additional information about runner.

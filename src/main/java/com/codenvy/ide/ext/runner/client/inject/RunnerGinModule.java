@@ -22,12 +22,8 @@ import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidgetImpl;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.console.ConsoleImpl;
-import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
-import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidgetImpl;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidgetImpl;
-import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
-import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidgetImpl;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.TerminalImpl;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
@@ -56,11 +52,9 @@ public class RunnerGinModule extends AbstractGinModule {
 
         install(new GinFactoryModuleBuilder().implement(Terminal.class, TerminalImpl.class)
                                              .implement(Console.class, ConsoleImpl.class)
-                                             .implement(RunnerWidget.class, RunnerWidgetImpl.class)
                                              .implement(ButtonWidget.class, ButtonWidgetImpl.class)
                                              .implement(TabWidget.class, TabWidgetImpl.class)
                                              .implement(MoreInfo.class, MoreInfoImpl.class)
-                                             .implement(TemplatesWidget.class, TemplatesWidgetImpl.class)
                                              .build(WidgetFactory.class));
     }
 }

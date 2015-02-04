@@ -11,7 +11,6 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
-import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.parts.PartStackUIResources;
 import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
@@ -20,10 +19,11 @@ import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
-import com.codenvy.ide.ext.runner.client.widgets.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.widgets.history.History;
+import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.Tab;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
-import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
+import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesPresenter;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.core.client.GWT;
@@ -42,6 +42,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -63,8 +64,8 @@ import static com.codenvy.ide.ext.runner.client.widgets.tab.Tab.RIGHT_PANEL;
  * @author Valeriy Svydenko
  */
 public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView,
-                                                                                                 RunnerWidget.ActionDelegate,
-                                                                                                 TemplatesWidget.ActionDelegate {
+                                                                                                 History.ActionDelegate,
+                                                                                                 TemplatesPresenter.ActionDelegate {
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
     }
 
@@ -85,12 +86,14 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     //runners panel
     @UiField
-    FlowPanel       runnersPanel;
+    SimplePanel     runnersPanel;
     @UiField
     DockLayoutPanel runnersContainer;
 
     @UiField
-    FlowPanel buttonsPanel;
+    FlowPanel otherButtonsPanel;
+    @UiField
+    FlowPanel runButtonPanel;
     @UiField
     FlowPanel tabsPanel;
     @UiField
@@ -117,6 +120,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private final Map<Runner, RunnerWidget> runnerWidgets;
     private final PopupPanel                popupPanel;
     private final MoreInfo                  moreInfoWidget;
+    private final History                   historyWidget;
+    private final TemplatesPresenter        templatesPresenter;
 
     private TabWidget consoleTab;
     private TabWidget terminalTab;
@@ -128,15 +133,16 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private ButtonWidget clean;
     private ButtonWidget docker;
 
-    private TemplatesWidget templatesWidget;
-    private String          url;
+    private String url;
 
     @Inject
     public RunnerManagerViewImpl(PartStackUIResources partStackUIResources,
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locale,
                                  WidgetFactory widgetFactory,
-                                 PopupPanel popupPanel) {
+                                 PopupPanel popupPanel,
+                                 TemplatesPresenter templatesPresenter,
+                                 History historyWidget) {
         super(partStackUIResources);
 
         this.resources = resources;
@@ -153,13 +159,15 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.terminals = new HashMap<>();
         this.runnerWidgets = new HashMap<>();
         this.moreInfoWidget = widgetFactory.createMoreInfo();
+        this.historyWidget = historyWidget;
+        this.historyWidget.setDelegate(this);
+
+        this.templatesPresenter = templatesPresenter;
+        this.templatesPresenter.setDelegate(this);
 
         this.popupPanel = popupPanel;
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
         this.popupPanel.add(moreInfoWidget);
-
-        this.templatesWidget = widgetFactory.createTemplates();
-        this.templatesWidget.setDelegate(this);
 
         addMoreInfoPanelHandler();
 
@@ -260,7 +268,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onRunButtonClicked();
             }
         };
-        run = createButton(resources.runButton(), runDelegate);
+        run = createButton(resources.runButton(), runDelegate, runButtonPanel);
 
         ButtonWidget.ActionDelegate stopDelegate = new ButtonWidget.ActionDelegate() {
             @Override
@@ -268,7 +276,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onStopButtonClicked();
             }
         };
-        stop = createButton(resources.stopButton(), stopDelegate);
+        stop = createButton(resources.stopButton(), stopDelegate, otherButtonsPanel);
 
         ButtonWidget.ActionDelegate cleanDelegate = new ButtonWidget.ActionDelegate() {
             @Override
@@ -276,7 +284,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onCleanConsoleButtonClicked();
             }
         };
-        clean = createButton(resources.cleanButton(), cleanDelegate);
+        clean = createButton(resources.cleanButton(), cleanDelegate, otherButtonsPanel);
 
         ButtonWidget.ActionDelegate dockerDelegate = new ButtonWidget.ActionDelegate() {
             @Override
@@ -284,27 +292,25 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onDockerButtonClicked();
             }
         };
-        docker = createButton(resources.dockerButton(), dockerDelegate);
+        docker = createButton(resources.dockerButton(), dockerDelegate, otherButtonsPanel);
     }
 
     @Nonnull
-    private ButtonWidget createButton(@Nonnull ImageResource icon, @Nonnull ButtonWidget.ActionDelegate delegate) {
+    private ButtonWidget createButton(@Nonnull ImageResource icon,
+                                      @Nonnull ButtonWidget.ActionDelegate delegate,
+                                      @Nonnull FlowPanel buttonPanel) {
         ButtonWidget button = widgetFactory.createButton(icon);
         button.setDelegate(delegate);
         button.setDisable();
 
-        buttonsPanel.add(button);
+        buttonPanel.add(button);
 
         return button;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onEnvironmentSelected(@Nullable RunnerEnvironment environment) {
-        if (environment == null) {
-            return;
-        }
-
+    public void onEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
         delegate.onEnvironmentSelected(environment);
     }
 
@@ -312,17 +318,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void onRunnerSelected(@Nonnull Runner runner) {
         delegate.onRunnerSelected(runner);
-
-        RunnerWidget widget = runnerWidgets.get(runner);
-        selectWidget(widget);
-    }
-
-    private void selectWidget(@Nonnull RunnerWidget selectWidget) {
-        for (RunnerWidget widget : runnerWidgets.values()) {
-            widget.unSelect();
-        }
-
-        selectWidget.select();
     }
 
     /** {@inheritDoc} */
@@ -335,9 +330,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             terminal.update(runner);
         }
 
-        RunnerWidget runnerWidget = runnerWidgets.get(runner);
-        if (runnerWidget != null) {
-            runnerWidget.update(runner);
+        RunnerWidget runnerItems = runnerWidgets.get(runner);
+        if (runnerItems != null) {
+            runnerItems.update(runner);
         }
 
         moreInfoWidget.update(runner);
@@ -377,13 +372,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         }
 
         RunnerWidget runnerWidget = widgetFactory.createRunner();
-        runnerWidget.update(runner);
-        runnerWidget.setDelegate(this);
-
         runnerWidgets.put(runner, runnerWidget);
-        runnersPanel.add(runnerWidget);
 
-        selectWidget(runnerWidget);
+        historyWidget.addRunner(runner, runnerWidget);
 
         Console console = widgetFactory.createConsole(runner);
         consoles.put(runner, console);
@@ -526,27 +517,26 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void activateHistory() {
+    public void activateHistoryTab() {
         templatesTab.unSelect();
         historyTab.select(BLACK);
 
-        runnersPanel.clear();
+        otherButtonsPanel.setVisible(true);
 
-        for (RunnerWidget widget : runnerWidgets.values()) {
-            runnersPanel.add(widget);
-        }
+        runnersPanel.clear();
+        runnersPanel.add(historyWidget);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void showTemplates(@Nonnull RunnerEnvironmentTree environmentTree) {
+    public void activeTemplatesTab() {
         templatesTab.select(BLACK);
         historyTab.unSelect();
 
-        templatesWidget.addEnvironments(environmentTree);
+        otherButtonsPanel.setVisible(false);
 
         runnersPanel.clear();
-        runnersPanel.add(templatesWidget);
+        templatesPresenter.go(runnersPanel);
     }
 
     /** {@inheritDoc} */

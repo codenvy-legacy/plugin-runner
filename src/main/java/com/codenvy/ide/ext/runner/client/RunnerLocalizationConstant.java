@@ -228,11 +228,8 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("runner.tab.templates")
     String runnerTabTemplates();
 
-    @Key("action.manager.available.environments")
-    String actionManagerAvailableEnvironments();
-
     @Key("url.app.waiting.for.boot")
-    String urlAppWaitingForBoot();
+    String uplAppWaitingForBoot();
 
     @Key("url.app.runner.stopped")
     String urlAppRunnerStopped();
@@ -242,6 +239,15 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("tooltip.runner.panel")
     String tooltipRunnerPanel();
+
+    @Key("template.scope")
+    String templateScope();
+
+    @Key("template.type")
+    String templateType();
+
+    @Key("template.type.all")
+    String templateTypeAll();
 
     @Key("selectRunnerPage.memoryRecommendedLabel")
     String selectRunnerPageMemoryRecommendedLabel();
@@ -275,4 +281,25 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("properties.button.cancel")
     String propertiesButtonCancel();
+
+    @Key("language.cpp")
+    String languageCpp();
+
+    @Key("language.go")
+    String languageGo();
+
+    @Key("language.java")
+    String languageJava();
+
+    @Key("language.javascript")
+    String languageJavascript();
+
+    @Key("language.php")
+    String languagePhp();
+
+    @Key("language.python")
+    String languagePython();
+
+    @Key("language.ruby")
+    String languageRuby();
 }
