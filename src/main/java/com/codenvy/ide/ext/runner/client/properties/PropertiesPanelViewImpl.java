@@ -79,10 +79,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
-        EnumSet<RAM> rams = EnumSet.allOf(RAM.class);
-        rams.remove(RAM.OTHER);
-        prepareField(ram, rams);
-
+        prepareField(ram, EnumSet.range(RAM._128, RAM._2048));
         prepareField(scope, EnumSet.allOf(Scope.class));
         prepareField(boot, EnumSet.allOf(Boot.class));
         prepareField(shutdown, EnumSet.allOf(Shutdown.class));
