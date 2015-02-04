@@ -1,0 +1,63 @@
+<!--
+
+    Copyright (c) 2012-2015 Codenvy, S.A.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+      Codenvy, S.A. - initial API and implementation
+
+-->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="locale" type="com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant"/>
+    <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
+
+    <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
+        <g:east size="200">
+            <g:FlowPanel>
+                <g:Label text="{locale.propertiesName}"/>
+                <g:TextBox ui:field="name"/>
+
+                <g:Label text="{locale.propertiesRam}"/>
+                <g:ListBox ui:field="ram"/>
+
+                <g:Label text="{locale.propertiesScope}"/>
+                <g:ListBox ui:field="scope"/>
+
+                <g:Label text="{locale.propertiesType}"/>
+                <g:TextBox ui:field="type"/>
+
+                <g:Label text="{locale.propertiesBoot}"/>
+                <g:ListBox ui:field="boot"/>
+
+                <g:Label text="{locale.propertiesShutdown}"/>
+                <g:ListBox ui:field="shutdown"/>
+            </g:FlowPanel>
+        </g:east>
+
+        <g:west size="100">
+            <g:FlowPanel>
+                <g:Button ui:field="btnSave" text="{locale.propertiesButtonSave}"/>
+                <g:Button ui:field="btnDelete" text="{locale.propertiesButtonDelete}"/>
+                <g:Button ui:field="btnCancel" text="{locale.propertiesButtonCancel}"/>
+            </g:FlowPanel>
+        </g:west>
+
+        <g:center>
+            <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
+                <g:north size="30">
+                    <g:Label text="{locale.propertiesDockerfile}"/>
+                </g:north>
+
+                <g:center>
+                    <g:TextArea ui:field="editor"/>
+                </g:center>
+            </g:DockLayoutPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+
+</ui:UiBinder>

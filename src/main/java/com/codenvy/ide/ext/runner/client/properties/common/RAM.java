@@ -26,6 +26,18 @@ public enum RAM {
         this.size = size;
     }
 
+    /** @return integer value of enum. */
+    public int getValue() {
+        return size;
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String toString() {
+        return size + "MB";
+    }
+
     /**
      * Returns an instance of {@link RAM} using special memory string value.
      *
@@ -42,18 +54,6 @@ public enum RAM {
         }
 
         return OTHER;
-    }
-
-    /** @return integer value of enum. */
-    public int getValue() {
-        return size;
-    }
-
-    /** {@inheritDoc} */
-    @Nonnull
-    @Override
-    public String toString() {
-        return size + "MB";
     }
 
 }

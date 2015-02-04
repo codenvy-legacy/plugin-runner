@@ -31,4 +31,22 @@ public enum Scope {
     public String toString() {
         return name;
     }
+
+    /**
+     * Returns a value of {@link Scope} that is equaled to a given content.
+     *
+     * @param content
+     *         content that needs to analyze
+     * @return an instance {@link Scope}
+     */
+    public static Scope detect(@Nonnull String content) {
+        for (Scope scope : Scope.values()) {
+            if (content.equals(scope.toString())) {
+                return scope;
+            }
+        }
+
+        throw new UnsupportedOperationException("You tried to detect unknown scope. Please, check your value. Your scope is " + content);
+    }
+
 }

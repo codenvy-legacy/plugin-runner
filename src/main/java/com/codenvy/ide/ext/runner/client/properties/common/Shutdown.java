@@ -31,4 +31,22 @@ public enum Shutdown {
     public String toString() {
         return name;
     }
+
+    /**
+     * Returns a value of {@link Shutdown} that is equaled to a given content.
+     *
+     * @param content
+     *         content that needs to analyze
+     * @return an instance {@link Shutdown}
+     */
+    public static Shutdown detect(@Nonnull String content) {
+        for (Shutdown shutdown : Shutdown.values()) {
+            if (content.equals(shutdown.toString())) {
+                return shutdown;
+            }
+        }
+
+        throw new UnsupportedOperationException("You tried to detect unknown shutdown. Please, check your value. Your shutdown is " + content);
+    }
+
 }

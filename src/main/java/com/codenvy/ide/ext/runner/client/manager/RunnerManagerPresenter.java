@@ -142,10 +142,10 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         switch (runner.getStatus()) {
             case IN_PROGRESS:
-                view.setApplicationURl(locale.uplAppWaitingForBoot());
+                view.setApplicationURl(locale.urlAppWaitingForBoot());
                 break;
             case IN_QUEUE:
-                view.setApplicationURl(locale.uplAppWaitingForBoot());
+                view.setApplicationURl(locale.urlAppWaitingForBoot());
                 break;
             case STOPPED:
                 view.setApplicationURl(locale.urlAppRunnerStopped());

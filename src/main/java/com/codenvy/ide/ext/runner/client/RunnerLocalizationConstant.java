@@ -231,8 +231,8 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("action.manager.available.environments")
     String actionManagerAvailableEnvironments();
 
-    @Key("upl.app.waiting.for.boot")
-    String uplAppWaitingForBoot();
+    @Key("url.app.waiting.for.boot")
+    String urlAppWaitingForBoot();
 
     @Key("url.app.runner.stopped")
     String urlAppRunnerStopped();
@@ -245,4 +245,34 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("selectRunnerPage.memoryRecommendedLabel")
     String selectRunnerPageMemoryRecommendedLabel();
+
+    @Key("properties.name")
+    String propertiesName();
+
+    @Key("properties.ram")
+    String propertiesRam();
+
+    @Key("properties.scope")
+    String propertiesScope();
+
+    @Key("properties.type")
+    String propertiesType();
+
+    @Key("properties.boot")
+    String propertiesBoot();
+
+    @Key("properties.shutdown")
+    String propertiesShutdown();
+
+    @Key("properties.dockerfile")
+    String propertiesDockerfile();
+
+    @Key("properties.button.save")
+    String propertiesButtonSave();
+
+    @Key("properties.button.delete")
+    String propertiesButtonDelete();
+
+    @Key("properties.button.cancel")
+    String propertiesButtonCancel();
 }

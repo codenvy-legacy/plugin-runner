@@ -31,4 +31,22 @@ public enum Boot {
     public String toString() {
         return name;
     }
+
+    /**
+     * Returns a value of {@link Boot} that is equaled to a given content.
+     *
+     * @param content
+     *         content that needs to analyze
+     * @return an instance {@link Boot}
+     */
+    public static Boot detect(@Nonnull String content) {
+        for (Boot boot : Boot.values()) {
+            if (content.equals(boot.toString())) {
+                return boot;
+            }
+        }
+
+        throw new UnsupportedOperationException("You tried to detect unknown boot. Please, check your value. Your boot is " + content);
+    }
+
 }
