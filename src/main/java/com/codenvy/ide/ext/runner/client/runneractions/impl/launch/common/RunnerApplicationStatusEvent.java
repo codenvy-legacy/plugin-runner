@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
-import com.codenvy.api.runner.ApplicationStatus;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.web.bindery.event.shared.Event;
 
 import javax.annotation.Nonnull;
@@ -22,21 +22,22 @@ import javax.annotation.Nonnull;
  *
  * @author Sun Tan
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class RunnerApplicationStatusEvent extends Event<RunnerApplicationStatusEventHandler> {
 
-    private static final Type<RunnerApplicationStatusEventHandler> TYPE = new Type<>();
+    public static final Type<RunnerApplicationStatusEventHandler> TYPE = new Type<>();
 
     private final ApplicationProcessDescriptor applicationProcessDescriptor;
     private final AppContext                   appContext;
-    private final ApplicationStatus            applicationStatus;
+    private final Runner                       runner;
 
     public RunnerApplicationStatusEvent(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor,
                                         @Nonnull AppContext appContext,
-                                        @Nonnull ApplicationStatus applicationStatus) {
+                                        @Nonnull Runner runner) {
         this.applicationProcessDescriptor = applicationProcessDescriptor;
         this.appContext = appContext;
-        this.applicationStatus = applicationStatus;
+        this.runner = runner;
     }
 
     /** {@inheritDoc} */
@@ -48,29 +49,7 @@ public class RunnerApplicationStatusEvent extends Event<RunnerApplicationStatusE
     /** {@inheritDoc} */
     @Override
     protected void dispatch(RunnerApplicationStatusEventHandler handler) {
-        switch (applicationStatus) {
-            case RUNNING:
-                handler.onRunnerAppRunning(applicationProcessDescriptor, appContext);
-                break;
-
-            case STOPPED:
-                handler.onRunnerAppStopped(applicationProcessDescriptor, appContext);
-                break;
-
-            case FAILED:
-                handler.onRunnerAppFailed(applicationProcessDescriptor, appContext);
-                break;
-
-            case CANCELLED:
-                handler.onRunnerCancelled(applicationProcessDescriptor, appContext);
-                break;
-
-            case NEW:
-                handler.onRunnerAppNew(applicationProcessDescriptor, appContext);
-                break;
-
-            default:
-        }
+        handler.onRunnerStatusChanged(applicationProcessDescriptor, appContext, runner);
     }
 
 }

@@ -175,7 +175,7 @@ public class StatusAction extends AbstractRunnerAction {
             default:
         }
 
-        eventBus.fireEvent(new RunnerApplicationStatusEvent(descriptor, appContext, descriptor.getStatus()));
+        eventBus.fireEvent(new RunnerApplicationStatusEvent(descriptor, appContext, runner));
     }
 
     private void processStoppedMessage() {

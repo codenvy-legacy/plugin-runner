@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.ext.runner.client.models.Runner;
 
 import javax.annotation.Nonnull;
 
@@ -20,57 +21,20 @@ import javax.annotation.Nonnull;
  *
  * @author Sun Tan
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public interface RunnerApplicationStatusEventHandler {
-
     /**
-     * Performs any actions when an application is being running in the runner.
+     * Performs any actions when a runner is changed its state.
      *
      * @param applicationProcessDescriptor
      *         descriptor of application process in the runner
      * @param appContext
      *         application context
+     * @param runner
+     *         current runner
      */
-    void onRunnerAppRunning(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor, @Nonnull AppContext appContext);
-
-    /**
-     * Performs any actions when an application is failed in the runner.
-     *
-     * @param applicationProcessDescriptor
-     *         descriptor of application process in the runner
-     * @param appContext
-     *         application context
-     */
-    void onRunnerAppFailed(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor, @Nonnull AppContext appContext);
-
-    /**
-     * Performs any actions when an application is stopped in the runner.
-     *
-     * @param applicationProcessDescriptor
-     *         descriptor of application process in the runner
-     * @param appContext
-     *         application context
-     */
-    void onRunnerAppStopped(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor, @Nonnull AppContext appContext);
-
-    /**
-     * Performs any actions when an application is cancelled in the runner.
-     *
-     * @param applicationProcessDescriptor
-     *         descriptor of application process in the runner
-     * @param appContext
-     *         application context
-     */
-    void onRunnerCancelled(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor, @Nonnull AppContext appContext);
-
-    /**
-     * Performs any actions when an application is created in the runner.
-     *
-     * @param applicationProcessDescriptor
-     *         descriptor of application process in the runner
-     * @param appContext
-     *         application context
-     */
-    void onRunnerAppNew(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor, @Nonnull AppContext appContext);
-
+    void onRunnerStatusChanged(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor,
+                               @Nonnull AppContext appContext,
+                               @Nonnull Runner runner);
 }

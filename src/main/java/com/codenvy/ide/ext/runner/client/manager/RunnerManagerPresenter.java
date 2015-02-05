@@ -227,9 +227,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
      *         runner which performs actions
      */
     public void stopRunAction(@Nonnull Runner runner) {
-        RunnerAction checkRamAndRunAction = runnerActions.get(runner);
-        if (checkRamAndRunAction != null) {
-            checkRamAndRunAction.stop();
+        RunnerAction runnerAction = runnerActions.get(runner);
+        if (runnerAction != null) {
+            runnerAction.stop();
         }
     }
 
@@ -284,27 +284,36 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     }
 
     /** {@inheritDoc} */
+    @Nullable
     @Override
-    public void launchRunner() {
+    public Runner launchRunner() {
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
-            return;
+            return null;
         }
 
         RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
                                           .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")))
                                           .withMemorySize(_512.getValue());
 
-        launchRunner(modelsFactory.createRunner(runOptions));
+        return launchRunner(modelsFactory.createRunner(runOptions));
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public Runner launchRunner(@Nonnull RunOptions runOptions) {
+        return launchRunner(modelsFactory.createRunner(runOptions));
     }
 
     /** {@inheritDoc} */
     @Override
-    public void launchRunner(@Nonnull RunOptions runOptions, @Nonnull String environmentName) {
-        launchRunner(modelsFactory.createRunner(runOptions, environmentName));
+    @Nonnull
+    public Runner launchRunner(@Nonnull RunOptions runOptions, @Nonnull String environmentName) {
+        return launchRunner(modelsFactory.createRunner(runOptions, environmentName));
     }
 
-    private void launchRunner(@Nonnull Runner runner) {
+    private Runner launchRunner(@Nonnull Runner runner) {
         selectedRunner = runner;
         selectedEnvironment = null;
 
@@ -321,6 +330,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         runnerTimer.schedule(ONE_SEC.getValue());
 
         update(selectedRunner);
+
+        return runner;
     }
 
     /** {@inheritDoc} */

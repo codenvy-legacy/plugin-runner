@@ -11,9 +11,11 @@
 package com.codenvy.ide.ext.runner.client.manager;
 
 import com.codenvy.api.runner.dto.RunOptions;
+import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * It is the main class of structure. It provides an ability to launch a new runner. It can launch default runner or custom runner. Default
@@ -25,15 +27,34 @@ import javax.annotation.Nonnull;
 @ImplementedBy(RunnerManagerPresenter.class)
 public interface RunnerManager {
 
-    /** Launch a new default runner. */
-    void launchRunner();
+    /**
+     * Launch a new default runner.
+     *
+     * @return new instance of the runner
+     */
+    @Nullable
+    Runner launchRunner();
+
+    /**
+     * Launch a new runner with given configuration.
+     *
+     * @param runOptions
+     *         configuration of the runner
+     * @return new instance of the runner
+     */
+    @Nonnull
+    Runner launchRunner(@Nonnull RunOptions runOptions);
 
     /**
      * Launch a new runner with given configurations.
      *
      * @param environmentName
      *         name of custom configuration
+     * @param runOptions
+     *         configuration of the runner
+     * @return new instance of the runner
      */
-    void launchRunner(@Nonnull RunOptions runOptions, @Nonnull String environmentName);
+    @Nonnull
+    Runner launchRunner(@Nonnull RunOptions runOptions, @Nonnull String environmentName);
 
 }
