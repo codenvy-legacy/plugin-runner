@@ -11,10 +11,14 @@
 package com.codenvy.ide.ext.runner.client.widgets.templates;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.properties.common.Scope;
 import com.codenvy.ide.ext.runner.client.widgets.general.RunnerItems;
+import com.codenvy.ide.ext.runner.client.widgets.templates.environment.EnvironmentWidget;
+import com.codenvy.ide.ext.runner.client.widgets.templates.typebutton.TypeButton;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,14 +34,6 @@ import com.google.inject.Singleton;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.CPP;
-import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.GO;
-import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.JAVA;
-import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.JAVASCRIPT;
-import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.PHP;
-import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.PYTHON;
-import static com.codenvy.ide.ext.runner.client.widgets.templates.EnvironmentType.RUBY;
 
 /**
  * The Class provides graphical implementation of runner environments.
@@ -55,23 +51,11 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
     @UiField
     FlowPanel environmentsPanel;
 
-    //type
+    //type buttons panels
     @UiField
-    FlowPanel allButton;
+    FlowPanel buttonsPanel;
     @UiField
-    FlowPanel java;
-    @UiField
-    FlowPanel cpp;
-    @UiField
-    FlowPanel go;
-    @UiField
-    FlowPanel javascript;
-    @UiField
-    FlowPanel php;
-    @UiField
-    FlowPanel python;
-    @UiField
-    FlowPanel ruby;
+    FlowPanel allButtonPanel;
 
     //scope
     @UiField
@@ -84,11 +68,13 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-
     private final List<RunnerItems> environments;
+    private final List<TypeButton>  typeButtons;
     private final WidgetFactory     widgetFactory;
 
     private ActionDelegate delegate;
+    private Scope          environmentScope;
+    private TypeButton     allButton;
 
     @Inject
     public TemplatesWidgetImpl(RunnerResources resources, RunnerLocalizationConstant locale, WidgetFactory widgetFactory) {
@@ -99,30 +85,33 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
         initWidget(UI_BINDER.createAndBindUi(this));
 
         this.environments = new ArrayList<>();
+        this.typeButtons = new ArrayList<>();
 
         initializeActions();
     }
 
     private void initializeActions() {
-        allButton.addDomHandler(new ClickHandler() {
+        allButton = widgetFactory.createTypeButton();
+        allButton.setDelegate(new TypeButton.ActionDelegate() {
             @Override
-            public void onClick(ClickEvent event) {
+            public void onButtonClicked() {
                 delegate.onAllTypeButtonClicked();
-            }
-        }, ClickEvent.getType());
 
-        addTypeBtnHandler(java, JAVA);
-        addTypeBtnHandler(go, GO);
-        addTypeBtnHandler(cpp, CPP);
-        addTypeBtnHandler(javascript, JAVASCRIPT);
-        addTypeBtnHandler(php, PHP);
-        addTypeBtnHandler(python, PYTHON);
-        addTypeBtnHandler(ruby, RUBY);
+                allButton.select();
+            }
+        });
+        allButton.setName(locale.templateTypeAll());
+        allButton.select();
+
+        typeButtons.add(allButton);
+        allButtonPanel.add(allButton);
 
         systemScope.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 delegate.onSystemScopeButtonClicked();
+
+                selectScopeButton();
             }
         }, ClickEvent.getType());
 
@@ -130,17 +119,26 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
             @Override
             public void onClick(ClickEvent event) {
                 delegate.onProjectScopeButtonClicked();
+
+                selectScopeButton();
             }
         }, ClickEvent.getType());
     }
 
-    private void addTypeBtnHandler(@Nonnull final FlowPanel panel, @Nonnull final EnvironmentType environmentType) {
-        panel.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                delegate.onLangTypeButtonClicked(environmentType);
-            }
-        }, ClickEvent.getType());
+    private void selectScopeButton() {
+        allButton.select();
+
+        switch (environmentScope) {
+            case SYSTEM:
+                systemScope.addStyleName(resources.runnerCss().opacityButton());
+                projectScope.removeStyleName(resources.runnerCss().opacityButton());
+                break;
+            case PROJECT:
+                projectScope.addStyleName(resources.runnerCss().opacityButton());
+                systemScope.removeStyleName(resources.runnerCss().opacityButton());
+                break;
+            default:
+        }
     }
 
     /** {@inheritDoc} */
@@ -151,8 +149,12 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
 
     /** {@inheritDoc} */
     @Override
-    public void addEnvironment(@Nonnull RunnerEnvironment environment) {
-        final RunnerItems<RunnerEnvironment> environmentWidget = widgetFactory.createEnvironment();
+    public void addEnvironment(@Nonnull RunnerEnvironment environment, @Nonnull Scope environmentScope) {
+        this.environmentScope = environmentScope;
+
+        selectScopeButton();
+
+        final EnvironmentWidget environmentWidget = widgetFactory.createEnvironment();
         environmentWidget.setDelegate(new RunnerItems.ActionDelegate<RunnerEnvironment>() {
             @Override
             public void onRunnerEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
@@ -162,27 +164,16 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
             }
         });
 
+        environmentWidget.setScope(environmentScope);
         environmentWidget.update(environment);
+
+        if (environments.isEmpty()) {
+            environmentWidget.select();
+        }
+
         environments.add(environmentWidget);
 
         environmentsPanel.add(environmentWidget);
-
-        selectFirstEnvironment();
-    }
-
-    private void selectFirstEnvironment() {
-        for (RunnerItems environment : environments) {
-            environment.unSelect();
-        }
-
-        environments.get(0).select();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void clear() {
-        environments.clear();
-        environmentsPanel.clear();
     }
 
     private void selectEnvironment(@Nonnull RunnerItems selectedWidget) {
@@ -191,6 +182,45 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
         }
 
         selectedWidget.select();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addButton(@Nonnull final RunnerEnvironmentTree environmentTree) {
+        final TypeButton typeButton = widgetFactory.createTypeButton();
+        typeButton.setDelegate(new TypeButton.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onLangTypeButtonClicked(environmentTree);
+
+                selectTypeButton(typeButton);
+            }
+        });
+        typeButton.setName(environmentTree.getDisplayName());
+
+        typeButtons.add(typeButton);
+        buttonsPanel.add(typeButton);
+    }
+
+    private void selectTypeButton(@Nonnull TypeButton selectedButton) {
+        for (TypeButton button : typeButtons) {
+            button.unSelect();
+        }
+
+        selectedButton.select();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void clearEnvironmentsPanel() {
+        environments.clear();
+        environmentsPanel.clear();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void clearTypeButtonsPanel() {
+        buttonsPanel.clear();
     }
 
     /** {@inheritDoc} */

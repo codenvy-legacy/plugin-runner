@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.widgets.general;
 
 import com.codenvy.ide.api.mvp.View;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.ImplementedBy;
 
 import org.vectomatic.dom.svg.ui.SVGImage;
@@ -59,12 +60,20 @@ public interface GeneralWidget extends View<GeneralWidget.ActionDelegate> {
     void setStartTime(@Nonnegative long time);
 
     /**
-     * Sets image to special place on widget.
+     * Sets svg image to special place on widget.
      *
      * @param image
      *         image which need set
      */
     void setImage(@Nonnull SVGImage image);
+
+    /**
+     * Sets image to special place on widget.
+     *
+     * @param imageResource
+     *         image which need set
+     */
+    void setImage(@Nonnull ImageResource imageResource);
 
     interface ActionDelegate {
         /** Performs some actions when user click on widget. */

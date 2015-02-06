@@ -64,7 +64,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     private final RunnerManagerView          view;
     private final RunnerAction               showDockerAction;
-    private final RunnerAction               getEnvironmentsAction;
     private final DtoFactory                 dtoFactory;
     private final AppContext                 appContext;
     private final ModelsFactory              modelsFactory;
@@ -95,7 +94,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
         this.showDockerAction = actionFactory.createShowDocker();
-        this.getEnvironmentsAction = actionFactory.createGetEnvironments();
 
         this.runnerActions = new HashMap<>();
 
@@ -278,8 +276,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onTemplatesButtonClicked() {
-        getEnvironmentsAction.perform();
-
         view.activeTemplatesTab();
     }
 

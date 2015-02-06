@@ -21,8 +21,7 @@ import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.collections.Collections;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
-import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
@@ -49,19 +48,19 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
     private static final String DOCKER_SCRIPT_NAME          = "/Dockerfile";
     private static final String ENVIRONMENT_NOT_EXIST_ERROR = "Path 'a/.codenvy/runners/environments' doesn't exist.";
 
-    private final String                     envFolderPath;
-    private final NotificationManager        notificationManager;
-    private final RunnerLocalizationConstant locale;
-    private final DialogFactory              dialogFactory;
-    private final ProjectServiceClient       projectServiceClient;
-    private final DtoUnmarshallerFactory     dtoUnmarshallerFactory;
-    private final EventBus                   eventBus;
-    private final AppContext                 appContext;
-    private final EnvironmentActionManager   environmentActionManager;
-    private final CustomEnvironmentView      view;
-    private final EnvironmentNameValidator   nameValidator;
-    private final RunnerResources            resources;
-    private final RunnerAction               getEnvironmentsAction;
+    private final String                       envFolderPath;
+    private final NotificationManager          notificationManager;
+    private final RunnerLocalizationConstant   locale;
+    private final DialogFactory                dialogFactory;
+    private final ProjectServiceClient         projectServiceClient;
+    private final DtoUnmarshallerFactory       dtoUnmarshallerFactory;
+    private final EventBus                     eventBus;
+    private final AppContext                   appContext;
+    private final EnvironmentActionManager     environmentActionManager;
+    private final CustomEnvironmentView        view;
+    private final EnvironmentNameValidator     nameValidator;
+    private final RunnerResources              resources;
+    private final GetProjectEnvironmentsAction projectEnvironmentsAction;
 
     private String         selectedEnvironmentName;
     private CurrentProject currentProject;
@@ -78,7 +77,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                                          RunnerLocalizationConstant locale,
                                          DialogFactory dialogFactory,
                                          RunnerResources resources,
-                                         RunnerActionFactory actionFactory,
+                                         GetProjectEnvironmentsAction projectEnvironmentsAction,
                                          @Named("envFolderPath") String envFolderPath) {
         this.view = view;
         this.view.setDelegate(this);
@@ -94,7 +93,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
         this.dialogFactory = dialogFactory;
         this.nameValidator = nameValidator;
         this.resources = resources;
-        this.getEnvironmentsAction = actionFactory.createGetEnvironments();
+        this.projectEnvironmentsAction = projectEnvironmentsAction;
 
         updateView();
     }
@@ -124,7 +123,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                                             public void accepted(String value) {
                                                 createEnvironment(value);
 
-                                                getEnvironmentsAction.perform();
+                                                projectEnvironmentsAction.perform();
                                             }
                                         }, null).withValidator(nameValidator).show();
     }
@@ -289,7 +288,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                 updateView();
                 refreshEnvironmentsList();
 
-                getEnvironmentsAction.perform();
+                projectEnvironmentsAction.perform();
             }
 
             @Override

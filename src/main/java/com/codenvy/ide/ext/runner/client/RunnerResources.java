@@ -144,6 +144,8 @@ public interface RunnerResources extends ClientBundle {
         String runnerShadow();
 
         String cursor();
+
+        String typeButton();
     }
 
 }

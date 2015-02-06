@@ -15,9 +15,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -56,6 +58,9 @@ public class GeneralWidgetImpl extends Composite implements GeneralWidget, Click
     @UiField(provided = true)
     final RunnerResources resources;
 
+    private final SimpleLayoutPanel svgImage;
+    private final Image             pngImage;
+
     private ActionDelegate delegate;
 
     @Inject
@@ -63,6 +68,9 @@ public class GeneralWidgetImpl extends Composite implements GeneralWidget, Click
         this.resources = resources;
 
         initWidget(UI_BINDER.createAndBindUi(this));
+
+        this.svgImage = new SimpleLayoutPanel();
+        this.pngImage = new Image();
 
         addDomHandler(this, ClickEvent.getType());
     }
@@ -113,8 +121,16 @@ public class GeneralWidgetImpl extends Composite implements GeneralWidget, Click
 
     /** {@inheritDoc} */
     @Override
-    public void setImage(@Nonnull SVGImage svgImage) {
-        image.getElement().setInnerHTML(svgImage.toString());
+    public void setImage(@Nonnull SVGImage svgImageResource) {
+        svgImage.getElement().setInnerHTML(svgImageResource.toString());
+        image.setWidget(svgImage);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setImage(@Nonnull ImageResource imageResource) {
+        pngImage.setResource(imageResource);
+        image.setWidget(pngImage);
     }
 
 }

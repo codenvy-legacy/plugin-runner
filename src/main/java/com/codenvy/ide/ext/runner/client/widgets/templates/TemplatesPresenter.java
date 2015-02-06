@@ -11,14 +11,19 @@
 package com.codenvy.ide.ext.runner.client.widgets.templates;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
+import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.Presenter;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.GetEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
+
+import static com.codenvy.ide.ext.runner.client.properties.common.Scope.SYSTEM;
 
 /**
  * The class contains business logic to change displaying of environments depending on scope or type.
@@ -28,21 +33,29 @@ import javax.annotation.Nonnull;
 @Singleton
 public class TemplatesPresenter implements Presenter, TemplatesWidget.ActionDelegate {
 
-    private final TemplatesWidget       view;
-    private final GetEnvironmentsAction environmentsAction;
+    private final TemplatesWidget              view;
+    private final GetProjectEnvironmentsAction projectEnvironments;
+    private final GetSystemEnvironmentsAction  systemEnvironments;
+    private final GetEnvironmentsUtil          environmentUtil;
 
     private ActionDelegate delegate;
+    private boolean        isSystemScope;
 
     @Inject
-    public TemplatesPresenter(TemplatesWidget view, GetEnvironmentsAction environmentsAction) {
+    public TemplatesPresenter(TemplatesWidget view,
+                              GetProjectEnvironmentsAction projectEnvironments,
+                              GetSystemEnvironmentsAction systemEnvironments,
+                              GetEnvironmentsUtil environmentUtil) {
         this.view = view;
         this.view.setDelegate(this);
 
-        this.environmentsAction = environmentsAction;
-    }
+        this.projectEnvironments = projectEnvironments;
+        this.systemEnvironments = systemEnvironments;
+        this.environmentUtil = environmentUtil;
 
-    public IsWidget getView() {
-        return view;
+        this.systemEnvironments.perform();
+
+        this.isSystemScope = true;
     }
 
     /**
@@ -64,33 +77,46 @@ public class TemplatesPresenter implements Presenter, TemplatesWidget.ActionDele
     /** {@inheritDoc} */
     @Override
     public void onAllTypeButtonClicked() {
-        view.clear();
+        view.clearEnvironmentsPanel();
+        view.clearTypeButtonsPanel();
 
-        environmentsAction.perform();
+        if (isSystemScope) {
+            systemEnvironments.perform();
+        } else {
+            projectEnvironments.perform();
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onLangTypeButtonClicked(@Nonnull EnvironmentType environmentType) {
-        view.clear();
+    public void onLangTypeButtonClicked(@Nonnull RunnerEnvironmentTree environmentTree) {
+        view.clearEnvironmentsPanel();
 
-        environmentsAction.getLanguageEnvironments(environmentType);
+        for (RunnerEnvironmentLeaf environment : environmentUtil.getAllEnvironments(environmentTree)) {
+            view.addEnvironment(environment.getEnvironment(), SYSTEM);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public void onProjectScopeButtonClicked() {
-        view.clear();
+        view.clearEnvironmentsPanel();
+        view.clearTypeButtonsPanel();
 
-        environmentsAction.getProjectEnvironments();
+        projectEnvironments.perform();
+
+        isSystemScope = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void onSystemScopeButtonClicked() {
-        view.clear();
+        view.clearEnvironmentsPanel();
+        view.clearTypeButtonsPanel();
 
-        environmentsAction.getSystemEnvironments();
+        systemEnvironments.perform();
+
+        isSystemScope = true;
     }
 
     /** {@inheritDoc} */

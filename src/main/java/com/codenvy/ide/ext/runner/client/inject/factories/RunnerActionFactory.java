@@ -12,7 +12,6 @@ package com.codenvy.ide.ext.runner.client.inject.factories;
 
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.GetEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.RunAction;
@@ -86,7 +85,4 @@ public interface RunnerActionFactory {
     @Nonnull
     StopAction createStop();
 
-    /** @return an instance of {@link GetEnvironmentsAction} */
-    @Nonnull
-    GetEnvironmentsAction createGetEnvironments();
 }

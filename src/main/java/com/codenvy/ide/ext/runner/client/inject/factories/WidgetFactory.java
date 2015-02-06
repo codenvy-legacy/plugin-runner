@@ -20,6 +20,7 @@ import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.templates.environment.EnvironmentWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
+import com.codenvy.ide.ext.runner.client.widgets.templates.typebutton.TypeButton;
 import com.google.gwt.resources.client.ImageResource;
 
 import javax.annotation.Nonnull;
@@ -104,5 +105,13 @@ public interface WidgetFactory {
      */
     @Nonnull
     FullLogMessageWidget createFullLogMessage(@Nonnull String logUrl);
+
+    /**
+     * Creates type button widget.
+     *
+     * @return an instance of {@link TypeButton}
+     */
+    @Nonnull
+    TypeButton createTypeButton();
 
 }

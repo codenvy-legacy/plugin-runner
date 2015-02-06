@@ -44,17 +44,15 @@
             margin-left: 5px;
         }
 
-        .image {
-            margin-left: 7px;
+        .svgImage {
+            margin-left: 6px;
             margin-top: 10px;
         }
     </ui:style>
 
     <g:DockLayoutPanel unit="PX" addStyleNames="{style.runnerSize}">
         <g:west size="20">
-            <g:FlowPanel>
-                <g:SimpleLayoutPanel ui:field="image" addStyleNames="{style.image}"/>
-            </g:FlowPanel>
+            <g:SimpleLayoutPanel ui:field="image" addStyleNames="{style.svgImage}"/>
         </g:west>
 
         <g:north size="20">

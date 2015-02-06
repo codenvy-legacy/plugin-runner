@@ -281,25 +281,4 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("properties.button.cancel")
     String propertiesButtonCancel();
-
-    @Key("language.cpp")
-    String languageCpp();
-
-    @Key("language.go")
-    String languageGo();
-
-    @Key("language.java")
-    String languageJava();
-
-    @Key("language.javascript")
-    String languageJavascript();
-
-    @Key("language.php")
-    String languagePhp();
-
-    @Key("language.python")
-    String languagePython();
-
-    @Key("language.ruby")
-    String languageRuby();
 }

@@ -11,7 +11,9 @@
 package com.codenvy.ide.ext.runner.client.widgets.templates;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
+import com.codenvy.ide.ext.runner.client.properties.common.Scope;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
@@ -29,11 +31,24 @@ public interface TemplatesWidget extends View<TemplatesWidget.ActionDelegate> {
      *
      * @param environment
      *         runner which was added
+     * @param projectScope
+     *         scope for current environment
      */
-    void addEnvironment(@Nonnull RunnerEnvironment environment);
+    void addEnvironment(@Nonnull RunnerEnvironment environment, @Nonnull Scope projectScope);
+
+    /**
+     * The method creates and adds buttons to special place on view for each group of runner environments.
+     *
+     * @param environmentTree
+     *         tree which contains all groups of environments
+     */
+    void addButton(@Nonnull RunnerEnvironmentTree environmentTree);
 
     /** Clears panel with environments */
-    void clear();
+    void clearEnvironmentsPanel();
+
+    /** The methods clears type buttons panel when we change project scope. */
+    void clearTypeButtonsPanel();
 
     interface ActionDelegate {
 
@@ -48,7 +63,7 @@ public interface TemplatesWidget extends View<TemplatesWidget.ActionDelegate> {
         /** Performs some actions when user click on all type button. */
         void onAllTypeButtonClicked();
 
-        void onLangTypeButtonClicked(@Nonnull EnvironmentType languageType);
+        void onLangTypeButtonClicked(@Nonnull RunnerEnvironmentTree tree);
 
         /** Performs some actions when user click on project scope button. */
         void onProjectScopeButtonClicked();

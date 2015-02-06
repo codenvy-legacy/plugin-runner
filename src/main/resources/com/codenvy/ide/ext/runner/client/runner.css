@@ -155,3 +155,7 @@
 .cursor {
     cursor: pointer;
 }
+
+.typeButton {
+    color: #1c9dee;
+}

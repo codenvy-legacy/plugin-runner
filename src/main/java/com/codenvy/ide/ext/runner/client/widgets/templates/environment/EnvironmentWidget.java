@@ -11,12 +11,16 @@
 package com.codenvy.ide.ext.runner.client.widgets.templates.environment;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.properties.common.Scope;
 import com.codenvy.ide.ext.runner.client.widgets.general.GeneralWidget;
 import com.codenvy.ide.ext.runner.client.widgets.general.RunnerItems;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
+
+import static com.codenvy.ide.ext.runner.client.properties.common.Scope.SYSTEM;
 
 /**
  * The class contains methods which allow change view representation of runner.
@@ -25,14 +29,20 @@ import javax.annotation.Nonnull;
  */
 public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
 
-    private final GeneralWidget generalWidget;
+    private static final String DEFAULT_DESCRIPTION = "DEFAULT";
+
+    private final GeneralWidget   generalWidget;
+    private final RunnerResources resources;
+
+    private Scope environmentScope;
 
     private ActionDelegate<RunnerEnvironment> actionDelegate;
     private RunnerEnvironment                 environment;
 
     @Inject
-    public EnvironmentWidget(final GeneralWidget generalWidget) {
+    public EnvironmentWidget(final GeneralWidget generalWidget, RunnerResources resources) {
         this.generalWidget = generalWidget;
+        this.resources = resources;
 
         generalWidget.setDelegate(new GeneralWidget.ActionDelegate() {
             @Override
@@ -40,6 +50,18 @@ public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
                 actionDelegate.onRunnerEnvironmentSelected(environment);
             }
         });
+
+        this.environmentScope = SYSTEM;
+    }
+
+    /**
+     * Sets special environment scope.
+     *
+     * @param environmentScope
+     *         scope which need set
+     */
+    public void setScope(@Nonnull Scope environmentScope) {
+        this.environmentScope = environmentScope;
     }
 
     /** {@inheritDoc} */
@@ -66,7 +88,24 @@ public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
         String name = id.substring(index);
 
         generalWidget.setName(name);
-        generalWidget.setDescription(environment.getDescription());
+
+        String description = environment.getDescription();
+
+        generalWidget.setDescription(description == null ? DEFAULT_DESCRIPTION : description);
+
+        setImage();
+    }
+
+    private void setImage() {
+        switch (environmentScope) {
+            case PROJECT:
+                generalWidget.setImage(resources.scopeProject());
+                break;
+            case SYSTEM:
+                generalWidget.setImage(resources.scopeSystem());
+                break;
+            default:
+        }
     }
 
     /** {@inheritDoc} */

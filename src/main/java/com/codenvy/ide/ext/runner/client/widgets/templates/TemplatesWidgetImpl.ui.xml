@@ -27,21 +27,6 @@
             float: left;
         }
 
-        .buttonLabels {
-            margin-top: 2px;
-        }
-
-        .typeBtn {
-            height: 15px;
-            width: 50px;
-            float: left;
-            text-align: center;
-            border: 1px solid #000000;
-            margin-left: 10px;
-            cursor: pointer;
-            background: #474747;
-        }
-
         .scopeBtn {
             float: left;
             margin-left: 6px;
@@ -72,40 +57,9 @@
             <g:FlowPanel>
                 <g:Label text="{locale.templateType}" addStyleNames="{style.typeScopeLabels}"/>
 
-                <g:FlowPanel ui:field="allButton" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.templateTypeAll}"
-                             addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
+                <g:FlowPanel ui:field="allButtonPanel"/>
+                <g:FlowPanel ui:field="buttonsPanel"/>
 
-                <g:FlowPanel ui:field="java" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.languageJava}" addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel ui:field="cpp" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.languageCpp}" addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel ui:field="go" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.languageGo}" addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel ui:field="javascript" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.languageJavascript}"
-                             addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel ui:field="php" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.languagePhp}" addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel ui:field="python" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.languagePython}"
-                             addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel ui:field="ruby" addStyleNames="{style.typeBtn}">
-                    <g:Label text="{locale.languageRuby}" addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
-                </g:FlowPanel>
             </g:FlowPanel>
         </g:north>
 
@@ -114,7 +68,8 @@
             <g:FlowPanel addStyleNames="{style.scopePanel}">
                 <g:Label text="{locale.templateScope}" addStyleNames="{style.typeScopeLabels}"/>
 
-                <g:Image ui:field="systemScope" resource="{resources.scopeSystem}" addStyleNames="{style.scopeBtn}"/>
+                <g:Image ui:field="systemScope" resource="{resources.scopeSystem}" addStyleNames="{style.scopeBtn}
+                                                                                                  {resources.runnerCss.opacityButton}"/>
                 <g:Image resource="{resources.scopeWorkspace}" addStyleNames="{style.scopeBtn}"/>
                 <g:Image ui:field="projectScope" resource="{resources.scopeProject}" addStyleNames="{style.scopeBtn}"/>
                 <g:Image resource="{resources.scopeUser}" addStyleNames="{style.scopeBtn}"/>
@@ -129,8 +84,6 @@
                 </g:ScrollPanel>
             </g:FlowPanel>
         </g:center>
-
     </g:DockLayoutPanel>
-
 
 </ui:UiBinder>
