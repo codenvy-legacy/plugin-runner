@@ -21,7 +21,7 @@ import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.history.History;
 import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
-import com.codenvy.ide.ext.runner.client.widgets.tab.Tab;
+import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesPresenter;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
@@ -54,8 +54,8 @@ import java.util.Map;
 
 import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.BLACK;
 import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.GREY;
-import static com.codenvy.ide.ext.runner.client.widgets.tab.Tab.LEFT_PANEL;
-import static com.codenvy.ide.ext.runner.client.widgets.tab.Tab.RIGHT_PANEL;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.LEFT_PANEL;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.RIGHT_PANEL;
 
 /**
  * Class provides view representation of runner panel.
@@ -252,8 +252,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private TabWidget createTab(@Nonnull String tabName,
                                 @Nonnull TabWidget.ActionDelegate actionDelegate,
                                 @Nonnull FlowPanel tabsPanel,
-                                @Nonnull Tab tab) {
-        TabWidget tabWidget = widgetFactory.createTab(tabName, tab);
+                                @Nonnull TabType tabType) {
+        TabWidget tabWidget = widgetFactory.createTab(tabName, tabType);
         tabWidget.setDelegate(actionDelegate);
 
         tabsPanel.add(tabWidget);

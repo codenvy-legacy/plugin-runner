@@ -32,6 +32,14 @@ public interface TabWidget extends View<TabWidget.ActionDelegate> {
     /** Performs some actions when tab is unselected. */
     void unSelect();
 
+    /**
+     * Change visible state of widget.
+     *
+     * @param visible
+     *         visible state of widget
+     */
+    void setVisible(boolean visible);
+
     interface ActionDelegate {
         /** Performs some actions in response to user's clicking on the tab. */
         void onMouseClicked();

@@ -8,27 +8,28 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.widgets.tab;
+package com.codenvy.ide.ext.runner.client.tab;
+
+import com.codenvy.ide.api.mvp.View;
+import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 /**
- * The class contains values of tabs height
- *
- * @author Dmitry Shnurenko
+ * @author Andrey Plotnikov
  */
-public enum Tab {
-    LEFT_PANEL("19px"), RIGHT_PANEL("20px");
+@ImplementedBy(TabContainerViewImpl.class)
+public interface TabContainerView extends View<TabContainerView.ActionDelegate> {
 
-    private final String height;
+    void showTab(@Nonnull Tab tab);
 
-    Tab(@Nonnull String height) {
-        this.height = height;
+    void setVisibleTitle(@Nonnull Map<String, Boolean> tabVisibilities);
+
+    void addTab(@Nonnull Tab tab);
+
+    interface ActionDelegate {
+        void onTabClicked(@Nonnull String title);
     }
 
-    /** @return string value of height. */
-    @Nonnull
-    public String getHeight() {
-        return height;
-    }
 }

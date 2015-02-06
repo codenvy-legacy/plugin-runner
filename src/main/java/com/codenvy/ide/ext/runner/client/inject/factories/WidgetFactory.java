@@ -15,7 +15,7 @@ import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.codenvy.ide.ext.runner.client.widgets.console.FullLogMessageWidget;
 import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
-import com.codenvy.ide.ext.runner.client.widgets.tab.Tab;
+import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.widgets.templates.environment.EnvironmentWidget;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
@@ -47,12 +47,12 @@ public interface WidgetFactory {
      *
      * @param title
      *         title which need set to widget's special place
-     * @param tab
+     * @param tabType
      *         enum which contains string value of height
      * @return an instance of {@link TabWidget}
      */
     @Nonnull
-    TabWidget createTab(@Nonnull String title, @Nonnull Tab tab);
+    TabWidget createTab(@Nonnull String title, @Nonnull TabType tabType);
 
     /**
      * Creates runner widget.
