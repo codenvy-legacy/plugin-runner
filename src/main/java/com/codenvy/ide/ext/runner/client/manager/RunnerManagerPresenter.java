@@ -218,12 +218,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         view.updateMoreInfoPopup(selectedRunner);
     }
 
-    /**
-     * Stops launch and run actions.
-     *
-     * @param runner
-     *         runner which performs actions
-     */
+    /** {@inheritDoc} */
+    @Override
     public void stopRunAction(@Nonnull Runner runner) {
         RunnerAction runnerAction = runnerActions.get(runner);
         if (runnerAction != null) {
@@ -348,7 +344,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Nonnull
     @Override
     public String getTitle() {
-        return "Runner 2";
+        return locale.runnerTitle();
     }
 
     /** {@inheritDoc} */

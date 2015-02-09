@@ -38,13 +38,14 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.RunnerExtension2.GROUP_RUN_WITH_2;
+import static com.codenvy.ide.ext.runner.client.constants.ActionId.GROUP_RUN_WITH;
 
 /**
  * Listens for opening/closing a project and adds/removes a corresponding action for executing every custom Docker-script.
  *
  * @author Artem Zatsarynnyy
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class EnvironmentActionManager implements ProjectActionHandler {
 
@@ -155,7 +156,7 @@ public class EnvironmentActionManager implements ProjectActionHandler {
         environments.put(action, environmentName);
 
         actionManager.registerAction(actionId, action);
-        ((DefaultActionGroup)actionManager.getAction(GROUP_RUN_WITH_2)).add(action);
+        ((DefaultActionGroup)actionManager.getAction(GROUP_RUN_WITH.getId())).add(action);
 
         final int actionNum = actions2HotKeys.size() + 1;
         // Bind hot-key only for the first 10 actions (Ctrl+Alt+0...9)
@@ -185,7 +186,7 @@ public class EnvironmentActionManager implements ProjectActionHandler {
     }
 
     private void removeAction(@Nonnull EnvironmentAction action) {
-        DefaultActionGroup customImagesGroup = (DefaultActionGroup)actionManager.getAction(GROUP_RUN_WITH_2);
+        DefaultActionGroup customImagesGroup = (DefaultActionGroup)actionManager.getAction(GROUP_RUN_WITH.getId());
         customImagesGroup.remove(action);
 
         String actionId = actionManager.getId(action);

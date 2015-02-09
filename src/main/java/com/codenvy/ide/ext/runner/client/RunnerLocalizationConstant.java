@@ -281,4 +281,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("properties.button.cancel")
     String propertiesButtonCancel();
+
+    @Key("runner.title")
+    String runnerTitle();
 }

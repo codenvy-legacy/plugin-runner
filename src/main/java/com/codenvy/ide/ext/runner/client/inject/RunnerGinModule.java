@@ -32,11 +32,15 @@ import com.codenvy.ide.ext.runner.client.widgets.templates.typebutton.TypeButton
 import com.codenvy.ide.ext.runner.client.widgets.templates.typebutton.TypeButtonImpl;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 
 /**
  * The module that contains configuration of the client side part of the plugin.
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 @ExtensionGinModule
 public class RunnerGinModule extends AbstractGinModule {
@@ -59,5 +63,13 @@ public class RunnerGinModule extends AbstractGinModule {
                                              .implement(MoreInfo.class, MoreInfoImpl.class)
                                              .implement(TypeButton.class, TypeButtonImpl.class)
                                              .build(WidgetFactory.class));
+    }
+
+    /** Provides project-relative path to the folder for project-scoped runner environments. */
+    @Provides
+    @Named("envFolderPath")
+    @Singleton
+    protected String provideEnvironmentsFolderRelPath() {
+        return ".codenvy/runners/environments";
     }
 }

@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
  * options.
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 @ImplementedBy(RunnerManagerPresenter.class)
 public interface RunnerManager {
@@ -56,5 +57,13 @@ public interface RunnerManager {
      */
     @Nonnull
     Runner launchRunner(@Nonnull RunOptions runOptions, @Nonnull String environmentName);
+
+    /**
+     * Stops launch and run actions.
+     *
+     * @param runner
+     *         runner which performs actions
+     */
+    void stopRunAction(@Nonnull Runner runner);
 
 }

@@ -30,29 +30,32 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import static com.codenvy.api.project.shared.Constants.BLANK_ID;
+import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN;
+import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
+import static com.codenvy.ide.ext.runner.client.constants.ActionId.CUSTOM_RUN_APP;
+import static com.codenvy.ide.ext.runner.client.constants.ActionId.GROUP_RUN_WITH;
+import static com.codenvy.ide.ext.runner.client.constants.ActionId.RUN_APP_ID;
 
 /**
  * Codenvy IDE3 extension provides functionality of Runner. It has to provides major operation for Runner: launch new runner, get different
  * information about runners, stop runner. The main feature is an ability to runner a few runner in the same time.
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 @Singleton
 @Extension(title = "Runner", version = "1.0.0")
-public class RunnerExtension2 { //TODO need rename
-
-    public static final String RUN_APP_ID       = "runApp";
-    public static final String GROUP_RUN_WITH_2 = "runWithGroup2"; //TODO need rename it when old runner extension will be deleted
-    public static final String GROUP_RUN_WITH   = "RunWithGroup";
-    public static final String BUILDER_PART_ID  = "Builder";
+public class RunnerExtension {
+    //This constant must be synchronized with BUILDER_PART_ID constant which defined into builder extension.
+    public static final String BUILDER_PART_ID = "Builder";
 
     @Inject
-    public RunnerExtension2(RunnerResources resources,
-                            ProjectTypeWizardRegistry wizardRegistry,
-                            Provider<SelectRunnerPagePresenter> runnerPagePresenter) {
+    public RunnerExtension(RunnerResources resources,
+                           ProjectTypeWizardRegistry wizardRegistry,
+                           Provider<SelectRunnerPagePresenter> runnerPagePresenter) {
 
         resources.runnerCss().ensureInjected();
 
@@ -81,13 +84,22 @@ public class RunnerExtension2 { //TODO need rename
         DefaultActionGroup mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
         DefaultActionGroup runToolbarGroup = new DefaultActionGroup(GROUP_RUN_TOOLBAR, false, actionManager);
 
+        actionManager.registerAction(CUSTOM_RUN_APP.getId(), customRunAction);
+        actionManager.registerAction(RUN_APP_ID.getId(), runAction);
         actionManager.registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
-        actionManager.registerAction(GROUP_RUN_WITH_2, runWithGroup);
+        actionManager.registerAction(GROUP_RUN_WITH.getId(), runWithGroup);
+
+        // add actions in context menu
+        DefaultActionGroup contextMenuGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_CONTEXT_MENU);
+        DefaultActionGroup runContextGroup = (DefaultActionGroup)actionManager.getAction(GROUP_RUN_CONTEXT_MENU);
+        runContextGroup.addSeparator();
+        runContextGroup.add(runAction);
+        contextMenuGroup.add(runContextGroup);
 
         runWithGroup.add(editRunnerAction);
         runWithGroup.addSeparator();
 
-        runToolbarGroup.add(runWithGroup, new Constraints(Anchor.AFTER, RUN_APP_ID));
+        runToolbarGroup.add(runWithGroup, new Constraints(Anchor.AFTER, RUN_APP_ID.getId()));
         runToolbarGroup.add(runAction);
 
         mainToolbarGroup.add(runToolbarGroup);
@@ -95,8 +107,8 @@ public class RunnerExtension2 { //TODO need rename
         //add actions in Run menu
         DefaultActionGroup runMenuActionGroup = (DefaultActionGroup)actionManager.getAction(GROUP_RUN);
         runMenuActionGroup.add(runAction, Constraints.FIRST);
-        runMenuActionGroup.add(runWithGroup, new Constraints(Anchor.AFTER, RUN_APP_ID));
-        runMenuActionGroup.add(customRunAction, new Constraints(Anchor.AFTER, GROUP_RUN_WITH));
+        runMenuActionGroup.add(runWithGroup, new Constraints(Anchor.AFTER, RUN_APP_ID.getId()));
+        runMenuActionGroup.add(customRunAction, new Constraints(Anchor.AFTER, GROUP_RUN_WITH.getId()));
     }
 
 }

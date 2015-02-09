@@ -35,13 +35,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 
 import static com.codenvy.api.project.shared.Constants.BLANK_ID;
+import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN;
+import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
-import static com.codenvy.ide.ext.runner.client.RunnerExtension2.BUILDER_PART_ID;
-import static com.codenvy.ide.ext.runner.client.RunnerExtension2.GROUP_RUN_WITH;
-import static com.codenvy.ide.ext.runner.client.RunnerExtension2.GROUP_RUN_WITH_2;
-import static com.codenvy.ide.ext.runner.client.RunnerExtension2.RUN_APP_ID;
+import static com.codenvy.ide.ext.runner.client.RunnerExtension.BUILDER_PART_ID;
+import static com.codenvy.ide.ext.runner.client.constants.ActionId.GROUP_RUN_WITH;
+import static com.codenvy.ide.ext.runner.client.constants.ActionId.RUN_APP_ID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
@@ -56,7 +57,7 @@ import static org.mockito.Mockito.when;
  * @author Valeriy Svydenko
  */
 @RunWith(GwtMockitoTestRunner.class)
-public class RunnerExtension2Test {
+public class RunnerExtensionTest {
 
     @Captor
     private ArgumentCaptor<Constraints>         constraintsCaptor;
@@ -72,14 +73,14 @@ public class RunnerExtension2Test {
     private Provider<SelectRunnerPagePresenter> runnerPagePresenter;
     @Mock
     private ProjectWizard                       wizard;
-    private RunnerExtension2                    extension;
+    private RunnerExtension                     extension;
 
     @Before
     public void setUp() throws Exception {
         when(resources.runnerCss()).thenReturn(runnerCss);
         when(wizardRegistry.getWizard(BLANK_ID)).thenReturn(wizard);
 
-        extension = new RunnerExtension2(resources, wizardRegistry, runnerPagePresenter);
+        extension = new RunnerExtension(resources, wizardRegistry, runnerPagePresenter);
     }
 
     @Test
@@ -109,7 +110,7 @@ public class RunnerExtension2Test {
         when(wizardRegistry.getWizard(BLANK_ID)).thenReturn(null);
         reset(wizard);
 
-        extension = new RunnerExtension2(resources, wizardRegistry, runnerPagePresenter);
+        extension = new RunnerExtension(resources, wizardRegistry, runnerPagePresenter);
 
         verify(wizard, never()).addPage(runnerPagePresenter);
     }
@@ -126,9 +127,13 @@ public class RunnerExtension2Test {
 
         DefaultActionGroup mainToolbarGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup runMenuActionGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup runContextGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup contextMenuGroup = mock(DefaultActionGroup.class);
 
         when(actionManager.getAction(GROUP_MAIN_TOOLBAR)).thenReturn(mainToolbarGroup);
         when(actionManager.getAction(GROUP_RUN)).thenReturn(runMenuActionGroup);
+        when(actionManager.getAction(GROUP_RUN_CONTEXT_MENU)).thenReturn(runContextGroup);
+        when(actionManager.getAction(GROUP_MAIN_CONTEXT_MENU)).thenReturn(contextMenuGroup);
 
         // test step
         extension.setUpRunActions(actionManager, runAction, editRunnerAction, runWithGroup, customRunAction);
@@ -136,11 +141,15 @@ public class RunnerExtension2Test {
         // check step
         verify(mainToolbarGroup).add(actionGroupCaptor.capture());
 
+        verify(runContextGroup).addSeparator();
+        verify(runContextGroup).add(runAction);
+        verify(contextMenuGroup).add(runContextGroup);
+
         DefaultActionGroup runToolbarGroup = actionGroupCaptor.getValue();
         assertThat(runToolbarGroup.getChildrenCount(), is(2));
 
         verify(actionManager).registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
-        verify(actionManager).registerAction(GROUP_RUN_WITH_2, runWithGroup);
+        verify(actionManager).registerAction(GROUP_RUN_WITH.getId(), runWithGroup);
 
         verify(runWithGroup).add(editRunnerAction);
         verify(runWithGroup).addSeparator();
@@ -148,10 +157,10 @@ public class RunnerExtension2Test {
         verify(runMenuActionGroup).add(runAction, Constraints.FIRST);
 
         verify(runMenuActionGroup).add(eq(runWithGroup), constraintsCaptor.capture());
-        verifyConstants(Anchor.AFTER, RUN_APP_ID);
+        verifyConstants(Anchor.AFTER, RUN_APP_ID.getId());
 
         verify(runMenuActionGroup).add(eq(customRunAction), constraintsCaptor.capture());
-        verifyConstants(Anchor.AFTER, GROUP_RUN_WITH);
+        verifyConstants(Anchor.AFTER, GROUP_RUN_WITH.getId());
     }
 
     private void verifyConstants(Anchor anchor, String actionId) {
