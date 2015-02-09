@@ -84,7 +84,7 @@ public abstract class AbstractRunnerAction implements RunnerAction, RunnerAction
 
     /** {@inheritDoc} */
     @Override
-    public void perform(@Nonnull final Runner runner) {
+    public void perform(@Nonnull Runner runner) {
         throw new UnsupportedOperationException("Not supported");
     }
 
