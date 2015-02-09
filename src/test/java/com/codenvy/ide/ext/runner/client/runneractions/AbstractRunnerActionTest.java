@@ -146,7 +146,7 @@ public class AbstractRunnerActionTest {
     }
 
     private class DummyAction extends AbstractRunnerAction {
-        public DummyAction() {
+        private DummyAction() {
         }
     }
 }
