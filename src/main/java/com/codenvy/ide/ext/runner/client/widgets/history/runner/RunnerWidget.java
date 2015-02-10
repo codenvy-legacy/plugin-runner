@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.widgets.history.runner;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.widgets.general.GeneralWidget;
 import com.codenvy.ide.ext.runner.client.widgets.general.RunnerItems;
 import com.google.gwt.user.client.ui.Widget;
@@ -38,11 +39,10 @@ public class RunnerWidget implements RunnerItems<Runner> {
     private final SVGImage done;
     private final SVGImage stopped;
 
-    private Runner                 runner;
-    private ActionDelegate<Runner> delegate;
+    private Runner runner;
 
     @Inject
-    public RunnerWidget(GeneralWidget generalWidget, RunnerResources resources) {
+    public RunnerWidget(GeneralWidget generalWidget, RunnerResources resources, final SelectionManager selectionManager) {
         this.generalWidget = generalWidget;
         this.resources = resources;
 
@@ -56,7 +56,7 @@ public class RunnerWidget implements RunnerItems<Runner> {
         generalWidget.setDelegate(new GeneralWidget.ActionDelegate() {
             @Override
             public void onWidgetClicked() {
-                delegate.onRunnerEnvironmentSelected(runner);
+                selectionManager.setRunner(runner);
             }
         });
     }
@@ -119,12 +119,6 @@ public class RunnerWidget implements RunnerItems<Runner> {
 
             default:
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setDelegate(@Nonnull ActionDelegate<Runner> delegate) {
-        this.delegate = delegate;
     }
 
     /** {@inheritDoc} */

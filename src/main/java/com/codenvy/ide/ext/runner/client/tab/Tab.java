@@ -11,9 +11,8 @@
 package com.codenvy.ide.ext.runner.client.tab;
 
 import com.codenvy.ide.ext.runner.client.state.State;
-import com.codenvy.ide.ext.runner.client.tab.TabContainerPresenter.TabSelectHandler;
+import com.codenvy.ide.ext.runner.client.tab.TabContainer.TabSelectHandler;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
-import com.google.inject.Provider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,23 +26,21 @@ import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.REMOVABLE;
  */
 public class Tab {
 
-    private final String                           title;
-    private final Provider<? extends TabPresenter> tabProvider;
-    private final Set<State>                       scopes;
-    private final TabSelectHandler                 handler;
-    private final TabType                          tabType;
-    private final VisibleState                     visibleState;
-
-    private TabPresenter tab;
+    private final String           title;
+    private final TabPresenter     tabPresenter;
+    private final Set<State>       scopes;
+    private final TabSelectHandler handler;
+    private final TabType          tabType;
+    private final VisibleState     visibleState;
 
     public Tab(@Nonnull String title,
-               @Nonnull Provider<? extends TabPresenter> tabProvider,
+               @Nonnull TabPresenter tabPresenter,
                @Nonnull Set<State> scopes,
                @Nullable TabSelectHandler handler,
                @Nonnull TabType tabType,
                @Nonnull VisibleState visibleState) {
         this.title = title;
-        this.tabProvider = tabProvider;
+        this.tabPresenter = tabPresenter;
         this.scopes = scopes;
         this.handler = handler;
         this.tabType = tabType;
@@ -57,11 +54,7 @@ public class Tab {
 
     @Nonnull
     public TabPresenter getTab() {
-        if (tab == null) {
-            tab = tabProvider.get();
-        }
-
-        return tab;
+        return tabPresenter;
     }
 
     public boolean isAvailableScope(@Nonnull State scope) {

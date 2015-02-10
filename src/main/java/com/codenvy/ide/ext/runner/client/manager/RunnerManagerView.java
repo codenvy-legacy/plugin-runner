@@ -10,11 +10,10 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
-import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.tab.TabContainer;
 import com.google.inject.ImplementedBy;
 import com.google.inject.Singleton;
 
@@ -131,12 +130,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void activateTerminal(@Nonnull Runner runner);
 
-    /** Shows history widget which contains all created runners. */
-    void activateHistoryTab();
-
-    /** Shows templates which are available for runner. */
-    void activeTemplatesTab();
-
     /**
      * Shows special popup panel which displays additional information about runner.
      *
@@ -153,17 +146,21 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void updateMoreInfoPopup(@Nonnull Runner runner);
 
+    /**
+     * Sets left panel view representation to container. This panel contains history and templates containers.
+     *
+     * @param containerPresenter
+     *         container to which need set panel
+     */
+    void setLeftPanel(@Nonnull TabContainer containerPresenter);
+
+    /** Hides all buttons on buttons panel except run button. */
+    void hideOtherButtons();
+
+    /** Shows all buttons on buttons panel. */
+    void showOtherButtons();
+
     interface ActionDelegate extends BaseActionDelegate {
-
-        /**
-         * Performs some actions in response to user's choosing a runner.
-         *
-         * @param runner
-         *         runner that was chosen
-         */
-        void onRunnerSelected(@Nonnull Runner runner);
-
-        void onEnvironmentSelected(@Nonnull RunnerEnvironment selectedEnvironment);
 
         /** Performs some actions in response to user's clicking on the 'Run' button. */
         void onRunButtonClicked();
@@ -185,12 +182,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's over mouse on timeout label. */
         void onMoreInfoBtnMouseOver();
-
-        /** Performs some actions in response to user's choosing to show history of runners. */
-        void onHistoryButtonClicked();
-
-        /** Performs some actions in response to user's choosing to runner's templates. */
-        void onTemplatesButtonClicked();
     }
 
 }

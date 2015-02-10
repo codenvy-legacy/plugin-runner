@@ -8,30 +8,26 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.tab;
+package com.codenvy.ide.ext.runner.client.widgets.templates;
 
-import com.codenvy.ide.api.mvp.View;
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.ide.ext.runner.client.tab.TabPresenter;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
 /**
- * @author Andrey Plotnikov
+ * Provides methods which allow work with templates panel.
+ *
+ * @author Dmitry Shnurenko
  */
-@ImplementedBy(TabContainerViewImpl.class)
-public interface TabContainerView extends View<TabContainerView.ActionDelegate> {
-
-    void showTab(@Nonnull Tab tab);
-
-    void setVisibleTitle(@Nonnull Map<String, Boolean> tabVisibilities);
-
-    void addTab(@Nonnull Tab tab);
-
-    void selectTab(@Nonnull Tab tab);
-
-    interface ActionDelegate {
-        void onTabClicked(@Nonnull String title);
-    }
-
+@ImplementedBy(TemplatesPresenter.class)
+public interface TemplatesPanel extends TabPresenter {
+    /**
+     * Calls special method on view which set current environment selected.
+     *
+     * @param environment
+     *         environment which was selected
+     */
+    void select(@Nonnull RunnerEnvironment environment);
 }

@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.widgets.templates.environment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.properties.common.Scope;
+import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.widgets.general.GeneralWidget;
 import com.codenvy.ide.ext.runner.client.widgets.general.RunnerItems;
 import com.google.gwt.user.client.ui.Widget;
@@ -34,20 +35,18 @@ public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
     private final GeneralWidget   generalWidget;
     private final RunnerResources resources;
 
-    private Scope environmentScope;
-
-    private ActionDelegate<RunnerEnvironment> actionDelegate;
-    private RunnerEnvironment                 environment;
+    private Scope             environmentScope;
+    private RunnerEnvironment environment;
 
     @Inject
-    public EnvironmentWidget(final GeneralWidget generalWidget, RunnerResources resources) {
+    public EnvironmentWidget(final GeneralWidget generalWidget, RunnerResources resources, final SelectionManager selectionManager) {
         this.generalWidget = generalWidget;
         this.resources = resources;
 
         generalWidget.setDelegate(new GeneralWidget.ActionDelegate() {
             @Override
             public void onWidgetClicked() {
-                actionDelegate.onRunnerEnvironmentSelected(environment);
+                selectionManager.setEnvironment(environment);
             }
         });
 
@@ -106,12 +105,6 @@ public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
                 break;
             default:
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setDelegate(@Nonnull ActionDelegate<RunnerEnvironment> actionDelegate) {
-        this.actionDelegate = actionDelegate;
     }
 
     /** {@inheritDoc} */

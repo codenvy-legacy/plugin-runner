@@ -10,20 +10,17 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.ide.api.parts.PartStackUIResources;
 import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.tab.TabContainer;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.widgets.console.Console;
-import com.codenvy.ide.ext.runner.client.widgets.history.History;
-import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
-import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesPresenter;
 import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.core.client.GWT;
@@ -37,7 +34,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -52,10 +48,8 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.BLACK;
 import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.GREY;
 import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.LEFT_PANEL;
-import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.RIGHT_PANEL;
 
 /**
  * Class provides view representation of runner panel.
@@ -63,9 +57,7 @@ import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.RIGHT_PANEL;
  * @author Dmitry Shnurenko
  * @author Valeriy Svydenko
  */
-public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView,
-                                                                                                 History.ActionDelegate,
-                                                                                                 TemplatesPresenter.ActionDelegate {
+public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDelegate> implements RunnerManagerView {
     interface RunnerManagerViewImplUiBinder extends UiBinder<Widget, RunnerManagerViewImpl> {
     }
 
@@ -82,13 +74,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     SplitLayoutPanel mainPanel;
 
     @UiField
-    FlowPanel historyTemplatePanel;
-
-    //runners panel
-    @UiField
-    SimplePanel     runnersPanel;
-    @UiField
-    DockLayoutPanel runnersContainer;
+    SimplePanel leftTabsPanel;
 
     @UiField
     FlowPanel otherButtonsPanel;
@@ -114,19 +100,14 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final WidgetFactory             widgetFactory;
-    private final Map<Runner, Console>      consoles;
-    private final Map<Runner, Terminal>     terminals;
-    private final Map<Runner, RunnerWidget> runnerWidgets;
-    private final PopupPanel                popupPanel;
-    private final MoreInfo                  moreInfoWidget;
-    private final History                   historyWidget;
-    private final TemplatesPresenter        templatesPresenter;
+    private final WidgetFactory         widgetFactory;
+    private final Map<Runner, Console>  consoles;
+    private final Map<Runner, Terminal> terminals;
+    private final PopupPanel            popupPanel;
+    private final MoreInfo              moreInfoWidget;
 
     private TabWidget consoleTab;
     private TabWidget terminalTab;
-    private TabWidget historyTab;
-    private TabWidget templatesTab;
 
     private ButtonWidget run;
     private ButtonWidget stop;
@@ -140,9 +121,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locale,
                                  WidgetFactory widgetFactory,
-                                 PopupPanel popupPanel,
-                                 TemplatesPresenter templatesPresenter,
-                                 History historyWidget) {
+                                 PopupPanel popupPanel) {
         super(partStackUIResources);
 
         this.resources = resources;
@@ -153,17 +132,11 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         titleLabel.setText(locale.runnersPanelTitle());
         container.add(UI_BINDER.createAndBindUi(this));
 
-        this.mainPanel.setWidgetMinSize(runnersContainer, 165);
+        this.mainPanel.setWidgetMinSize(leftTabsPanel, 165);
 
         this.consoles = new HashMap<>();
         this.terminals = new HashMap<>();
-        this.runnerWidgets = new HashMap<>();
         this.moreInfoWidget = widgetFactory.createMoreInfo();
-        this.historyWidget = historyWidget;
-        this.historyWidget.setDelegate(this);
-
-        this.templatesPresenter = templatesPresenter;
-        this.templatesPresenter.setDelegate(this);
 
         this.popupPanel = popupPanel;
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
@@ -229,23 +202,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             }
         };
         terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate, tabsPanel, LEFT_PANEL);
-
-        TabWidget.ActionDelegate historyDelegate = new TabWidget.ActionDelegate() {
-            @Override
-            public void onMouseClicked() {
-                delegate.onHistoryButtonClicked();
-            }
-        };
-        historyTab = createTab(locale.runnerTabHistory(), historyDelegate, historyTemplatePanel, RIGHT_PANEL);
-        historyTab.select(BLACK);
-
-        TabWidget.ActionDelegate templatesDelegate = new TabWidget.ActionDelegate() {
-            @Override
-            public void onMouseClicked() {
-                delegate.onTemplatesButtonClicked();
-            }
-        };
-        templatesTab = createTab(locale.runnerTabTemplates(), templatesDelegate, historyTemplatePanel, RIGHT_PANEL);
     }
 
     @Nonnull
@@ -310,29 +266,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void onEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
-        delegate.onEnvironmentSelected(environment);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onRunnerSelected(@Nonnull Runner runner) {
-        delegate.onRunnerSelected(runner);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void update(@Nonnull Runner runner) {
         changeButtonsState(runner);
 
         Terminal terminal = terminals.get(runner);
         if (terminal != null) {
             terminal.update(runner);
-        }
-
-        RunnerWidget runnerItems = runnerWidgets.get(runner);
-        if (runnerItems != null) {
-            runnerItems.update(runner);
         }
 
         moreInfoWidget.update(runner);
@@ -367,15 +306,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     /** {@inheritDoc} */
     @Override
     public void addRunner(@Nonnull Runner runner) {
-        if (runnerWidgets.get(runner) != null) {
-            return;
-        }
-
-        RunnerWidget runnerWidget = widgetFactory.createRunner();
-        runnerWidgets.put(runner, runnerWidget);
-
-        historyWidget.addRunner(runner, runnerWidget);
-
+        //TODO  method addRunner relocated to history presenter and it is called from manager presenter.
+        //TODO It seems method for adding console must be on console presenter which need create at first
         Console console = widgetFactory.createConsole(runner);
         consoles.put(runner, console);
         activateConsole(runner);
@@ -517,30 +449,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void activateHistoryTab() {
-        templatesTab.unSelect();
-        historyTab.select(BLACK);
-
-        otherButtonsPanel.setVisible(true);
-
-        runnersPanel.clear();
-        runnersPanel.add(historyWidget);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void activeTemplatesTab() {
-        templatesTab.select(BLACK);
-        historyTab.unSelect();
-
-        otherButtonsPanel.setVisible(false);
-
-        runnersPanel.clear();
-        templatesPresenter.go(runnersPanel);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void showMoreInfoPopup(@Nonnull Runner runner) {
         moreInfoWidget.update(runner);
 
@@ -555,6 +463,24 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void updateMoreInfoPopup(@Nonnull Runner runner) {
         moreInfoWidget.update(runner);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLeftPanel(@Nonnull TabContainer containerPresenter) {
+        containerPresenter.go(leftTabsPanel);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void hideOtherButtons() {
+        otherButtonsPanel.setVisible(false);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showOtherButtons() {
+        otherButtonsPanel.setVisible(true);
     }
 
     @UiHandler("appReference")

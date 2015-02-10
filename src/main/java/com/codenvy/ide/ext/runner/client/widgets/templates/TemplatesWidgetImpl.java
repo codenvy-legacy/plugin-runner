@@ -33,7 +33,9 @@ import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Class provides graphical implementation of runner environments.
@@ -41,7 +43,7 @@ import java.util.List;
  * @author Dmitry Shnurenko
  */
 @Singleton
-public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, RunnerItems.ActionDelegate<RunnerEnvironment> {
+public class TemplatesWidgetImpl extends Composite implements TemplatesWidget {
 
     interface TemplatesViewImplUiBinder extends UiBinder<Widget, TemplatesWidgetImpl> {
     }
@@ -68,9 +70,9 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final List<RunnerItems> environments;
-    private final List<TypeButton>  typeButtons;
-    private final WidgetFactory     widgetFactory;
+    private final Map<RunnerEnvironment, RunnerItems> environments;
+    private final List<TypeButton>                    typeButtons;
+    private final WidgetFactory                       widgetFactory;
 
     private ActionDelegate delegate;
     private Scope          environmentScope;
@@ -84,7 +86,7 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
-        this.environments = new ArrayList<>();
+        this.environments = new HashMap<>();
         this.typeButtons = new ArrayList<>();
 
         initializeActions();
@@ -143,26 +145,12 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
 
     /** {@inheritDoc} */
     @Override
-    public void onRunnerEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
-        delegate.onEnvironmentSelected(environment);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void addEnvironment(@Nonnull RunnerEnvironment environment, @Nonnull Scope environmentScope) {
         this.environmentScope = environmentScope;
 
         selectScopeButton();
 
         final EnvironmentWidget environmentWidget = widgetFactory.createEnvironment();
-        environmentWidget.setDelegate(new RunnerItems.ActionDelegate<RunnerEnvironment>() {
-            @Override
-            public void onRunnerEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
-                delegate.onEnvironmentSelected(environment);
-
-                selectEnvironment(environmentWidget);
-            }
-        });
 
         environmentWidget.setScope(environmentScope);
         environmentWidget.update(environment);
@@ -171,17 +159,19 @@ public class TemplatesWidgetImpl extends Composite implements TemplatesWidget, R
             environmentWidget.select();
         }
 
-        environments.add(environmentWidget);
+        environments.put(environment, environmentWidget);
 
         environmentsPanel.add(environmentWidget);
     }
 
-    private void selectEnvironment(@Nonnull RunnerItems selectedWidget) {
-        for (RunnerItems widget : environments) {
+    /** {@inheritDoc} */
+    @Override
+    public void selectEnvironment(@Nonnull RunnerEnvironment selectedEnvironment) {
+        for (RunnerItems widget : environments.values()) {
             widget.unSelect();
         }
 
-        selectedWidget.select();
+        environments.get(selectedEnvironment).select();
     }
 
     /** {@inheritDoc} */

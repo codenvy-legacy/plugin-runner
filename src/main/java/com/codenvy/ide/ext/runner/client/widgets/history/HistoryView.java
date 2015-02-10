@@ -10,9 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.widgets.history;
 
-import com.codenvy.ide.api.mvp.View;
-import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
@@ -22,25 +21,22 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-@ImplementedBy(HistoryImpl.class)
-public interface History extends View<History.ActionDelegate> {
+@ImplementedBy(HistoryViewImpl.class)
+public interface HistoryView extends IsWidget {
 
     /**
      * Adds runner on panel and update runner's state.
      *
-     * @param runner
+     * @param runnerWidget
      *         runner which was added
      */
-    void addRunner(@Nonnull Runner runner, @Nonnull RunnerWidget runnerWidget);
+    void addRunner(@Nonnull RunnerWidget runnerWidget);
 
-    interface ActionDelegate {
-
-        /**
-         * Performs some actions when user clicks on runner.
-         *
-         * @param selectedRunner
-         *         runner which was selected
-         */
-        void onRunnerSelected(@Nonnull Runner selectedRunner);
-    }
+    /**
+     * Sets visibility state to panel.
+     *
+     * @param isVisible
+     *         <code>true</code> panel is visible, <code>false</code> panel is un visible
+     */
+    void setVisible(boolean isVisible);
 }

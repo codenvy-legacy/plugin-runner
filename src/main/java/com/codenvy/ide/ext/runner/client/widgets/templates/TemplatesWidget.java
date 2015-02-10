@@ -44,21 +44,29 @@ public interface TemplatesWidget extends View<TemplatesWidget.ActionDelegate> {
      */
     void addButton(@Nonnull RunnerEnvironmentTree environmentTree);
 
+    /**
+     * Sets visibility state to panel.
+     *
+     * @param isVisible
+     *         <code>true</code> panel is visible, <code>false</code> panel is un visible
+     */
+    void setVisible(boolean isVisible);
+
     /** Clears panel with environments */
     void clearEnvironmentsPanel();
 
     /** The methods clears type buttons panel when we change project scope. */
     void clearTypeButtonsPanel();
 
-    interface ActionDelegate {
+    /**
+     * Selects environment widget using current environment.
+     *
+     * @param selectedEnvironment
+     *         environment which was selected
+     */
+    void selectEnvironment(@Nonnull RunnerEnvironment selectedEnvironment);
 
-        /**
-         * Performs some actions when user click on environment.
-         *
-         * @param environment
-         *         selected environment
-         */
-        void onEnvironmentSelected(@Nonnull RunnerEnvironment environment);
+    interface ActionDelegate {
 
         /** Performs some actions when user click on all type button. */
         void onAllTypeButtonClicked();

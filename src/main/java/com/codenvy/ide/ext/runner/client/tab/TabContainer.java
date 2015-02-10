@@ -10,28 +10,31 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tab;
 
-import com.codenvy.ide.api.mvp.View;
+import com.codenvy.ide.api.mvp.Presenter;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
 /**
+ * Provides methods which allow work with tab container.
+ *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
-@ImplementedBy(TabContainerViewImpl.class)
-public interface TabContainerView extends View<TabContainerView.ActionDelegate> {
+@ImplementedBy(TabContainerPresenter.class)
+public interface TabContainer extends Presenter {
 
-    void showTab(@Nonnull Tab tab);
-
-    void setVisibleTitle(@Nonnull Map<String, Boolean> tabVisibilities);
-
+    /**
+     * Adds tab to tab container and saves tab visibility.
+     *
+     * @param tab
+     *         tab which need add
+     */
     void addTab(@Nonnull Tab tab);
 
-    void selectTab(@Nonnull Tab tab);
-
-    interface ActionDelegate {
-        void onTabClicked(@Nonnull String title);
+    interface TabSelectHandler {
+        /** Performs some actions when user clicks on tab. */
+        void onTabSelected();
     }
 
 }

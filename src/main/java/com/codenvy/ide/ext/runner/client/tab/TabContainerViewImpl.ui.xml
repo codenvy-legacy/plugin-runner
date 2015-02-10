@@ -15,9 +15,22 @@
 
     <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
 
+    <ui:style>
+        .tabs {
+            height: 25px;
+            box-shadow: inset -1px 0 0 #4d4d4d,
+            inset -2px 0 0 #000000,
+            inset 0 -1px 0 0 #000000;
+        }
+    </ui:style>
+
     <g:DockLayoutPanel ui:field="PX" addStyleNames="{resources.runnerCss.fullSize}">
         <g:north size="25">
-            <g:FlowPanel ui:field="tabs" addStyleNames="{resources.runnerCss.fullSize}"/>
+            <g:FlowPanel ui:field="tabs" addStyleNames="{resources.runnerCss.fullSize} {style.tabs}"/>
+        </g:north>
+
+        <g:north size="6">
+            <g:FlowPanel/>
         </g:north>
 
         <g:center>

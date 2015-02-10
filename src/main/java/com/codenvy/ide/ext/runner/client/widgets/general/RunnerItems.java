@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.widgets.general;
 
-import com.codenvy.ide.api.mvp.View;
+import com.google.gwt.user.client.ui.IsWidget;
 
 import javax.annotation.Nonnull;
 
@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public interface RunnerItems<T> extends View<RunnerItems.ActionDelegate<T>> {
+public interface RunnerItems<T> extends IsWidget {
 
     /** Performs some action when widget is selected. */
     void select();
@@ -34,14 +34,4 @@ public interface RunnerItems<T> extends View<RunnerItems.ActionDelegate<T>> {
      *         runner or environment item which need update
      */
     void update(@Nonnull T item);
-
-    interface ActionDelegate<T> {
-        /**
-         * Performs some action when user clicks on runner or environment item.
-         *
-         * @param selectedItem
-         *         item which is selected
-         */
-        void onRunnerEnvironmentSelected(@Nonnull T selectedItem);
-    }
 }

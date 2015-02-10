@@ -29,6 +29,17 @@ import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
+import com.codenvy.ide.ext.runner.client.selection.Selection;
+import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
+import com.codenvy.ide.ext.runner.client.state.PanelState;
+import com.codenvy.ide.ext.runner.client.state.State;
+import com.codenvy.ide.ext.runner.client.tab.Tab;
+import com.codenvy.ide.ext.runner.client.tab.TabBuilder;
+import com.codenvy.ide.ext.runner.client.tab.TabContainer;
+import com.codenvy.ide.ext.runner.client.tab.TabPresenter;
+import com.codenvy.ide.ext.runner.client.widgets.history.HistoryPanel;
+import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
+import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesPanel;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -38,6 +49,7 @@ import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,7 +59,14 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 import static com.codenvy.ide.ext.runner.client.properties.common.RAM._512;
+import static com.codenvy.ide.ext.runner.client.selection.Selection.RUNNER;
+import static com.codenvy.ide.ext.runner.client.state.State.HISTORY;
+import static com.codenvy.ide.ext.runner.client.state.State.TEMPLATE;
+import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState;
+import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.REMOVABLE;
+import static com.codenvy.ide.ext.runner.client.tab.TabContainer.TabSelectHandler;
 import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.LEFT_PANEL;
 
 /**
  * The class provides much business logic:
@@ -60,8 +79,10 @@ import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
  * @author Valeriy Svydenko
  */
 @Singleton
-public class RunnerManagerPresenter extends BasePresenter implements RunnerManager, RunnerManagerView.ActionDelegate, ProjectActionHandler {
-
+public class RunnerManagerPresenter extends BasePresenter implements RunnerManager,
+                                                                     RunnerManagerView.ActionDelegate,
+                                                                     ProjectActionHandler,
+                                                                     SelectionManager.SelectionChangeListener {
     private final RunnerManagerView          view;
     private final RunnerAction               showDockerAction;
     private final DtoFactory                 dtoFactory;
@@ -71,6 +92,10 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final Map<Runner, RunnerAction>  runnerActions;
     private final Timer                      runnerTimer;
     private final RunnerLocalizationConstant locale;
+    private final HistoryPanel               history;
+    private final TemplatesPanel             templates;
+    private final TabContainer               leftTabContainer;
+    private final SelectionManager           selectionManager;
 
     private Set<Long>                 runnersId;
     private GetRunningProcessesAction getRunningProcessAction;
@@ -85,7 +110,13 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   AppContext appContext,
                                   DtoFactory dtoFactory,
                                   EventBus eventBus,
-                                  RunnerLocalizationConstant locale) {
+                                  RunnerLocalizationConstant locale,
+                                  TabContainer leftTabContainer,
+                                  PanelState panelState,
+                                  TabBuilder tabBuilder,
+                                  HistoryPanel history,
+                                  TemplatesPanel templates,
+                                  SelectionManager selectionManager) {
         this.view = view;
         this.view.setDelegate(this);
         this.locale = locale;
@@ -94,6 +125,13 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
         this.showDockerAction = actionFactory.createShowDocker();
+        this.leftTabContainer = leftTabContainer;
+
+        this.selectionManager = selectionManager;
+        this.selectionManager.addListener(this);
+
+        this.templates = templates;
+        this.history = history;
 
         this.runnerActions = new HashMap<>();
 
@@ -108,12 +146,80 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
         runnersId = new HashSet<>();
+
+        createLeftPanelTabs(panelState, tabBuilder, history, templates);
     }
 
     private void updateRunnerTimer() {
         view.setTimeout(selectedRunner.getTimeout());
 
         view.updateMoreInfoPopup(selectedRunner);
+    }
+
+    private void createLeftPanelTabs(@Nonnull final PanelState panelState,
+                                     @Nonnull TabBuilder tabBuilder,
+                                     @Nonnull HistoryPanel historyPanel,
+                                     @Nonnull TemplatesPanel templatesPanel) {
+        TabSelectHandler historyHandler = new TabSelectHandler() {
+            @Override
+            public void onTabSelected() {
+                panelState.setState(HISTORY);
+
+                view.showOtherButtons();
+            }
+        };
+
+        createTab(tabBuilder,
+                  historyPanel,
+                  historyHandler,
+                  locale.runnerTabHistory(),
+                  REMOVABLE,
+                  EnumSet.allOf(State.class),
+                  LEFT_PANEL,
+                  leftTabContainer);
+
+        TabSelectHandler templatesHandler = new TabSelectHandler() {
+            @Override
+            public void onTabSelected() {
+                panelState.setState(TEMPLATE);
+
+                view.hideOtherButtons();
+            }
+        };
+
+        createTab(tabBuilder,
+                  templatesPanel,
+                  templatesHandler,
+                  locale.runnerTabTemplates(),
+                  REMOVABLE,
+                  EnumSet.allOf(State.class),
+                  LEFT_PANEL,
+                  leftTabContainer);
+
+        view.setLeftPanel(leftTabContainer);
+    }
+
+    @Nonnull
+    private Tab createTab(@Nonnull TabBuilder tabBuilder,
+                          @Nonnull TabPresenter presenter,
+                          @Nonnull TabSelectHandler handler,
+                          @Nonnull String title,
+                          @Nonnull VisibleState visibleState,
+                          @Nonnull EnumSet<State> states,
+                          @Nonnull TabType tabType,
+                          @Nonnull TabContainer container) {
+
+        Tab tab = tabBuilder.presenter(presenter)
+                            .selectHandler(handler)
+                            .title(title)
+                            .visible(visibleState)
+                            .scope(states)
+                            .type(tabType)
+                            .build();
+
+        container.addTab(tab);
+
+        return tab;
     }
 
     /** @return the GWT widget that is controlled by the presenter */
@@ -129,6 +235,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
      *         runner which was changed
      */
     public void update(@Nonnull Runner runner) {
+        history.updateRunner(runner);
         view.update(runner);
 
         if (runner.equals(selectedRunner)) {
@@ -155,27 +262,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                 String url = runner.getApplicationURL();
                 view.setApplicationURl(url == null ? locale.urlAppRunning() : url);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onRunnerSelected(@Nonnull Runner runner) {
-        this.selectedRunner = runner;
-
-        update(selectedRunner);
-        updateRunnerTimer();
-
-        if (runner.isConsoleActive()) {
-            view.activateConsole(selectedRunner);
-        } else {
-            view.activateTerminal(selectedRunner);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onEnvironmentSelected(@Nonnull RunnerEnvironment selectedEnvironment) {
-        this.selectedEnvironment = selectedEnvironment;
     }
 
     /** {@inheritDoc} */
@@ -262,20 +348,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void onHistoryButtonClicked() {
-        selectedEnvironment = null;
-
-        view.activateHistoryTab();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onTemplatesButtonClicked() {
-        view.activeTemplatesTab();
-    }
-
-    /** {@inheritDoc} */
     @Nullable
     @Override
     public Runner launchRunner() {
@@ -309,9 +381,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         selectedRunner = runner;
         selectedEnvironment = null;
 
-        view.activateHistoryTab();
-        view.addRunner(runner);
-        update(runner);
+        history.addRunner(runner);
 
         CheckRamAndRunAction checkRamAndRunAction = actionFactory.createCheckRamAndRun();
         checkRamAndRunAction.perform(runner);
@@ -320,8 +390,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         runner.resetCreationTime();
         runnerTimer.schedule(ONE_SEC.getValue());
-
-        update(selectedRunner);
 
         return runner;
     }
@@ -364,8 +432,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
-        view.activateHistoryTab();
-
         getRunningProcessAction = actionFactory.createGetRunningProcess();
 
         CurrentProject currentProject = appContext.getCurrentProject();
@@ -412,9 +478,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         runner.setStatus(DONE);
         runner.resetCreationTime();
 
-        view.addRunner(runner);
+        history.addRunner(runner);
 
-        onRunnerSelected(runner);
+        onSelectionChanged(RUNNER);
 
         runnerTimer.schedule(ONE_SEC.getValue());
 
@@ -446,4 +512,40 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         return runnersId.contains(runnerId);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void onSelectionChanged(@Nonnull Selection selection) {
+        if (RUNNER.equals(selection)) {
+            runnerSelected();
+        } else {
+            environmentSelected();
+        }
+    }
+
+    private void runnerSelected() {
+        selectedRunner = selectionManager.getRunner();
+        if (selectedRunner == null) {
+            return;
+        }
+
+        history.selectRunner(selectedRunner);
+        update(selectedRunner);
+
+        updateRunnerTimer();
+
+        if (selectedRunner.isConsoleActive()) {
+            view.activateConsole(selectedRunner);
+        } else {
+            view.activateTerminal(selectedRunner);
+        }
+    }
+
+    private void environmentSelected() {
+        selectedEnvironment = selectionManager.getEnvironment();
+        if (selectedEnvironment == null) {
+            return;
+        }
+
+        templates.select(selectedEnvironment);
+    }
 }

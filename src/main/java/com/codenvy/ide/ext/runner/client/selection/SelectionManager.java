@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.selection;
 
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -27,7 +28,7 @@ public class SelectionManager {
 
     private final List<SelectionChangeListener> listeners;
     private       Runner                        selectedRunner;
-    private       String                        selectedEnvironment;
+    private       RunnerEnvironment             selectedEnvironment;
 
     @Inject
     public SelectionManager() {
@@ -45,11 +46,11 @@ public class SelectionManager {
     }
 
     @Nullable
-    public String getEnvironment() {
+    public RunnerEnvironment getEnvironment() {
         return selectedEnvironment;
     }
 
-    public void setEnvironment(@Nullable String selectedEnvironment) {
+    public void setEnvironment(@Nullable RunnerEnvironment selectedEnvironment) {
         this.selectedEnvironment = selectedEnvironment;
         notifyListeners(Selection.ENVIRONMENT);
     }

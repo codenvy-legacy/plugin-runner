@@ -13,11 +13,11 @@ package com.codenvy.ide.ext.runner.client.widgets.templates;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
-import com.codenvy.ide.api.mvp.Presenter;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -31,15 +31,14 @@ import static com.codenvy.ide.ext.runner.client.properties.common.Scope.SYSTEM;
  * @author Dmitry Shnurenko
  */
 @Singleton
-public class TemplatesPresenter implements Presenter, TemplatesWidget.ActionDelegate {
+public class TemplatesPresenter implements TemplatesPanel, TemplatesWidget.ActionDelegate {
 
     private final TemplatesWidget              view;
     private final GetProjectEnvironmentsAction projectEnvironments;
     private final GetSystemEnvironmentsAction  systemEnvironments;
     private final GetEnvironmentsUtil          environmentUtil;
 
-    private ActionDelegate delegate;
-    private boolean        isSystemScope;
+    private boolean isSystemScope;
 
     @Inject
     public TemplatesPresenter(TemplatesWidget view,
@@ -56,22 +55,6 @@ public class TemplatesPresenter implements Presenter, TemplatesWidget.ActionDele
         this.systemEnvironments.perform();
 
         this.isSystemScope = true;
-    }
-
-    /**
-     * Sets action delegate to templates widget.
-     *
-     * @param delegate
-     *         delegate which will be set
-     */
-    public void setDelegate(@Nonnull ActionDelegate delegate) {
-        this.delegate = delegate;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onEnvironmentSelected(@Nonnull RunnerEnvironment environment) {
-        delegate.onEnvironmentSelected(environment);
     }
 
     /** {@inheritDoc} */
@@ -125,14 +108,22 @@ public class TemplatesPresenter implements Presenter, TemplatesWidget.ActionDele
         container.setWidget(view);
     }
 
-    public interface ActionDelegate {
-        /**
-         * Performs some action when user selects environment.
-         *
-         * @param environment
-         *         environment which is selected
-         */
-        void onEnvironmentSelected(@Nonnull RunnerEnvironment environment);
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public IsWidget getView() {
+        return view;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void setVisible(boolean visible) {
+        view.setVisible(visible);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void select(@Nonnull RunnerEnvironment environment) {
+        view.selectEnvironment(environment);
+    }
 }

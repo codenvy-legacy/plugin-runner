@@ -27,8 +27,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.BLACK;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.GREY;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.LEFT_PANEL;
+
 /**
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 public class TabContainerViewImpl extends Composite implements TabContainerView {
 
@@ -87,13 +92,28 @@ public class TabContainerViewImpl extends Composite implements TabContainerView 
 
     /** {@inheritDoc} */
     @Override
+    public void selectTab(@Nonnull Tab tab) {
+        for (TabWidget widget : titles.values()) {
+            widget.unSelect();
+        }
+
+        boolean isLeftPanel = LEFT_PANEL.equals(tab.getTabType());
+
+        titles.get(tab.getTitle()).select(isLeftPanel ? BLACK : GREY);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void setVisibleTitle(@Nonnull Map<String, Boolean> tabVisibilities) {
         tabs.clear();
 
         for (Map.Entry<String, Boolean> entry : tabVisibilities.entrySet()) {
             String title = entry.getKey();
             TabWidget tabWidget = titles.get(title);
-            tabWidget.setVisible(entry.getValue());
+
+            if (entry.getValue()) {
+                tabs.add(tabWidget);
+            }
         }
     }
 

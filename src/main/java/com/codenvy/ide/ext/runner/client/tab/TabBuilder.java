@@ -12,10 +12,9 @@ package com.codenvy.ide.ext.runner.client.tab;
 
 import com.codenvy.ide.ext.runner.client.state.State;
 import com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState;
-import com.codenvy.ide.ext.runner.client.tab.TabContainerPresenter.TabSelectHandler;
+import com.codenvy.ide.ext.runner.client.tab.TabContainer.TabSelectHandler;
 import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -24,15 +23,16 @@ import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.REMOVABLE;
 
 /**
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 public class TabBuilder {
 
-    private String                           title;
-    private Provider<? extends TabPresenter> tabProvider;
-    private Set<State>                       scopes;
-    private TabSelectHandler                 handler;
-    private TabType                          tabType;
-    private VisibleState                     visibleState;
+    private String           title;
+    private TabPresenter     presenter;
+    private Set<State>       scopes;
+    private TabSelectHandler handler;
+    private TabType          tabType;
+    private VisibleState     visibleState;
 
     @Inject
     public TabBuilder() {
@@ -46,8 +46,8 @@ public class TabBuilder {
     }
 
     @Nonnull
-    public TabBuilder widgetProvider(@Nonnull Provider<? extends TabPresenter> provider) {
-        tabProvider = provider;
+    public TabBuilder presenter(@Nonnull TabPresenter presenter) {
+        this.presenter = presenter;
         return this;
     }
 
@@ -85,15 +85,15 @@ public class TabBuilder {
             throw new IllegalStateException("You forgot to initialize 'Scopes' value. Please, initialize it and try again.");
         }
 
-        if (tabProvider == null) {
-            throw new IllegalStateException("You forgot to initialize 'Widget provider' value. Please, initialize it and try again.");
+        if (presenter == null) {
+            throw new IllegalStateException("You forgot to initialize 'Widget presenter' value. Please, initialize it and try again.");
         }
 
         if (tabType == null) {
             throw new IllegalStateException("You forgot to initialize 'Type' value. Please, initialize it and try again.");
         }
 
-        return new Tab(title, tabProvider, scopes, handler, tabType, visibleState);
+        return new Tab(title, presenter, scopes, handler, tabType, visibleState);
     }
 
 }
