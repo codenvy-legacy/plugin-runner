@@ -71,7 +71,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void setVisible(boolean visible) {
-
+        view.setVisible(visible);
     }
 
 }
