@@ -8,13 +8,13 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.console;
+package com.codenvy.ide.ext.runner.client.terminal;
 
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.selection.Selection;
 import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
-import com.codenvy.ide.ext.runner.client.widgets.console.Console;
+import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -26,58 +26,30 @@ import java.util.Map;
 import static com.codenvy.ide.ext.runner.client.selection.Selection.ENVIRONMENT;
 
 /**
- * @author Andrey Plotnikov
+ * The class that manages a container of the terminals.
+ *
  * @author Valeriy Svydenko
  */
-public class ConsoleContainerPresenter implements ConsoleContainer,
-                                                  ConsoleContainerView.ActionDelegate,
-                                                  SelectionManager.SelectionChangeListener {
+public class TerminalContainerPresenter implements TerminalContainer,
+                                                   TerminalContainerView.ActionDelegate,
+                                                   SelectionManager.SelectionChangeListener {
 
-    private final ConsoleContainerView view;
-    private final SelectionManager     selectionManager;
-    private final WidgetFactory        widgetFactory;
-    private final Map<Runner, Console> consoles;
+    private final TerminalContainerView view;
+    private final SelectionManager      selectionManager;
+    private final Map<Runner, Terminal> terminals;
+    private final WidgetFactory         widgetFactory;
 
     @Inject
-    public ConsoleContainerPresenter(ConsoleContainerView view, WidgetFactory widgetFactory, SelectionManager selectionManager) {
+    public TerminalContainerPresenter(TerminalContainerView view, WidgetFactory widgetFactory, SelectionManager selectionManager) {
         this.view = view;
         this.view.setDelegate(this);
         this.widgetFactory = widgetFactory;
         this.selectionManager = selectionManager;
 
-        consoles = new HashMap<>();
+        terminals = new HashMap<>();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void print(@Nonnull Runner runner, @Nonnull String message) {
-        Console console = getConsoleOrCreate(runner);
-        console.print(message);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printInfo(@Nonnull Runner runner, @Nonnull String message) {
-        Console console = getConsoleOrCreate(runner);
-        console.printInfo(message);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printError(@Nonnull Runner runner, @Nonnull String message) {
-        Console console = getConsoleOrCreate(runner);
-        console.printError(message);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printWarn(@Nonnull Runner runner, @Nonnull String message) {
-        Console console = getConsoleOrCreate(runner);
-        console.printWarn(message);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void onSelectionChanged(@Nonnull Selection selection) {
         if (ENVIRONMENT.equals(selection)) {
             return;
@@ -88,18 +60,29 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
             return;
         }
 
-        view.showWidget(getConsoleOrCreate(runner));
+        showTerminal(runner);
     }
 
-    @Nonnull
-    private Console getConsoleOrCreate(@Nonnull Runner runner) {
-        Console result = consoles.get(runner);
-        if (result == null) {
-            result = widgetFactory.createConsole(runner);
-            consoles.put(runner, result);
+    private void showTerminal(@Nonnull Runner runner) {
+        for (Terminal terminal : terminals.values()) {
+            terminal.setVisible(false);
+            terminal.setUnavailableLabelVisible(false);
         }
 
-        return result;
+        Terminal terminal = terminals.get(runner);
+        if (terminal == null) {
+            terminal = widgetFactory.createTerminal();
+            terminal.update(runner);
+
+            terminals.put(runner, terminal);
+
+            view.addWidget(terminal);
+        } else {
+            boolean isAnyAppRun = runner.isAlive();
+
+            terminal.setVisible(isAnyAppRun);
+            terminal.setUnavailableLabelVisible(!isAnyAppRun);
+        }
     }
 
     /** {@inheritDoc} */
