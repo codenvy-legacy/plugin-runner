@@ -48,6 +48,7 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
  * @author Valeriy Svydenko
  * @author Dmitry Shnurenko
  */
+//Todo CheckRamAndRunAction is too difficult. This class should improve.
 public class CheckRamAndRunAction extends AbstractRunnerAction {
     private final RunnerServiceClient                                 service;
     private final AppContext                                          appContext;
