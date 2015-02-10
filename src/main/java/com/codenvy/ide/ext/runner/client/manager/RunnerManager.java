@@ -64,6 +64,6 @@ public interface RunnerManager {
      * @param runner
      *         runner which performs actions
      */
-    void stopRunAction(@Nonnull Runner runner);
+    void stopRunner(@Nonnull Runner runner);
 
 }

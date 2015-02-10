@@ -192,7 +192,7 @@ public class StatusAction extends AbstractRunnerAction {
 
         view.printInfo(runner, message);
 
-        presenter.stopRunAction(runner);
+        presenter.stopRunner(runner);
         stop();
     }
 

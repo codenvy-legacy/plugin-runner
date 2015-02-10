@@ -296,7 +296,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onStopButtonClicked() {
-        stopRunAction(selectedRunner);
+        stopRunner(selectedRunner);
 
         StopAction stopAction = actionFactory.createStop();
         stopAction.perform(selectedRunner);
@@ -306,7 +306,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     /** {@inheritDoc} */
     @Override
-    public void stopRunAction(@Nonnull Runner runner) {
+    public void stopRunner(@Nonnull Runner runner) {
         RunnerAction runnerAction = runnerActions.get(runner);
         if (runnerAction != null) {
             runnerAction.stop();
@@ -453,7 +453,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             if (runner.isAlive()) {
                 runner.setStatus(STOPPED);
 
-                stopRunAction(runner);
+                stopRunner(runner);
             }
         }
 
