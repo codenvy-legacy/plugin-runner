@@ -8,28 +8,17 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.util;
+package com.codenvy.ide.ext.runner.client.properties;
 
-import javax.annotation.Nonnegative;
+import com.codenvy.ide.ext.runner.client.tab.TabPresenter;
+import com.google.inject.ImplementedBy;
 
 /**
- * The class store Integer representation of time intervals in milliseconds.
+ * The common representation of properties panel widget.
  *
- * @author Dmitry Shnurenko
+ * @author Andrey Plotnikov
  */
-public enum TimeInterval {
+@ImplementedBy(PropertiesPanelPresenter.class)
+public interface PropertiesPanel extends TabPresenter {
 
-    ONE_SEC(1_000), FIVE_SEC(5_000), THIRTY_SEC(30_000);
-
-    private final int timeInterval;
-
-    TimeInterval(@Nonnegative int timeInterval) {
-        this.timeInterval = timeInterval;
-    }
-
-    /** @return time interval value. */
-    @Nonnegative
-    public int getValue() {
-        return timeInterval;
-    }
 }

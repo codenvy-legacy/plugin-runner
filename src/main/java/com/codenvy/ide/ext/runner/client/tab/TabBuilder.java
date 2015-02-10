@@ -22,6 +22,9 @@ import java.util.Set;
 import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.REMOVABLE;
 
 /**
+ * The builder for simplifying work flow with creating of 'Multi runner' panel's tab. It provides methods which collect all parameters for
+ * creating an instance of tab.
+ *
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
  */
@@ -39,42 +42,85 @@ public class TabBuilder {
         visibleState = REMOVABLE;
     }
 
+    /**
+     * Adds title parameter to configuration of tab.
+     *
+     * @param title
+     *         title that needs to be used
+     * @return an instance of {@link TabBuilder}
+     */
     @Nonnull
     public TabBuilder title(@Nonnull String title) {
         this.title = title;
         return this;
     }
 
+    /**
+     * Adds widget parameter to configuration of tab.
+     *
+     * @param presenter
+     *         presenter of widget that needs to be shown
+     * @return an instance of {@link TabBuilder}
+     */
     @Nonnull
     public TabBuilder presenter(@Nonnull TabPresenter presenter) {
         this.presenter = presenter;
         return this;
     }
 
+    /**
+     * Adds scope of states when tab has to be shown to configuration of tab.
+     *
+     * @param scopes
+     *         scope these need to be used
+     * @return an instance of {@link TabBuilder}
+     */
     @Nonnull
     public TabBuilder scope(@Nonnull Set<State> scopes) {
         this.scopes = scopes;
         return this;
     }
 
+    /**
+     * Adds selection handler to configuration of tab.
+     *
+     * @param handler
+     *         handler that needs to be added
+     * @return an instance of {@link TabBuilder}
+     */
     @Nonnull
     public TabBuilder selectHandler(@Nonnull TabSelectHandler handler) {
         this.handler = handler;
         return this;
     }
 
+    /**
+     * Adds type to configuration of tab.
+     *
+     * @param type
+     *         type that needs to be added
+     * @return an instance of {@link TabBuilder}
+     */
     @Nonnull
     public TabBuilder type(@Nonnull TabType type) {
         tabType = type;
         return this;
     }
 
+    /**
+     * Adds visibility state to configuration of tab.
+     *
+     * @param visibleState
+     *         visibility state that needs to be applied for tab
+     * @return an instance of {@link TabBuilder}
+     */
     @Nonnull
     public TabBuilder visible(@Nonnull VisibleState visibleState) {
         this.visibleState = visibleState;
         return this;
     }
 
+    /** @return an instance of {@link Tab} with given parameters */
     @Nonnull
     public Tab build() {
         if (title == null) {

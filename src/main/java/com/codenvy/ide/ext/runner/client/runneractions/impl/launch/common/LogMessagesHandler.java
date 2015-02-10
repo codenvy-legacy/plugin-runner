@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.util.TimeInterval.FIVE_SEC;
+import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.FIVE_SEC;
 
 /**
  * This class listens for log messages from the server and process it. Logic of this class is slightly complicated since we can't guaranty
@@ -124,6 +124,7 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
     }
 
     public interface ErrorHandler {
+        /** Perform some actions in response on some error happens */
         void onErrorHappened();
     }
 

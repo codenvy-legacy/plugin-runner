@@ -17,6 +17,8 @@ import com.google.inject.ImplementedBy;
 import javax.annotation.Nonnull;
 
 /**
+ * The common representation of console container widget. This widget provides an ability to manager many console widgets for every runner.
+ *
  * @author Andrey Plotnikov
  */
 @ImplementedBy(ConsoleContainerPresenter.class)

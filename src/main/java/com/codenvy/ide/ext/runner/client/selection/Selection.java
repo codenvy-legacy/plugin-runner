@@ -11,6 +11,8 @@
 package com.codenvy.ide.ext.runner.client.selection;
 
 /**
+ * The enum of available selection element.
+ *
  * @author Andrey Plotnikov
  */
 public enum Selection {

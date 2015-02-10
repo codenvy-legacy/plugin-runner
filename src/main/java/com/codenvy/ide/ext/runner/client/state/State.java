@@ -11,6 +11,8 @@
 package com.codenvy.ide.ext.runner.client.state;
 
 /**
+ * The enum of available states for 'Multi runner panel'.
+ *
  * @author Andrey Plotnikov
  */
 public enum State {

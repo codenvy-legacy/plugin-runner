@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The manager for panel state. It provides an ability to change 'Multi panel' state.
+ *
  * @author Andrey Plotnikov
  */
 @Singleton
@@ -32,27 +34,41 @@ public class PanelState {
         state = State.HISTORY;
     }
 
+    /** @return current state of the panel */
     @Nonnull
     public State getState() {
         return state;
     }
 
+    /**
+     * Changes state of the panel
+     *
+     * @param state
+     *         sate that needs to be applied
+     */
     public void setState(@Nonnull State state) {
         this.state = state;
         notifyListeners();
     }
 
+    /**
+     * Adds a listener for detecting state changing.
+     *
+     * @param listener
+     *         listener that needs to be added
+     */
     public void addListener(@Nonnull StateChangeListener listener) {
         listeners.add(listener);
     }
 
-    public void notifyListeners() {
+    private void notifyListeners() {
         for (StateChangeListener listener : listeners) {
             listener.onStateChanged();
         }
     }
 
     public interface StateChangeListener {
+        /** Perform any actions when panel state is changed. */
         void onStateChanged();
     }
 

@@ -22,6 +22,8 @@ import java.util.Set;
 import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.REMOVABLE;
 
 /**
+ * The class that contains general information about tab of 'Multi runner' panel.
+ *
  * @author Andrey Plotnikov
  */
 public class Tab {
@@ -47,20 +49,30 @@ public class Tab {
         this.visibleState = visibleState;
     }
 
+    /** @return title for the current tab */
     @Nonnull
     public String getTitle() {
         return title;
     }
 
+    /** @return widget of the current tab */
     @Nonnull
     public TabPresenter getTab() {
         return tabPresenter;
     }
 
+    /**
+     * Validates an ability to show current tab for a given scope.
+     *
+     * @param scope
+     *         current scope
+     * @return <code>true</code> if need to show this tab <code>false</code> otherwise
+     */
     public boolean isAvailableScope(@Nonnull State scope) {
         return scopes.contains(scope);
     }
 
+    /** Fire tab selection event for listeners if any. */
     public void performHandler() {
         if (handler == null) {
             return;
@@ -69,11 +81,13 @@ public class Tab {
         handler.onTabSelected();
     }
 
+    /** @return type of tab */
     @Nonnull
     public TabType getTabType() {
         return tabType;
     }
 
+    /** @return <code>true</code> if current tab can be removed from the container <code>false</code> otherwise */
     public boolean isRemovable() {
         return REMOVABLE.equals(visibleState);
     }

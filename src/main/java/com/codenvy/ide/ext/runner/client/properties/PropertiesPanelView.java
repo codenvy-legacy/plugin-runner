@@ -111,6 +111,14 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
      */
     void setContent(@Nonnull String content);
 
+    /**
+     * Changes visibility of the widget.
+     *
+     * @param visible
+     *         visible state that needs to be applied
+     */
+    void setVisible(boolean visible);
+
     interface ActionDelegate {
 
         /** Performs some actions in response to user's changing some configuration. */

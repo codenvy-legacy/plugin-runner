@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The manager that manages different selection element in 'Multi runner' panel.
+ *
  * @author Andrey Plotnikov
  */
 @Singleton
@@ -35,26 +37,46 @@ public class SelectionManager {
         listeners = new ArrayList<>();
     }
 
+    /** @return an instance of {@link Runner} that is selected */
     @Nullable
     public Runner getRunner() {
         return selectedRunner;
     }
 
-    public void setRunner(@Nullable Runner selectedRunner) {
-        this.selectedRunner = selectedRunner;
+    /**
+     * Select a new runner.
+     *
+     * @param runner
+     *         runner that needs to be selected
+     */
+    public void setRunner(@Nullable Runner runner) {
+        this.selectedRunner = runner;
         notifyListeners(Selection.RUNNER);
     }
 
+    /** @return an instance of {@link RunnerEnvironment} that is selected */
     @Nullable
     public RunnerEnvironment getEnvironment() {
         return selectedEnvironment;
     }
 
-    public void setEnvironment(@Nullable RunnerEnvironment selectedEnvironment) {
-        this.selectedEnvironment = selectedEnvironment;
+    /**
+     * Select a new environment.
+     *
+     * @param environment
+     *         environment that needs to be selected
+     */
+    public void setEnvironment(@Nullable RunnerEnvironment environment) {
+        this.selectedEnvironment = environment;
         notifyListeners(Selection.ENVIRONMENT);
     }
 
+    /**
+     * Adds a new listener for detecting changes in the manager.
+     *
+     * @param listener
+     *         listener that needs to be added
+     */
     public void addListener(@Nonnull SelectionChangeListener listener) {
         listeners.add(listener);
     }
@@ -66,6 +88,12 @@ public class SelectionManager {
     }
 
     public interface SelectionChangeListener {
+        /**
+         * Perform any actions when selection element is changed.
+         *
+         * @param selection
+         *         type of element that is changed
+         */
         void onSelectionChanged(@Nonnull Selection selection);
     }
 

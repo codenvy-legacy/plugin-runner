@@ -10,16 +10,18 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.properties;
 
-import com.codenvy.ide.api.mvp.Presenter;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+
+import javax.annotation.Nonnull;
 
 /**
  * The class that manages Properties panel widget.
  *
  * @author Andrey Plotnikov
  */
-public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDelegate, Presenter {
+public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDelegate, PropertiesPanel {
 
     private final PropertiesPanelView view;
 
@@ -57,6 +59,19 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     @Override
     public void go(AcceptsOneWidget container) {
         container.setWidget(view);
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public IsWidget getView() {
+        return view;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setVisible(boolean visible) {
+
     }
 
 }

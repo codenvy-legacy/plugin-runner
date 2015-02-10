@@ -34,7 +34,7 @@ import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.api.notification.Notification.Type.WARNING;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
-import static com.codenvy.ide.ext.runner.client.util.TimeInterval.THIRTY_SEC;
+import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.THIRTY_SEC;
 
 /**
  * The action that checks status of runner. It pings runner every 30 second and the client side knows that the runner is alive.

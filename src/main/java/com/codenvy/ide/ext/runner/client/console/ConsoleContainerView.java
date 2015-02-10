@@ -17,13 +17,27 @@ import com.google.inject.ImplementedBy;
 import javax.annotation.Nonnull;
 
 /**
+ * The abstract representation of console container widget UI part.
+ *
  * @author Andrey Plotnikov
  */
 @ImplementedBy(ConsoleContainerViewImpl.class)
 public interface ConsoleContainerView extends View<ConsoleContainerView.ActionDelegate> {
 
+    /**
+     * Show a given widget in the special place in the container.
+     *
+     * @param console
+     *         console that needs to be shown
+     */
     void showWidget(@Nonnull IsWidget console);
 
+    /**
+     * Changes visibility of the widget.
+     *
+     * @param visible
+     *         visible state that needs to be applied
+     */
     void setVisible(boolean visible);
 
     interface ActionDelegate {

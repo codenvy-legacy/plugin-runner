@@ -38,7 +38,7 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
-import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
+import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 
 /**
  * @author Andrey Plotnikov

@@ -65,7 +65,7 @@ import static com.codenvy.ide.ext.runner.client.state.State.TEMPLATE;
 import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState;
 import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.REMOVABLE;
 import static com.codenvy.ide.ext.runner.client.tab.TabContainer.TabSelectHandler;
-import static com.codenvy.ide.ext.runner.client.util.TimeInterval.ONE_SEC;
+import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.LEFT_PANEL;
 
 /**
