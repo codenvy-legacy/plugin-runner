@@ -15,9 +15,8 @@ import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
@@ -29,6 +28,7 @@ import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 
 /**
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class LaunchAction extends AbstractRunnerAction {
 
@@ -36,20 +36,20 @@ public class LaunchAction extends AbstractRunnerAction {
     private final RunnerLocalizationConstant locale;
     private final AppContext                 appContext;
     private final RunnerActionFactory        runnerActionFactory;
-    private final RunnerManagerView          view;
     private final RunnerAction               outputAction;
+    private final ConsoleContainer           consoleContainer;
 
     @Inject
     public LaunchAction(NotificationManager notificationManager,
-                        RunnerManagerPresenter presenter,
                         RunnerLocalizationConstant locale,
                         AppContext appContext,
+                        ConsoleContainer consoleContainer,
                         RunnerActionFactory runnerActionFactory) {
         this.notificationManager = notificationManager;
         this.locale = locale;
         this.appContext = appContext;
         this.runnerActionFactory = runnerActionFactory;
-        this.view = presenter.getView();
+        this.consoleContainer = consoleContainer;
 
         outputAction = runnerActionFactory.createOutput();
         addAction(outputAction);
@@ -71,7 +71,7 @@ public class LaunchAction extends AbstractRunnerAction {
         Notification notification = new Notification(message, PROGRESS, true);
         notificationManager.showNotification(notification);
 
-        view.printInfo(runner, message);
+        consoleContainer.printInfo(runner, message);
 
         RunnerAction statusAction = runnerActionFactory.createStatus(notification);
         addAction(statusAction);

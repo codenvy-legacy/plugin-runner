@@ -14,8 +14,8 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
@@ -33,14 +33,15 @@ import javax.annotation.Nonnull;
 import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.api.notification.Notification.Type.WARNING;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.THIRTY_SEC;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 
 /**
  * The action that checks status of runner. It pings runner every 30 second and the client side knows that the runner is alive.
  *
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class CheckHealthStatusAction extends AbstractRunnerAction {
 
@@ -56,7 +57,7 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
     private final RunnerManagerPresenter     presenter;
     private final WebSocketUtil              webSocketUtil;
     private final Notification               notification;
-    private final RunnerManagerView          view;
+    private final ConsoleContainer           consoleContainer;
 
     // The server makes the limited quantity of tries checking application's health,
     // so we're waiting for some time (about 30 sec.) and assume that app health is OK.
@@ -71,12 +72,13 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
                                    RunnerLocalizationConstant locale,
                                    RunnerManagerPresenter presenter,
                                    WebSocketUtil webSocketUtil,
+                                   ConsoleContainer consoleContainer,
                                    @Nonnull @Assisted Notification notification) {
         this.appContext = appContext;
         this.locale = locale;
         this.presenter = presenter;
         this.webSocketUtil = webSocketUtil;
-        this.view = presenter.getView();
+        this.consoleContainer = consoleContainer;
 
         this.notification = notification;
     }
@@ -100,7 +102,7 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
                 String notificationMessage = locale.applicationMaybeStarted(projectName);
 
                 notification.update(notificationMessage, WARNING, FINISHED, null, true);
-                view.printWarn(runner, notificationMessage);
+                consoleContainer.printWarn(runner, notificationMessage);
             }
         };
         changeAppAliveTimer.schedule(THIRTY_SEC.getValue());
@@ -130,7 +132,7 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
                 String notificationMessage = locale.applicationStarted(projectName);
 
                 notification.update(notificationMessage, INFO, FINISHED, null, true);
-                view.printInfo(runner, notificationMessage);
+                consoleContainer.printInfo(runner, notificationMessage);
 
                 stop();
             }

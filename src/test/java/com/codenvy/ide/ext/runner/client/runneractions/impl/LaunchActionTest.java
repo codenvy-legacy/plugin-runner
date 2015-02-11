@@ -16,6 +16,7 @@ import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
@@ -67,6 +68,8 @@ public class LaunchActionTest {
     private RunnerActionFactory        runnerActionFactory;
     @Mock
     private OutputAction               outputAction;
+    @Mock
+    private ConsoleContainer           consoleContainer;
 
     private LaunchAction action;
 
@@ -75,7 +78,7 @@ public class LaunchActionTest {
         when(runnerActionFactory.createOutput()).thenReturn(outputAction);
         when(runnerManagerPresenter.getView()).thenReturn(view);
 
-        action = new LaunchAction(notificationManager, runnerManagerPresenter, locale, appContext, runnerActionFactory);
+        action = new LaunchAction(notificationManager, locale, appContext, consoleContainer, runnerActionFactory);
 
         verify(outputAction).setListener(Matchers.<StopActionListener>any());
     }
@@ -105,7 +108,7 @@ public class LaunchActionTest {
         verify(project).setIsRunningEnabled(false);
         verify(locale).environmentCooking(SOME_TEXT);
         verify(notificationManager).showNotification(Matchers.<Notification>any());
-        verify(view).printInfo(runner, SOME_TEXT);
+        verify(consoleContainer).printInfo(runner, SOME_TEXT);
         verify(runnerActionFactory).createStatus(Matchers.<Notification>any());
         verify(statusAction).perform(runner);
         verify(outputAction).perform(runner);

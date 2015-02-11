@@ -13,8 +13,8 @@ package com.codenvy.ide.ext.runner.client.util;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.google.inject.Inject;
@@ -26,8 +26,8 @@ import javax.annotation.Nullable;
 
 import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
 
 /**
  * Contains implementations of methods which are general for runner plugin classes.
@@ -41,18 +41,19 @@ public class RunnerUtilImpl implements RunnerUtil {
     private final RunnerLocalizationConstant locale;
     private final RunnerManagerPresenter     presenter;
     private final NotificationManager        notificationManager;
-    private final RunnerManagerView          view;
+    private final ConsoleContainer           consoleContainer;
 
     @Inject
     public RunnerUtilImpl(DialogFactory dialogFactory,
                           RunnerLocalizationConstant locale,
                           RunnerManagerPresenter presenter,
+                          ConsoleContainer consoleContainer,
                           NotificationManager notificationManager) {
         this.dialogFactory = dialogFactory;
         this.locale = locale;
         this.presenter = presenter;
-        this.view = presenter.getView();
         this.notificationManager = notificationManager;
+        this.consoleContainer = consoleContainer;
     }
 
     /** {@inheritDoc} */
@@ -110,9 +111,9 @@ public class RunnerUtilImpl implements RunnerUtil {
         notification.update(message, ERROR, FINISHED, null, true);
 
         if (exception != null && exception.getMessage() != null) {
-            view.printError(runner, message + ": " + exception.getMessage());
+            consoleContainer.printError(runner, message + ": " + exception.getMessage());
         } else {
-            view.printError(runner, message);
+            consoleContainer.printError(runner, message);
         }
     }
 

@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.util;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -33,8 +34,8 @@ import org.mockito.MockitoAnnotations;
 
 import javax.annotation.Nonnegative;
 
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -71,6 +72,8 @@ public class RunnerUtilImplTest {
     private Runner                     runner;
     @Mock
     private Throwable                  exception;
+    @Mock
+    private ConsoleContainer consoleContainer;
 
     private RunnerUtil util;
 
@@ -79,15 +82,10 @@ public class RunnerUtilImplTest {
         MockitoAnnotations.initMocks(this);
         when(presenter.getView()).thenReturn(view);
 
-        util = new RunnerUtilImpl(dialogFactory, locale, presenter, notificationManager);
+        util = new RunnerUtilImpl(dialogFactory, locale, presenter, consoleContainer, notificationManager);
 
         when(locale.titlesWarning()).thenReturn(SOME_TEXT);
         when(dialogFactory.createMessageDialog(anyString(), anyString(), any(ConfirmCallback.class))).thenReturn(messageDialog);
-    }
-
-    @Test
-    public void constructorShouldBeDone() throws Exception {
-        verify(presenter).getView();
     }
 
     @DataProvider
@@ -169,7 +167,7 @@ public class RunnerUtilImplTest {
         util.showError(runner, SOME_TEXT, exception);
 
         verifyShowError();
-        verify(view).printError(runner, SOME_TEXT);
+        verify(consoleContainer).printError(runner, SOME_TEXT);
     }
 
     private void verifyShowError() {
@@ -192,7 +190,7 @@ public class RunnerUtilImplTest {
         util.showError(runner, SOME_TEXT, exception);
 
         verifyShowError();
-        verify(view).printError(runner, SOME_TEXT + ": " + SOME_TEXT);
+        verify(consoleContainer).printError(runner, SOME_TEXT + ": " + SOME_TEXT);
     }
 
 }

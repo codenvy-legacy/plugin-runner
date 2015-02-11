@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import static com.codenvy.ide.ext.runner.client.selection.Selection.ENVIRONMENT;
  *
  * @author Valeriy Svydenko
  */
+@Singleton
 public class TerminalContainerPresenter implements TerminalContainer,
                                                    TerminalContainerView.ActionDelegate,
                                                    SelectionManager.SelectionChangeListener {
@@ -44,7 +46,9 @@ public class TerminalContainerPresenter implements TerminalContainer,
         this.view = view;
         this.view.setDelegate(this);
         this.widgetFactory = widgetFactory;
+
         this.selectionManager = selectionManager;
+        this.selectionManager.addListener(this);
 
         terminals = new HashMap<>();
     }

@@ -18,8 +18,8 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
@@ -41,9 +41,9 @@ public class GetLogsAction extends AbstractRunnerAction {
     private final AppContext                             appContext;
     private final Provider<AsyncCallbackBuilder<String>> callbackBuilderProvider;
     private final RunnerLocalizationConstant             constant;
-    private final RunnerManagerView                      view;
     private final RunnerUtil                             runnerUtil;
     private final RunnerManagerPresenter                 presenter;
+    private final ConsoleContainer                       consoleContainer;
 
     @Inject
     public GetLogsAction(RunnerServiceClient service,
@@ -51,6 +51,7 @@ public class GetLogsAction extends AbstractRunnerAction {
                          Provider<AsyncCallbackBuilder<String>> callbackBuilderProvider,
                          RunnerLocalizationConstant constant,
                          RunnerUtil runnerUtil,
+                         ConsoleContainer consoleContainer,
                          RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
         this.appContext = appContext;
@@ -58,7 +59,7 @@ public class GetLogsAction extends AbstractRunnerAction {
         this.constant = constant;
         this.runnerUtil = runnerUtil;
         this.presenter = runnerManagerPresenter;
-        this.view = runnerManagerPresenter.getView();
+        this.consoleContainer = consoleContainer;
     }
 
     /** {@inheritDoc} */
@@ -83,7 +84,7 @@ public class GetLogsAction extends AbstractRunnerAction {
                 .success(new SuccessCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
-                        view.printMessage(runner, result);
+                        consoleContainer.print(runner, result);
                     }
                 })
                 .failure(new FailureCallback() {

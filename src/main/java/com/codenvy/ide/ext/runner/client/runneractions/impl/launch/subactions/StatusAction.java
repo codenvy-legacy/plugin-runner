@@ -18,6 +18,7 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.commons.exception.ServerException;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
@@ -67,6 +68,7 @@ public class StatusAction extends AbstractRunnerAction {
     private final RunnerAction               checkHealthStatusAction;
     private final Notification               notification;
     private final RunnerManagerView          view;
+    private final ConsoleContainer           consoleContainer;
 
     private SubscriptionHandler<ApplicationProcessDescriptor> runnerStatusHandler;
     private String                                            webSocketChannel;
@@ -82,6 +84,7 @@ public class StatusAction extends AbstractRunnerAction {
                         RunnerLocalizationConstant locale,
                         RunnerManagerPresenter presenter,
                         RunnerUtil runnerUtil,
+                        ConsoleContainer consoleContainer,
                         RunnerActionFactory actionFactory,
                         @Nonnull @Assisted Notification notification) {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
@@ -92,6 +95,7 @@ public class StatusAction extends AbstractRunnerAction {
         this.locale = locale;
         this.presenter = presenter;
         this.view = presenter.getView();
+        this.consoleContainer = consoleContainer;
         this.runnerUtil = runnerUtil;
         this.notification = notification;
 
@@ -190,7 +194,7 @@ public class StatusAction extends AbstractRunnerAction {
         String message = locale.applicationStopped(projectName);
         notification.update(message, INFO, FINISHED, null, true);
 
-        view.printInfo(runner, message);
+        consoleContainer.printInfo(runner, message);
 
         presenter.stopRunner(runner);
         stop();
@@ -207,7 +211,7 @@ public class StatusAction extends AbstractRunnerAction {
         String message = locale.applicationStarting(projectName);
         notification.update(message, INFO, FINISHED, null, true);
 
-        view.printInfo(runner, message);
+        consoleContainer.printInfo(runner, message);
     }
 
     private void processFailedMessage() {
@@ -223,7 +227,7 @@ public class StatusAction extends AbstractRunnerAction {
         String message = locale.applicationFailed(projectName);
         notification.update(message, ERROR, FINISHED, null, true);
 
-        view.printError(runner, message);
+        consoleContainer.printError(runner, message);
 
         stop();
     }
@@ -240,7 +244,7 @@ public class StatusAction extends AbstractRunnerAction {
         String message = locale.applicationCanceled(projectName);
         notification.update(message, ERROR, FINISHED, null, true);
 
-        view.printError(runner, message);
+        consoleContainer.printError(runner, message);
 
         stop();
     }

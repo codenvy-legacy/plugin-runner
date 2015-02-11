@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -81,6 +82,8 @@ public class GetLogsActionTest {
     private RunnerUtil                             runnerUtil;
     @Mock
     private RunnerManagerPresenter                 runnerManagerPresenter;
+    @Mock
+    private ConsoleContainer                       consoleContainer;
 
     private GetLogsAction action;
 
@@ -93,7 +96,13 @@ public class GetLogsActionTest {
         when(callbackBuilder.failure(any(FailureCallback.class))).thenReturn(callbackBuilder);
 
         when(runnerManagerPresenter.getView()).thenReturn(view);
-        action = new GetLogsAction(service, appContext, callbackBuilderProvider, constant, runnerUtil, runnerManagerPresenter);
+        action = new GetLogsAction(service,
+                                   appContext,
+                                   callbackBuilderProvider,
+                                   constant,
+                                   runnerUtil,
+                                   consoleContainer,
+                                   runnerManagerPresenter);
     }
 
     @Test
@@ -148,7 +157,7 @@ public class GetLogsActionTest {
         SuccessCallback<String> successCallback = successCallbackCaptor.getValue();
         successCallback.onSuccess(SOME_TEXT);
 
-        verify(view).printMessage(runner, SOME_TEXT);
+        verify(consoleContainer).print(runner, SOME_TEXT);
     }
 
     @Test

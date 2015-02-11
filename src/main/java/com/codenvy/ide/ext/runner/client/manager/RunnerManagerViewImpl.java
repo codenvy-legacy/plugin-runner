@@ -18,10 +18,6 @@ import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.tab.TabContainer;
 import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
-import com.codenvy.ide.ext.runner.client.widgets.console.Console;
-import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
-import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
-import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
 import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -45,11 +41,6 @@ import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.codenvy.ide.ext.runner.client.widgets.tab.Background.GREY;
-import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.LEFT_PANEL;
 
 /**
  * Class provides view representation of runner panel.
@@ -77,13 +68,11 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     SimplePanel leftTabsPanel;
 
     @UiField
-    FlowPanel otherButtonsPanel;
+    FlowPanel   otherButtonsPanel;
     @UiField
-    FlowPanel runButtonPanel;
+    FlowPanel   runButtonPanel;
     @UiField
-    FlowPanel tabsPanel;
-    @UiField
-    FlowPanel textArea;
+    SimplePanel rightPanel;
 
     //info panel
     @UiField
@@ -101,13 +90,8 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     final RunnerLocalizationConstant locale;
 
     private final WidgetFactory         widgetFactory;
-    private final Map<Runner, Console>  consoles;
-    private final Map<Runner, Terminal> terminals;
     private final PopupPanel            popupPanel;
     private final MoreInfo              moreInfoWidget;
-
-    private TabWidget consoleTab;
-    private TabWidget terminalTab;
 
     private ButtonWidget run;
     private ButtonWidget stop;
@@ -127,16 +111,13 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.resources = resources;
         this.locale = locale;
         this.widgetFactory = widgetFactory;
+        this.moreInfoWidget = widgetFactory.createMoreInfo();
         this.mainPanel = new SplitLayoutPanel(SPLITTER_WIDTH);
 
         titleLabel.setText(locale.runnersPanelTitle());
         container.add(UI_BINDER.createAndBindUi(this));
 
         this.mainPanel.setWidgetMinSize(leftTabsPanel, 165);
-
-        this.consoles = new HashMap<>();
-        this.terminals = new HashMap<>();
-        this.moreInfoWidget = widgetFactory.createMoreInfo();
 
         this.popupPanel = popupPanel;
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
@@ -145,8 +126,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         addMoreInfoPanelHandler();
 
         changeSplitterStyle();
-
-        initializeTabs();
 
         initializeButtons();
     }
@@ -183,38 +162,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 widget.addStyleName(resources.runnerCss().splitter());
             }
         }
-    }
-
-    private void initializeTabs() {
-        TabWidget.ActionDelegate consoleDelegate = new TabWidget.ActionDelegate() {
-            @Override
-            public void onMouseClicked() {
-                delegate.onConsoleButtonClicked();
-            }
-        };
-        consoleTab = createTab(locale.runnerTabConsole(), consoleDelegate, tabsPanel, LEFT_PANEL);
-        consoleTab.select(GREY);
-
-        TabWidget.ActionDelegate terminalDelegate = new TabWidget.ActionDelegate() {
-            @Override
-            public void onMouseClicked() {
-                delegate.onTerminalButtonClicked();
-            }
-        };
-        terminalTab = createTab(locale.runnerTabTerminal(), terminalDelegate, tabsPanel, LEFT_PANEL);
-    }
-
-    @Nonnull
-    private TabWidget createTab(@Nonnull String tabName,
-                                @Nonnull TabWidget.ActionDelegate actionDelegate,
-                                @Nonnull FlowPanel tabsPanel,
-                                @Nonnull TabType tabType) {
-        TabWidget tabWidget = widgetFactory.createTab(tabName, tabType);
-        tabWidget.setDelegate(actionDelegate);
-
-        tabsPanel.add(tabWidget);
-
-        return tabWidget;
     }
 
     private void initializeButtons() {
@@ -269,11 +216,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     public void update(@Nonnull Runner runner) {
         changeButtonsState(runner);
 
-        Terminal terminal = terminals.get(runner);
-        if (terminal != null) {
-            terminal.update(runner);
-        }
-
         moreInfoWidget.update(runner);
     }
 
@@ -305,16 +247,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void addRunner(@Nonnull Runner runner) {
-        //TODO  method addRunner relocated to history presenter and it is called from manager presenter.
-        //TODO It seems method for adding console must be on console presenter which need create at first
-        Console console = widgetFactory.createConsole(runner);
-        consoles.put(runner, console);
-        activateConsole(runner);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void setApplicationURl(@Nullable String applicationUrl) {
         url = null;
         appReference.removeStyleName(resources.runnerCss().cursor());
@@ -331,120 +263,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void setTimeout(@Nonnull String timeoutValue) {
         timeout.setText(timeoutValue);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printMessage(@Nonnull Runner runner, @Nonnull String line) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.print(line);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printInfo(@Nonnull Runner runner, @Nonnull String line) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.printInfo(line);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printError(@Nonnull Runner runner, @Nonnull String line) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.printError(line);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void printWarn(@Nonnull Runner runner, @Nonnull String line) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.printWarn(line);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void clearConsole(@Nonnull Runner runner) {
-        Console console = consoles.get(runner);
-        if (console == null) {
-            return;
-        }
-
-        console.clear();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void activateConsole(@Nonnull Runner runner) {
-        consoleTab.select(GREY);
-        terminalTab.unSelect();
-
-        for (Terminal terminal : terminals.values()) {
-            terminal.setVisible(false);
-        }
-
-        for (Console console : consoles.values()) {
-            console.setVisible(false);
-        }
-
-        Console console = consoles.get(runner);
-        if (console == null) {
-            textArea.clear();
-            return;
-        }
-
-        console.setVisible(true);
-        textArea.add(console);
-
-        console.scrollBottom();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void activateTerminal(@Nonnull Runner runner) {
-        terminalTab.select(GREY);
-        consoleTab.unSelect();
-
-        for (Console console : consoles.values()) {
-            console.setVisible(false);
-        }
-
-        for (Terminal terminal : terminals.values()) {
-            terminal.setVisible(false);
-            terminal.setUnavailableLabelVisible(false);
-        }
-
-        Terminal terminal = terminals.get(runner);
-        if (terminal == null) {
-            terminal = widgetFactory.createTerminal();
-            terminal.update(runner);
-
-            terminals.put(runner, terminal);
-
-            textArea.add(terminal);
-        } else {
-            boolean isAnyAppRun = runner.isAlive();
-
-            terminal.setVisible(isAnyAppRun);
-            terminal.setUnavailableLabelVisible(!isAnyAppRun);
-        }
-
     }
 
     /** {@inheritDoc} */
@@ -469,6 +287,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void setLeftPanel(@Nonnull TabContainer containerPresenter) {
         containerPresenter.go(leftTabsPanel);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setRightPanel(@Nonnull TabContainer containerPresenter) {
+        containerPresenter.go(rightPanel);
     }
 
     /** {@inheritDoc} */

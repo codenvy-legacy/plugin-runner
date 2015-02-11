@@ -40,14 +40,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void update(@Nonnull Runner runner);
 
     /**
-     * Adds a new runner part on the view.
-     *
-     * @param runner
-     *         runner that needs to be added on the view
-     */
-    void addRunner(@Nonnull Runner runner);
-
-    /**
      * Shows application url on the view.
      *
      * @param applicationUrl
@@ -62,73 +54,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      *         timeout that needs to be shown
      */
     void setTimeout(@Nonnull String timeout);
-
-    /**
-     * Prints a given line with unknown content in the console for a given runner.
-     *
-     * @param runner
-     *         runner that needs to contain a given line
-     * @param line
-     *         line that needs to be printed
-     */
-    void printMessage(@Nonnull Runner runner, @Nonnull String line);
-
-    /**
-     * Prints a given line with info content in the console for a given runner.
-     * Printed line will look like this: [INFO] some string
-     *
-     * @param runner
-     *         runner that needs to contain a given line
-     * @param line
-     *         line that needs to be printed
-     */
-    void printInfo(@Nonnull Runner runner, @Nonnull String line);
-
-    /**
-     * Prints a given line with error content in the console for a given runner.
-     * Printed line will look like this: [ERROR] some string
-     *
-     * @param runner
-     *         runner that needs to contain a given line
-     * @param line
-     *         line that needs to be printed
-     */
-    void printError(@Nonnull Runner runner, @Nonnull String line);
-
-    /**
-     * Prints a given line with warning content in the console for a given runner.
-     * Printed line will look like this: [WARNING] some string
-     *
-     * @param runner
-     *         runner that needs to contain a given line
-     * @param line
-     *         line that needs to be printed
-     */
-    void printWarn(@Nonnull Runner runner, @Nonnull String line);
-
-    /**
-     * Clean console for a given runner.
-     *
-     * @param runner
-     *         runner that is bound wth console which needs to be cleaned
-     */
-    void clearConsole(@Nonnull Runner runner);
-
-    /**
-     * Shows a console widget for a given runner on the view.
-     *
-     * @param runner
-     *         runner that bound with console widget
-     */
-    void activateConsole(@Nonnull Runner runner);
-
-    /**
-     * Shows a terminal widget for a given runner on the view.
-     *
-     * @param runner
-     *         runner that bound with terminal widget
-     */
-    void activateTerminal(@Nonnull Runner runner);
 
     /**
      * Shows special popup panel which displays additional information about runner.
@@ -154,6 +79,14 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void setLeftPanel(@Nonnull TabContainer containerPresenter);
 
+    /**
+     * Sets left panel view representation to container. This panel contains history and templates containers.
+     *
+     * @param containerPresenter
+     *         container to which need set panel
+     */
+    void setRightPanel(@Nonnull TabContainer containerPresenter);
+
     /** Hides all buttons on buttons panel except run button. */
     void hideOtherButtons();
 
@@ -173,12 +106,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's clicking on the 'Docker' button. */
         void onDockerButtonClicked();
-
-        /** Performs some actions in response to user's choosing to show runner console widget. */
-        void onConsoleButtonClicked();
-
-        /** Performs some actions in response to user's choosing to show runner terminal widget. */
-        void onTerminalButtonClicked();
 
         /** Performs some actions in response to user's over mouse on timeout label. */
         void onMoreInfoBtnMouseOver();

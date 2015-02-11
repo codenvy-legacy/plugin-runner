@@ -21,9 +21,9 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
@@ -54,10 +54,10 @@ public class StopAction extends AbstractRunnerAction {
     private final NotificationManager                                          notificationManager;
     private final RunnerUtil                                                   runnerUtil;
     private final GetLogsAction                                                logsAction;
+    private final ConsoleContainer                                             consoleContainer;
 
     private CurrentProject         project;
     private Runner                 runner;
-    private RunnerManagerView      view;
     private RunnerManagerPresenter presenter;
 
     @Inject
@@ -68,6 +68,7 @@ public class StopAction extends AbstractRunnerAction {
                       NotificationManager notificationManager,
                       RunnerUtil runnerUtil,
                       RunnerActionFactory actionFactory,
+                      ConsoleContainer consoleContainer,
                       RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
         this.appContext = appContext;
@@ -76,9 +77,9 @@ public class StopAction extends AbstractRunnerAction {
         this.notificationManager = notificationManager;
         this.runnerUtil = runnerUtil;
         this.logsAction = actionFactory.createGetLogs();
+        this.consoleContainer = consoleContainer;
 
         presenter = runnerManagerPresenter;
-        view = runnerManagerPresenter.getView();
 
         addAction(logsAction);
     }
@@ -149,14 +150,14 @@ public class StopAction extends AbstractRunnerAction {
             notificationType = INFO;
 
             runner.setStatus(STOPPED);
-            view.printInfo(runner, message);
+            consoleContainer.printInfo(runner, message);
         } else {
             // this mean that application has failed to start
             notificationType = ERROR;
 
             runner.setStatus(FAILED);
             logsAction.perform(runner);
-            view.printError(runner, message);
+            consoleContainer.printError(runner, message);
         }
 
         Notification notification = new Notification(message, notificationType);

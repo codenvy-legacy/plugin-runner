@@ -21,9 +21,11 @@ import com.codenvy.ide.api.parts.PartPresenter;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.properties.PropertiesPanel;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
@@ -36,14 +38,14 @@ import com.codenvy.ide.ext.runner.client.state.State;
 import com.codenvy.ide.ext.runner.client.tab.Tab;
 import com.codenvy.ide.ext.runner.client.tab.TabBuilder;
 import com.codenvy.ide.ext.runner.client.tab.TabContainer;
-import com.codenvy.ide.ext.runner.client.tab.TabPresenter;
+import com.codenvy.ide.ext.runner.client.terminal.TerminalContainer;
 import com.codenvy.ide.ext.runner.client.widgets.history.HistoryPanel;
-import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
 import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesPanel;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
@@ -55,6 +57,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
@@ -62,11 +65,11 @@ import static com.codenvy.ide.ext.runner.client.properties.common.RAM._512;
 import static com.codenvy.ide.ext.runner.client.selection.Selection.RUNNER;
 import static com.codenvy.ide.ext.runner.client.state.State.HISTORY;
 import static com.codenvy.ide.ext.runner.client.state.State.TEMPLATE;
-import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState;
 import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.REMOVABLE;
+import static com.codenvy.ide.ext.runner.client.tab.Tab.VisibleState.VISIBLE;
 import static com.codenvy.ide.ext.runner.client.tab.TabContainer.TabSelectHandler;
-import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.LEFT_PANEL;
+import static com.codenvy.ide.ext.runner.client.widgets.tab.TabType.RIGHT_PANEL;
 
 /**
  * The class provides much business logic:
@@ -94,8 +97,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final RunnerLocalizationConstant locale;
     private final HistoryPanel               history;
     private final TemplatesPanel             templates;
-    private final TabContainer               leftTabContainer;
     private final SelectionManager           selectionManager;
+    private final ConsoleContainer           consoleContainer;
 
     private Set<Long>                 runnersId;
     private GetRunningProcessesAction getRunningProcessAction;
@@ -112,8 +115,12 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   EventBus eventBus,
                                   RunnerLocalizationConstant locale,
                                   TabContainer leftTabContainer,
+                                  TabContainer rightTabContainer,
                                   PanelState panelState,
-                                  TabBuilder tabBuilder,
+                                  Provider<TabBuilder> tabBuilderProvider,
+                                  ConsoleContainer consoleContainer,
+                                  TerminalContainer terminalContainer,
+                                  PropertiesPanel propertiesPanel,
                                   HistoryPanel history,
                                   TemplatesPanel templates,
                                   SelectionManager selectionManager) {
@@ -125,13 +132,14 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
         this.showDockerAction = actionFactory.createShowDocker();
-        this.leftTabContainer = leftTabContainer;
 
         this.selectionManager = selectionManager;
         this.selectionManager.addListener(this);
 
         this.templates = templates;
         this.history = history;
+
+        this.consoleContainer = consoleContainer;
 
         this.runnerActions = new HashMap<>();
 
@@ -147,7 +155,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
         runnersId = new HashSet<>();
 
-        createLeftPanelTabs(panelState, tabBuilder, history, templates);
+        initializeLeftPanel(panelState, leftTabContainer, tabBuilderProvider, history, templates);
+        initializeRightPanel(rightTabContainer, tabBuilderProvider, consoleContainer, terminalContainer, propertiesPanel);
+
+        view.setLeftPanel(leftTabContainer);
+        view.setRightPanel(rightTabContainer);
     }
 
     private void updateRunnerTimer() {
@@ -156,8 +168,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         view.updateMoreInfoPopup(selectedRunner);
     }
 
-    private void createLeftPanelTabs(@Nonnull final PanelState panelState,
-                                     @Nonnull TabBuilder tabBuilder,
+    private void initializeLeftPanel(@Nonnull final PanelState panelState,
+                                     @Nonnull TabContainer container,
+                                     @Nonnull Provider<TabBuilder> tabBuilderProvider,
                                      @Nonnull HistoryPanel historyPanel,
                                      @Nonnull TemplatesPanel templatesPanel) {
         TabSelectHandler historyHandler = new TabSelectHandler() {
@@ -169,14 +182,16 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             }
         };
 
-        createTab(tabBuilder,
-                  historyPanel,
-                  historyHandler,
-                  locale.runnerTabHistory(),
-                  REMOVABLE,
-                  EnumSet.allOf(State.class),
-                  LEFT_PANEL,
-                  leftTabContainer);
+        Tab historyTab = tabBuilderProvider.get()
+                                           .presenter(historyPanel)
+                                           .selectHandler(historyHandler)
+                                           .title(locale.runnerTabHistory())
+                                           .visible(REMOVABLE)
+                                           .scope(EnumSet.allOf(State.class))
+                                           .type(LEFT_PANEL)
+                                           .build();
+
+        container.addTab(historyTab);
 
         TabSelectHandler templatesHandler = new TabSelectHandler() {
             @Override
@@ -187,39 +202,53 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             }
         };
 
-        createTab(tabBuilder,
-                  templatesPanel,
-                  templatesHandler,
-                  locale.runnerTabTemplates(),
-                  REMOVABLE,
-                  EnumSet.allOf(State.class),
-                  LEFT_PANEL,
-                  leftTabContainer);
+        Tab templateTab = tabBuilderProvider.get()
+                                            .presenter(templatesPanel)
+                                            .selectHandler(templatesHandler)
+                                            .title(locale.runnerTabTemplates())
+                                            .visible(REMOVABLE)
+                                            .scope(EnumSet.allOf(State.class))
+                                            .type(LEFT_PANEL)
+                                            .build();
 
-        view.setLeftPanel(leftTabContainer);
+        container.addTab(templateTab);
     }
 
-    @Nonnull
-    private Tab createTab(@Nonnull TabBuilder tabBuilder,
-                          @Nonnull TabPresenter presenter,
-                          @Nonnull TabSelectHandler handler,
-                          @Nonnull String title,
-                          @Nonnull VisibleState visibleState,
-                          @Nonnull EnumSet<State> states,
-                          @Nonnull TabType tabType,
-                          @Nonnull TabContainer container) {
+    private void initializeRightPanel(@Nonnull TabContainer container,
+                                      @Nonnull Provider<TabBuilder> tabBuilderProvider,
+                                      @Nonnull ConsoleContainer consoleContainer,
+                                      @Nonnull TerminalContainer terminalContainer,
+                                      @Nonnull PropertiesPanel propertiesPanel) {
 
-        Tab tab = tabBuilder.presenter(presenter)
-                            .selectHandler(handler)
-                            .title(title)
-                            .visible(visibleState)
-                            .scope(states)
-                            .type(tabType)
-                            .build();
+        Tab consoleTab = tabBuilderProvider.get()
+                                           .presenter(consoleContainer)
+                                           .title(locale.runnerTabConsole())
+                                           .visible(REMOVABLE)
+                                           .scope(EnumSet.allOf(State.class))
+                                           .type(RIGHT_PANEL)
+                                           .build();
 
-        container.addTab(tab);
+        container.addTab(consoleTab);
 
-        return tab;
+        Tab terminalTab = tabBuilderProvider.get()
+                                            .presenter(terminalContainer)
+                                            .title(locale.runnerTabTerminal())
+                                            .visible(VISIBLE)
+                                            .scope(EnumSet.allOf(State.class))
+                                            .type(RIGHT_PANEL)
+                                            .build();
+
+        container.addTab(terminalTab);
+
+        Tab propertiesTab = tabBuilderProvider.get()
+                                              .presenter(propertiesPanel)
+                                              .title(locale.runnerTabProperties())
+                                              .visible(REMOVABLE)
+                                              .scope(EnumSet.allOf(State.class))
+                                              .type(RIGHT_PANEL)
+                                              .build();
+
+        container.addTab(propertiesTab);
     }
 
     /** @return the GWT widget that is controlled by the presenter */
@@ -316,29 +345,13 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onCleanConsoleButtonClicked() {
-        view.clearConsole(selectedRunner);
+        consoleContainer.clear(selectedRunner);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onDockerButtonClicked() {
         showDockerAction.perform(selectedRunner);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onConsoleButtonClicked() {
-        view.activateConsole(selectedRunner);
-
-        selectedRunner.activateConsole();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onTerminalButtonClicked() {
-        view.activateTerminal(selectedRunner);
-
-        selectedRunner.activateTerminal();
     }
 
     /** {@inheritDoc} */
@@ -534,9 +547,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         updateRunnerTimer();
 
         if (selectedRunner.isConsoleActive()) {
-            view.activateConsole(selectedRunner);
+            //TODO console should be activated
         } else {
-            view.activateTerminal(selectedRunner);
+            //TODO terminal should be activated
         }
     }
 

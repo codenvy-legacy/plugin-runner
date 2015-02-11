@@ -225,6 +225,9 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("runner.tab.history")
     String runnerTabHistory();
 
+    @Key("runner.tab.properties")
+    String runnerTabProperties();
+
     @Key("runner.tab.templates")
     String runnerTabTemplates();
 

@@ -27,11 +27,6 @@
             box-shadow: inset 1px 0 0 0 #292929;
         }
 
-        .tabsPanel {
-            background: #313335;
-            box-shadow: 0 -1px 0 0 #4d4d4d inset, inset 0 -2px 0 0 #000000;
-        }
-
         .appInfoPanel {
             border-top: 1px solid #3b4b53;
             box-shadow: inset 0 1px 0 0 #000000;
@@ -108,11 +103,6 @@
                     </g:FlowPanel>
                 </g:west>
 
-                <!--tabs panel-->
-                <g:north size="25">
-                    <g:FlowPanel ui:field="tabsPanel" addStyleNames="{style.tabsPanel}"/>
-                </g:north>
-
                 <!--app info panel-->
                 <g:south size="20">
                     <g:FlowPanel addStyleNames="{style.appInfoPanel}">
@@ -138,7 +128,7 @@
 
                 <!--print panel-->
                 <g:center>
-                    <g:FlowPanel ui:field="textArea" addStyleNames="{style.textArea}"/>
+                    <g:SimplePanel ui:field="rightPanel" addStyleNames="{style.textArea}"/>
                 </g:center>
             </g:DockLayoutPanel>
         </g:center>

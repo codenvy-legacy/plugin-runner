@@ -10,8 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.ide.websocket.rest.SubscriptionHandler;
@@ -36,24 +35,24 @@ import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.FIVE_SEC;
  */
 public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
 
-    private final RunnerManagerView        view;
     private final Runner                   runner;
     private final ErrorHandler             errorHandler;
     private final Map<Integer, LogMessage> postponedMessages;
     private final Timer                    flushTimer;
+    private final ConsoleContainer         consoleContainer;
 
     private int lastPrintedMessageNum;
 
     @Inject
-    public LogMessagesHandler(RunnerManagerPresenter runnerManagerPresenter,
-                              LogMessageUnmarshaller unmarshaller,
+    public LogMessagesHandler(LogMessageUnmarshaller unmarshaller,
+                              ConsoleContainer consoleContainer,
                               @Nonnull @Assisted Runner runner,
                               @Nonnull @Assisted ErrorHandler errorHandler) {
         super(unmarshaller);
 
         this.runner = runner;
         this.errorHandler = errorHandler;
-        this.view = runnerManagerPresenter.getView();
+        this.consoleContainer = consoleContainer;
         this.postponedMessages = new HashMap<>();
 
         this.flushTimer = new Timer() {
@@ -112,7 +111,7 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
     }
 
     private void printLine(@Nonnull LogMessage logMessage) {
-        view.printMessage(runner, logMessage.getText());
+        consoleContainer.print(runner, logMessage.getText());
         lastPrintedMessageNum = logMessage.getNumber();
     }
 

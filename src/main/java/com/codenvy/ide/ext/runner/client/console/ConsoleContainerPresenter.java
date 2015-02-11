@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.widgets.console.Console;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import static com.codenvy.ide.ext.runner.client.selection.Selection.ENVIRONMENT;
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
  */
+@Singleton
 public class ConsoleContainerPresenter implements ConsoleContainer,
                                                   ConsoleContainerView.ActionDelegate,
                                                   SelectionManager.SelectionChangeListener {
@@ -44,6 +46,8 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
         this.view.setDelegate(this);
         this.widgetFactory = widgetFactory;
         this.selectionManager = selectionManager;
+
+        this.selectionManager.addListener(this);
 
         consoles = new HashMap<>();
     }
@@ -74,6 +78,14 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
     public void printWarn(@Nonnull Runner runner, @Nonnull String message) {
         Console console = getConsoleOrCreate(runner);
         console.printWarn(message);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void clear(@Nonnull Runner runner) {
+        Console console = getConsoleOrCreate(runner);
+
+        console.clear();
     }
 
     /** {@inheritDoc} */

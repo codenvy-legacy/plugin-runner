@@ -69,27 +69,27 @@ public class RunActionTest {
     private RunnerActionFactory                                          actionFactory;
 
     @Mock
-    private Throwable                                          reason;
+    private Throwable                                                     reason;
     //callbacks for server
     @Mock
-    private AsyncCallbackBuilder<ApplicationProcessDescriptor> asyncCallbackBuilder;
+    private AsyncCallbackBuilder<ApplicationProcessDescriptor>            asyncCallbackBuilder;
     @Mock
-    private AsyncRequestCallback<ApplicationProcessDescriptor> asyncRequestCallback;
+    private AsyncRequestCallback<ApplicationProcessDescriptor>            asyncRequestCallback;
     //project varables
     @Mock
-    private CurrentProject                                     project;
+    private CurrentProject                                                project;
     @Mock
-    private ProjectDescriptor                                  projectDescriptor;
+    private ProjectDescriptor                                             projectDescriptor;
     //run variables
     @Mock
-    private RunOptions                                         runOptions;
+    private RunOptions                                                    runOptions;
     @Mock
-    private Runner                                             runner;
+    private Runner                                                        runner;
     //action variables
     @Mock
-    private ApplicationProcessDescriptor                       descriptor;
+    private ApplicationProcessDescriptor                                  descriptor;
     @Mock
-    private LaunchAction                                       launchAction;
+    private LaunchAction                                                  launchAction;
     //captors
     @Captor
     private ArgumentCaptor<FailureCallback>                               failedCallBackCaptor;

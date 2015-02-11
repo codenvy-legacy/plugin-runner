@@ -23,6 +23,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
@@ -75,36 +76,38 @@ public class StopActionTest {
     private RunnerActionFactory                                          actionFactory;
     @Mock
     private RunnerManagerPresenter                                       presenter;
+    @Mock
+    private ConsoleContainer                                             consoleContainer;
 
 
     //action varables
     @Mock
-    private GetLogsAction     logsAction;
+    private GetLogsAction                                                 logsAction;
     @Mock
-    private LaunchAction      launchAction;
+    private LaunchAction                                                  launchAction;
     //project variables
     @Mock
-    private CurrentProject    project;
+    private CurrentProject                                                project;
     @Mock
-    private ProjectDescriptor projectDescriptor;
+    private ProjectDescriptor                                             projectDescriptor;
     @Mock
-    private Link                                               stopLink;
+    private Link                                                          stopLink;
     //runner variables
     @Mock
-    private Runner            runner;
+    private Runner                                                        runner;
     @Mock
-    private RunnerManagerView view;
+    private RunnerManagerView                                             view;
     @Mock
-    private RunOptions        runOptions;
+    private RunOptions                                                    runOptions;
     //callbacks for server
     @Mock
-    private AsyncCallbackBuilder<ApplicationProcessDescriptor> asyncCallbackBuilder;
+    private AsyncCallbackBuilder<ApplicationProcessDescriptor>            asyncCallbackBuilder;
     @Mock
-    private AsyncRequestCallback<ApplicationProcessDescriptor> callback;
+    private AsyncRequestCallback<ApplicationProcessDescriptor>            callback;
     @Mock
-    private Throwable                                          reason;
+    private Throwable                                                     reason;
     @Mock
-    private ApplicationProcessDescriptor                       descriptor;
+    private ApplicationProcessDescriptor                                  descriptor;
     //captors
     @Captor
     private ArgumentCaptor<FailureCallback>                               failedCallBackCaptor;
@@ -121,8 +124,15 @@ public class StopActionTest {
         when(presenter.getView()).thenReturn(view);
         when(actionFactory.createLaunch()).thenReturn(launchAction);
 
-        stopAction = new StopAction(service, appContext, callbackBuilderProvider, constant, notificationManager, runnerUtil,
-                                    actionFactory, presenter);
+        stopAction = new StopAction(service,
+                                    appContext,
+                                    callbackBuilderProvider,
+                                    constant,
+                                    notificationManager,
+                                    runnerUtil,
+                                    actionFactory,
+                                    consoleContainer,
+                                    presenter);
 
         when(appContext.getCurrentProject()).thenReturn(project);
         when(runner.getStopUrl()).thenReturn(stopLink);
@@ -214,7 +224,7 @@ public class StopActionTest {
 
         verify(runner).getStatus();
         verify(runner).setStatus(Runner.Status.STOPPED);
-        verify(view).printInfo(runner, MESSAGE);
+        verify(consoleContainer).printInfo(runner, MESSAGE);
 
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
@@ -248,7 +258,7 @@ public class StopActionTest {
 
         verify(runner).getStatus();
         verify(runner).setStatus(Runner.Status.STOPPED);
-        verify(view).printInfo(runner, MESSAGE);
+        verify(consoleContainer).printInfo(runner, MESSAGE);
 
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
@@ -283,7 +293,7 @@ public class StopActionTest {
         verify(runner).getStatus();
         verify(runner).setStatus(Runner.Status.FAILED);
         verify(logsAction).perform(runner);
-        verify(view).printError(runner, MESSAGE);
+        verify(consoleContainer).printError(runner, MESSAGE);
 
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
