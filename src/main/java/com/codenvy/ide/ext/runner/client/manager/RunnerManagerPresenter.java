@@ -99,6 +99,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final TemplatesPanel             templates;
     private final SelectionManager           selectionManager;
     private final ConsoleContainer           consoleContainer;
+    private final TerminalContainer          terminalContainer;
 
     private Set<Long>                 runnersId;
     private GetRunningProcessesAction getRunningProcessAction;
@@ -140,6 +141,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.history = history;
 
         this.consoleContainer = consoleContainer;
+        this.terminalContainer = terminalContainer;
 
         this.runnerActions = new HashMap<>();
 
@@ -264,7 +266,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
      *         runner which was changed
      */
     public void update(@Nonnull Runner runner) {
-        history.updateRunner(runner);
+        history.update(runner);
+        terminalContainer.update(runner);
+
         view.update(runner);
 
         if (runner.equals(selectedRunner)) {

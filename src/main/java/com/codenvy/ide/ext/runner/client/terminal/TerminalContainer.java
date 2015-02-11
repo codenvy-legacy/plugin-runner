@@ -10,8 +10,11 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.terminal;
 
+import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.tab.TabPresenter;
 import com.google.inject.ImplementedBy;
+
+import javax.annotation.Nonnull;
 
 /**
  * The common representation of terminal container widget. This widget provides an ability to manager many terminal widgets for every
@@ -21,5 +24,11 @@ import com.google.inject.ImplementedBy;
  */
 @ImplementedBy(TerminalContainerPresenter.class)
 public interface TerminalContainer extends TabPresenter {
-
+    /**
+     * The method update terminal of current runner.
+     *
+     * @param runner
+     *         runner which need update
+     */
+    void update(@Nonnull Runner runner);
 }

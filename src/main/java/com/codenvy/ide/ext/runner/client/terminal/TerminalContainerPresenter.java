@@ -108,4 +108,12 @@ public class TerminalContainerPresenter implements TerminalContainer,
         container.setWidget(view);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void update(@Nonnull Runner runner) {
+        Terminal terminal = terminals.get(runner);
+        if (terminal != null) {
+            terminal.update(runner);
+        }
+    }
 }

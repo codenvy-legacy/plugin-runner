@@ -38,7 +38,7 @@ public interface HistoryPanel extends TabPresenter {
      * @param runner
      *         runner which need update
      */
-    void updateRunner(@Nonnull Runner runner);
+    void update(@Nonnull Runner runner);
 
     /**
      * Selects runner widget using current runner.

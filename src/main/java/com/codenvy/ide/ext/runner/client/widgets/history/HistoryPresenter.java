@@ -66,7 +66,7 @@ public class HistoryPresenter implements HistoryPanel {
 
     /** {@inheritDoc} */
     @Override
-    public void updateRunner(@Nonnull Runner runner) {
+    public void update(@Nonnull Runner runner) {
         RunnerWidget runnerWidget = runnerWidgets.get(runner);
         if (runnerWidget == null) {
             return;
