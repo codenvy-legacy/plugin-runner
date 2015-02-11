@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
-import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
+import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.ide.websocket.rest.SubscriptionHandler;

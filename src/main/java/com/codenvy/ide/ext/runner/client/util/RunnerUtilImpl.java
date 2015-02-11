@@ -13,7 +13,7 @@ package com.codenvy.ide.ext.runner.client.util;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
+import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._128;
 
 /**
  * Contains implementations of methods which are general for runner plugin classes.

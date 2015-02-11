@@ -15,10 +15,10 @@ import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.manager.button.ButtonWidget;
+import com.codenvy.ide.ext.runner.client.manager.info.MoreInfo;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.tab.TabContainer;
-import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
-import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
+import com.codenvy.ide.ext.runner.client.tabs.container.TabContainer;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -89,9 +89,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final WidgetFactory         widgetFactory;
-    private final PopupPanel            popupPanel;
-    private final MoreInfo              moreInfoWidget;
+    private final WidgetFactory widgetFactory;
+    private final PopupPanel    popupPanel;
+    private final MoreInfo      moreInfoWidget;
 
     private ButtonWidget run;
     private ButtonWidget stop;

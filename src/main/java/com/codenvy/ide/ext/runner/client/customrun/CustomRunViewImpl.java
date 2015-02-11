@@ -18,7 +18,7 @@ import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.properties.common.RAM;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ui.tree.Tree;
 import com.codenvy.ide.ui.tree.TreeNodeElement;
 import com.codenvy.ide.ui.window.Window;
@@ -46,12 +46,12 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM.OTHER;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._1024;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._2048;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._256;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._512;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM.OTHER;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._1024;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._128;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._2048;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._256;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._512;
 
 /**
  * The Class provides graphical implementation of dialog window to change settings of custom environments.

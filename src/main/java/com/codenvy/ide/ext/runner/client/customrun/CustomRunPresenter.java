@@ -26,7 +26,7 @@ import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.properties.common.RAM;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;

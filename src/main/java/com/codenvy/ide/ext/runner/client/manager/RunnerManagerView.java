@@ -13,7 +13,7 @@ package com.codenvy.ide.ext.runner.client.manager;
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.tab.TabContainer;
+import com.codenvy.ide.ext.runner.client.tabs.container.TabContainer;
 import com.google.inject.ImplementedBy;
 import com.google.inject.Singleton;
 

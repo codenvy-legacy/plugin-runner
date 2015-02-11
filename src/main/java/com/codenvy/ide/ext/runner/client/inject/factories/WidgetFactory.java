@@ -10,17 +10,17 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.inject.factories;
 
+import com.codenvy.ide.ext.runner.client.manager.button.ButtonWidget;
+import com.codenvy.ide.ext.runner.client.manager.info.MoreInfo;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.widgets.button.ButtonWidget;
-import com.codenvy.ide.ext.runner.client.widgets.console.Console;
-import com.codenvy.ide.ext.runner.client.widgets.console.FullLogMessageWidget;
-import com.codenvy.ide.ext.runner.client.widgets.history.runner.RunnerWidget;
-import com.codenvy.ide.ext.runner.client.widgets.tab.TabType;
-import com.codenvy.ide.ext.runner.client.widgets.tab.TabWidget;
-import com.codenvy.ide.ext.runner.client.widgets.templates.environment.EnvironmentWidget;
-import com.codenvy.ide.ext.runner.client.widgets.terminal.Terminal;
-import com.codenvy.ide.ext.runner.client.widgets.tooltip.MoreInfo;
-import com.codenvy.ide.ext.runner.client.widgets.templates.typebutton.TypeButton;
+import com.codenvy.ide.ext.runner.client.tabs.console.panel.Console;
+import com.codenvy.ide.ext.runner.client.tabs.console.panel.FullLogMessageWidget;
+import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType;
+import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidget;
+import com.codenvy.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
+import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
+import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
 import com.google.gwt.resources.client.ImageResource;
 
 import javax.annotation.Nonnull;

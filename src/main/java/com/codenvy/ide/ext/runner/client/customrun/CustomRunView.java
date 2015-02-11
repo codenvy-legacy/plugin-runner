@@ -13,7 +13,7 @@ package com.codenvy.ide.ext.runner.client.customrun;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
-import com.codenvy.ide.ext.runner.client.properties.common.RAM;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnegative;

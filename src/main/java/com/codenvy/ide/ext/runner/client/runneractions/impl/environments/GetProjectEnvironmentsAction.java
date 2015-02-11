@@ -22,7 +22,7 @@ import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
-import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
+import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesView;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -30,7 +30,7 @@ import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 
-import static com.codenvy.ide.ext.runner.client.properties.common.Scope.PROJECT;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 
 /**
  * The class contains business logic to get project environments which are added on templates panel.
@@ -40,7 +40,7 @@ import static com.codenvy.ide.ext.runner.client.properties.common.Scope.PROJECT;
 @Singleton
 public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
 
-    private final TemplatesWidget                                       templatesWidget;
+    private final TemplatesView                                         templatesView;
     private final AppContext                                            appContext;
     private final ProjectServiceClient                                  projectService;
     private final NotificationManager                                   notificationManager;
@@ -49,14 +49,14 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
     private final GetEnvironmentsUtil                                   environmentUtil;
 
     @Inject
-    public GetProjectEnvironmentsAction(TemplatesWidget templatesWidget,
+    public GetProjectEnvironmentsAction(TemplatesView templatesView,
                                         AppContext appContext,
                                         ProjectServiceClient projectService,
                                         NotificationManager notificationManager,
                                         Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider,
                                         RunnerLocalizationConstant locale,
                                         GetEnvironmentsUtil environmentUtil) {
-        this.templatesWidget = templatesWidget;
+        this.templatesView = templatesView;
         this.appContext = appContext;
         this.projectService = projectService;
         this.notificationManager = notificationManager;
@@ -80,7 +80,7 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
                     @Override
                     public void onSuccess(RunnerEnvironmentTree result) {
                         for (RunnerEnvironmentLeaf environment : environmentUtil.getAllEnvironments(result)) {
-                            templatesWidget.addEnvironment(environment.getEnvironment(), PROJECT);
+                            templatesView.addEnvironment(environment.getEnvironment(), PROJECT);
                         }
                     }
                 })

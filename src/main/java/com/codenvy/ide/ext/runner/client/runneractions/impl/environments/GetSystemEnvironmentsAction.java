@@ -20,7 +20,7 @@ import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
-import com.codenvy.ide.ext.runner.client.widgets.templates.TemplatesWidget;
+import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesView;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -28,7 +28,7 @@ import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 
-import static com.codenvy.ide.ext.runner.client.properties.common.Scope.SYSTEM;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * The class contains business logic to get system environments which are added on templates panel.
@@ -38,7 +38,7 @@ import static com.codenvy.ide.ext.runner.client.properties.common.Scope.SYSTEM;
 @Singleton
 public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
 
-    private final TemplatesWidget                                       templatesWidget;
+    private final TemplatesView                                         templatesView;
     private final RunnerServiceClient                                   runnerService;
     private final NotificationManager                                   notificationManager;
     private final Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider;
@@ -48,13 +48,13 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     private RunnerEnvironmentTree environmentTree;
 
     @Inject
-    public GetSystemEnvironmentsAction(TemplatesWidget templatesWidget,
+    public GetSystemEnvironmentsAction(TemplatesView templatesView,
                                        RunnerServiceClient runnerService,
                                        NotificationManager notificationManager,
                                        Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider,
                                        RunnerLocalizationConstant locale,
                                        GetEnvironmentsUtil environmentUtil) {
-        this.templatesWidget = templatesWidget;
+        this.templatesView = templatesView;
         this.runnerService = runnerService;
         this.notificationManager = notificationManager;
         this.callbackBuilderProvider = callbackBuilderProvider;
@@ -92,15 +92,15 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     }
 
     private void getEnvironments(@Nonnull RunnerEnvironmentTree tree) {
-        templatesWidget.clearEnvironmentsPanel();
-        templatesWidget.clearTypeButtonsPanel();
+        templatesView.clearEnvironmentsPanel();
+        templatesView.clearTypeButtonsPanel();
 
         for (RunnerEnvironmentLeaf environment : environmentUtil.getAllEnvironments(tree)) {
-            templatesWidget.addEnvironment(environment.getEnvironment(), SYSTEM);
+            templatesView.addEnvironment(environment.getEnvironment(), SYSTEM);
         }
 
         for (RunnerEnvironmentTree environment : environmentUtil.getAllEnvironments(tree, 1)) {
-            templatesWidget.addButton(environment);
+            templatesView.addButton(environment);
         }
     }
 }

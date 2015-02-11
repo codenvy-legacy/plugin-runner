@@ -13,7 +13,7 @@ package com.codenvy.ide.ext.runner.client.util;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.console.ConsoleContainer;
+import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -35,7 +35,7 @@ import org.mockito.MockitoAnnotations;
 import javax.annotation.Nonnegative;
 
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
-import static com.codenvy.ide.ext.runner.client.properties.common.RAM._128;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._128;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
