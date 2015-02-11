@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl;
 
-
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
@@ -52,6 +51,7 @@ import static org.mockito.Mockito.when;
 public class RunActionTest {
     private static final String PATH_TO_PROJECT = "somePath";
     private static final String PROJECT_NAME    = "projectName";
+
     /*constructor variables*/
     @Mock
     private RunnerServiceClient                                          service;
@@ -75,7 +75,7 @@ public class RunActionTest {
     private AsyncCallbackBuilder<ApplicationProcessDescriptor>            asyncCallbackBuilder;
     @Mock
     private AsyncRequestCallback<ApplicationProcessDescriptor>            asyncRequestCallback;
-    //project varables
+    //project variables
     @Mock
     private CurrentProject                                                project;
     @Mock
@@ -109,8 +109,8 @@ public class RunActionTest {
         when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.unmarshaller(ApplicationProcessDescriptor.class)).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ApplicationProcessDescriptor>>anyObject())).thenReturn(
-                asyncCallbackBuilder);
+        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ApplicationProcessDescriptor>>anyObject()))
+                .thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing project data
         when(project.getProjectDescription()).thenReturn(projectDescriptor);

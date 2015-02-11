@@ -79,8 +79,7 @@ public class StopActionTest {
     @Mock
     private ConsoleContainer                                             consoleContainer;
 
-
-    //action varables
+    //action variables
     @Mock
     private GetLogsAction                                                 logsAction;
     @Mock
@@ -139,8 +138,8 @@ public class StopActionTest {
         when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.unmarshaller(ApplicationProcessDescriptor.class)).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ApplicationProcessDescriptor>>anyObject())).thenReturn(
-                asyncCallbackBuilder);
+        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ApplicationProcessDescriptor>>anyObject()))
+                .thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.build()).thenReturn(callback);
         //preparing project data
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
@@ -157,8 +156,15 @@ public class StopActionTest {
         stopAction.perform(runner);
 
         verify(appContext).getCurrentProject();
-        verifyNoMoreInteractions(service, appContext, callbackBuilderProvider, constant, notificationManager, runnerUtil,
-                                 actionFactory, presenter, runner);
+        verifyNoMoreInteractions(service,
+                                 appContext,
+                                 callbackBuilderProvider,
+                                 constant,
+                                 notificationManager,
+                                 runnerUtil,
+                                 actionFactory,
+                                 presenter,
+                                 runner);
     }
 
     @Test
