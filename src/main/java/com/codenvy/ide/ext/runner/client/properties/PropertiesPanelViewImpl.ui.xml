@@ -17,7 +17,7 @@
     <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
 
     <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
-        <g:east size="200">
+        <g:west size="200">
             <g:FlowPanel>
                 <g:Label text="{locale.propertiesName}"/>
                 <g:TextBox ui:field="name"/>
@@ -37,15 +37,15 @@
                 <g:Label text="{locale.propertiesShutdown}"/>
                 <g:ListBox ui:field="shutdown"/>
             </g:FlowPanel>
-        </g:east>
+        </g:west>
 
-        <g:west size="100">
+        <g:east size="100">
             <g:FlowPanel>
                 <g:Button ui:field="btnSave" text="{locale.propertiesButtonSave}"/>
                 <g:Button ui:field="btnDelete" text="{locale.propertiesButtonDelete}"/>
                 <g:Button ui:field="btnCancel" text="{locale.propertiesButtonCancel}"/>
             </g:FlowPanel>
-        </g:west>
+        </g:east>
 
         <g:center>
             <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
