@@ -287,4 +287,6 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("runner.title")
     String runnerTitle();
+
+    String editorNotReady();
 }

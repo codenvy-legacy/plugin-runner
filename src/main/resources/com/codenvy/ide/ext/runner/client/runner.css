@@ -159,3 +159,12 @@
 .typeButton {
     color: #1c9dee;
 }
+
+.unAvailableMessage {
+    left: 0;
+    cursor: default;
+    position: absolute;
+    text-align: center;
+    top: 50% !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 1);
+}

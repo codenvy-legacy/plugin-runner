@@ -17,17 +17,6 @@
     <ui:with field="locale" type="com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant"/>
 
     <ui:style>
-        .runnerNotReadyLabel {
-            left: 0;
-            cursor: default;
-            line-height: 200px;
-            margin-top: -100px;
-            position: absolute;
-            text-align: center;
-            top: 50%;
-            text-shadow: 0 1px 0 rgba(0, 0, 0, 1);
-        }
-
         .terminalFrame {
             position: absolute;
             left: 0;
@@ -41,7 +30,7 @@
 
     <g:FlowPanel>
         <g:Label ui:field="unavailableLabel" text="{locale.runnerNotReady}"
-                 addStyleNames="{style.runnerNotReadyLabel} {res.runnerCss.fullSize}"/>
+                 addStyleNames="{res.runnerCss.fullSize} {res.runnerCss.unAvailableMessage}"/>
         <g:Frame ui:field="terminal" addStyleNames="{style.terminalFrame} {res.runnerCss.fullSize}"/>
     </g:FlowPanel>
 

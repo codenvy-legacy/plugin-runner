@@ -20,11 +20,16 @@ import com.codenvy.ide.api.parts.PropertyListener;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFileFactory;
+import com.codenvy.ide.util.loging.Log;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import javax.annotation.Nonnull;
+
 import static com.codenvy.ide.api.editor.EditorPartPresenter.PROP_INPUT;
+import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 
 /**
  * The class that manages Properties panel widget.
@@ -34,24 +39,45 @@ import static com.codenvy.ide.api.editor.EditorPartPresenter.PROP_INPUT;
 public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDelegate, PropertiesPanel {
 
     private final PropertiesPanelView view;
+    private final Timer               timer;
+
+    private EditorPartPresenter editor;
 
     @Inject
     public PropertiesPanelPresenter(final PropertiesPanelView view,
-                                    EditorRegistry editorRegistry,
-                                    FileTypeRegistry fileTypeRegistry,
-                                    DockerFileFactory dockerFileFactory,
-                                    @Assisted Runner runner) throws EditorInitException {
+                                    final EditorRegistry editorRegistry,
+                                    final FileTypeRegistry fileTypeRegistry,
+                                    final DockerFileFactory dockerFileFactory,
+                                    @Assisted @Nonnull final Runner runner) {
         this.view = view;
         this.view.setDelegate(this);
 
-        String dockerUrl = runner.getDockerUrl();
-        if (dockerUrl == null) {
-            return;
-        }
+        // we're waiting for getting application descriptor from server. so we can't show editor without knowing about configuration file.
+        timer = new Timer() {
+            @Override
+            public void run() {
+                String dockerUrl = runner.getDockerUrl();
+                if (dockerUrl == null) {
+                    timer.schedule(ONE_SEC.getValue());
+                    return;
+                }
 
+                timer.cancel();
+                initializeEditor(dockerUrl, editorRegistry, fileTypeRegistry, dockerFileFactory);
+            }
+        };
+        timer.schedule(ONE_SEC.getValue());
+    }
+
+    private void initializeEditor(@Nonnull String dockerUrl,
+                                  @Nonnull EditorRegistry editorRegistry,
+                                  @Nonnull FileTypeRegistry fileTypeRegistry,
+                                  @Nonnull DockerFileFactory dockerFileFactory) {
         FileNode file = dockerFileFactory.newInstance(dockerUrl);
         FileType fileType = fileTypeRegistry.getFileTypeByFile(file);
-        final EditorPartPresenter editor = editorRegistry.getEditor(fileType).getEditor();
+        editor = editorRegistry.getEditor(fileType).getEditor();
+
+        // wait when editor is initialized
         editor.addPropertyListener(new PropertyListener() {
             @Override
             public void propertyChanged(PartPresenter source, int propId) {
@@ -61,7 +87,11 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
             }
         });
 
-        editor.init(new DockerFileEditorInput(fileType, file));
+        try {
+            editor.init(new DockerFileEditorInput(fileType, file));
+        } catch (EditorInitException e) {
+            Log.error(getClass(), e);
+        }
     }
 
     /** {@inheritDoc} */
@@ -92,6 +122,13 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     @Override
     public void go(AcceptsOneWidget container) {
         container.setWidget(view);
+
+        if (editor == null) {
+            return;
+        }
+
+        editor.activate();
+        editor.onOpen();
     }
 
 }

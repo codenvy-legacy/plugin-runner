@@ -146,6 +146,8 @@ public interface RunnerResources extends ClientBundle {
         String cursor();
 
         String typeButton();
+
+        String unAvailableMessage();
     }
 
 }

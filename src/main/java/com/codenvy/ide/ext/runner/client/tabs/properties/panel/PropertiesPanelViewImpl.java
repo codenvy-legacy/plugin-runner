@@ -26,6 +26,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -84,6 +85,12 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
         prepareField(scope, EnumSet.allOf(Scope.class));
         prepareField(boot, EnumSet.allOf(Boot.class));
         prepareField(shutdown, EnumSet.allOf(Shutdown.class));
+
+        Label unAvailableMessage = new Label(locale.editorNotReady());
+        unAvailableMessage.addStyleName(resources.runnerCss().fullSize());
+        unAvailableMessage.addStyleName(resources.runnerCss().unAvailableMessage());
+
+        editorPanel.setWidget(unAvailableMessage);
     }
 
     private void prepareField(@Nonnull ListBox field, @Nonnull Set<? extends Enum> items) {
