@@ -189,6 +189,18 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     /** {@inheritDoc} */
     @Override
+    public void setEnableSaveButton(boolean enable) {
+        btnSave.setEnabled(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableCancelButton(boolean enable) {
+        btnCancel.setEnabled(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void showEditor(@Nonnull EditorPartPresenter editor) {
         editor.go(editorPanel);
     }

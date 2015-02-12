@@ -18,6 +18,8 @@ import com.codenvy.ide.api.filetypes.FileTypeRegistry;
 import com.codenvy.ide.api.parts.PartPresenter;
 import com.codenvy.ide.api.parts.PropertyListener;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
+import com.codenvy.ide.api.texteditor.HandlesUndoRedo;
+import com.codenvy.ide.api.texteditor.UndoableEditor;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFileFactory;
 import com.codenvy.ide.util.loging.Log;
@@ -28,6 +30,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import javax.annotation.Nonnull;
 
+import static com.codenvy.ide.api.editor.EditorPartPresenter.PROP_DIRTY;
 import static com.codenvy.ide.api.editor.EditorPartPresenter.PROP_INPUT;
 import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 
@@ -81,8 +84,17 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         editor.addPropertyListener(new PropertyListener() {
             @Override
             public void propertyChanged(PartPresenter source, int propId) {
-                if (propId == PROP_INPUT) {
-                    view.showEditor(editor);
+                switch (propId) {
+                    case PROP_INPUT:
+                        view.showEditor(editor);
+                        break;
+
+                    case PROP_DIRTY:
+                        view.setEnableSaveButton(true);
+                        view.setEnableCancelButton(true);
+                        break;
+
+                    default:
                 }
             }
         });
@@ -103,7 +115,10 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void onSaveButtonClicked() {
+        view.setEnableSaveButton(false);
+        view.setEnableCancelButton(false);
 
+        editor.doSave();
     }
 
     /** {@inheritDoc} */
@@ -115,7 +130,15 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void onCancelButtonClicked() {
+        view.setEnableSaveButton(false);
+        view.setEnableCancelButton(false);
 
+        if (editor instanceof UndoableEditor) {
+            HandlesUndoRedo undoRedo = ((UndoableEditor)editor).getUndoRedo();
+            while (undoRedo.undoable()) {
+                undoRedo.undo();
+            }
+        }
     }
 
     /** {@inheritDoc} */

@@ -100,6 +100,28 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
      */
     void selectShutdown(@Nonnull Shutdown shutdown);
 
+    /**
+     * Changes enable state of 'Save' button.
+     *
+     * @param enable
+     *         enable state of button
+     */
+    void setEnableSaveButton(boolean enable);
+
+    /**
+     * Changes enable state of 'Cancel' button.
+     *
+     * @param enable
+     *         enable state of button
+     */
+    void setEnableCancelButton(boolean enable);
+
+    /**
+     * Show a given editor in the special place on the container.
+     *
+     * @param editor
+     *         editor that needs to be shown
+     */
     void showEditor(@Nonnull EditorPartPresenter editor);
 
     interface ActionDelegate {
