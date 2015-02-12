@@ -56,6 +56,7 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     /** {@inheritDoc} */
     @Override
     public void show(@Nonnull Runner runner) {
+        // we save current panel if our container isn't shown and then we will show this panel when container is shown
         currentPanel = panels.get(runner);
         if (currentPanel == null) {
             currentPanel = widgetFactory.createPropertiesPanel(runner);
