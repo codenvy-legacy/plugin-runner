@@ -14,9 +14,6 @@ import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ActionManager;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
-import com.codenvy.ide.api.wizard.DefaultWizard;
-import com.codenvy.ide.api.wizard.DefaultWizardFactory;
-import com.codenvy.ide.api.wizard.WizardDialog;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -36,12 +33,6 @@ import static org.mockito.Mockito.when;
 @RunWith(GwtMockitoTestRunner.class)
 public class RunWithGroupTest {
 
-    @Mock
-    private DefaultWizard              wizard;
-    @Mock
-    private DefaultWizardFactory       defaultWizardFactory;
-    @Mock
-    private WizardDialog               dialog;
     @Mock
     private AppContext                 appContext;
     @Mock

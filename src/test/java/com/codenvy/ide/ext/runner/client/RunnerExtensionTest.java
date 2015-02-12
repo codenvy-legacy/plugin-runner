@@ -16,16 +16,12 @@ import com.codenvy.ide.api.constraints.Anchor;
 import com.codenvy.ide.api.constraints.Constraints;
 import com.codenvy.ide.api.parts.PartStackType;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
-import com.codenvy.ide.api.projecttype.wizard.ProjectTypeWizardRegistry;
-import com.codenvy.ide.api.projecttype.wizard.ProjectWizard;
 import com.codenvy.ide.ext.runner.client.actions.CustomRunAction;
 import com.codenvy.ide.ext.runner.client.actions.EditRunnerAction;
 import com.codenvy.ide.ext.runner.client.actions.RunAction;
 import com.codenvy.ide.ext.runner.client.actions.RunWithGroup;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.codenvy.ide.ext.runner.client.wizard.SelectRunnerPagePresenter;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.inject.Provider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 
-import static com.codenvy.api.project.shared.Constants.BLANK_ID;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN;
@@ -47,8 +42,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,20 +60,13 @@ public class RunnerExtensionTest {
     private RunnerResources.RunnerCss           runnerCss;
     @Mock
     private RunnerResources                     resources;
-    @Mock
-    private ProjectTypeWizardRegistry           wizardRegistry;
-    @Mock
-    private Provider<SelectRunnerPagePresenter> runnerPagePresenter;
-    @Mock
-    private ProjectWizard                       wizard;
     private RunnerExtension                     extension;
 
     @Before
     public void setUp() throws Exception {
         when(resources.runnerCss()).thenReturn(runnerCss);
-        when(wizardRegistry.getWizard(BLANK_ID)).thenReturn(wizard);
 
-        extension = new RunnerExtension(resources, wizardRegistry, runnerPagePresenter);
+        extension = new RunnerExtension(resources);
     }
 
     @Test
@@ -99,21 +85,6 @@ public class RunnerExtensionTest {
         verifyConstants(Anchor.AFTER, BUILDER_PART_ID);
     }
 
-    @Test
-    public void runnerPageShouldBeAdded() throws Exception {
-        verify(wizard).addPage(runnerPagePresenter);
-        verify(wizardRegistry).addWizard(BLANK_ID, wizard);
-    }
-
-    @Test
-    public void runnerPageShouldNotBeAddedIfWizardIsNull() throws Exception {
-        when(wizardRegistry.getWizard(BLANK_ID)).thenReturn(null);
-        reset(wizard);
-
-        extension = new RunnerExtension(resources, wizardRegistry, runnerPagePresenter);
-
-        verify(wizard, never()).addPage(runnerPagePresenter);
-    }
 
     @Test
     public void runnerMenuActionsShouldBeAdded() throws Exception {
