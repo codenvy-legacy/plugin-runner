@@ -23,7 +23,7 @@ import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesView;
+import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Provider;
@@ -33,12 +33,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
@@ -49,6 +47,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Alexander Andrienko
+ * @author Dmitry Shnurenko
  */
 @RunWith(MockitoJUnitRunner.class)
 public class GetProjectEnvironmentsActionTest {
@@ -56,7 +55,7 @@ public class GetProjectEnvironmentsActionTest {
 
     //variables for constructor
     @Mock
-    private TemplatesView                                         templatesView;
+    private Provider<TemplatesContainer>                          templatesContainerProvider;
     @Mock
     private AppContext                                            appContext;
     @Mock
@@ -85,13 +84,11 @@ public class GetProjectEnvironmentsActionTest {
     private ProjectDescriptor                           projectDescriptor;
     //runner variables
     @Mock
-    private RunnerEnvironmentLeaf                       runnerEnvironmentLeaf1;
+    private TemplatesContainer                          templatesContainer;
     @Mock
-    private RunnerEnvironmentLeaf                       runnerEnvironmentLeaf2;
+    private List<RunnerEnvironmentLeaf>                 environmentLeaves;
     @Mock
-    private RunnerEnvironment                           runnerEnvironment1;
-    @Mock
-    private RunnerEnvironment                           runnerEnvironment2;
+    private List<RunnerEnvironment>                     environments;
     @Mock
     private RunnerEnvironmentTree                       result;
 
@@ -101,11 +98,19 @@ public class GetProjectEnvironmentsActionTest {
     @Captor
     private ArgumentCaptor<SuccessCallback<RunnerEnvironmentTree>> successCallBackCaptor;
 
-    @InjectMocks
-    private GetProjectEnvironmentsAction getProjectEnvironmentsAction;
+    private GetProjectEnvironmentsAction action;
 
     @Before
     public void setUp() {
+        action = new GetProjectEnvironmentsAction(appContext,
+                                                  projectService,
+                                                  notificationManager,
+                                                  callbackBuilderProvider,
+                                                  locale,
+                                                  environmentUtil,
+                                                  templatesContainerProvider);
+
+        when(templatesContainerProvider.get()).thenReturn(templatesContainer);
         //preparing callbacks for server
         when(appContext.getCurrentProject()).thenReturn(project);
         when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
@@ -123,11 +128,11 @@ public class GetProjectEnvironmentsActionTest {
     public void shouldPerformWhenCurrentProjectIsNull() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
-        getProjectEnvironmentsAction.perform();
+        action.perform();
 
         verify(appContext).getCurrentProject();
         verifyZeroInteractions(project);
-        verifyNoMoreInteractions(templatesView,
+        verifyNoMoreInteractions(templatesContainerProvider,
                                  appContext,
                                  projectService,
                                  notificationManager,
@@ -141,13 +146,13 @@ public class GetProjectEnvironmentsActionTest {
         String errorMessage = "error message";
         when(locale.customRunnerGetEnvironmentFailed()).thenReturn(errorMessage);
 
-        getProjectEnvironmentsAction.perform();
+        action.perform();
 
         verify(appContext).getCurrentProject();
 
         verify(asyncCallbackBuilder).failure(failedCallBackCaptor.capture());
-        FailureCallback successCallback = failedCallBackCaptor.getValue();
-        successCallback.onFailure(reason);
+        FailureCallback failureCallback = failedCallBackCaptor.getValue();
+        failureCallback.onFailure(reason);
 
         verify(locale).customRunnerGetEnvironmentFailed();
         verify(notificationManager).showError(errorMessage);
@@ -157,12 +162,10 @@ public class GetProjectEnvironmentsActionTest {
 
     @Test
     public void shouldPerformSuccessWithToRunnerEnvironment() {
-        List<RunnerEnvironmentLeaf> environments = Arrays.asList(runnerEnvironmentLeaf1, runnerEnvironmentLeaf2);
-        when(runnerEnvironmentLeaf1.getEnvironment()).thenReturn(runnerEnvironment1);
-        when(runnerEnvironmentLeaf2.getEnvironment()).thenReturn(runnerEnvironment2);
-        when(environmentUtil.getAllEnvironments(result)).thenReturn(environments);
+        when(environmentUtil.getAllEnvironments(result)).thenReturn(environmentLeaves);
+        when(environmentUtil.getEnvironmentsFromNodes(environmentLeaves)).thenReturn(environments);
 
-        getProjectEnvironmentsAction.perform();
+        action.perform();
 
         verify(appContext).getCurrentProject();
 
@@ -170,8 +173,10 @@ public class GetProjectEnvironmentsActionTest {
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(result);
 
-        verify(templatesView).addEnvironment(runnerEnvironment1, Scope.PROJECT);
-        verify(templatesView).addEnvironment(runnerEnvironment2, Scope.PROJECT);
+        verify(environmentUtil).getAllEnvironments(result);
+        verify(environmentUtil).getEnvironmentsFromNodes(environmentLeaves);
+
+        verify(templatesContainer).addEnvironments(environments, Scope.PROJECT);
 
         verify(projectService).getRunnerEnvironments(PATH, asyncRequestCallback);
     }

@@ -16,24 +16,18 @@
     <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
 
     <ui:style>
-        .typeBtn {
-            height: 15px;
+        .panel {
+            height: 20px;
+            width: 15px;
             float: left;
-            padding-left: 3px;
-            padding-right: 3px;
-            text-align: center;
-            border: 1px solid #000000;
-            margin-left: 10px;
+            margin-top: 3px;
+            margin-left: 6px;
             cursor: pointer;
-            background: #474747;
-        }
-
-        .buttonLabels {
-            margin-top: 2px;
         }
     </ui:style>
 
-    <g:FlowPanel addStyleNames="{style.typeBtn}">
-        <g:Label ui:field="name" addStyleNames="{resources.runnerCss.fontSizeEight} {style.buttonLabels}"/>
+    <g:FlowPanel addStyleNames="{style.panel}">
+        <g:Image ui:field="scope"/>
     </g:FlowPanel>
+
 </ui:UiBinder>

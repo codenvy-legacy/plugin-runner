@@ -39,7 +39,7 @@ import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer
 import com.codenvy.ide.ext.runner.client.tabs.container.TabContainer;
 import com.codenvy.ide.ext.runner.client.tabs.history.HistoryPanel;
 import com.codenvy.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
-import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesPanel;
+import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
@@ -96,7 +96,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final Timer                      runnerTimer;
     private final RunnerLocalizationConstant locale;
     private final HistoryPanel               history;
-    private final TemplatesPanel             templates;
+    private final TemplatesContainer         templates;
     private final SelectionManager           selectionManager;
     private final ConsoleContainer           consoleContainer;
     private final TerminalContainer          terminalContainer;
@@ -124,7 +124,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   TerminalContainer terminalContainer,
                                   PropertiesContainer propertiesContainer,
                                   HistoryPanel history,
-                                  TemplatesPanel templates,
+                                  TemplatesContainer templates,
                                   SelectionManager selectionManager) {
         this.view = view;
         this.view.setDelegate(this);
@@ -177,7 +177,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                      @Nonnull TabContainer container,
                                      @Nonnull Provider<TabBuilder> tabBuilderProvider,
                                      @Nonnull HistoryPanel historyPanel,
-                                     @Nonnull TemplatesPanel templatesPanel) {
+                                     @Nonnull TemplatesContainer templatesContainer) {
         TabSelectHandler historyHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
@@ -208,7 +208,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         };
 
         Tab templateTab = tabBuilderProvider.get()
-                                            .presenter(templatesPanel)
+                                            .presenter(templatesContainer)
                                             .selectHandler(templatesHandler)
                                             .title(locale.runnerTabTemplates())
                                             .visible(REMOVABLE)

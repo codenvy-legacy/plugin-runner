@@ -20,7 +20,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesView;
+import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Provider;
@@ -35,7 +35,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
@@ -46,6 +45,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Alexander Andrienko
+ * @author Dmitry Shnurenko
  */
 @RunWith(MockitoJUnitRunner.class)
 public class GetSystemEnvironmentsActionTest {
@@ -53,7 +53,7 @@ public class GetSystemEnvironmentsActionTest {
 
     //constructor variables
     @Mock
-    private TemplatesView                                         templatesView;
+    private Provider<TemplatesContainer>                          templatesContainerProvider;
     @Mock
     private RunnerServiceClient                                   runnerService;
     @Mock
@@ -70,12 +70,12 @@ public class GetSystemEnvironmentsActionTest {
 
     //callbacks for server
     @Mock
-    private AsyncCallbackBuilder<RunnerEnvironmentTree> asyncCallbackBuilder;
+    private AsyncCallbackBuilder<RunnerEnvironmentTree>            asyncCallbackBuilder;
     @Mock
-    private AsyncRequestCallback<RunnerEnvironmentTree> asyncRequestCallback;
+    private AsyncRequestCallback<RunnerEnvironmentTree>            asyncRequestCallback;
     //project variables
     @Mock
-    private ProjectDescriptor                           projectDescriptor;
+    private ProjectDescriptor                                      projectDescriptor;
     //captors
     @Captor
     private ArgumentCaptor<FailureCallback>                        failedCallBackCaptor;
@@ -83,36 +83,29 @@ public class GetSystemEnvironmentsActionTest {
     private ArgumentCaptor<SuccessCallback<RunnerEnvironmentTree>> successCallBackCaptor;
     //run variables
     @Mock
-    private RunnerEnvironmentTree                                  runnerEnvironmentTree1;
+    private List<RunnerEnvironmentLeaf>                            leaves;
     @Mock
-    private RunnerEnvironmentTree                                  runnerEnvironmentTree2;
+    private List<RunnerEnvironment>                                environments;
     @Mock
-    private RunnerEnvironmentLeaf                                  runnerEnvironmentLeaf1;
-    @Mock
-    private RunnerEnvironmentLeaf                                  runnerEnvironmentLeaf2;
-    @Mock
-    private RunnerEnvironmentLeaf                                  runnerEnvironmentLeaf3;
-    @Mock
-    private RunnerEnvironmentTree                                  environmentTree;
-    @Mock
-    private RunnerEnvironment                                      runnerEnvOfLeaf1;
-    @Mock
-    private RunnerEnvironment                                      runnerEnvOfLeaf2;
-    @Mock
-    private RunnerEnvironment                                      runnerEnvOfLeaf3;
-    @Mock
-    private RunnerEnvironment                                      runnerEnvironment1;
-    @Mock
-    private RunnerEnvironment                                      runnerEnvironment2;
+    private TemplatesContainer                                     templatesContainer;
     @Mock
     private RunnerEnvironmentTree                                  tree;
 
     @InjectMocks
-    private GetSystemEnvironmentsAction getSystemEnvironmentsAction;
+    private GetSystemEnvironmentsAction action;
 
     @Before
     public void setUp() {
+        action = new GetSystemEnvironmentsAction(runnerService,
+                                                 notificationManager,
+                                                 callbackBuilderProvider,
+                                                 locale,
+                                                 environmentUtil,
+                                                 templatesContainerProvider);
         //preparing callbacks for server
+        when(templatesContainerProvider.get()).thenReturn(templatesContainer);
+        when(environmentUtil.getAllEnvironments(tree)).thenReturn(leaves);
+        when(environmentUtil.getEnvironmentsFromNodes(leaves)).thenReturn(environments);
         when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.unmarshaller(RunnerEnvironmentTree.class)).thenReturn(asyncCallbackBuilder)
                                                                             .thenReturn(asyncCallbackBuilder);
@@ -121,49 +114,23 @@ public class GetSystemEnvironmentsActionTest {
                 .thenReturn(asyncCallbackBuilder).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback).thenReturn(asyncRequestCallback);
 
-        List<RunnerEnvironmentLeaf> runnerEnvironmentLeafs =
-                Arrays.asList(runnerEnvironmentLeaf1, runnerEnvironmentLeaf2, runnerEnvironmentLeaf3);
-        List<RunnerEnvironmentTree> runnerEnvironmentTrees = Arrays.asList(runnerEnvironmentTree1, runnerEnvironmentTree2);
-
-        when(environmentUtil.getAllEnvironments(tree)).thenReturn(runnerEnvironmentLeafs);
-        when(environmentUtil.getAllEnvironments(tree, 1)).thenReturn(runnerEnvironmentTrees);
-
-        when(runnerEnvironmentLeaf1.getEnvironment()).thenReturn(runnerEnvOfLeaf1);
-        when(runnerEnvironmentLeaf2.getEnvironment()).thenReturn(runnerEnvOfLeaf2);
-        when(runnerEnvironmentLeaf3.getEnvironment()).thenReturn(runnerEnvOfLeaf3);
-
         when(locale.customRunnerGetEnvironmentFailed()).thenReturn(MESSAGE);
     }
 
     @Test
     public void shouldSuccessPerformWhenEnvironmentTreeIsNull() {
-        getSystemEnvironmentsAction.perform();
+        action.perform();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
-        successCallback.onSuccess(tree);
-
-        verify(templatesView).clearEnvironmentsPanel();
-        verify(templatesView).clearTypeButtonsPanel();
-
-        verify(environmentUtil).getAllEnvironments(tree);
-
-        verify(templatesView).addEnvironment(runnerEnvOfLeaf1, SYSTEM);
-        verify(templatesView).addEnvironment(runnerEnvOfLeaf2, SYSTEM);
-        verify(templatesView).addEnvironment(runnerEnvOfLeaf3, SYSTEM);
-
-        verify(environmentUtil).getAllEnvironments(tree, 1);
-
-        verify(templatesView).addButton(runnerEnvironmentTree1);
-        verify(templatesView).addButton(runnerEnvironmentTree1);
-        verify(templatesView).addButton(runnerEnvironmentTree1);
+        successCallback.onSuccess(null);
 
         verify(runnerService).getRunners(asyncRequestCallback);
     }
 
     @Test
     public void shouldFailurePerformWhenEnvironmentTreeIsNull() {
-        getSystemEnvironmentsAction.perform();
+        action.perform();
 
         verify(asyncCallbackBuilder).failure(failedCallBackCaptor.capture());
         FailureCallback failureCallback = failedCallBackCaptor.getValue();
@@ -176,67 +143,40 @@ public class GetSystemEnvironmentsActionTest {
     @Test
     public void shouldSuccessPerformWhenEnvironmentTreeIsNotNull() throws Exception {
         //launch perform first time for set environmentTree not null
-        getSystemEnvironmentsAction.perform();
+        action.perform();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(tree);
 
-        getSystemEnvironmentsAction.perform();
+        action.perform();
 
         verify(asyncCallbackBuilder, times(2)).success(successCallBackCaptor.capture());
         SuccessCallback<RunnerEnvironmentTree> successCallback2 = successCallBackCaptor.getValue();
         successCallback2.onSuccess(tree);
 
-        verify(templatesView, times(3)).clearEnvironmentsPanel();
-        verify(templatesView, times(3)).clearTypeButtonsPanel();
-
-        verify(environmentUtil, times(3)).getAllEnvironments(tree);
-
-        verify(templatesView, times(3)).addEnvironment(runnerEnvOfLeaf1, SYSTEM);
-        verify(templatesView, times(3)).addEnvironment(runnerEnvOfLeaf2, SYSTEM);
-        verify(templatesView, times(3)).addEnvironment(runnerEnvOfLeaf3, SYSTEM);
-
-        verify(environmentUtil, times(3)).getAllEnvironments(tree, 1);
-
-        verify(templatesView, times(3)).addButton(runnerEnvironmentTree1);
-        verify(templatesView, times(3)).addButton(runnerEnvironmentTree1);
-        verify(templatesView, times(3)).addButton(runnerEnvironmentTree1);
-
         verify(runnerService).getRunners(asyncRequestCallback);
+
+        verify(templatesContainer, times(3)).addButton(tree);
+        verify(templatesContainer, times(3)).addEnvironments(environments, SYSTEM);
     }
 
     @Test
     public void shouldFailurePerformWhenEnvironmentTreeIsNotNull() {
         //launch perform first time for set environmentTree not null
-        getSystemEnvironmentsAction.perform();
+        action.perform();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(tree);
 
-        getSystemEnvironmentsAction.perform();
+        action.perform();
 
         verify(asyncCallbackBuilder, times(2)).failure(failedCallBackCaptor.capture());
         FailureCallback failureCallback = failedCallBackCaptor.getValue();
         failureCallback.onFailure(reason);
 
         verify(notificationManager).showError(MESSAGE);
-
-        verify(templatesView, times(2)).clearEnvironmentsPanel();
-        verify(templatesView, times(2)).clearTypeButtonsPanel();
-
-        verify(environmentUtil, times(2)).getAllEnvironments(tree);
-
-        verify(templatesView, times(2)).addEnvironment(runnerEnvOfLeaf1, SYSTEM);
-        verify(templatesView, times(2)).addEnvironment(runnerEnvOfLeaf2, SYSTEM);
-        verify(templatesView, times(2)).addEnvironment(runnerEnvOfLeaf3, SYSTEM);
-
-        verify(environmentUtil, times(2)).getAllEnvironments(tree, 1);
-
-        verify(templatesView, times(2)).addButton(runnerEnvironmentTree1);
-        verify(templatesView, times(2)).addButton(runnerEnvironmentTree1);
-        verify(templatesView, times(2)).addButton(runnerEnvironmentTree1);
     }
 
 }

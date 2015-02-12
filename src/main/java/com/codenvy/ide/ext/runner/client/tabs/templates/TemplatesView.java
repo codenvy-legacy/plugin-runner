@@ -14,9 +14,12 @@ import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import com.codenvy.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides methods which allow display runner environments on special widget.
@@ -29,12 +32,10 @@ public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
     /**
      * Adds environment on templates panel and.
      *
-     * @param environment
+     * @param environments
      *         runner which was added
-     * @param projectScope
-     *         scope for current environment
      */
-    void addEnvironment(@Nonnull RunnerEnvironment environment, @Nonnull Scope projectScope);
+    void addEnvironment(@Nonnull Map<Scope, List<RunnerEnvironment>> environments);
 
     /**
      * The method creates and adds buttons to special place on view for each group of runner environments.
@@ -66,17 +67,25 @@ public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
      */
     void selectEnvironment(@Nonnull RunnerEnvironment selectedEnvironment);
 
+    /**
+     * Sets scope panel {@link ScopePanel}to special place on templates panel.
+     *
+     * @param scopePanel
+     *         panel which need set
+     */
+    void setScopePanel(@Nonnull ScopePanel scopePanel);
+
     interface ActionDelegate {
 
         /** Performs some actions when user click on all type button. */
         void onAllTypeButtonClicked();
 
+        /**
+         * Performs some actions when user clicks on language type button.
+         *
+         * @param tree
+         *         tree which need analyze to get all environments from the tree
+         */
         void onLangTypeButtonClicked(@Nonnull RunnerEnvironmentTree tree);
-
-        /** Performs some actions when user click on project scope button. */
-        void onProjectScopeButtonClicked();
-
-        /** Performs some actions when user click on system scope button. */
-        void onSystemScopeButtonClicked();
     }
 }

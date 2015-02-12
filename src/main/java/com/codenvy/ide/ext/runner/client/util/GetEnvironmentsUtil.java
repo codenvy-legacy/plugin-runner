@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.util;
 
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.google.inject.ImplementedBy;
@@ -45,4 +46,13 @@ public interface GetEnvironmentsUtil {
      * @return list environments.
      */
     List<RunnerEnvironmentLeaf> getAllEnvironments(@Nonnull RunnerEnvironmentTree tree);
+
+    /**
+     * Gets all environments from nodes and adds them to list.
+     *
+     * @param environmentList
+     *         list with nodes
+     * @return list of environments
+     */
+    List<RunnerEnvironment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList);
 }

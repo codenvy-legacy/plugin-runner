@@ -19,7 +19,9 @@ import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
+import com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton.ScopeButton;
 import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
 import com.google.gwt.resources.client.ImageResource;
@@ -124,5 +126,19 @@ public interface WidgetFactory {
      */
     @Nonnull
     TypeButton createTypeButton();
+
+    /**
+     * Creates scope button widget with special image.
+     *
+     * @param image
+     *         image which need set to button
+     * @param buttonScope
+     *         scope of current button
+     * @param isChecked
+     *         flag which defines is checked button or un checked
+     * @return an instance of {@link ScopeButton}
+     */
+    @Nonnull
+    ScopeButton createScopeButton(@Nonnull Scope buttonScope, @Nonnull ImageResource image, boolean isChecked);
 
 }

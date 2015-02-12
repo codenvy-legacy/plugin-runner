@@ -13,8 +13,11 @@ package com.codenvy.ide.ext.runner.client.tabs.templates;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
+import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import com.codenvy.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -22,7 +25,12 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
@@ -31,30 +39,49 @@ import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Sco
  * @author Dmitry Shnurenko
  */
 @Singleton
-public class TemplatesPresenter implements TemplatesPanel, TemplatesView.ActionDelegate {
+public class TemplatesPresenter implements TemplatesContainer, TemplatesView.ActionDelegate, ScopePanel.ActionDelegate {
 
-    private final TemplatesView                view;
-    private final GetProjectEnvironmentsAction projectEnvironments;
-    private final GetSystemEnvironmentsAction  systemEnvironments;
-    private final GetEnvironmentsUtil          environmentUtil;
+    private final TemplatesView                       view;
+    private final GetProjectEnvironmentsAction        projectEnvironmentsAction;
+    private final GetSystemEnvironmentsAction         systemEnvironmentsAction;
+    private final GetEnvironmentsUtil                 environmentUtil;
+    private final List<RunnerEnvironment>             systemEnvironments;
+    private final List<RunnerEnvironment>             projectEnvironments;
+    private final Map<Scope, List<RunnerEnvironment>> environmentMap;
 
-    private boolean isSystemScope;
+    private Scope scope;
 
     @Inject
     public TemplatesPresenter(TemplatesView view,
-                              GetProjectEnvironmentsAction projectEnvironments,
-                              GetSystemEnvironmentsAction systemEnvironments,
-                              GetEnvironmentsUtil environmentUtil) {
+                              GetProjectEnvironmentsAction projectEnvironmentsAction,
+                              GetSystemEnvironmentsAction systemEnvironmentsAction,
+                              GetEnvironmentsUtil environmentUtil,
+                              ScopePanel scopePanel,
+                              RunnerResources resources) {
         this.view = view;
         this.view.setDelegate(this);
 
-        this.projectEnvironments = projectEnvironments;
-        this.systemEnvironments = systemEnvironments;
+        this.projectEnvironmentsAction = projectEnvironmentsAction;
+        this.systemEnvironmentsAction = systemEnvironmentsAction;
         this.environmentUtil = environmentUtil;
 
-        this.systemEnvironments.perform();
+        this.projectEnvironments = new ArrayList<>();
+        this.systemEnvironments = new ArrayList<>();
 
-        this.isSystemScope = true;
+        this.environmentMap = new EnumMap<>(Scope.class);
+        this.environmentMap.put(PROJECT, projectEnvironments);
+        this.environmentMap.put(SYSTEM, systemEnvironments);
+
+        scopePanel.setDelegate(this);
+
+        scopePanel.addButton(SYSTEM, resources.scopeSystem(), false);
+        scopePanel.addButton(PROJECT, resources.scopeProject(), true);
+
+        this.view.setScopePanel(scopePanel);
+
+        this.scope = SYSTEM;
+
+        this.systemEnvironmentsAction.perform();
     }
 
     /** {@inheritDoc} */
@@ -63,43 +90,126 @@ public class TemplatesPresenter implements TemplatesPanel, TemplatesView.ActionD
         view.clearEnvironmentsPanel();
         view.clearTypeButtonsPanel();
 
-        if (isSystemScope) {
-            systemEnvironments.perform();
-        } else {
-            projectEnvironments.perform();
+        if (scope == null) {
+            return;
         }
+
+        if (!systemEnvironments.isEmpty() && !projectEnvironments.isEmpty()) {
+            performSystemEnvironments();
+            performProjectEnvironments();
+
+            return;
+        }
+
+        switch (scope) {
+            case SYSTEM:
+                performSystemEnvironments();
+                break;
+            case PROJECT:
+                performProjectEnvironments();
+                break;
+            default:
+        }
+    }
+
+    private void performSystemEnvironments() {
+        systemEnvironments.clear();
+
+        systemEnvironmentsAction.perform();
+    }
+
+    private void performProjectEnvironments() {
+        projectEnvironments.clear();
+
+        projectEnvironmentsAction.perform();
     }
 
     /** {@inheritDoc} */
     @Override
     public void onLangTypeButtonClicked(@Nonnull RunnerEnvironmentTree environmentTree) {
-        view.clearEnvironmentsPanel();
+        systemEnvironments.clear();
 
-        for (RunnerEnvironmentLeaf environment : environmentUtil.getAllEnvironments(environmentTree)) {
-            view.addEnvironment(environment.getEnvironment(), SYSTEM);
+        List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(environmentTree);
+
+        systemEnvironments.addAll(environmentUtil.getEnvironmentsFromNodes(environments));
+
+        environmentMap.put(SYSTEM, systemEnvironments);
+
+        view.addEnvironment(environmentMap);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void select(@Nonnull RunnerEnvironment environment) {
+        view.selectEnvironment(environment);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addEnvironments(@Nonnull List<RunnerEnvironment> environmentList, @Nonnull Scope scope) {
+        switch (scope) {
+            case SYSTEM:
+                systemEnvironments.addAll(environmentList);
+                environmentMap.put(scope, systemEnvironments);
+
+                view.addEnvironment(environmentMap);
+                break;
+            case PROJECT:
+                projectEnvironments.addAll(environmentList);
+                environmentMap.put(scope, projectEnvironments);
+
+                view.addEnvironment(environmentMap);
+                break;
+            default:
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onProjectScopeButtonClicked() {
-        view.clearEnvironmentsPanel();
+    public void addButton(@Nonnull RunnerEnvironmentTree tree) {
         view.clearTypeButtonsPanel();
 
-        projectEnvironments.perform();
-
-        isSystemScope = false;
+        for (RunnerEnvironmentTree environment : environmentUtil.getAllEnvironments(tree, 1)) {
+            view.addButton(environment);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onSystemScopeButtonClicked() {
+    public void onButtonChecked(@Nonnull Scope scope) {
+        this.scope = scope;
+
+        switch (scope) {
+            case SYSTEM:
+                systemEnvironmentsAction.perform();
+                break;
+            case PROJECT:
+                projectEnvironmentsAction.perform();
+                break;
+            default:
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onButtonUnchecked(@Nonnull Scope scope) {
+        this.scope = null;
         view.clearEnvironmentsPanel();
-        view.clearTypeButtonsPanel();
 
-        systemEnvironments.perform();
+        switch (scope) {
+            case PROJECT:
+                environmentMap.get(scope).clear();
 
-        isSystemScope = true;
+                view.addEnvironment(environmentMap);
+                break;
+            case SYSTEM:
+                environmentMap.get(scope).clear();
+                view.clearTypeButtonsPanel();
+
+                view.addEnvironment(environmentMap);
+                break;
+            default:
+        }
     }
 
     /** {@inheritDoc} */
@@ -119,11 +229,5 @@ public class TemplatesPresenter implements TemplatesPanel, TemplatesView.ActionD
     @Override
     public void setVisible(boolean visible) {
         view.setVisible(visible);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void select(@Nonnull RunnerEnvironment environment) {
-        view.selectEnvironment(environment);
     }
 }

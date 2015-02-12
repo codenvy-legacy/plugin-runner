@@ -27,17 +27,6 @@
             float: left;
         }
 
-        .scopeBtn {
-            float: left;
-            margin-left: 6px;
-            margin-top: 2px;
-            cursor: pointer;
-        }
-
-        .scopePanel {
-            margin-top: 6px;
-        }
-
         .scroll {
             width: 100%;
             height: 100%;
@@ -65,15 +54,7 @@
 
         <!--scope panel-->
         <g:north size="27">
-            <g:FlowPanel addStyleNames="{style.scopePanel}">
-                <g:Label text="{locale.templateScope}" addStyleNames="{style.typeScopeLabels}"/>
-
-                <g:Image ui:field="systemScope" resource="{resources.scopeSystem}" addStyleNames="{style.scopeBtn}
-                                                                                                  {resources.runnerCss.opacityButton}"/>
-                <g:Image resource="{resources.scopeWorkspace}" addStyleNames="{style.scopeBtn}"/>
-                <g:Image ui:field="projectScope" resource="{resources.scopeProject}" addStyleNames="{style.scopeBtn}"/>
-                <g:Image resource="{resources.scopeUser}" addStyleNames="{style.scopeBtn}"/>
-            </g:FlowPanel>
+            <g:SimplePanel ui:field="scopePanel"/>
         </g:north>
 
         <!--templates panel-->

@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.util;
 
 
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.google.inject.Inject;
@@ -29,11 +30,13 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
 
     private final List<RunnerEnvironmentTree> languageTypeEnvironments;
     private final List<RunnerEnvironmentLeaf> allEnvironments;
+    private final List<RunnerEnvironment>     environments;
 
     @Inject
     public GetEnvironmentsUtilImpl() {
         this.languageTypeEnvironments = new ArrayList<>();
         this.allEnvironments = new ArrayList<>();
+        this.environments = new ArrayList<>();
     }
 
     /** {@inheritDoc} */
@@ -84,4 +87,17 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
             getEnvironments(environmentTree, allEnvironments);
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<RunnerEnvironment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList) {
+        environments.clear();
+
+        for (RunnerEnvironmentLeaf environmentLeaf : environmentList) {
+            environments.add(environmentLeaf.getEnvironment());
+        }
+
+        return environments;
+    }
+
 }
