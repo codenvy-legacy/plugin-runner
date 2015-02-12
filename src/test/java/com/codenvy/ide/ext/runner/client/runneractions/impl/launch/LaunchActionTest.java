@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl;
+package com.codenvy.ide.ext.runner.client.runneractions.impl.launch;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.app.AppContext;
@@ -21,7 +21,6 @@ import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.subactions.OutputAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.subactions.StatusAction;
 
