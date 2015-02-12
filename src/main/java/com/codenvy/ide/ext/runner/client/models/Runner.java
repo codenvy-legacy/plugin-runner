@@ -27,18 +27,17 @@ import javax.annotation.Nullable;
  */
 public interface Runner {
 
+    /** @return title of tab which is active for current runner */
+    @Nonnull
+    String getActiveTab();
+
     /**
-     * Returns boolean flag which allows define is console active or not for current runner.
+     * Sets a tab, which is activated.
      *
-     * @return <code>true</code> console is active,<code>false</code> console isn't active, terminal is actives
+     * @param title
+     *         title of the active tab
      */
-    boolean isConsoleActive();
-
-    /** Sets true value console flag, which defines that console is active. */
-    void activateConsole();
-
-    /** Sets false value console flag, which defines that terminal is active. */
-    void activateTerminal();
+    void setActiveTab(@Nonnull String title);
 
     /** @return amount of available RAM for current runner */
     @Nonnegative

@@ -26,6 +26,14 @@ import javax.annotation.Nonnull;
 public interface TabContainer extends Presenter {
 
     /**
+     * Shows tab on the tab container by title.
+     *
+     * @param title
+     *         title of the tab
+     */
+    void showTab(@Nonnull String title);
+
+    /**
      * Adds tab to tab container and saves tab visibility.
      *
      * @param tab

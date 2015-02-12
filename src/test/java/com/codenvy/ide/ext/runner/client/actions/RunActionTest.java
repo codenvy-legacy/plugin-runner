@@ -13,7 +13,7 @@ package com.codenvy.ide.ext.runner.client.actions;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManager;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 public class RunActionTest {
 
     @Mock
-    private RunnerManagerPresenter     managerPresenter;
+    private RunnerManager              runnerManager;
     @Mock
     private ActionEvent                actionEvent;
     @Mock
@@ -52,7 +52,7 @@ public class RunActionTest {
     public void actionShouldBePerformed() throws Exception {
         action.actionPerformed(actionEvent);
 
-        verify(managerPresenter).launchRunner();
+        verify(runnerManager).launchRunner();
     }
 
 }

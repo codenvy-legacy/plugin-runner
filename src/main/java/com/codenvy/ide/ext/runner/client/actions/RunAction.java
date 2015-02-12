@@ -14,7 +14,7 @@ import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManager;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
@@ -23,24 +23,25 @@ import javax.annotation.Nonnull;
  * Action which allows run project with default runner parameters.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class RunAction extends AbstractRunnerActions {
 
-    private final RunnerManagerPresenter runnerManagerPresenter;
+    private final RunnerManager runnerManager;
 
     @Inject
-    public RunAction(RunnerManagerPresenter runnerManagerPresenter,
+    public RunAction(RunnerManager runnerManager,
                      RunnerLocalizationConstant locale,
                      AppContext appContext,
                      RunnerResources resources) {
         super(appContext, locale.actionRun(), locale.actionRunDescription(), resources.runAppImage());
 
-        this.runnerManagerPresenter = runnerManagerPresenter;
+        this.runnerManager = runnerManager;
     }
 
     /** {@inheritDoc} */
     @Override
     public void actionPerformed(@Nonnull ActionEvent event) {
-        runnerManagerPresenter.launchRunner();
+        runnerManager.launchRunner();
     }
 }

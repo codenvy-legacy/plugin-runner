@@ -25,7 +25,7 @@ import com.codenvy.ide.api.event.ProjectDescriptorChangedEvent;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManager;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
@@ -55,7 +55,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
     private final NotificationManager        notificationManager;
     private final DtoFactory                 dtoFactory;
     private final EventBus                   eventBus;
-    private final RunnerManagerPresenter     managerPresenter;
+    private final RunnerManager              runnerManager;
     private final RunnerUtil                 util;
 
     private CurrentProject    currentProject;
@@ -71,7 +71,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
                               NotificationManager notificationManager,
                               DtoFactory dtoFactory,
                               EventBus eventBus,
-                              RunnerManagerPresenter managerPresenter,
+                              RunnerManager runnerManager,
                               RunnerUtil util) {
         this.view = view;
         this.view.setDelegate(this);
@@ -84,7 +84,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
         this.notificationManager = notificationManager;
         this.dtoFactory = dtoFactory;
         this.eventBus = eventBus;
-        this.managerPresenter = managerPresenter;
+        this.runnerManager = runnerManager;
         this.util = util;
     }
 
@@ -196,8 +196,7 @@ public class CustomRunPresenter implements CustomRunView.ActionDelegate {
 
             view.close();
 
-            // TODO it seems need to change last parameter. It seems id isn't good variant for it.
-            managerPresenter.launchRunner(runOptions, runnerEnvironment.getId());
+            runnerManager.launchRunner(runOptions, runnerEnvironment.getId());
         }
     }
 

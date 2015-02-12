@@ -15,6 +15,7 @@ import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.api.runner.dto.RunnerMetric;
 import com.codenvy.api.runner.gwt.client.utils.RunnerUtils;
+import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.util.StringUtils;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -33,12 +34,12 @@ import static com.codenvy.api.runner.internal.Constants.LINK_REL_SHELL_URL;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_STOP;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
+import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
-import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 
 /**
  * @author Andrey Plotnikov
@@ -56,9 +57,9 @@ public class RunnerImpl implements Runner {
 
     private ApplicationProcessDescriptor descriptor;
     private Status                       status;
+    private String                       activeTab;
     private long                         creationTime;
     private int                          ram;
-    private boolean                      isConsoleActive;
 
     /**
      * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
@@ -67,8 +68,8 @@ public class RunnerImpl implements Runner {
      *         options which needs to be used
      */
     @AssistedInject
-    public RunnerImpl(@Nonnull @Assisted RunOptions runOptions) {
-        this(runOptions, null);
+    public RunnerImpl(@Nonnull RunnerLocalizationConstant locale, @Nonnull @Assisted RunOptions runOptions) {
+        this(locale, runOptions, null);
     }
 
     /**
@@ -81,11 +82,13 @@ public class RunnerImpl implements Runner {
      *         name of custom configuration
      */
     @AssistedInject
-    public RunnerImpl(@Nonnull @Assisted RunOptions runOptions, @Nullable @Assisted String environmentName) {
+    public RunnerImpl(@Nonnull RunnerLocalizationConstant locale,
+                      @Nonnull @Assisted RunOptions runOptions,
+                      @Nullable @Assisted String environmentName) {
         this.runOptions = runOptions;
         this.ram = runOptions.getMemorySize();
         this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + getCorrectName(environmentName));
-        this.isConsoleActive = true;
+        this.activeTab = locale.runnerTabConsole();
         this.status = Status.IN_QUEUE;
 
         creationTime = System.currentTimeMillis();
@@ -100,21 +103,16 @@ public class RunnerImpl implements Runner {
     }
 
     /** {@inheritDoc} */
+    @Nonnull
     @Override
-    public boolean isConsoleActive() {
-        return isConsoleActive;
+    public String getActiveTab() {
+        return activeTab;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void activateConsole() {
-        isConsoleActive = true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void activateTerminal() {
-        isConsoleActive = false;
+    public void setActiveTab(@Nonnull String tab) {
+        activeTab = tab;
     }
 
     /** {@inheritDoc} */

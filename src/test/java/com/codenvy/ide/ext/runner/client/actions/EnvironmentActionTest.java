@@ -14,7 +14,7 @@ import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.dto.DtoFactory;
-import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import com.codenvy.ide.ext.runner.client.manager.RunnerManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,21 +35,21 @@ public class EnvironmentActionTest {
     private static final String SOME_TEXT = "someText";
 
     @Mock
-    private RunnerManagerPresenter managerPresenter;
+    private RunnerManager runnerManager;
     @Mock
-    private RunOptions             runOptions;
+    private RunOptions    runOptions;
     @Mock
-    private DtoFactory             dtoFactory;
+    private DtoFactory    dtoFactory;
     @Mock
-    private AppContext             appContext;
+    private AppContext    appContext;
     @Mock
-    private ActionEvent            actionEvent;
+    private ActionEvent   actionEvent;
 
     private EnvironmentAction action;
 
     @Before
     public void setUp() {
-        action = new EnvironmentAction(appContext, managerPresenter, dtoFactory, SOME_TEXT, SOME_TEXT, SOME_TEXT);
+        action = new EnvironmentAction(appContext, runnerManager, dtoFactory, SOME_TEXT, SOME_TEXT, SOME_TEXT);
     }
 
     @Test
@@ -61,6 +61,6 @@ public class EnvironmentActionTest {
 
         verify(dtoFactory).createDto(RunOptions.class);
         verify(runOptions).withEnvironmentId("project://" + SOME_TEXT);
-        verify(managerPresenter).launchRunner(runOptions, SOME_TEXT);
+        verify(runnerManager).launchRunner(runOptions, SOME_TEXT);
     }
 }

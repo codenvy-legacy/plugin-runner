@@ -55,6 +55,12 @@ public class TabContainerPresenter implements TabContainer, TabContainerView.Act
 
     /** {@inheritDoc} */
     @Override
+    public void showTab(@Nonnull String title) {
+        onTabClicked(title);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void addTab(@Nonnull Tab tab) {
         String title = tab.getTitle();
 

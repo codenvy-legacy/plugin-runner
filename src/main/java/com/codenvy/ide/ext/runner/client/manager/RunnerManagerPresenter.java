@@ -100,6 +100,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final SelectionManager           selectionManager;
     private final ConsoleContainer           consoleContainer;
     private final TerminalContainer          terminalContainer;
+    private final TabContainer               rightTabContainer;
 
     private Set<Long>                 runnersId;
     private GetRunningProcessesAction getRunningProcessAction;
@@ -142,6 +143,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         this.consoleContainer = consoleContainer;
         this.terminalContainer = terminalContainer;
+
+        this.rightTabContainer = rightTabContainer;
 
         this.runnerActions = new HashMap<>();
 
@@ -222,41 +225,54 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                       @Nonnull TerminalContainer terminalContainer,
                                       @Nonnull final PropertiesContainer propertiesContainer) {
 
+        TabSelectHandler consoleHandler = new TabSelectHandler() {
+            @Override
+            public void onTabSelected() {
+                selectedRunner.setActiveTab(locale.runnerTabConsole());
+            }
+        };
+
         Tab consoleTab = tabBuilderProvider.get()
                                            .presenter(consoleContainer)
                                            .title(locale.runnerTabConsole())
                                            .visible(REMOVABLE)
+                                           .selectHandler(consoleHandler)
                                            .scope(EnumSet.allOf(State.class))
                                            .type(RIGHT_PANEL)
                                            .build();
 
         container.addTab(consoleTab);
 
+        TabSelectHandler terminalHandler = new TabSelectHandler() {
+            @Override
+            public void onTabSelected() {
+                selectedRunner.setActiveTab(locale.runnerTabTerminal());
+            }
+        };
+
         Tab terminalTab = tabBuilderProvider.get()
                                             .presenter(terminalContainer)
                                             .title(locale.runnerTabTerminal())
                                             .visible(VISIBLE)
+                                            .selectHandler(terminalHandler)
                                             .scope(EnumSet.allOf(State.class))
                                             .type(RIGHT_PANEL)
                                             .build();
 
         container.addTab(terminalTab);
 
-        TabSelectHandler propertiesPanelHandler = new TabSelectHandler() {
+        TabSelectHandler propertiesHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
-                Runner runner = selectionManager.getRunner();
-                if (runner == null) {
-                    return;
-                }
+                selectedRunner.setActiveTab(locale.runnerTabProperties());
 
-                propertiesContainer.show(runner);
+                propertiesContainer.show(selectedRunner);
             }
         };
 
         Tab propertiesTab = tabBuilderProvider.get()
                                               .presenter(propertiesContainer)
-                                              .selectHandler(propertiesPanelHandler)
+                                              .selectHandler(propertiesHandler)
                                               .title(locale.runnerTabProperties())
                                               .visible(REMOVABLE)
                                               .scope(EnumSet.allOf(State.class))
@@ -407,8 +423,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         return launchRunner(modelsFactory.createRunner(runOptions, environmentName));
     }
 
+    @Nonnull
     private Runner launchRunner(@Nonnull Runner runner) {
-        selectedRunner = runner;
         selectedEnvironment = null;
 
         history.addRunner(runner);
@@ -559,15 +575,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         history.selectRunner(selectedRunner);
+        rightTabContainer.showTab(selectedRunner.getActiveTab());
+
         update(selectedRunner);
 
         updateRunnerTimer();
-
-        if (selectedRunner.isConsoleActive()) {
-            //TODO console should be activated
-        } else {
-            //TODO terminal should be activated
-        }
     }
 
     private void environmentSelected() {
