@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.properties.panel;
 
+import com.codenvy.ide.api.editor.EditorPartPresenter;
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Boot;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
@@ -99,25 +100,7 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
      */
     void selectShutdown(@Nonnull Shutdown shutdown);
 
-    /** @return content of Editor text area */
-    @Nonnull
-    String getContent();
-
-    /**
-     * Changes content of Editor text area.
-     *
-     * @param content
-     *         content that needs to be set
-     */
-    void setContent(@Nonnull String content);
-
-    /**
-     * Changes visibility of the widget.
-     *
-     * @param visible
-     *         visible state that needs to be applied
-     */
-    void setVisible(boolean visible);
+    void showEditor(@Nonnull EditorPartPresenter editor);
 
     interface ActionDelegate {
 

@@ -21,11 +21,9 @@ import com.codenvy.ide.api.parts.PartPresenter;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
@@ -37,10 +35,12 @@ import com.codenvy.ide.ext.runner.client.state.PanelState;
 import com.codenvy.ide.ext.runner.client.state.State;
 import com.codenvy.ide.ext.runner.client.tabs.common.Tab;
 import com.codenvy.ide.ext.runner.client.tabs.common.TabBuilder;
+import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.tabs.container.TabContainer;
-import com.codenvy.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
 import com.codenvy.ide.ext.runner.client.tabs.history.HistoryPanel;
+import com.codenvy.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesPanel;
+import com.codenvy.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -61,7 +61,6 @@ import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._512;
 import static com.codenvy.ide.ext.runner.client.selection.Selection.RUNNER;
 import static com.codenvy.ide.ext.runner.client.state.State.HISTORY;
 import static com.codenvy.ide.ext.runner.client.state.State.TEMPLATE;
@@ -70,6 +69,7 @@ import static com.codenvy.ide.ext.runner.client.tabs.common.Tab.VisibleState.VIS
 import static com.codenvy.ide.ext.runner.client.tabs.container.TabContainer.TabSelectHandler;
 import static com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
 import static com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._512;
 
 /**
  * The class provides much business logic:
@@ -121,7 +121,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   Provider<TabBuilder> tabBuilderProvider,
                                   ConsoleContainer consoleContainer,
                                   TerminalContainer terminalContainer,
-                                  PropertiesPanel propertiesPanel,
+                                  PropertiesContainer propertiesContainer,
                                   HistoryPanel history,
                                   TemplatesPanel templates,
                                   SelectionManager selectionManager) {
@@ -158,7 +158,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         runnersId = new HashSet<>();
 
         initializeLeftPanel(panelState, leftTabContainer, tabBuilderProvider, history, templates);
-        initializeRightPanel(rightTabContainer, tabBuilderProvider, consoleContainer, terminalContainer, propertiesPanel);
+        initializeRightPanel(rightTabContainer, tabBuilderProvider, consoleContainer, terminalContainer, propertiesContainer);
 
         view.setLeftPanel(leftTabContainer);
         view.setRightPanel(rightTabContainer);
@@ -220,7 +220,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                       @Nonnull Provider<TabBuilder> tabBuilderProvider,
                                       @Nonnull ConsoleContainer consoleContainer,
                                       @Nonnull TerminalContainer terminalContainer,
-                                      @Nonnull PropertiesPanel propertiesPanel) {
+                                      @Nonnull final PropertiesContainer propertiesContainer) {
 
         Tab consoleTab = tabBuilderProvider.get()
                                            .presenter(consoleContainer)
@@ -242,8 +242,21 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         container.addTab(terminalTab);
 
+        TabSelectHandler propertiesPanelHandler = new TabSelectHandler() {
+            @Override
+            public void onTabSelected() {
+                Runner runner = selectionManager.getRunner();
+                if (runner == null) {
+                    return;
+                }
+
+                propertiesContainer.show(runner);
+            }
+        };
+
         Tab propertiesTab = tabBuilderProvider.get()
-                                              .presenter(propertiesPanel)
+                                              .presenter(propertiesContainer)
+                                              .selectHandler(propertiesPanelHandler)
                                               .title(locale.runnerTabProperties())
                                               .visible(REMOVABLE)
                                               .scope(EnumSet.allOf(State.class))

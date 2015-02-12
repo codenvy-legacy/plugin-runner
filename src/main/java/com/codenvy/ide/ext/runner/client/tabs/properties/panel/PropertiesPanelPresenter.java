@@ -10,11 +10,21 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.properties.panel;
 
+import com.codenvy.ide.api.editor.EditorInitException;
+import com.codenvy.ide.api.editor.EditorPartPresenter;
+import com.codenvy.ide.api.editor.EditorRegistry;
+import com.codenvy.ide.api.filetypes.FileType;
+import com.codenvy.ide.api.filetypes.FileTypeRegistry;
+import com.codenvy.ide.api.parts.PartPresenter;
+import com.codenvy.ide.api.parts.PropertyListener;
+import com.codenvy.ide.api.projecttree.generic.FileNode;
+import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFileFactory;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
-import javax.annotation.Nonnull;
+import static com.codenvy.ide.api.editor.EditorPartPresenter.PROP_INPUT;
 
 /**
  * The class that manages Properties panel widget.
@@ -24,29 +34,34 @@ import javax.annotation.Nonnull;
 public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDelegate, PropertiesPanel {
 
     private final PropertiesPanelView view;
-//    private final FileTypeRegistry    fileTypeRegistry;
-//    private final EditorRegistry      editorRegistry;
 
     @Inject
-    public PropertiesPanelPresenter(PropertiesPanelView view
-//                                    EditorRegistry editorRegistry,
-//                                    FileTypeRegistry fileTypeRegistry,
-//                                    DockerFileFactory dockerFileFactory,
-//                                    @Assisted Runner runner
-                                   ) {
+    public PropertiesPanelPresenter(final PropertiesPanelView view,
+                                    EditorRegistry editorRegistry,
+                                    FileTypeRegistry fileTypeRegistry,
+                                    DockerFileFactory dockerFileFactory,
+                                    @Assisted Runner runner) throws EditorInitException {
         this.view = view;
         this.view.setDelegate(this);
 
-//        this.editorRegistry = editorRegistry;
-//        this.fileTypeRegistry = fileTypeRegistry;
-//
-//        String dockerUrl = runner.getDockerUrl();
-//        if (dockerUrl == null) {
-//            return;
-//        }
-//
-//        FileType fileType = fileTypeRegistry.getFileTypeByFile(dockerFileFactory.newInstance(dockerUrl));
-//        EditorPartPresenter editor = editorRegistry.getEditor(fileType).getEditor();
+        String dockerUrl = runner.getDockerUrl();
+        if (dockerUrl == null) {
+            return;
+        }
+
+        FileNode file = dockerFileFactory.newInstance(dockerUrl);
+        FileType fileType = fileTypeRegistry.getFileTypeByFile(file);
+        final EditorPartPresenter editor = editorRegistry.getEditor(fileType).getEditor();
+        editor.addPropertyListener(new PropertyListener() {
+            @Override
+            public void propertyChanged(PartPresenter source, int propId) {
+                if (propId == PROP_INPUT) {
+                    view.showEditor(editor);
+                }
+            }
+        });
+
+        editor.init(new DockerFileEditorInput(fileType, file));
     }
 
     /** {@inheritDoc} */
@@ -77,19 +92,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     @Override
     public void go(AcceptsOneWidget container) {
         container.setWidget(view);
-    }
-
-    /** {@inheritDoc} */
-    @Nonnull
-    @Override
-    public IsWidget getView() {
-        return view;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setVisible(boolean visible) {
-        view.setVisible(visible);
     }
 
 }

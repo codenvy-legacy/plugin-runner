@@ -54,7 +54,7 @@
                 </g:north>
 
                 <g:center>
-                    <g:TextArea ui:field="editor"/>
+                    <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{resources.runnerCss.fullSize}"/>
                 </g:center>
             </g:DockLayoutPanel>
         </g:center>

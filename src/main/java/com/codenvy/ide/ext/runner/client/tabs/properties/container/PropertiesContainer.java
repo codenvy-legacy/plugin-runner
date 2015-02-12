@@ -8,17 +8,26 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.tabs.properties.panel;
+package com.codenvy.ide.ext.runner.client.tabs.properties.container;
 
-import com.codenvy.ide.api.mvp.Presenter;
+import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.tabs.common.TabPresenter;
 import com.google.inject.ImplementedBy;
 
+import javax.annotation.Nonnull;
+
 /**
- * The common representation of properties panel widget.
+ * The container for properties panels.
  *
  * @author Andrey Plotnikov
  */
-@ImplementedBy(PropertiesPanelPresenter.class)
-public interface PropertiesPanel extends Presenter {
-
+@ImplementedBy(PropertiesContainerPresenter.class)
+public interface PropertiesContainer extends TabPresenter {
+    /**
+     * Show properties panel for runner.
+     *
+     * @param runner
+     *         runner that is bound with properties panel
+     */
+    void show(@Nonnull Runner runner);
 }

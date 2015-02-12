@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.properties.panel;
 
+import com.codenvy.ide.api.editor.EditorPartPresenter;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Boot;
@@ -26,7 +27,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -46,25 +47,25 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     private static final PropertiesPanelViewImplUiBinder UI_BINDER = GWT.create(PropertiesPanelViewImplUiBinder.class);
 
     @UiField
-    TextBox  name;
+    TextBox           name;
     @UiField
-    ListBox  ram;
+    ListBox           ram;
     @UiField
-    ListBox  scope;
+    ListBox           scope;
     @UiField
-    TextBox  type;
+    TextBox           type;
     @UiField
-    ListBox  boot;
+    ListBox           boot;
     @UiField
-    ListBox  shutdown;
+    ListBox           shutdown;
     @UiField
-    Button   btnSave;
+    Button            btnSave;
     @UiField
-    Button   btnDelete;
+    Button            btnDelete;
     @UiField
-    Button   btnCancel;
+    Button            btnCancel;
     @UiField
-    TextArea editor;
+    SimpleLayoutPanel editorPanel;
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
     @UiField(provided = true)
@@ -180,16 +181,9 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     }
 
     /** {@inheritDoc} */
-    @Nonnull
     @Override
-    public String getContent() {
-        return editor.getText();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setContent(@Nonnull String content) {
-        editor.setText(content);
+    public void showEditor(@Nonnull EditorPartPresenter editor) {
+        editor.go(editorPanel);
     }
 
     @UiHandler({"name", "type"})

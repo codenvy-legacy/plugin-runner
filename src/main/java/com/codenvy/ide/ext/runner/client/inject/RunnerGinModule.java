@@ -26,6 +26,8 @@ import com.codenvy.ide.ext.runner.client.tabs.console.panel.Console;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.ConsoleImpl;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidgetImpl;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelPresenter;
 import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButtonImpl;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
@@ -60,6 +62,7 @@ public class RunnerGinModule extends AbstractGinModule {
                                              .implement(Console.class, ConsoleImpl.class)
                                              .implement(ButtonWidget.class, ButtonWidgetImpl.class)
                                              .implement(TabWidget.class, TabWidgetImpl.class)
+                                             .implement(PropertiesPanel.class, PropertiesPanelPresenter.class)
                                              .implement(MoreInfo.class, MoreInfoImpl.class)
                                              .implement(TypeButton.class, TypeButtonImpl.class)
                                              .build(WidgetFactory.class));

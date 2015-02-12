@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.tabs.console.panel.FullLogMessageWidget
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
 import com.codenvy.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
 import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
@@ -87,6 +88,16 @@ public interface WidgetFactory {
      */
     @Nonnull
     Terminal createTerminal();
+
+    /**
+     * Creates a properties panel widget for a given runner.
+     *
+     * @param runner
+     *         runner that needs to be bound with a widget
+     * @return an instance of {@link PropertiesPanel}
+     */
+    @Nonnull
+    PropertiesPanel createPropertiesPanel(@Nonnull Runner runner);
 
     /**
      * Creates more info popup widget.
