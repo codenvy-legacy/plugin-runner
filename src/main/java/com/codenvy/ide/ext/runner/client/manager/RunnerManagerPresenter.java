@@ -237,7 +237,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                            .title(locale.runnerTabConsole())
                                            .visible(REMOVABLE)
                                            .selectHandler(consoleHandler)
-                                           .scope(EnumSet.allOf(State.class))
+                                           .scope(EnumSet.of(HISTORY))
                                            .type(RIGHT_PANEL)
                                            .build();
 
@@ -255,7 +255,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                             .title(locale.runnerTabTerminal())
                                             .visible(VISIBLE)
                                             .selectHandler(terminalHandler)
-                                            .scope(EnumSet.allOf(State.class))
+                                            .scope(EnumSet.of(HISTORY))
                                             .type(RIGHT_PANEL)
                                             .build();
 

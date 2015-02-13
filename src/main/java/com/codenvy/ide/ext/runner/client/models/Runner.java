@@ -11,9 +11,7 @@
 package com.codenvy.ide.ext.runner.client.models;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
-import com.codenvy.api.runner.ApplicationStatus;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
-import com.codenvy.api.runner.dto.PortMapping;
 import com.codenvy.api.runner.dto.RunOptions;
 
 import javax.annotation.Nonnegative;
@@ -28,6 +26,10 @@ import javax.annotation.Nullable;
  * @author Dmitry Shnurenko
  */
 public interface Runner {
+
+    /** @return descriptor of application process */
+    @Nullable
+    ApplicationProcessDescriptor getDescriptor();
 
     /** @return title of tab which is active for current runner */
     @Nonnull
@@ -98,10 +100,6 @@ public interface Runner {
      */
     void setStatus(@Nonnull Status status);
 
-    /** @return status of application */
-    @Nonnull
-    ApplicationStatus getApplicationStatus();
-
     /** @return url where application is running */
     @Nullable
     String getApplicationURL();
@@ -138,10 +136,6 @@ public interface Runner {
 
     /** @return id of process that was bound with this runner */
     long getProcessId();
-
-    /** @return port application port mapping */
-    @Nullable
-    PortMapping getPortMapping();
 
     /** @return options of a runner */
     @Nonnull

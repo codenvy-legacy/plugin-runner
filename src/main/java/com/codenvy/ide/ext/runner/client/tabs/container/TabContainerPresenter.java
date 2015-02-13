@@ -98,14 +98,24 @@ public class TabContainerPresenter implements TabContainer, TabContainerView.Act
     @Override
     public void onStateChanged() {
         State state = panelState.getState();
+        Tab firsVisibleTab = null;
 
         for (Tab tab : tabs.values()) {
             boolean visible = tab.isAvailableScope(state);
-
+            if (visible && firsVisibleTab == null) {
+                firsVisibleTab = tab;
+            }
             tabVisibilities.put(tab.getTitle(), visible);
         }
 
         view.setVisibleTitle(tabVisibilities);
+
+        if (firsVisibleTab == null) {
+            return;
+        }
+
+        view.showTab(firsVisibleTab);
+        view.selectTab(firsVisibleTab);
     }
 
 }
