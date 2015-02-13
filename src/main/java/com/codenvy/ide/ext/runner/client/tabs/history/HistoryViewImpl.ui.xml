@@ -21,6 +21,7 @@
         }
 
         .runnerPanels {
+            margin-top: 6px;
             width: calc(100% + 1px);
             margin-left: 5px;
             background: #313131;

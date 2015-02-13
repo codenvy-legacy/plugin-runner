@@ -29,10 +29,6 @@
             <g:FlowPanel ui:field="tabs" addStyleNames="{resources.runnerCss.fullSize} {style.tabs}"/>
         </g:north>
 
-        <g:north size="6">
-            <g:FlowPanel/>
-        </g:north>
-
         <g:center>
             <g:FlowPanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize}"/>
         </g:center>

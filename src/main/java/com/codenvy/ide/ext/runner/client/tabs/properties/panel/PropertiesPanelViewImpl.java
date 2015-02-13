@@ -13,19 +13,20 @@ package com.codenvy.ide.ext.runner.client.tabs.properties.panel;
 import com.codenvy.ide.api.editor.EditorPartPresenter;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Boot;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Shutdown;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -48,38 +49,45 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     private static final PropertiesPanelViewImplUiBinder UI_BINDER = GWT.create(PropertiesPanelViewImplUiBinder.class);
 
     @UiField
-    TextBox           name;
+    TextBox name;
     @UiField
-    ListBox           ram;
+    TextBox type;
+
     @UiField
-    ListBox           scope;
+    FlowPanel buttonsPanel;
+
     @UiField
-    TextBox           type;
+    ListBox ram;
     @UiField
-    ListBox           boot;
+    ListBox scope;
     @UiField
-    ListBox           shutdown;
+    ListBox boot;
     @UiField
-    Button            btnSave;
-    @UiField
-    Button            btnDelete;
-    @UiField
-    Button            btnCancel;
+    ListBox shutdown;
+
     @UiField
     SimpleLayoutPanel editorPanel;
+
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
     @UiField(provided = true)
     final RunnerResources            resources;
 
+    private final WidgetFactory widgetFactory;
+
     private ActionDelegate delegate;
 
+    private PropertyButtonWidget saveBtn;
+    private PropertyButtonWidget cancelBtn;
+
     @Inject
-    public PropertiesPanelViewImpl(RunnerLocalizationConstant locale, RunnerResources resources) {
+    public PropertiesPanelViewImpl(RunnerLocalizationConstant locale, RunnerResources resources, WidgetFactory widgetFactory) {
         this.locale = locale;
         this.resources = resources;
 
         initWidget(UI_BINDER.createAndBindUi(this));
+
+        this.widgetFactory = widgetFactory;
 
         prepareField(ram, EnumSet.range(RAM._128, RAM._2048));
         prepareField(scope, EnumSet.allOf(Scope.class));
@@ -91,12 +99,47 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
         unAvailableMessage.addStyleName(resources.runnerCss().unAvailableMessage());
 
         editorPanel.setWidget(unAvailableMessage);
+
+        PropertyButtonWidget.ActionDelegate saveDelegate = new PropertyButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onSaveButtonClicked();
+            }
+        };
+
+        PropertyButtonWidget.ActionDelegate deleteDelegate = new PropertyButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onDeleteButtonClicked();
+            }
+        };
+
+        PropertyButtonWidget.ActionDelegate cancelDelegate = new PropertyButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onCancelButtonClicked();
+            }
+        };
+
+        saveBtn = createButton(locale.propertiesButtonSave(), saveDelegate);
+        createButton(locale.propertiesButtonDelete(), deleteDelegate);
+        cancelBtn = createButton(locale.propertiesButtonCancel(), cancelDelegate);
     }
 
     private void prepareField(@Nonnull ListBox field, @Nonnull Set<? extends Enum> items) {
         for (Enum item : items) {
             field.addItem(item.toString());
         }
+    }
+
+    @Nonnull
+    private PropertyButtonWidget createButton(@Nonnull String title, @Nonnull PropertyButtonWidget.ActionDelegate delegate) {
+        PropertyButtonWidget button = widgetFactory.createPropertyButton(title);
+        button.setDelegate(delegate);
+
+        buttonsPanel.add(button);
+
+        return button;
     }
 
     /** {@inheritDoc} */
@@ -190,13 +233,13 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     /** {@inheritDoc} */
     @Override
     public void setEnableSaveButton(boolean enable) {
-        btnSave.setEnabled(enable);
+        saveBtn.setEnable(enable);
     }
 
     /** {@inheritDoc} */
     @Override
     public void setEnableCancelButton(boolean enable) {
-        btnCancel.setEnabled(enable);
+        cancelBtn.setEnable(enable);
     }
 
     /** {@inheritDoc} */
@@ -213,21 +256,6 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     @UiHandler({"ram", "scope", "boot", "shutdown"})
     public void handleChange(@SuppressWarnings("UnusedParameters") ChangeEvent event) {
         delegate.onConfigurationChanged();
-    }
-
-    @UiHandler("btnSave")
-    public void onSaveButtonClicked(@SuppressWarnings("UnusedParameters") ClickEvent event) {
-        delegate.onSaveButtonClicked();
-    }
-
-    @UiHandler("btnDelete")
-    public void onDeleteButtonClicked(@SuppressWarnings("UnusedParameters") ClickEvent event) {
-        delegate.onDeleteButtonClicked();
-    }
-
-    @UiHandler("btnCancel")
-    public void onCancelButtonClicked(@SuppressWarnings("UnusedParameters") ClickEvent event) {
-        delegate.onCancelButtonClicked();
     }
 
 }

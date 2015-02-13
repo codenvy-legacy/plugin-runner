@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.tabs.console.panel.FullLogMessageWidget
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
+import com.codenvy.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
@@ -140,5 +141,15 @@ public interface WidgetFactory {
      */
     @Nonnull
     ScopeButton createScopeButton(@Nonnull Scope buttonScope, @Nonnull ImageResource image, boolean isChecked);
+
+    /**
+     * Creates property button widget.
+     *
+     * @param title
+     *         title of button
+     * @return an instance of {@link PropertyButtonWidget}
+     */
+    @Nonnull
+    PropertyButtonWidget createPropertyButton(@Nonnull String title);
 
 }

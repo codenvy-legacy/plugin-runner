@@ -16,45 +16,118 @@
     <ui:with field="locale" type="com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant"/>
     <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
 
-    <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
-        <g:west size="200">
-            <g:FlowPanel>
-                <g:Label text="{locale.propertiesName}"/>
-                <g:TextBox ui:field="name"/>
+    <ui:style>
+        .mainPanel {
+            background: #474747;
+        }
 
-                <g:Label text="{locale.propertiesRam}"/>
-                <g:ListBox ui:field="ram"/>
+        .itemPanel {
+            float: left;
+            width: 100%;
+            height: 30px;
+        }
 
-                <g:Label text="{locale.propertiesScope}"/>
-                <g:ListBox ui:field="scope"/>
+        .settingsPanel {
+            width: 100%;
+            height: 100%;
+            margin-left: 6px;
+            margin-top: 11px;
+        }
 
-                <g:Label text="{locale.propertiesType}"/>
-                <g:TextBox ui:field="type"/>
+        .settingField {
+            float: right;
+            width: 160px;
+            border: 1px solid #191c1e;
+            border-radius: 2px;
+            margin-right: 50px;
+            padding-left: 6px;
+            padding-top: 2px;
+            background-color: #373737;
+            box-shadow: 0 1px 0 0 rgba(223, 223, 223, 0.4);
+        }
 
-                <g:Label text="{locale.propertiesBoot}"/>
-                <g:ListBox ui:field="boot"/>
+        .listBoxWidth {
+            width: 170px !important;
+        }
 
-                <g:Label text="{locale.propertiesShutdown}"/>
-                <g:ListBox ui:field="shutdown"/>
+        .label {
+            margin-top: 3px;
+            float: left;
+        }
+
+        .dockerFileLabel {
+            margin-top: 10px;
+        }
+
+        .editor {
+            border: 1px solid #191c1e;
+            width: calc(100% - 20px);
+        }
+
+        .buttonsPanel {
+            width: 100px;
+            margin-left: 50px;
+            margin-top: 20px;
+        }
+    </ui:style>
+
+    <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize} {style.mainPanel}">
+        <g:west size="300">
+            <g:FlowPanel addStyleNames="{style.settingsPanel}">
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesName}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:TextBox ui:field="name" addStyleNames="{style.settingField} {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
+
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesRam}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:ListBox ui:field="ram" addStyleNames="{style.settingField}
+                                                             {style.listBoxWidth}
+                                                             {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
+
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesScope}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:ListBox ui:field="scope" addStyleNames="{style.settingField}
+                                                               {style.listBoxWidth}
+                                                               {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
+
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesType}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:TextBox ui:field="type" addStyleNames="{style.settingField} {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
+
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesBoot}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:ListBox ui:field="boot" addStyleNames="{style.settingField}
+                                                              {style.listBoxWidth}
+                                                              {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
+
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesShutdown}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:ListBox ui:field="shutdown" addStyleNames="{style.settingField}
+                                                                  {style.listBoxWidth}
+                                                                  {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
             </g:FlowPanel>
         </g:west>
 
-        <g:east size="100">
-            <g:FlowPanel>
-                <g:Button ui:field="btnSave" text="{locale.propertiesButtonSave}"/>
-                <g:Button ui:field="btnDelete" text="{locale.propertiesButtonDelete}"/>
-                <g:Button ui:field="btnCancel" text="{locale.propertiesButtonCancel}"/>
-            </g:FlowPanel>
+        <g:east size="180">
+            <g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}"/>
         </g:east>
 
         <g:center>
             <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
                 <g:north size="30">
-                    <g:Label text="{locale.propertiesDockerfile}"/>
+                    <g:Label text="{locale.propertiesDockerfile}" addStyleNames="{style.dockerFileLabel}
+                                                                                 {resources.runnerCss.propertiesFont}"/>
                 </g:north>
 
                 <g:center>
-                    <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{resources.runnerCss.fullSize}"/>
+                    <!--TODO editor panel goes beyond of parent panel-->
+                    <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{resources.runnerCss.fullSize} {style.editor}"/>
                 </g:center>
             </g:DockLayoutPanel>
         </g:center>

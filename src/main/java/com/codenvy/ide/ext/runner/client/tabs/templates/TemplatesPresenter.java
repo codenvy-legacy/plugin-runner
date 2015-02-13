@@ -198,6 +198,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
         switch (scope) {
             case PROJECT:
+                this.scope = SYSTEM;
                 environmentMap.get(scope).clear();
 
                 view.addEnvironment(environmentMap);
