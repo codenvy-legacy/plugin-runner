@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
-import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.web.bindery.event.shared.Event;
 
@@ -27,11 +26,9 @@ public class RunnerApplicationStatusEvent extends Event<RunnerApplicationStatusE
 
     public static final Type<RunnerApplicationStatusEventHandler> TYPE = new Type<>();
 
-    private final ApplicationProcessDescriptor applicationProcessDescriptor;
-    private final Runner                       runner;
+    private final Runner runner;
 
-    public RunnerApplicationStatusEvent(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor, @Nonnull Runner runner) {
-        this.applicationProcessDescriptor = applicationProcessDescriptor;
+    public RunnerApplicationStatusEvent(@Nonnull Runner runner) {
         this.runner = runner;
     }
 
@@ -44,7 +41,7 @@ public class RunnerApplicationStatusEvent extends Event<RunnerApplicationStatusE
     /** {@inheritDoc} */
     @Override
     protected void dispatch(RunnerApplicationStatusEventHandler handler) {
-        handler.onRunnerStatusChanged(applicationProcessDescriptor, runner);
+        handler.onRunnerStatusChanged(runner);
     }
 
 }

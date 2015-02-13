@@ -18,7 +18,6 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.commons.exception.ServerException;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerView;
@@ -27,6 +26,7 @@ import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common.RunnerApplicationStatusEvent;
+import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -179,7 +179,7 @@ public class StatusAction extends AbstractRunnerAction {
             default:
         }
 
-        eventBus.fireEvent(new RunnerApplicationStatusEvent(descriptor, runner));
+        eventBus.fireEvent(new RunnerApplicationStatusEvent(runner));
     }
 
     private void processStoppedMessage() {

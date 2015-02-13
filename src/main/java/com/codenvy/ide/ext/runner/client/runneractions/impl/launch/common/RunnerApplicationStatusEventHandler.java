@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
-import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 
 import javax.annotation.Nonnull;
@@ -26,10 +25,8 @@ public interface RunnerApplicationStatusEventHandler {
     /**
      * Performs any actions when a runner is changed its state.
      *
-     * @param applicationProcessDescriptor
-     *         descriptor of application process in the runner
      * @param runner
      *         current runner
      */
-    void onRunnerStatusChanged(@Nonnull ApplicationProcessDescriptor applicationProcessDescriptor, @Nonnull Runner runner);
+    void onRunnerStatusChanged(@Nonnull Runner runner);
 }

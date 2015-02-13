@@ -11,7 +11,9 @@
 package com.codenvy.ide.ext.runner.client.models;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
+import com.codenvy.api.runner.ApplicationStatus;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
+import com.codenvy.api.runner.dto.PortMapping;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.api.runner.dto.RunnerMetric;
 import com.codenvy.api.runner.gwt.client.utils.RunnerUtils;
@@ -265,6 +267,14 @@ public class RunnerImpl implements Runner {
     }
 
     /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public ApplicationStatus getApplicationStatus() {
+        Objects.requireNonNull(descriptor);
+        return descriptor.getStatus();
+    }
+
+    /** {@inheritDoc} */
     @Nullable
     @Override
     public String getApplicationURL() {
@@ -368,6 +378,13 @@ public class RunnerImpl implements Runner {
     public long getProcessId() {
         Objects.requireNonNull(descriptor);
         return descriptor.getProcessId();
+    }
+
+    /** {@inheritDoc} */
+    @Nullable
+    @Override
+    public PortMapping getPortMapping() {
+        return descriptor.getPortMapping();
     }
 
     @Nullable
