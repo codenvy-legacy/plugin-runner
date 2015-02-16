@@ -20,8 +20,8 @@ import javax.annotation.Nonnull;
  * @author Andrey Plotnikov
  */
 public class LogMessage {
-    private int    lineNumber;
-    private String text;
+    private final int    lineNumber;
+    private final String text;
 
     public LogMessage(@Nonnegative int lineNumber, @Nonnull String text) {
         this.lineNumber = lineNumber;

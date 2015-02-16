@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl.launch.common;
 
 import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.util.TimerFactory;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.ide.websocket.rest.SubscriptionHandler;
 import com.google.gwt.user.client.Timer;
@@ -46,6 +47,7 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
     @Inject
     public LogMessagesHandler(LogMessageUnmarshaller unmarshaller,
                               ConsoleContainer consoleContainer,
+                              TimerFactory timerFactory,
                               @Nonnull @Assisted Runner runner,
                               @Nonnull @Assisted ErrorHandler errorHandler) {
         super(unmarshaller);
@@ -55,12 +57,12 @@ public class LogMessagesHandler extends SubscriptionHandler<LogMessage> {
         this.consoleContainer = consoleContainer;
         this.postponedMessages = new HashMap<>();
 
-        this.flushTimer = new Timer() {
+        this.flushTimer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
             @Override
-            public void run() {
+            public void onRun() {
                 printAllPostponedMessages();
             }
-        };
+        });
     }
 
     /** {@inheritDoc} */

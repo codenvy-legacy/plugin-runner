@@ -126,9 +126,9 @@ public class StatusAction extends AbstractRunnerAction {
                 runner.setStatus(FAILED);
 
                 if (exception instanceof ServerException && ((ServerException)exception).getHTTPStatus() == 500) {
-                    ServiceError e = dtoFactory.createDtoFromJson(exception.getMessage(), ServiceError.class);
+                    ServiceError error = dtoFactory.createDtoFromJson(exception.getMessage(), ServiceError.class);
                     runnerUtil.showError(runner,
-                                         locale.startApplicationFailed(project.getProjectDescription().getName()) + ": " + e.getMessage(),
+                                         locale.startApplicationFailed(project.getProjectDescription().getName()) + ": " + error.getMessage(),
                                          null,
                                          notification);
                 } else {

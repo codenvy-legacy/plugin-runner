@@ -23,6 +23,7 @@ import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.collections.java.JsonArrayListAdapter;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.TestUtil;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
@@ -50,8 +51,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
@@ -238,9 +239,9 @@ public class GetRunningProcessesActionTest {
 
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
-        assertEquals(notification.getMessage(), MESSAGE);
-        assertTrue(notification.isImportant());
-        assertTrue(notification.isInfo());
+        assertThat(notification.getMessage(), is(MESSAGE));
+        assertThat(notification.isImportant(), is(true));
+        assertThat(notification.isInfo(), is(true));
 
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
 
@@ -271,9 +272,9 @@ public class GetRunningProcessesActionTest {
 
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
-        assertEquals(notification.getMessage(), MESSAGE);
-        assertTrue(notification.isImportant());
-        assertTrue(notification.isInfo());
+        assertThat(notification.getMessage(), is(MESSAGE));
+        assertThat(notification.isImportant(), is(true));
+        assertThat(notification.isInfo(), is(true));
 
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
 
@@ -294,9 +295,7 @@ public class GetRunningProcessesActionTest {
         verify(webSocketUtil).subscribeHandler(anyString(), handlerArgumentCaptor.capture());
         SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler = handlerArgumentCaptor.getValue();
 
-        Method method = SubscriptionHandler.class.getDeclaredMethod("onMessageReceived", Object.class);
-        method.setAccessible(true);
-        method.invoke(processStartedHandler, processDescriptor);
+        TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", processDescriptor);
 
         verify(runnerManagerPresenter).isRunnerExist(1234567890L);
         verify(processDescriptor).getStatus();
@@ -321,9 +320,7 @@ public class GetRunningProcessesActionTest {
         verify(webSocketUtil).subscribeHandler(anyString(), handlerArgumentCaptor.capture());
         SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler = handlerArgumentCaptor.getValue();
 
-        Method method = SubscriptionHandler.class.getDeclaredMethod("onMessageReceived", Object.class);
-        method.setAccessible(true);
-        method.invoke(processStartedHandler, processDescriptor);
+        TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", processDescriptor);
 
         verify(runnerManagerPresenter).isRunnerExist(1234567890L);
         verifyNoMoreInteractions(runnerManagerPresenter, logsAction, notificationManager, locale);
@@ -393,9 +390,9 @@ public class GetRunningProcessesActionTest {
         verify(notificationManager, times(2)).showNotification(notificationCaptor2.capture());
         Notification notification2 = notificationCaptor2.getValue();
 
-        assertEquals(notification2.getMessage(), MESSAGE);
-        assertTrue(notification2.isImportant());
-        assertTrue(notification2.isInfo());
+        assertThat(notification2.getMessage(), is(MESSAGE));
+        assertThat(notification2.isImportant(), is(true));
+        assertThat(notification2.isInfo(), is(true));
 
         verify(service).getRunningProcesses(PATH_TO_PROJECT, callback);
     }

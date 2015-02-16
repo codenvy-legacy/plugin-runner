@@ -134,6 +134,15 @@ public class CheckRamAndRunActionTest {
         when(actionFactory.createRun()).thenReturn(runAction);
         checkRamAndRunAction =
                 new CheckRamAndRunAction(service, appContext, dialogFactory, callbackBuilderProvider, constant, runnerUtil, actionFactory);
+
+        when(appContext.getCurrentProject()).thenReturn(project);
+        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
+        //preparing mock for creation SuccessCallback
+        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
+        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
+        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
+        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
+        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
     }
 
     @Test
@@ -149,15 +158,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldFailedPerform() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
-
         checkRamAndRunAction.perform(runner);
 
         verify(appContext).getCurrentProject();
@@ -177,14 +177,6 @@ public class CheckRamAndRunActionTest {
     @Test
     public void shouldPerformWithDefaultRunnerConfiguration() {
         String defaultRunnerConfig = "defaultRunnerConfigTesT";
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -231,14 +223,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldPerformWhenEnoughMemory() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -282,14 +266,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldPerformWhenOverrideMemoryIsZero() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -332,14 +308,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldPerformWhenOverrideAndRequiredMemoriesAreZero() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -380,14 +348,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldShowMessageTotalLessRequiredMemory() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -432,14 +392,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldShowMessagesAvailableLessRequiredMemory() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -485,14 +437,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldShowMessageTotalMemoryLessOverrideMemory() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -537,14 +481,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldShowMessageAvailableMemoryLessOverrideMemory() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
@@ -594,16 +530,7 @@ public class CheckRamAndRunActionTest {
         String messageOverrideMemory = "override memory message";
         String messagesOverrideLessRequiredMemory = "some message";
 
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
-
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(runners);
         when(runner.getEnvironmentId()).thenReturn(ID_ENVIRONMENT);
@@ -651,7 +578,6 @@ public class CheckRamAndRunActionTest {
         ConfirmCallback confirmCallback = confirmCallbackArgumentCaptor.getValue();
         confirmCallback.accepted();
 
-
         verify(constant).messagesOverrideMemory();
 
         verify(runner).setRAM(384);
@@ -674,15 +600,6 @@ public class CheckRamAndRunActionTest {
         String titleWarning = "some warning";
         String messageOverrideMemory = "override memory message";
         String messagesOverrideLessRequiredMemory = "some message";
-        //preparing mock for creation SuccessCallback
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(null);
@@ -727,14 +644,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldShowMessageTotalLessOverrideMemoryButRunnerDescriptorIsNull() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(null);
@@ -775,14 +684,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldShowMessagesAvailableLessOverrideMemoryButRunnerDescriptorIsNull() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation SuccessCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(null);
@@ -824,14 +725,6 @@ public class CheckRamAndRunActionTest {
 
     @Test
     public void shouldPerformWhenOverrideMemoryCorrectAndEnoughButRunnerDescriptorIsNull() {
-        when(appContext.getCurrentProject()).thenReturn(project);
-        when(constant.getResourcesFailed()).thenReturn(RESOURCE);
-        //preparing mock for creation FailureCallback
-        when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.unmarshaller(ResourcesDescriptor.class)).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ResourcesDescriptor>>anyObject())).thenReturn(asyncCallbackBuilder);
-        when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getRunners()).thenReturn(null);

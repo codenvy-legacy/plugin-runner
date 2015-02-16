@@ -18,6 +18,7 @@ import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.util.TimerFactory;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.ide.websocket.rest.StringUnmarshallerWS;
@@ -66,6 +67,7 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
     private SubscriptionHandler<String> runnerHealthHandler;
     private String                      webSocketChannel;
     private CurrentProject              project;
+    private TimerFactory                timerFactory;
 
     @Inject
     public CheckHealthStatusAction(AppContext appContext,
@@ -73,13 +75,14 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
                                    RunnerManagerPresenter presenter,
                                    WebSocketUtil webSocketUtil,
                                    ConsoleContainer consoleContainer,
+                                   TimerFactory timerFactory,
                                    @Nonnull @Assisted Notification notification) {
         this.appContext = appContext;
         this.locale = locale;
         this.presenter = presenter;
         this.webSocketUtil = webSocketUtil;
         this.consoleContainer = consoleContainer;
-
+        this.timerFactory = timerFactory;
         this.notification = notification;
     }
 
@@ -92,10 +95,10 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
             return;
         }
 
-        changeAppAliveTimer = new Timer() {
+        changeAppAliveTimer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
             /** {@inheritDoc} */
             @Override
-            public void run() {
+            public void onRun() {
                 presenter.update(runner);
 
                 String projectName = project.getProjectDescription().getName();
@@ -104,7 +107,8 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
                 notification.update(notificationMessage, WARNING, FINISHED, null, true);
                 consoleContainer.printWarn(runner, notificationMessage);
             }
-        };
+        });
+
         changeAppAliveTimer.schedule(THIRTY_SEC.getValue());
 
         webSocketChannel = APP_HEALTH_CHANNEL + runner.getProcessId();
@@ -149,6 +153,10 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void stop() {
+        if (webSocketChannel == null || runnerHealthHandler == null) {
+            // It is impossible to perform stop event twice.
+            return;
+        }
         webSocketUtil.unSubscribeHandler(webSocketChannel, runnerHealthHandler);
 
         if (changeAppAliveTimer != null) {
@@ -156,6 +164,9 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
         }
 
         super.stop();
+
+        webSocketChannel = null;
+        runnerHealthHandler = null;
     }
 
 }

@@ -42,7 +42,8 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -234,8 +235,8 @@ public class StopActionTest {
 
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
-        assertEquals(notification.getMessage(), MESSAGE);
-        assertEquals(notification.getType(), Notification.Type.INFO);
+        assertThat(notification.getMessage(), is(MESSAGE));
+        assertThat(notification.getType(), is(Notification.Type.INFO));
 
         verify(presenter).update(runner);
 
@@ -268,8 +269,8 @@ public class StopActionTest {
 
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
-        assertEquals(notification.getMessage(), MESSAGE);
-        assertEquals(notification.getType(), Notification.Type.INFO);
+        assertThat(notification.getMessage(), is(MESSAGE));
+        assertThat(notification.getType(), is(Notification.Type.INFO));
 
         verify(presenter).update(runner);
 
@@ -304,7 +305,7 @@ public class StopActionTest {
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
         //because type of message ERROR
-        assertEquals(notification.getType(), Notification.Type.ERROR);
+        assertThat(notification.getType(), is(Notification.Type.ERROR));
 
         verify(presenter).update(runner);
 

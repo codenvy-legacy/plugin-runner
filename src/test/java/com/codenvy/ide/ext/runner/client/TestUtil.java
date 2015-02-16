@@ -14,6 +14,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -41,6 +42,49 @@ public class TestUtil {
         field.setAccessible(true);
 
         return field.get(object);
+    }
+
+    /**
+     * Do method from superclass by name.
+     *
+     * @param object
+     *         object from super class which need invoke method
+     * @param name
+     *         name of method which need invoke
+     * @param arg
+     *         argument of method
+     * @throws Exception
+     */
+    public static <T> void invokeMethodByName(@Nonnull T object, @Nonnull String name, Object arg) throws Exception {
+        Method method = object.getClass().getDeclaredMethod(name, Object.class);
+
+        method.setAccessible(true);
+
+        method.invoke(object, arg);
+    }
+
+    /**
+     * Do method from superclass by name.
+     *
+     * @param object
+     *         object from super class which need invoke method
+     * @param name
+     *         name of method which need invoke
+     * @param typeArg
+     *         type of method argument
+     * @param arg
+     *         argument of method
+     * @throws Exception
+     */
+    public static <T> void invokeMethodByName(@Nonnull T object,
+                                              @Nonnull String name,
+                                              Class typeArg,
+                                              Object arg) throws Exception {
+        Method method = object.getClass().getDeclaredMethod(name, typeArg);
+
+        method.setAccessible(true);
+
+        method.invoke(object, arg);
     }
 
     /**
