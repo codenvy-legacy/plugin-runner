@@ -30,9 +30,9 @@ public class TestUtil {
      * Method returns value of field from superclass by name.
      *
      * @param object
-     *         object from super class which need get field value
+     *         object from super class which need to get field value
      * @param fieldName
-     *         field name which need get
+     *         field name which need to get
      * @return value of field by name
      * @throws Exception
      */
@@ -48,9 +48,9 @@ public class TestUtil {
      * Do method from superclass by name.
      *
      * @param object
-     *         object from super class which need invoke method
+     *         object from super class which need to invoke method
      * @param name
-     *         name of method which need invoke
+     *         name of method which need to invoke
      * @param arg
      *         argument of method
      * @throws Exception
@@ -67,9 +67,9 @@ public class TestUtil {
      * Do method from superclass by name.
      *
      * @param object
-     *         object from super class which need invoke method
+     *         object from super class which need to invoke method
      * @param name
-     *         name of method which need invoke
+     *         name of method which need to invoke
      * @param typeArg
      *         type of method argument
      * @param arg
@@ -91,7 +91,7 @@ public class TestUtil {
      * Methods returns value of field from object using index. Index is number field in class.
      *
      * @param object
-     *         object from which need get value of field
+     *         object from which need to get value of field
      * @param index
      *         index of field for which need get value
      * @return value of field by index
@@ -113,7 +113,7 @@ public class TestUtil {
      * @param clazz
      *         class which uses this method
      * @param path
-     *         path to content which need read
+     *         path to content which need to read
      * @return string representation of content which located by current path
      */
     @Nonnull
