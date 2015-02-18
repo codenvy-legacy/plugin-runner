@@ -11,9 +11,14 @@
 package com.codenvy.ide.ext.runner.client.manager.button;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.manager.tooltip.TooltipWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -31,10 +36,12 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public class ButtonWidgetImpl extends Composite implements ButtonWidget, ClickHandler {
+public class ButtonWidgetImpl extends Composite implements ButtonWidget, ClickHandler, MouseOverHandler, MouseOutHandler {
 
     interface ButtonWidgetImplUiBinder extends UiBinder<Widget, ButtonWidgetImpl> {
     }
+
+    private static final int TOP_TOOLTIP_SHIFT = 35;
 
     private static final ButtonWidgetImplUiBinder UI_BINDER = GWT.create(ButtonWidgetImplUiBinder.class);
 
@@ -46,18 +53,27 @@ public class ButtonWidgetImpl extends Composite implements ButtonWidget, ClickHa
     @UiField(provided = true)
     final RunnerResources resources;
 
+    private final TooltipWidget tooltip;
+
     private ActionDelegate delegate;
     private boolean        isEnable;
 
     @Inject
-    public ButtonWidgetImpl(RunnerResources resources, @Nonnull @Assisted ImageResource image) {
+    public ButtonWidgetImpl(RunnerResources resources,
+                            final TooltipWidget tooltip,
+                            @Nonnull @Assisted String prompt,
+                            @Nonnull @Assisted ImageResource image) {
         this.resources = resources;
+        this.tooltip = tooltip;
+        this.tooltip.setDescription(prompt);
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
         this.image.setResource(image);
 
         addDomHandler(this, ClickEvent.getType());
+        addDomHandler(this, MouseOutEvent.getType());
+        addDomHandler(this, MouseOverEvent.getType());
     }
 
     /** {@inheritDoc} */
@@ -88,5 +104,19 @@ public class ButtonWidgetImpl extends Composite implements ButtonWidget, ClickHa
         if (isEnable) {
             delegate.onButtonClicked();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onMouseOut(MouseOutEvent mouseOutEvent) {
+        tooltip.hide();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onMouseOver(MouseOverEvent event) {
+        tooltip.setPopupPosition(getAbsoluteLeft(), getAbsoluteTop() + TOP_TOOLTIP_SHIFT);
+
+        tooltip.show();
     }
 }

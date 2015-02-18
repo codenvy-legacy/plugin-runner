@@ -80,22 +80,15 @@
                 </g:FlowPanel>
 
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesType}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:TextBox ui:field="type" addStyleNames="{style.settingField} {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
+
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
                     <g:Label text="{locale.propertiesRam}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
                     <g:ListBox ui:field="ram" addStyleNames="{style.settingField}
                                                              {style.listBoxWidth}
                                                              {resources.runnerCss.propertiesFont}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel addStyleNames="{style.itemPanel}">
-                    <g:Label text="{locale.propertiesScope}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
-                    <g:ListBox ui:field="scope" addStyleNames="{style.settingField}
-                                                               {style.listBoxWidth}
-                                                               {resources.runnerCss.propertiesFont}"/>
-                </g:FlowPanel>
-
-                <g:FlowPanel addStyleNames="{style.itemPanel}">
-                    <g:Label text="{locale.propertiesType}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
-                    <g:TextBox ui:field="type" addStyleNames="{style.settingField} {resources.runnerCss.propertiesFont}"/>
                 </g:FlowPanel>
 
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
@@ -110,6 +103,13 @@
                     <g:ListBox ui:field="shutdown" addStyleNames="{style.settingField}
                                                                   {style.listBoxWidth}
                                                                   {resources.runnerCss.propertiesFont}"/>
+                </g:FlowPanel>
+
+                <g:FlowPanel addStyleNames="{style.itemPanel}">
+                    <g:Label text="{locale.propertiesScope}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
+                    <g:ListBox ui:field="scope" addStyleNames="{style.settingField}
+                                                               {style.listBoxWidth}
+                                                               {resources.runnerCss.propertiesFont}"/>
                 </g:FlowPanel>
             </g:FlowPanel>
         </g:west>

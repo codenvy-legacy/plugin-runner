@@ -171,7 +171,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onRunButtonClicked();
             }
         };
-        run = createButton(resources.runButton(), runDelegate, runButtonPanel);
+        run = createButton(resources.runButton(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
 
         ButtonWidget.ActionDelegate stopDelegate = new ButtonWidget.ActionDelegate() {
             @Override
@@ -179,7 +179,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onStopButtonClicked();
             }
         };
-        stop = createButton(resources.stopButton(), stopDelegate, otherButtonsPanel);
+        stop = createButton(resources.stopButton(), locale.tooltipStopButton(), stopDelegate, otherButtonsPanel);
 
         ButtonWidget.ActionDelegate cleanDelegate = new ButtonWidget.ActionDelegate() {
             @Override
@@ -187,7 +187,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onCleanConsoleButtonClicked();
             }
         };
-        clean = createButton(resources.cleanButton(), cleanDelegate, otherButtonsPanel);
+        clean = createButton(resources.cleanButton(), locale.tooltipCleanButton(), cleanDelegate, otherButtonsPanel);
 
         ButtonWidget.ActionDelegate dockerDelegate = new ButtonWidget.ActionDelegate() {
             @Override
@@ -195,14 +195,15 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onDockerButtonClicked();
             }
         };
-        docker = createButton(resources.dockerButton(), dockerDelegate, otherButtonsPanel);
+        docker = createButton(resources.dockerButton(), locale.tooltipDockerButton(), dockerDelegate, otherButtonsPanel);
     }
 
     @Nonnull
     private ButtonWidget createButton(@Nonnull ImageResource icon,
+                                      @Nonnull String prompt,
                                       @Nonnull ButtonWidget.ActionDelegate delegate,
                                       @Nonnull FlowPanel buttonPanel) {
-        ButtonWidget button = widgetFactory.createButton(icon);
+        ButtonWidget button = widgetFactory.createButton(prompt, icon);
         button.setDelegate(delegate);
         button.setDisable();
 

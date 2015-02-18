@@ -11,17 +11,20 @@
 package com.codenvy.ide.ext.runner.client.manager.button;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.manager.tooltip.TooltipWidget;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,23 +42,31 @@ public class ButtonWidgetImplTest {
     @Mock
     private ImageResource               image;
     @Mock
+    private TooltipWidget               tooltipWidget;
+    @Mock
     private ButtonWidget.ActionDelegate delegate;
     @Mock
     private ClickEvent                  clickEvent;
+    @Mock
+    private MouseOverEvent              mouseOverEvent;
+    @Mock
+    private MouseOutEvent               mouseOutEvent;
 
-    @InjectMocks
     private ButtonWidgetImpl button;
 
     @Before
     public void setUp() throws Exception {
+        button = new ButtonWidgetImpl(resources, tooltipWidget, SOME_TEXT, image);
+
         when(resources.runnerCss().opacityButton()).thenReturn(SOME_TEXT);
 
         button.setDelegate(delegate);
     }
 
     @Test
-    public void imageShouldBeSet() throws Exception {
-        button.image.setResource(image);
+    public void constructorShouldBeVerified() throws Exception {
+        verify(button.image).setResource(image);
+        verify(tooltipWidget).setDescription(SOME_TEXT);
     }
 
     @Test
@@ -88,6 +99,21 @@ public class ButtonWidgetImplTest {
         button.onClick(clickEvent);
 
         verify(delegate, never()).onButtonClicked();
+    }
+
+    @Test
+    public void onMouseOutShouldBeDone() throws Exception {
+        button.onMouseOut(mouseOutEvent);
+
+        verify(tooltipWidget).hide();
+    }
+
+    @Test
+    public void onMouseOverShouldBeDone() throws Exception {
+        button.onMouseOver(mouseOverEvent);
+
+        verify(tooltipWidget).setPopupPosition(anyInt(), anyInt());
+        verify(tooltipWidget).show();
     }
 
 }

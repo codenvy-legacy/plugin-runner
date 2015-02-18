@@ -101,6 +101,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final ConsoleContainer           consoleContainer;
     private final TerminalContainer          terminalContainer;
     private final TabContainer               rightTabContainer;
+    private final PanelState                 panelState;
 
     private Set<Long>                 runnersId;
     private GetRunningProcessesAction getRunningProcessAction;
@@ -141,6 +142,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.templates = templates;
         this.history = history;
 
+        this.panelState = panelState;
         this.consoleContainer = consoleContainer;
         this.terminalContainer = terminalContainer;
 
@@ -329,7 +331,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRunButtonClicked() {
-        if (selectedEnvironment != null) {
+        if (TEMPLATE.equals(panelState.getState()) && selectedEnvironment != null) {
             Map<String, String> options = selectedEnvironment.getOptions();
             String environmentName = selectedEnvironment.getId();
 
@@ -426,6 +428,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Nonnull
     private Runner launchRunner(@Nonnull Runner runner) {
         selectedEnvironment = null;
+        panelState.setState(HISTORY);
 
         history.addRunner(runner);
 
