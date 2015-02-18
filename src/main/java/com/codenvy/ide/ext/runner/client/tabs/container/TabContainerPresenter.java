@@ -86,7 +86,7 @@ public class TabContainerPresenter implements TabContainer, TabContainerView.Act
     public void onTabClicked(@Nonnull String title) {
         Tab tab = tabs.get(title);
 
-        if (title.equals(tab.getTitle())) {
+        if (tab != null && title.equals(tab.getTitle())) {
             tab.performHandler();
 
             view.showTab(tab);
