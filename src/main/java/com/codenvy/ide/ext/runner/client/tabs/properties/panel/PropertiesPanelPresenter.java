@@ -45,6 +45,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     private final Timer               timer;
 
     private EditorPartPresenter editor;
+    private int                 undoOperations;
 
     @Inject
     public PropertiesPanelPresenter(final PropertiesPanelView view,
@@ -90,8 +91,10 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                         break;
 
                     case PROP_DIRTY:
-                        view.setEnableSaveButton(true);
-                        view.setEnableCancelButton(true);
+                        if (validateUndoOperation()) {
+                            view.setEnableSaveButton(true);
+                            view.setEnableCancelButton(true);
+                        }
                         break;
 
                     default:
@@ -104,6 +107,16 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         } catch (EditorInitException e) {
             Log.error(getClass(), e);
         }
+    }
+
+    private boolean validateUndoOperation() {
+        // this code needs for right behaviour when someone is clicking on 'Cancel' button. We need to make disable some buttons.
+        if (undoOperations == 0) {
+            return true;
+        }
+
+        undoOperations--;
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -135,7 +148,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
         if (editor instanceof UndoableEditor) {
             HandlesUndoRedo undoRedo = ((UndoableEditor)editor).getUndoRedo();
-            while (undoRedo.undoable()) {
+            while (editor.isDirty() && undoRedo.undoable()) {
+                undoOperations++;
                 undoRedo.undo();
             }
         }
