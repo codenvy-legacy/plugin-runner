@@ -289,4 +289,17 @@ public interface RunnerLocalizationConstant extends Messages {
     String runnerTitle();
 
     String editorNotReady();
+
+    @Key("tooltip.run.button")
+    String tooltipRunButton();
+
+    @Key("tooltip.stop.button")
+    String tooltipStopButton();
+
+    @Key("tooltip.clean.button")
+    String tooltipCleanButton();
+
+    @Key("tooltip.docker.button")
+    String tooltipDockerButton();
+
 }

@@ -39,12 +39,14 @@ public interface WidgetFactory {
     /**
      * Creates button widget with special icon.
      *
+     * @param prompt
+     *         prompt for current button which is displayed on special popup widget
      * @param resource
      *         icon which need set to button
      * @return an instance of {@link ButtonWidget}
      */
     @Nonnull
-    ButtonWidget createButton(@Nonnull ImageResource resource);
+    ButtonWidget createButton(@Nonnull String prompt, @Nonnull ImageResource resource);
 
     /**
      * Creates tab widget with special title.
