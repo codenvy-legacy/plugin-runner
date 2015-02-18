@@ -31,11 +31,11 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class TabBuilderTest {
-    private static final String title = "Title";
+    private static final String     title  = "Title";
     private static final Set<State> scopes = new HashSet<>();
 
     @Mock
-    private TabPresenter presenter;
+    private TabPresenter                  presenter;
     @Mock
     private TabContainer.TabSelectHandler handler;
 
@@ -114,7 +114,8 @@ public class TabBuilderTest {
         String errorMessage = null;
         try {
             tabBuilder.visible(Tab.VisibleState.VISIBLE)
-                      .title("").scope(scopes)
+                      .title("")
+                      .scope(scopes)
                       .selectHandler(handler)
                       .type(TabType.LEFT_PANEL)
                       .build();
