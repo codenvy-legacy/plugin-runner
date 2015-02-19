@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.never;
@@ -94,6 +95,20 @@ public class TabTest {
     public void shouldEqualsWhenObjectIsNewTabButTitleIsSame() {
         Tab tab2 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
         assertThat(tab.equals(tab2), is(true));
+    }
+
+    @Test
+    public void shouldCheckHashCodeForEquivalentObjects() {
+        Tab tab1 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
+        Tab tab2 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
+        assertThat(tab1.hashCode(), is(tab2.hashCode()));
+    }
+
+    @Test
+    public void shouldCheckHashCodeForNotEquivalentObjects() {
+        Tab tab1 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
+        Tab tab2 = new Tab("title", tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
+        assertThat(tab1.hashCode(), is(not(tab2.hashCode())));
     }
 
 }
