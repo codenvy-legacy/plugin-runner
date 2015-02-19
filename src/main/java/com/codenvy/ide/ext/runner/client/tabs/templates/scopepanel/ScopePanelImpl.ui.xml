@@ -24,14 +24,23 @@
         }
 
         .label {
+            margin-top: 2px;
             float: left;
+        }
+
+        .iconPanel svg {
+            float: left;
+            height: 22px;
+            width: 22px;
+            fill: #dbdbdb;
+            stroke: #dbdbdb;
         }
     </ui:style>
 
     <g:FlowPanel addStyleNames="{style.panel}">
         <g:Label text="{locale.templateScope}" addStyleNames="{style.label}"/>
 
-        <g:FlowPanel ui:field="buttonsPanel"/>
+        <g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.iconPanel}"/>
     </g:FlowPanel>
 
 </ui:UiBinder>

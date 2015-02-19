@@ -12,12 +12,14 @@ package com.codenvy.ide.ext.runner.client.tabs.templates.environment;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
-import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.tabs.common.item.ItemWidget;
 import com.codenvy.ide.ext.runner.client.tabs.common.item.RunnerItems;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 
@@ -32,16 +34,23 @@ public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
 
     private static final String DEFAULT_DESCRIPTION = "DEFAULT";
 
-    private final ItemWidget      itemWidget;
-    private final RunnerResources resources;
+    private final ItemWidget itemWidget;
 
     private Scope             environmentScope;
     private RunnerEnvironment environment;
 
+    private final SVGImage projectScope;
+    private final SVGImage systemScope;
+
     @Inject
     public EnvironmentWidget(final ItemWidget itemWidget, RunnerResources resources, final SelectionManager selectionManager) {
         this.itemWidget = itemWidget;
-        this.resources = resources;
+
+        projectScope = new SVGImage(resources.scopeProject());
+        systemScope = new SVGImage(resources.scopeSystem());
+
+        projectScope.addClassNameBaseVal(resources.runnerCss().environmentSvg());
+        systemScope.addClassNameBaseVal(resources.runnerCss().environmentSvg());
 
         itemWidget.setDelegate(new ItemWidget.ActionDelegate() {
             @Override
@@ -98,10 +107,10 @@ public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
     private void setImage() {
         switch (environmentScope) {
             case PROJECT:
-                itemWidget.setImage(resources.scopeProject());
+                itemWidget.setImage(projectScope);
                 break;
             case SYSTEM:
-                itemWidget.setImage(resources.scopeSystem());
+                itemWidget.setImage(systemScope);
                 break;
             default:
         }

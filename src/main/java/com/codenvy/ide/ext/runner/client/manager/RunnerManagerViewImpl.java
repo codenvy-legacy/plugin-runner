@@ -172,6 +172,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             }
         };
         run = createButton(resources.runButton(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
+        run.setEnable();
 
         ButtonWidget.ActionDelegate stopDelegate = new ButtonWidget.ActionDelegate() {
             @Override

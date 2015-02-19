@@ -41,6 +41,12 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/runnerwidget/timeout.svg")
     SVGResource runnerTimeoutImage();
 
+    @Source("images/templates/scopeP.svg")
+    SVGResource scopeProject();
+
+    @Source("images/templates/scopeS.svg")
+    SVGResource scopeSystem();
+
     @Source("images/mainwidget/run.png")
     ImageResource runButton();
 
@@ -55,12 +61,6 @@ public interface RunnerResources extends ClientBundle {
 
     @Source("images/mainwidget/more-icon.png")
     ImageResource moreIcon();
-
-    @Source("images/templates/scope-project.png")
-    ImageResource scopeProject();
-
-    @Source("images/templates/scope-system.png")
-    ImageResource scopeSystem();
 
     @Source("images/templates/scope-user.png")
     ImageResource scopeUser();
@@ -150,6 +150,8 @@ public interface RunnerResources extends ClientBundle {
         String unAvailableMessage();
 
         String propertiesFont();
+
+        String environmentSvg();
     }
 
 }

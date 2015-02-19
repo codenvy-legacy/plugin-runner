@@ -12,8 +12,9 @@ package com.codenvy.ide.ext.runner.client.tabs.templates.scopepanel;
 
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.ImplementedBy;
+
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +37,7 @@ public interface ScopePanel extends View<ScopePanel.ActionDelegate> {
      *         flag which allows understand button is checked or un checked.<code>true</code> button is un checked,
      *         <code>false</code> button is checked
      */
-    void addButton(@Nonnull Scope scope, @Nonnull ImageResource image, boolean isUnChecked);
+    void addButton(@Nonnull Scope scope, @Nonnull SVGResource image, boolean isUnChecked);
 
     interface ActionDelegate {
         /**

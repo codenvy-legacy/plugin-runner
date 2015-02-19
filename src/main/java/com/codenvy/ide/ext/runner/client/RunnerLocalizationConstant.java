@@ -252,9 +252,6 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("template.type.all")
     String templateTypeAll();
 
-    @Key("selectRunnerPage.memoryRecommendedLabel")
-    String selectRunnerPageMemoryRecommendedLabel();
-
     @Key("properties.name")
     String propertiesName();
 
@@ -302,4 +299,9 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("tooltip.docker.button")
     String tooltipDockerButton();
 
+    @Key("tooltip.scope.project")
+    String tooltipScopeProject();
+
+    @Key("tooltip.scope.system")
+    String tooltipScopeSystem();
 }

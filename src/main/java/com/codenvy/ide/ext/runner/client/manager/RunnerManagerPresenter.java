@@ -227,10 +227,12 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                       @Nonnull TerminalContainer terminalContainer,
                                       @Nonnull final PropertiesContainer propertiesContainer) {
 
-        TabSelectHandler consoleHandler = new TabSelectHandler() {
+        final TabSelectHandler consoleHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
-                selectedRunner.setActiveTab(locale.runnerTabConsole());
+                if (selectedRunner != null) {
+                    selectedRunner.setActiveTab(locale.runnerTabConsole());
+                }
             }
         };
 
@@ -248,7 +250,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         TabSelectHandler terminalHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
-                selectedRunner.setActiveTab(locale.runnerTabTerminal());
+                if (selectedRunner != null) {
+                    selectedRunner.setActiveTab(locale.runnerTabTerminal());
+                }
             }
         };
 
@@ -266,9 +270,12 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         TabSelectHandler propertiesHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
-                selectedRunner.setActiveTab(locale.runnerTabProperties());
+                if (selectedRunner != null) {
+                    selectedRunner.setActiveTab(locale.runnerTabProperties());
 
-                propertiesContainer.show(selectedRunner);
+                    propertiesContainer.show(selectedRunner);
+                }
+
             }
         };
 
@@ -331,6 +338,12 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRunButtonClicked() {
+        if (selectedRunner == null && selectedEnvironment == null) {
+            launchRunner();
+
+            return;
+        }
+
         if (TEMPLATE.equals(panelState.getState()) && selectedEnvironment != null) {
             Map<String, String> options = selectedEnvironment.getOptions();
             String environmentName = selectedEnvironment.getId();
@@ -428,7 +441,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Nonnull
     private Runner launchRunner(@Nonnull Runner runner) {
         selectedEnvironment = null;
+
         panelState.setState(HISTORY);
+        view.showOtherButtons();
 
         history.addRunner(runner);
 

@@ -27,6 +27,8 @@ import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
 import com.google.gwt.resources.client.ImageResource;
 
+import org.vectomatic.dom.svg.ui.SVGImage;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -133,16 +135,16 @@ public interface WidgetFactory {
     /**
      * Creates scope button widget with special image.
      *
-     * @param image
-     *         image which need set to button
      * @param buttonScope
      *         scope of current button
+     * @param image
+     *         image which need set to button
      * @param isChecked
      *         flag which defines is checked button or un checked
      * @return an instance of {@link ScopeButton}
      */
     @Nonnull
-    ScopeButton createScopeButton(@Nonnull Scope buttonScope, @Nonnull ImageResource image, boolean isChecked);
+    ScopeButton createScopeButton(@Nonnull Scope buttonScope, @Nonnull SVGImage image, boolean isChecked);
 
     /**
      * Creates property button widget.

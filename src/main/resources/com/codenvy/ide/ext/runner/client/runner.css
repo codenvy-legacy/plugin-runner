@@ -125,7 +125,15 @@
 }
 
 .blueColor {
-    fill: #1c9dee;
+    fill: #1c9dee !important;
+    stroke: #1c9dee !important;
+}
+
+.environmentSvg {
+    margin-left: -3px;
+    margin-top: -3px;
+    fill: #dbdbdb !important;
+    stroke: #dbdbdb !important;
 }
 
 .fontSizeTen {

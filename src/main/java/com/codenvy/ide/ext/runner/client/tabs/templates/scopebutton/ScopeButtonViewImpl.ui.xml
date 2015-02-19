@@ -20,14 +20,13 @@
             height: 20px;
             width: 15px;
             float: left;
-            margin-top: 3px;
-            margin-left: 6px;
+            margin-left: 8px;
             cursor: pointer;
         }
     </ui:style>
 
     <g:FlowPanel addStyleNames="{style.panel}">
-        <g:Image ui:field="scope"/>
+        <g:SimpleLayoutPanel ui:field="scope"/>
     </g:FlowPanel>
 
 </ui:UiBinder>

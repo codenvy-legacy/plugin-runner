@@ -16,13 +16,15 @@ import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton.ScopeButton;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 
@@ -61,7 +63,9 @@ public class ScopePanelImpl extends Composite implements ScopePanel {
 
     /** {@inheritDoc} */
     @Override
-    public void addButton(@Nonnull Scope scope, @Nonnull ImageResource image, boolean isUnChecked) {
+    public void addButton(@Nonnull Scope scope, @Nonnull SVGResource resource, boolean isUnChecked) {
+        SVGImage image = new SVGImage(resource);
+
         ScopeButton button = widgetFactory.createScopeButton(scope, image, isUnChecked);
         button.setDelegate(new ScopeButton.ActionDelegate() {
             @Override

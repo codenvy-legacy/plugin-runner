@@ -11,16 +11,22 @@
 package com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton;
 
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.manager.tooltip.TooltipWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 
@@ -29,45 +35,66 @@ import javax.annotation.Nonnull;
  *
  * @author Dmitry Shnurenko
  */
-public class ScopeButtonViewImpl extends Composite implements ScopeButtonView, ClickHandler {
+public class ScopeButtonViewImpl extends Composite implements ScopeButtonView, ClickHandler, MouseOverHandler, MouseOutHandler {
     interface ScopeButtonImplUiBinder extends UiBinder<Widget, ScopeButtonViewImpl> {
     }
+
+    private static final int TOP_TOOLTIP_SHIFT  = 30;
+    private static final int LEFT_TOOLTIP_SHIFT = 8;
 
     private static final ScopeButtonImplUiBinder UI_BINDER = GWT.create(ScopeButtonImplUiBinder.class);
 
     @UiField
-    Image scope;
+    SimpleLayoutPanel scope;
 
     @UiField(provided = true)
     final RunnerResources resources;
 
+    private final TooltipWidget tooltip;
+
+    private SVGImage       image;
     private ActionDelegate delegate;
 
     @Inject
-    public ScopeButtonViewImpl(RunnerResources resources) {
+    public ScopeButtonViewImpl(RunnerResources resources, TooltipWidget tooltip) {
         this.resources = resources;
+        this.tooltip = tooltip;
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
         addDomHandler(this, ClickEvent.getType());
+        addDomHandler(this, MouseOverEvent.getType());
+        addDomHandler(this, MouseOutEvent.getType());
     }
 
     /** {@inheritDoc} */
     @Override
     public void select() {
-        addStyleName(resources.runnerCss().opacityButton());
+        image.addClassNameBaseVal(resources.runnerCss().blueColor());
+
+        scope.getElement().setInnerHTML(image.toString());
     }
 
     /** {@inheritDoc} */
     @Override
     public void unSelect() {
-        removeStyleName(resources.runnerCss().opacityButton());
+        image.removeClassNameBaseVal(resources.runnerCss().blueColor());
+
+        scope.getElement().setInnerHTML(image.toString());
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setImage(@Nonnull ImageResource image) {
-        scope.setResource(image);
+    public void setImage(@Nonnull SVGImage image) {
+        this.image = image;
+
+        scope.getElement().setInnerHTML(image.toString());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setPrompt(@Nonnull String prompt) {
+        tooltip.setDescription(prompt);
     }
 
     /** {@inheritDoc} */
@@ -80,5 +107,19 @@ public class ScopeButtonViewImpl extends Composite implements ScopeButtonView, C
     @Override
     public void onClick(ClickEvent event) {
         delegate.onButtonClicked();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onMouseOut(MouseOutEvent mouseOutEvent) {
+        tooltip.hide();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onMouseOver(MouseOverEvent event) {
+        tooltip.setPopupPosition(getAbsoluteLeft() - LEFT_TOOLTIP_SHIFT, getAbsoluteTop() + TOP_TOOLTIP_SHIFT);
+
+        tooltip.show();
     }
 }

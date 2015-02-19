@@ -10,10 +10,12 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton;
 
+import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+
+import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 
@@ -26,26 +28,43 @@ import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Sco
  */
 public class ScopeButtonPresenter implements ScopeButton, ScopeButtonView.ActionDelegate {
 
-    private final ScopeButtonView view;
-    private final Scope           buttonScope;
+    private final ScopeButtonView            view;
+    private final Scope                      buttonScope;
+    private final RunnerLocalizationConstant locale;
 
     private ActionDelegate delegate;
     private boolean        isUnChecked;
 
     @Inject
     public ScopeButtonPresenter(ScopeButtonView view,
+                                RunnerLocalizationConstant locale,
                                 @Assisted Scope buttonScope,
-                                @Assisted ImageResource image,
+                                @Assisted SVGImage image,
                                 @Assisted boolean isUnChecked) {
         this.view = view;
         this.view.setDelegate(this);
         this.view.setImage(image);
+        this.locale = locale;
 
         this.buttonScope = buttonScope;
         this.isUnChecked = isUnChecked;
 
         if (SYSTEM.equals(buttonScope)) {
             view.select();
+        }
+
+        setPrompt(buttonScope);
+    }
+
+    private void setPrompt(@Nonnull Scope scope) {
+        switch (scope) {
+            case PROJECT:
+                view.setPrompt(locale.tooltipScopeProject());
+                break;
+            case SYSTEM:
+                view.setPrompt(locale.tooltipScopeSystem());
+                break;
+            default:
         }
     }
 

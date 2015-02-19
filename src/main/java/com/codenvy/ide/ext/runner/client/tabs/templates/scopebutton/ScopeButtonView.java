@@ -11,8 +11,9 @@
 package com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton;
 
 import com.codenvy.ide.api.mvp.View;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.ImplementedBy;
+
+import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +37,15 @@ public interface ScopeButtonView extends View<ScopeButtonView.ActionDelegate> {
      * @param image
      *         image which need set
      */
-    void setImage(@Nonnull ImageResource image);
+    void setImage(@Nonnull SVGImage image);
+
+    /**
+     * Sets prompt to current scope button.
+     *
+     * @param prompt
+     *         prompt which need set
+     */
+    void setPrompt(@Nonnull String prompt);
 
     interface ActionDelegate {
         /** Performs some actions when user click on button. */
