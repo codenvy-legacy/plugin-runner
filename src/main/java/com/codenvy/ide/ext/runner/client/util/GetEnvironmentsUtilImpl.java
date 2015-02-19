@@ -58,13 +58,14 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
     }
 
     private void getEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnegative int deep) {
+        if(deep <= 0) {
+            return;
+        }
 
-        while (deep-- > 0) {
-            for (RunnerEnvironmentTree environment : tree.getNodes()) {
-                languageTypeEnvironments.add(environment);
+        for (RunnerEnvironmentTree environment : tree.getNodes()) {
+            languageTypeEnvironments.add(environment);
 
-                getEnvironments(environment, deep);
-            }
+            getEnvironments(environment, deep - 1);
         }
     }
 
