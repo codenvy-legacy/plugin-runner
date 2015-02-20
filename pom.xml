@@ -28,6 +28,9 @@
         <developerConnection>scm:git@github.com:codenvy/plugin-runner.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+    <properties>
+        <argLine>-XX:MaxPermSize=256M</argLine>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.codenvy.ide</groupId>
