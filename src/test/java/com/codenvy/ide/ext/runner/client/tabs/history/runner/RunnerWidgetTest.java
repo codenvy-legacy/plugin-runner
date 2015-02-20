@@ -15,7 +15,6 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.tabs.common.item.ItemWidget;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
-import com.google.gwt.dom.client.Element;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Before;
@@ -23,11 +22,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,10 +47,6 @@ public class RunnerWidgetTest {
     private SelectionManager selectionManager;
 
     @Mock
-    private OMSVGSVGElement           svgElem;
-    @Mock
-    private Element                   element;
-    @Mock
     private Runner                    runner;
     @Mock
     private RunnerResources.RunnerCss css;
@@ -60,11 +55,9 @@ public class RunnerWidgetTest {
 
     @Before
     public void setUp() {
-        SVGResource svgResource = mock(SVGResource.class);
-        when(resources.runnerInProgressImage()).thenReturn(svgResource);
+        SVGResource svgResource = mock(SVGResource.class, RETURNS_DEEP_STUBS);
 
-        when(svgResource.getSvg()).thenReturn(svgElem);
-        when(svgElem.getElement()).thenReturn(element);
+        when(resources.runnerInProgressImage()).thenReturn(svgResource);
         when(resources.runnerInQueueImage()).thenReturn(svgResource);
         when(resources.runnerFailedImage()).thenReturn(svgResource);
         when(resources.runnerTimeoutImage()).thenReturn(svgResource);

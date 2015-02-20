@@ -27,20 +27,26 @@ import java.nio.file.Paths;
 public class TestUtil {
 
     /**
-     * Method returns value of field from superclass by name.
+     * Method returns value of field from this class or its superclass by name.
      *
      * @param object
-     *         object from super class which need to get field value
+     *         object from class which need to get field value
      * @param fieldName
      *         field name which need to get
      * @return value of field by name
      * @throws Exception
      */
     public static <T> Object getFieldValueByName(@Nonnull T object, @Nonnull String fieldName) throws Exception {
-        Field field = object.getClass().getSuperclass().getDeclaredField(fieldName);
+        Field field;
+        try {
+            field = object.getClass().getDeclaredField(fieldName);
 
-        field.setAccessible(true);
+            field.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            field = object.getClass().getSuperclass().getDeclaredField(fieldName);
 
+            field.setAccessible(true);
+        }
         return field.get(object);
     }
 
