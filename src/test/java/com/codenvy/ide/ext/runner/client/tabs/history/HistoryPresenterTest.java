@@ -18,13 +18,13 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -118,8 +118,7 @@ public class HistoryPresenterTest {
 
     @Test
     public void shouldGetView() {
-        IsWidget v = view;
-        assertThat(historyPresenter.getView(), is(v));
+        assertThat(historyPresenter.getView(), CoreMatchers.<IsWidget>is(view));
     }
 
     @Test

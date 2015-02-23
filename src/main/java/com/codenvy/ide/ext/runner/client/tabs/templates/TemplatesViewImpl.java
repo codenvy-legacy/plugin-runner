@@ -116,14 +116,17 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
         clearEnvironmentsPanel();
         int i = 0;
 
-        for (RunnerEnvironment environment : environments.get(PROJECT)) {
-            addEnvironment(environment, PROJECT, i++);
+        if (environments.get(PROJECT) != null) {
+            for (RunnerEnvironment environment : environments.get(PROJECT)) {
+                addEnvironment(environment, PROJECT, i++);
+            }
         }
 
         List<RunnerEnvironment> systemEnvironments = environments.get(SYSTEM);
 
-        if (systemEnvironments.isEmpty()) {
+        if (systemEnvironments == null || systemEnvironments.isEmpty()) {
             selectTypeButton(allButton);
+            return;
         }
 
         for (RunnerEnvironment environment : systemEnvironments) {
@@ -165,7 +168,10 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
             widget.unSelect();
         }
 
-        environments.get(selectedEnvironment).select();
+        EnvironmentWidget selectedWidget = environments.get(selectedEnvironment);
+        if(selectedWidget != null) {
+            selectedWidget.select();
+        }
     }
 
     /** {@inheritDoc} */
