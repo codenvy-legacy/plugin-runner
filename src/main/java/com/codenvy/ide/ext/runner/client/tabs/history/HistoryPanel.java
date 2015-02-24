@@ -47,4 +47,7 @@ public interface HistoryPanel extends TabPresenter {
      *         runner which was selected
      */
     void selectRunner(@Nonnull Runner runner);
+
+    /** Clears runner widgets. */
+    void clear();
 }

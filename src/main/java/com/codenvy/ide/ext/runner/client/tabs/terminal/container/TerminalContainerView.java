@@ -33,6 +33,14 @@ public interface TerminalContainerView extends View<TerminalContainerView.Action
     void addWidget(@Nonnull IsWidget terminal);
 
     /**
+     * Remove a given widget from the container.
+     *
+     * @param terminal
+     *         terminal that needs to be remove
+     */
+    void removeWidget(@Nonnull IsWidget terminal);
+
+    /**
      * Changes visibility of the widget.
      *
      * @param visible

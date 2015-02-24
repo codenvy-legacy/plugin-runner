@@ -56,4 +56,10 @@ public class TerminalContainerViewImpl extends Composite implements TerminalCont
         mainPanel.add(terminal);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void removeWidget(@Nonnull IsWidget terminal) {
+        mainPanel.remove(terminal);
+    }
+
 }

@@ -67,6 +67,12 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        panels.clear();
+    }
+
+    /** {@inheritDoc} */
     @Nonnull
     @Override
     public IsWidget getView() {

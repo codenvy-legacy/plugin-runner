@@ -93,6 +93,38 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     /** Shows all buttons on buttons panel. */
     void showOtherButtons();
 
+    /**
+     * Changes state of run button.
+     *
+     * @param isEnable
+     *         <code>true</code> button is enable, <code>false</code> button is disable
+     */
+    void setEnableRunButton(boolean isEnable);
+
+    /**
+     * Changes state of stop button.
+     *
+     * @param isEnable
+     *         <code>true</code> button is enable, <code>false</code> button is disable
+     */
+    void setEnableStopButton(boolean isEnable);
+
+    /**
+     * Changes state of clean button.
+     *
+     * @param isEnable
+     *         <code>true</code> button is enable, <code>false</code> button is disable
+     */
+    void setEnableCleanButton(boolean isEnable);
+
+    /**
+     * Changes state of docker button.
+     *
+     * @param isEnable
+     *         <code>true</code> button is enable, <code>false</code> button is disable
+     */
+    void setEnableDockerButton(boolean isEnable);
+
     interface ActionDelegate extends BaseActionDelegate {
 
         /** Performs some actions in response to user's clicking on the 'Run' button. */

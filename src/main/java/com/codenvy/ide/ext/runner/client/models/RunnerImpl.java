@@ -35,6 +35,7 @@ import static com.codenvy.api.runner.internal.Constants.LINK_REL_STOP;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static com.codenvy.api.runner.internal.Constants.LINK_REL_WEB_URL;
 import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
+import static com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter.TIMER_STUB;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
@@ -48,9 +49,7 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
  */
 public class RunnerImpl implements Runner {
 
-    private static final String TIMER_STUB    = "--:--:--";
-    private static final String RUNNER_NAME   = "Runner ";
-    private static       int    RUNNER_NUMBER = 1;
+    private static final String RUNNER_NAME = "Runner ";
 
     private final RunOptions runOptions;
     private final String     title;
@@ -64,18 +63,28 @@ public class RunnerImpl implements Runner {
     /**
      * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
      *
+     * @param locale
+     *         localization constants
+     * @param runnerCounter
+     *         utility that support the counter of runners
      * @param runOptions
      *         options which needs to be used
      */
     @AssistedInject
-    public RunnerImpl(@Nonnull RunnerLocalizationConstant locale, @Nonnull @Assisted RunOptions runOptions) {
-        this(locale, runOptions, null);
+    public RunnerImpl(@Nonnull RunnerLocalizationConstant locale,
+                      @Nonnull RunnerCounter runnerCounter,
+                      @Nonnull @Assisted RunOptions runOptions) {
+        this(locale, runnerCounter, runOptions, null);
     }
 
     /**
      * This runner needs runner options (user configurations) and environment name (inputted by user).
      * It analyzes all given information and get necessary information.
      *
+     * @param locale
+     *         localization constants
+     * @param runnerCounter
+     *         utility that support the counter of runners
      * @param runOptions
      *         options which needs to be used
      * @param environmentName
@@ -83,16 +92,18 @@ public class RunnerImpl implements Runner {
      */
     @AssistedInject
     public RunnerImpl(@Nonnull RunnerLocalizationConstant locale,
+                      @Nonnull RunnerCounter runnerCounter,
                       @Nonnull @Assisted RunOptions runOptions,
                       @Nullable @Assisted String environmentName) {
         this.runOptions = runOptions;
         this.ram = runOptions.getMemorySize();
-        this.title = RUNNER_NAME + RUNNER_NUMBER + (environmentName == null ? "" : " - " + getCorrectName(environmentName));
+        this.title = RUNNER_NAME +
+                     runnerCounter.getRunnerNumber() +
+                     (environmentName == null ? "" : " - " + getCorrectName(environmentName));
         this.activeTab = locale.runnerTabConsole();
         this.status = Status.IN_QUEUE;
 
         creationTime = System.currentTimeMillis();
-        RUNNER_NUMBER++;
     }
 
     @Nonnull

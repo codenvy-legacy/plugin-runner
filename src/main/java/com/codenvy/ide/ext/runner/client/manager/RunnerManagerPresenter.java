@@ -24,6 +24,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.models.RunnerCounter;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
@@ -87,6 +88,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                                                      RunnerManagerView.ActionDelegate,
                                                                      ProjectActionHandler,
                                                                      SelectionManager.SelectionChangeListener {
+    public static final String TIMER_STUB = "--:--:--";
+
     private final RunnerManagerView          view;
     private final RunnerAction               showDockerAction;
     private final DtoFactory                 dtoFactory;
@@ -97,12 +100,14 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final Timer                      runnerTimer;
     private final RunnerLocalizationConstant locale;
     private final HistoryPanel               history;
-    private final TemplatesContainer         templates;
     private final SelectionManager           selectionManager;
-    private final ConsoleContainer           consoleContainer;
     private final TerminalContainer          terminalContainer;
     private final TabContainer               rightTabContainer;
+    private final ConsoleContainer           consoleContainer;
+    private final PropertiesContainer        propertiesContainer;
+    private final TemplatesContainer         templateContainer;
     private final PanelState                 panelState;
+    private final RunnerCounter              runnerCounter;
 
     private Set<Long>                 runnersId;
     private GetRunningProcessesAction getRunningProcessAction;
@@ -127,6 +132,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   PropertiesContainer propertiesContainer,
                                   HistoryPanel history,
                                   TemplatesContainer templates,
+                                  RunnerCounter runnerCounter,
                                   SelectionManager selectionManager,
                                   TimerFactory timerFactory) {
         this.view = view;
@@ -137,16 +143,19 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.modelsFactory = modelsFactory;
         this.appContext = appContext;
         this.showDockerAction = actionFactory.createShowDocker();
+        this.runnerCounter = runnerCounter;
 
         this.selectionManager = selectionManager;
         this.selectionManager.addListener(this);
 
-        this.templates = templates;
         this.history = history;
 
         this.panelState = panelState;
+
         this.consoleContainer = consoleContainer;
+        this.templateContainer = templates;
         this.terminalContainer = terminalContainer;
+        this.propertiesContainer = propertiesContainer;
 
         this.rightTabContainer = rightTabContainer;
 
@@ -377,9 +386,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     public void onStopButtonClicked() {
         stopRunner(selectedRunner);
 
-        StopAction stopAction = actionFactory.createStop();
-        stopAction.perform(selectedRunner);
-
         view.updateMoreInfoPopup(selectedRunner);
     }
 
@@ -390,6 +396,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         if (runnerAction != null) {
             runnerAction.stop();
         }
+
+        StopAction stopAction = actionFactory.createStop();
+        stopAction.perform(runner);
     }
 
     /** {@inheritDoc} */
@@ -498,6 +507,10 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
+        view.setEnableRunButton(true);
+
+        templateContainer.setVisible(true);
+
         getRunningProcessAction = actionFactory.createGetRunningProcess();
 
         CurrentProject currentProject = appContext.getCurrentProject();
@@ -515,13 +528,27 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     public void onProjectClosed(@Nonnull ProjectActionEvent projectActionEvent) {
         partStack.hidePart(this);
 
-        for (Runner runner : runnerActions.keySet()) {
-            if (runner.isAlive()) {
-                runner.setStatus(STOPPED);
+        selectionManager.setRunner(null);
 
-                stopRunner(runner);
-            }
-        }
+        propertiesContainer.setVisible(false);
+        templateContainer.setVisible(false);
+
+        view.setEnableRunButton(false);
+        view.setEnableStopButton(false);
+        view.setEnableCleanButton(false);
+        view.setEnableDockerButton(false);
+
+        view.setApplicationURl(null);
+        view.setTimeout(TIMER_STUB);
+
+
+        history.clear();
+        runnerActions.clear();
+
+        runnerCounter.reset();
+        terminalContainer.reset();
+        consoleContainer.reset();
+        propertiesContainer.reset();
 
         getRunningProcessAction.stop();
     }
@@ -608,6 +635,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             return;
         }
 
-        templates.select(selectedEnvironment);
+        templateContainer.select(selectedEnvironment);
     }
 }

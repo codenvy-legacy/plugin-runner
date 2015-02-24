@@ -89,7 +89,6 @@ public class RunAction extends AbstractRunnerAction {
                         runner.setProcessDescriptor(descriptor);
                         runner.setRAM(descriptor.getMemorySize());
                         runner.setStatus(IN_PROGRESS);
-                        project.setProcessDescriptor(descriptor);
 
                         presenter.addRunnerId(descriptor.getProcessId());
 

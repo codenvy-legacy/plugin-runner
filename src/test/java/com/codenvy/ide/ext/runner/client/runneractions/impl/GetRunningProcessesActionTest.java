@@ -31,6 +31,9 @@ import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
+import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
+import com.codenvy.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
+import com.codenvy.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -97,6 +100,12 @@ public class GetRunningProcessesActionTest {
     private RunnerActionFactory                                                 actionFactory;
     @Mock
     private RunnerManagerPresenter                                              runnerManagerPresenter;
+    @Mock
+    private ConsoleContainer                                                    consoleContainer;
+    @Mock
+    private TerminalContainer                                                   terminalContainer;
+    @Mock
+    private PropertiesContainer                                                 propertiesContainer;
 
     //captors
     @Captor
@@ -160,6 +169,7 @@ public class GetRunningProcessesActionTest {
                                                                   webSocketUtil,
                                                                   actionFactory,
                                                                   runnerManagerPresenter,
+                                                                  propertiesContainer,
                                                                   WORKSPACE_ID);
         when(appContext.getCurrentProject()).thenReturn(project);
         when(appContext.getCurrentUser()).thenReturn(currentUser);
@@ -379,6 +389,8 @@ public class GetRunningProcessesActionTest {
         verify(processDescriptor1).getStatus();
         verify(processDescriptor2).getStatus();
         verify(processDescriptor3).getStatus();
+
+        verify(propertiesContainer).setVisible(true);
 
         verify(runnerManagerPresenter).addRunner(processDescriptor1);
         verify(runnerManagerPresenter).addRunner(processDescriptor2);

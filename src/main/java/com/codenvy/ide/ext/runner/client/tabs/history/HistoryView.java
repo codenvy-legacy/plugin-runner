@@ -39,4 +39,7 @@ public interface HistoryView extends IsWidget {
      *         <code>true</code> panel is visible, <code>false</code> panel is un visible
      */
     void setVisible(boolean isVisible);
+
+    /** Clears runner widgets. */
+    void clear();
 }

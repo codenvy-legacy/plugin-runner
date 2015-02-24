@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.parts.PartStackUIResources;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
@@ -35,17 +37,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 
 /**
  * @author Andrienko Alexander
@@ -69,6 +71,8 @@ public class RunnerManagerViewImplTest {
     private PopupPanel                 popupPanel;
     @Mock
     private ButtonWidget               buttonWidget;
+    @Mock
+    private AppContext                 appContext;
 
     @Mock
     private PartStackUIResources.PartStackCss css;
@@ -96,6 +100,8 @@ public class RunnerManagerViewImplTest {
     private ButtonWidget                      docker;
     @Mock
     private Runner                            runner;
+    @Mock
+    private CurrentProject                    currentProject;
     @Mock
     private TabContainer                      containerPresenter;
 
@@ -128,7 +134,7 @@ public class RunnerManagerViewImplTest {
 
         when(widgetFactory.createMoreInfo()).thenReturn(moreInfoWidget);
         when(locale.runnersPanelTitle()).thenReturn(TEXT);
-        view = new RunnerManagerViewImpl(partStackUIResources, resources, locale, widgetFactory, popupPanel);
+        view = new RunnerManagerViewImpl(partStackUIResources, resources, locale, widgetFactory, appContext, popupPanel);
     }
 
     @Test
@@ -197,9 +203,22 @@ public class RunnerManagerViewImplTest {
     }
 
     @Test
+    public void allButtonsShouldBeDisabledWhenCurrentProjectIsNull() throws Exception {
+        when(appContext.getCurrentProject()).thenReturn(null);
+
+        view.update(runner);
+
+        verify(clean, times(2)).setDisable();
+        verify(run, times(2)).setDisable();
+        verify(docker, times(2)).setDisable();
+        verify(stop, times(2)).setDisable();
+    }
+
+    @Test
     public void shouldUpdateWhenRunnerInStatusInQueue() {
         reset(run, stop, clean, docker);
         when(runner.getStatus()).thenReturn(IN_QUEUE);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
 
         view.update(runner);
 
@@ -213,6 +232,7 @@ public class RunnerManagerViewImplTest {
     public void shouldUpdateWhenRunnerInStatusFailed() {
         reset(run, stop, clean, docker);
         when(runner.getStatus()).thenReturn(FAILED);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
 
         view.update(runner);
 
@@ -225,6 +245,7 @@ public class RunnerManagerViewImplTest {
     public void shouldUpdateWhenRunnerInStatusStopped() {
         reset(run, stop, clean, docker);
         when(runner.getStatus()).thenReturn(STOPPED);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
 
         view.update(runner);
 
@@ -317,5 +338,77 @@ public class RunnerManagerViewImplTest {
         view.showOtherButtons();
 
         verify(view.otherButtonsPanel).setVisible(true);
+    }
+
+    @Test
+    public void runButtonShouldBeEnabled() throws Exception {
+        reset(run);
+        view.setEnableRunButton(true);
+
+        verify(run).setEnable();
+        verify(run, never()).setDisable();
+    }
+
+    @Test
+    public void runButtonShouldBeDisabled() throws Exception {
+        reset(run);
+        view.setEnableRunButton(false);
+
+        verify(run, never()).setEnable();
+        verify(run).setDisable();
+    }
+
+    @Test
+    public void stopButtonShouldBeEnabled() throws Exception {
+        reset(stop);
+        view.setEnableStopButton(true);
+
+        verify(stop).setEnable();
+        verify(stop, never()).setDisable();
+    }
+
+    @Test
+    public void stopButtonShouldBeDisabled() throws Exception {
+        reset(stop);
+        view.setEnableStopButton(false);
+
+        verify(stop, never()).setEnable();
+        verify(stop).setDisable();
+    }
+
+    @Test
+    public void dockerButtonShouldBeEnabled() throws Exception {
+        reset(docker);
+        view.setEnableDockerButton(true);
+
+        verify(docker).setEnable();
+        verify(docker, never()).setDisable();
+    }
+
+    @Test
+    public void dockerButtonShouldBeDisabled() throws Exception {
+        reset(docker);
+        view.setEnableDockerButton(false);
+
+        verify(docker, never()).setEnable();
+        verify(docker).setDisable();
+    }
+
+    @Test
+    public void cleanButtonShouldBeEnabled() throws Exception {
+        reset(clean);
+        view.setEnableCleanButton(true);
+
+        verify(clean).setEnable();
+        verify(clean, never()).setDisable();
+    }
+
+    @Test
+    public void cleanButtonShouldBeDisabled() throws Exception {
+        reset(clean);
+        view.setEnableCleanButton(false);
+
+        verify(clean, never()).setEnable();
+        verify(clean).setDisable();
     }
 }

@@ -21,11 +21,11 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
@@ -94,8 +94,6 @@ public class StopAction extends AbstractRunnerAction {
             return;
         }
 
-        presenter.setActive();
-
         Link stopLink = runner.getStopUrl();
         if (stopLink == null) {
             runnerUtil.showError(runner, constant.applicationFailed(project.getProjectDescription().getName()), null);
@@ -121,7 +119,6 @@ public class StopAction extends AbstractRunnerAction {
                         runner.setProcessDescriptor(null);
 
                         project.setIsRunningEnabled(true);
-                        project.setProcessDescriptor(null);
 
                         runnerUtil.showError(runner,
                                              constant.applicationFailed(project.getProjectDescription().getName()),
@@ -137,7 +134,6 @@ public class StopAction extends AbstractRunnerAction {
         runner.setProcessDescriptor(descriptor);
 
         project.setIsRunningEnabled(true);
-        project.setProcessDescriptor(null);
 
         String projectName = project.getProjectDescription().getName();
         String message = constant.applicationStopped(projectName);

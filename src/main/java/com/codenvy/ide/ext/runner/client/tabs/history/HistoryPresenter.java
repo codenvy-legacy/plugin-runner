@@ -89,6 +89,13 @@ public class HistoryPresenter implements HistoryPanel {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void clear() {
+        view.clear();
+        runnerWidgets.clear();
+    }
+
+    /** {@inheritDoc} */
     @Nonnull
     @Override
     public IsWidget getView() {

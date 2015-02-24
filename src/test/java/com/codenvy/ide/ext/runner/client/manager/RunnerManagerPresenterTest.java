@@ -23,6 +23,7 @@ import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.models.RunnerCounter;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
@@ -61,6 +62,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
+import static com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter.TIMER_STUB;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.IN_PROGRESS;
@@ -143,6 +145,8 @@ public class RunnerManagerPresenterTest {
     private ApplicationProcessDescriptor processDescriptor;
     @Mock
     private TimerFactory                 timerFactory;
+    @Mock
+    private RunnerCounter                runnerCounter;
 
     @Mock
     private ShowDockerAction showDockerAction;
@@ -189,6 +193,8 @@ public class RunnerManagerPresenterTest {
     private GetRunningProcessesAction getRunningProcessAction;
     @Mock
     private PartStack                 partStack;
+    @Mock
+    private StopAction                stopAction;
     @Mock
     private PartPresenter             activePart;
     @Mock
@@ -250,6 +256,7 @@ public class RunnerManagerPresenterTest {
                                                propertiesContainer,
                                                history,
                                                templates,
+                                               runnerCounter,
                                                selectionManager,
                                                timerFactory);
 
@@ -698,10 +705,13 @@ public class RunnerManagerPresenterTest {
 
     @Test
     public void shouldStopRunner() {
+        when(actionFactory.createStop()).thenReturn(stopAction);
+
         presenter.addRunner(processDescriptor);
 
         presenter.stopRunner(runner);
         verify(launchAction).stop();
+        verify(stopAction).perform(runner);
     }
 
     @Test
@@ -856,6 +866,8 @@ public class RunnerManagerPresenterTest {
     public void shouldOnProjectOpened() {
         presenter.onProjectOpened(projectActionEvent);
 
+        verify(view).setEnableRunButton(true);
+        verify(templates).setVisible(true);
         verify(actionFactory).createGetRunningProcess();
         verify(appContext).getCurrentProject();
         verify(getRunningProcessAction).perform();
@@ -868,14 +880,15 @@ public class RunnerManagerPresenterTest {
 
         presenter.onProjectOpened(projectActionEvent);
 
+        verify(view).setEnableRunButton(true);
+        verify(templates).setVisible(true);
         verify(actionFactory).createGetRunningProcess();
         verify(appContext).getCurrentProject();
         verifyNoMoreInteractions(getRunningProcessAction);
     }
 
     @Test
-    public void shouldOnProjectClosedWhenRunnerIsAlive() {
-        when(runner.isAlive()).thenReturn(false);
+    public void shouldOnProjectClosed() {
         presenter.addRunner(processDescriptor);
         presenter.onRunButtonClicked();
         presenter.setPartStack(partStack);
@@ -884,25 +897,25 @@ public class RunnerManagerPresenterTest {
         presenter.onProjectClosed(projectActionEvent);
 
         verify(partStack).hidePart(presenter);
-        verify(runner, never()).setStatus(STOPPED);
-        verify(checkRamAndRunAction, never()).stop();
         verify(getRunningProcessAction).stop();
-    }
+        verify(selectionManager).setRunner(null);
+        verify(propertiesContainer).setVisible(false);
+        verify(templates).setVisible(false);
 
-    @Test
-    public void shouldOnProjectClosedWhenRunnerIsNotAlive() {
-        when(runner.isAlive()).thenReturn(true);
-        presenter.addRunner(processDescriptor);
-        presenter.onRunButtonClicked();
-        presenter.setPartStack(partStack);
-        presenter.onProjectOpened(projectActionEvent);
+        verify(view).setEnableRunButton(false);
+        verify(view).setEnableStopButton(false);
+        verify(view).setEnableCleanButton(false);
+        verify(view).setEnableDockerButton(false);
 
-        presenter.onProjectClosed(projectActionEvent);
+        verify(view).setApplicationURl(null);
+        verify(view).setTimeout(TIMER_STUB);
+        verify(history).clear();
 
-        verify(partStack).hidePart(presenter);
-        verify(runner).setStatus(STOPPED);
-        verify(checkRamAndRunAction).stop();
-        verify(getRunningProcessAction).stop();
+        verify(runnerCounter).reset();
+        verify(terminalContainer).reset();
+        verify(consoleContainer).reset();
+        verify(propertiesContainer).reset();
+
     }
 
     private void verifyLaunchRunnerWithNotNullCurrentProject() {

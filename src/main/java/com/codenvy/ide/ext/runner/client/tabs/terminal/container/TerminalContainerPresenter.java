@@ -116,4 +116,14 @@ public class TerminalContainerPresenter implements TerminalContainer,
             terminal.update(runner);
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset() {
+        for (Terminal terminal : terminals.values()) {
+            view.removeWidget(terminal);
+        }
+
+        terminals.clear();
+    }
 }

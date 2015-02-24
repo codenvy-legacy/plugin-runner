@@ -75,4 +75,7 @@ public interface ConsoleContainer extends TabPresenter {
      */
     void clear(@Nonnull Runner runner);
 
+    /** Cleans the data of the console widgets. */
+    void reset();
+
 }

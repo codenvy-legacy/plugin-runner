@@ -48,4 +48,10 @@ public class HistoryViewImpl extends Composite implements HistoryView {
     public void addRunner(@Nonnull RunnerWidget runnerWidget) {
         runnersPanel.add(runnerWidget);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void clear() {
+        runnersPanel.clear();
+    }
 }

@@ -33,6 +33,14 @@ public interface ConsoleContainerView extends View<ConsoleContainerView.ActionDe
     void showWidget(@Nonnull IsWidget console);
 
     /**
+     * Remove a given widget from the container.
+     *
+     * @param console
+     *         widget that needs to be remove
+     */
+    void removeWidget(@Nonnull IsWidget console);
+
+    /**
      * Changes visibility of the widget.
      *
      * @param visible

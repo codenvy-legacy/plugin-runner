@@ -31,4 +31,7 @@ public interface TerminalContainer extends TabPresenter {
      *         runner which need update
      */
     void update(@Nonnull Runner runner);
+
+    /** Cleans the data of console widgets. */
+    void reset();
 }

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.parts.PartStackUIResources;
 import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
@@ -90,6 +91,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     final RunnerLocalizationConstant locale;
 
     private final WidgetFactory widgetFactory;
+    private final AppContext    appContext;
     private final PopupPanel    popupPanel;
     private final MoreInfo      moreInfoWidget;
 
@@ -105,9 +107,11 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                                  RunnerResources resources,
                                  RunnerLocalizationConstant locale,
                                  WidgetFactory widgetFactory,
+                                 AppContext appContext,
                                  PopupPanel popupPanel) {
         super(partStackUIResources);
 
+        this.appContext = appContext;
         this.resources = resources;
         this.locale = locale;
         this.widgetFactory = widgetFactory;
@@ -222,6 +226,15 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     }
 
     private void changeButtonsState(@Nonnull Runner runner) {
+        if (appContext.getCurrentProject() == null) {
+            run.setDisable();
+            stop.setDisable();
+            clean.setDisable();
+            docker.setDisable();
+
+            return;
+        }
+
         run.setEnable();
         stop.setEnable();
         clean.setEnable();
@@ -307,6 +320,46 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     @Override
     public void showOtherButtons() {
         otherButtonsPanel.setVisible(true);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableRunButton(boolean isEnable) {
+        if (isEnable) {
+            run.setEnable();
+        } else {
+            run.setDisable();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableStopButton(boolean isEnable) {
+        if (isEnable) {
+            stop.setEnable();
+        } else {
+            stop.setDisable();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableCleanButton(boolean isEnable) {
+        if (isEnable) {
+            clean.setEnable();
+        } else {
+            clean.setDisable();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableDockerButton(boolean isEnable) {
+        if (isEnable) {
+            docker.setEnable();
+        } else {
+            docker.setDisable();
+        }
     }
 
     @UiHandler("appReference")

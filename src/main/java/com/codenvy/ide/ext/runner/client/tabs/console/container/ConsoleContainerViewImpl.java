@@ -56,4 +56,10 @@ public class ConsoleContainerViewImpl extends Composite implements ConsoleContai
         mainPanel.setWidget(console);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void removeWidget(@Nonnull IsWidget console) {
+        mainPanel.remove(console);
+    }
+
 }

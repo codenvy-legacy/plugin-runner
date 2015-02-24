@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
  * @author Dmitry Shnurenko
  */
 public interface Runner {
-
     /** @return descriptor of application process */
     @Nullable
     ApplicationProcessDescriptor getDescriptor();

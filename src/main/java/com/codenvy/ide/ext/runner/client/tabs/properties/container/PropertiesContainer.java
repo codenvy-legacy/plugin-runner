@@ -30,4 +30,7 @@ public interface PropertiesContainer extends TabPresenter {
      *         runner that is bound with properties panel
      */
     void show(@Nonnull Runner runner);
+
+    /** Cleans the data of the property widgets. */
+    void reset();
 }

@@ -140,7 +140,6 @@ public class StatusAction extends AbstractRunnerAction {
 
                 stop();
 
-                project.setProcessDescriptor(null);
                 project.setIsRunningEnabled(true);
             }
         };
@@ -151,7 +150,6 @@ public class StatusAction extends AbstractRunnerAction {
     }
 
     private void onApplicationStatusUpdated(@Nonnull ApplicationProcessDescriptor descriptor) {
-        project.setProcessDescriptor(descriptor);
         runner.setProcessDescriptor(descriptor);
 
         switch (descriptor.getStatus()) {
@@ -238,7 +236,6 @@ public class StatusAction extends AbstractRunnerAction {
         presenter.update(runner);
 
         project.setIsRunningEnabled(true);
-        project.setProcessDescriptor(null);
 
         String projectName = project.getProjectDescription().getName();
         String message = locale.applicationCanceled(projectName);

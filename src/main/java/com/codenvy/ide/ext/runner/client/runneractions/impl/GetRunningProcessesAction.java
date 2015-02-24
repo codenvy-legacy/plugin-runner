@@ -26,6 +26,7 @@ import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import com.codenvy.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import com.codenvy.ide.ext.runner.client.util.WebSocketUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -62,6 +63,7 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
     private final WebSocketUtil                                                       webSocketUtil;
     private final RunnerManagerPresenter                                              runnerManagerPresenter;
     private final String                                                              workspaceId;
+    private final PropertiesContainer                                                 propertiesContainer;
 
     private String                                            channel;
     private SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler;
@@ -77,6 +79,7 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                                      WebSocketUtil webSocketUtil,
                                      RunnerActionFactory actionFactory,
                                      RunnerManagerPresenter runnerManagerPresenter,
+                                     PropertiesContainer propertiesContainer,
                                      @Named("workspaceId") String workspaceId) {
         this.notificationManager = notificationManager;
         this.service = service;
@@ -87,6 +90,7 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.webSocketUtil = webSocketUtil;
         this.runnerManagerPresenter = runnerManagerPresenter;
+        this.propertiesContainer = propertiesContainer;
         this.workspaceId = workspaceId;
 
         addAction(logsAction);
@@ -108,6 +112,12 @@ public class GetRunningProcessesAction extends AbstractRunnerAction {
                 .success(new SuccessCallback<Array<ApplicationProcessDescriptor>>() {
                     @Override
                     public void onSuccess(Array<ApplicationProcessDescriptor> result) {
+                        if (result.isEmpty()) {
+                            return;
+                        }
+
+                        propertiesContainer.setVisible(true);
+
                         for (ApplicationProcessDescriptor processDescriptor : result.asIterable()) {
                             if (isNewOrRunningProcess(processDescriptor)) {
                                 prepareRunnerWithRunningApp(processDescriptor);

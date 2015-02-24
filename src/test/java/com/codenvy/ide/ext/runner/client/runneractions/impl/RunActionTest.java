@@ -23,8 +23,8 @@ import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ext.runner.client.util.RunnerUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -147,7 +147,6 @@ public class RunActionTest {
         verify(runner).setProcessDescriptor(descriptor);
         verify(runner).setRAM(RAM._512.getValue());
         verify(runner).setStatus(Runner.Status.IN_PROGRESS);
-        verify(project).setProcessDescriptor(descriptor);
 
         verify(presenter).addRunnerId(12345678L);
 

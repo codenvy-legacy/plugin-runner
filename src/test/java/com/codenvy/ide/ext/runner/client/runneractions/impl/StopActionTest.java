@@ -176,7 +176,6 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
-        verify(presenter).setActive();
         verify(runner).getStopUrl();
         verify(runnerUtil).showError(runner, MESSAGE, null);
         verify(runner).setStatus(Runner.Status.STOPPED);
@@ -193,7 +192,6 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
-        verify(presenter).setActive();
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).failure(failedCallBackCaptor.capture());
@@ -203,7 +201,6 @@ public class StopActionTest {
         verify(runner).setStatus(Runner.Status.FAILED);
         verify(runner).setProcessDescriptor(null);
         verify(project).setIsRunningEnabled(true);
-        verify(project).setProcessDescriptor(null);
         verify(runnerUtil).showError(runner, MESSAGE, reason);
 
         verify(service).stop(stopLink, callback);
@@ -218,7 +215,6 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
-        verify(presenter).setActive();
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -227,7 +223,6 @@ public class StopActionTest {
 
         verify(runner).setProcessDescriptor(descriptor);
         verify(project).setIsRunningEnabled(true);
-        verify(project).setProcessDescriptor(null);
 
         verify(runner).getStatus();
         verify(runner).setStatus(Runner.Status.STOPPED);
@@ -252,7 +247,6 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
-        verify(presenter).setActive();
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -261,7 +255,6 @@ public class StopActionTest {
 
         verify(runner).setProcessDescriptor(descriptor);
         verify(project).setIsRunningEnabled(true);
-        verify(project).setProcessDescriptor(null);
 
         verify(runner).getStatus();
         verify(runner).setStatus(Runner.Status.STOPPED);
@@ -286,7 +279,6 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
-        verify(presenter).setActive();
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -295,7 +287,6 @@ public class StopActionTest {
 
         verify(runner).setProcessDescriptor(descriptor);
         verify(project).setIsRunningEnabled(true);
-        verify(project).setProcessDescriptor(null);
 
         verify(runner).getStatus();
         verify(runner).setStatus(Runner.Status.FAILED);

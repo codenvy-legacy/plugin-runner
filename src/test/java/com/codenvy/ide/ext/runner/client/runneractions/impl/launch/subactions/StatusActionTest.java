@@ -91,7 +91,7 @@ public class StatusActionTest {
     private Notification               notification;
 
     @Mock
-    private ServerException serverException;
+    private ServerException                                                   serverException;
     @Mock
     private Response                                                          response;
     @Mock
@@ -176,7 +176,6 @@ public class StatusActionTest {
         TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", descriptor);
 
         verify(dtoUnmarshallerFactory).newWSUnmarshaller(ApplicationProcessDescriptor.class);
-        verify(project).setProcessDescriptor(descriptor);
         verify(runner).setProcessDescriptor(descriptor);
 
         verify(descriptor).getStatus();
@@ -211,7 +210,6 @@ public class StatusActionTest {
         TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", descriptor);
 
         verify(dtoUnmarshallerFactory).newWSUnmarshaller(ApplicationProcessDescriptor.class);
-        verify(project).setProcessDescriptor(descriptor);
         verify(runner).setProcessDescriptor(descriptor);
 
         verify(descriptor).getStatus();
@@ -254,7 +252,6 @@ public class StatusActionTest {
         TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", descriptor);
 
         verify(dtoUnmarshallerFactory).newWSUnmarshaller(ApplicationProcessDescriptor.class);
-        verify(project).setProcessDescriptor(descriptor);
         verify(runner).setProcessDescriptor(descriptor);
 
         verify(descriptor).getStatus();
@@ -297,7 +294,6 @@ public class StatusActionTest {
         TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", descriptor);
 
         verify(dtoUnmarshallerFactory).newWSUnmarshaller(ApplicationProcessDescriptor.class);
-        verify(project).setProcessDescriptor(descriptor);
         verify(runner).setProcessDescriptor(descriptor);
 
         verify(descriptor).getStatus();
@@ -340,7 +336,6 @@ public class StatusActionTest {
         TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", descriptor);
 
         verify(dtoUnmarshallerFactory).newWSUnmarshaller(ApplicationProcessDescriptor.class);
-        verify(project).setProcessDescriptor(descriptor);
         verify(runner).setProcessDescriptor(descriptor);
 
         verify(descriptor).getStatus();
@@ -386,7 +381,6 @@ public class StatusActionTest {
         verify(logsAction).removeListener();
         verify(logsAction).stop();
 
-        verify(project).setProcessDescriptor(null);
         verify(project).setIsRunningEnabled(true);
     }
 
@@ -422,7 +416,6 @@ public class StatusActionTest {
         verify(logsAction).removeListener();
         verify(logsAction).stop();
 
-        verify(project).setProcessDescriptor(null);
         verify(project).setIsRunningEnabled(true);
     }
 
@@ -457,7 +450,6 @@ public class StatusActionTest {
         verify(logsAction).removeListener();
         verify(logsAction).stop();
 
-        verify(project).setProcessDescriptor(null);
         verify(project).setIsRunningEnabled(true);
     }
 

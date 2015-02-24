@@ -90,6 +90,16 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
 
     /** {@inheritDoc} */
     @Override
+    public void reset() {
+        for (Console console : consoles.values()) {
+            view.removeWidget(console);
+        }
+
+        consoles.clear();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void onSelectionChanged(@Nonnull Selection selection) {
         if (ENVIRONMENT.equals(selection)) {
             return;
