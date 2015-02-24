@@ -41,6 +41,7 @@ import com.codenvy.ide.ext.runner.client.tabs.history.HistoryPanel;
 import com.codenvy.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
+import com.codenvy.ide.ext.runner.client.util.TimerFactory;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -126,7 +127,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   PropertiesContainer propertiesContainer,
                                   HistoryPanel history,
                                   TemplatesContainer templates,
-                                  SelectionManager selectionManager) {
+                                  SelectionManager selectionManager,
+                                  TimerFactory timerFactory) {
         this.view = view;
         this.view.setDelegate(this);
         this.locale = locale;
@@ -150,14 +152,14 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         this.runnerActions = new HashMap<>();
 
-        this.runnerTimer = new Timer() {
+        this.runnerTimer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
             @Override
-            public void run() {
+            public void onRun() {
                 updateRunnerTimer();
 
-                this.schedule(ONE_SEC.getValue());
+                runnerTimer.schedule(ONE_SEC.getValue());
             }
-        };
+        });
 
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
         runnersId = new HashSet<>();
