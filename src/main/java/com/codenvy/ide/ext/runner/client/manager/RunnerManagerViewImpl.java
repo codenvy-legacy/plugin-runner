@@ -118,7 +118,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.mainPanel = new SplitLayoutPanel(SPLITTER_WIDTH);
 
         titleLabel.setText(locale.runnersPanelTitle());
-        container.add(UI_BINDER.createAndBindUi(this));
+        setContentWidget(UI_BINDER.createAndBindUi(this));
 
         this.mainPanel.setWidgetMinSize(leftTabsPanel, 165);
 
