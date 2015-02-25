@@ -91,10 +91,6 @@ public class RunnerManagerViewImplTest {
     @Mock
     private ButtonWidget                      stop;
     @Mock
-    private ImageResource                     imageClean;
-    @Mock
-    private ButtonWidget                      clean;
-    @Mock
     private ImageResource                     imageDocker;
     @Mock
     private ButtonWidget                      docker;
@@ -123,10 +119,6 @@ public class RunnerManagerViewImplTest {
         when(resources.stopButton()).thenReturn(imageStop);
         when(locale.tooltipStopButton()).thenReturn(TEXT);
         when(widgetFactory.createButton(TEXT, imageStop)).thenReturn(stop);
-
-        when(resources.cleanButton()).thenReturn(imageClean);
-        when(locale.tooltipCleanButton()).thenReturn(TEXT);
-        when(widgetFactory.createButton(TEXT, imageClean)).thenReturn(clean);
 
         when(resources.dockerButton()).thenReturn(imageDocker);
         when(locale.tooltipDockerButton()).thenReturn(TEXT);
@@ -179,11 +171,6 @@ public class RunnerManagerViewImplTest {
         verifyButton(imageStop, stop, view.otherButtonsPanel);
         verify(actionDelegate).onStopButtonClicked();
 
-        //clean button
-        verify(widgetFactory).createButton(TEXT, imageClean);
-        verifyButton(imageClean, clean, view.otherButtonsPanel);
-        verify(actionDelegate).onCleanConsoleButtonClicked();
-
         //docker button
         verify(widgetFactory).createButton(TEXT, imageDocker);
         verifyButton(imageDocker, docker, view.otherButtonsPanel);
@@ -208,7 +195,6 @@ public class RunnerManagerViewImplTest {
 
         view.update(runner);
 
-        verify(clean, times(2)).setDisable();
         verify(run, times(2)).setDisable();
         verify(docker, times(2)).setDisable();
         verify(stop, times(2)).setDisable();
@@ -216,7 +202,7 @@ public class RunnerManagerViewImplTest {
 
     @Test
     public void shouldUpdateWhenRunnerInStatusInQueue() {
-        reset(run, stop, clean, docker);
+        reset(run, stop, docker);
         when(runner.getStatus()).thenReturn(IN_QUEUE);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -230,7 +216,7 @@ public class RunnerManagerViewImplTest {
 
     @Test
     public void shouldUpdateWhenRunnerInStatusFailed() {
-        reset(run, stop, clean, docker);
+        reset(run, stop, docker);
         when(runner.getStatus()).thenReturn(FAILED);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -243,7 +229,7 @@ public class RunnerManagerViewImplTest {
 
     @Test
     public void shouldUpdateWhenRunnerInStatusStopped() {
-        reset(run, stop, clean, docker);
+        reset(run, stop, docker);
         when(runner.getStatus()).thenReturn(STOPPED);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -256,7 +242,6 @@ public class RunnerManagerViewImplTest {
     private void verifyEnableAllButton() {
         verify(run).setEnable();
         verify(stop).setEnable();
-        verify(clean).setEnable();
         verify(docker).setEnable();
     }
 
@@ -394,21 +379,4 @@ public class RunnerManagerViewImplTest {
         verify(docker).setDisable();
     }
 
-    @Test
-    public void cleanButtonShouldBeEnabled() throws Exception {
-        reset(clean);
-        view.setEnableCleanButton(true);
-
-        verify(clean).setEnable();
-        verify(clean, never()).setDisable();
-    }
-
-    @Test
-    public void cleanButtonShouldBeDisabled() throws Exception {
-        reset(clean);
-        view.setEnableCleanButton(false);
-
-        verify(clean, never()).setEnable();
-        verify(clean).setDisable();
-    }
 }

@@ -89,6 +89,12 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/environment.svg")
     SVGResource environmentImage();
 
+    @Source("images/console/arrow-bottom.svg")
+    SVGResource arrowBottom();
+
+    @Source("images/console/erase.svg")
+    SVGResource erase();
+
     @Source("docker-template.txt")
     TextResource dockerTemplate();
 
@@ -99,7 +105,7 @@ public interface RunnerResources extends ClientBundle {
 
         String fullSize();
 
-        String consolePanel();
+        String consoleBackground();
 
         String logLink();
 
@@ -152,6 +158,12 @@ public interface RunnerResources extends ClientBundle {
         String propertiesFont();
 
         String environmentSvg();
+
+        String console();
+
+        String consoleButtonShadow();
+
+        String activeConsoleButton();
     }
 
 }

@@ -403,12 +403,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     /** {@inheritDoc} */
     @Override
-    public void onCleanConsoleButtonClicked() {
-        consoleContainer.clear(selectedRunner);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void onDockerButtonClicked() {
         showDockerAction.perform(selectedRunner);
     }
@@ -535,12 +529,10 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         view.setEnableRunButton(false);
         view.setEnableStopButton(false);
-        view.setEnableCleanButton(false);
         view.setEnableDockerButton(false);
 
         view.setApplicationURl(null);
         view.setTimeout(TIMER_STUB);
-
 
         history.clear();
         runnerActions.clear();

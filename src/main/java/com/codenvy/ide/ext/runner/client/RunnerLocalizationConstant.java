@@ -293,9 +293,6 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("tooltip.stop.button")
     String tooltipStopButton();
 
-    @Key("tooltip.clean.button")
-    String tooltipCleanButton();
-
     @Key("tooltip.docker.button")
     String tooltipDockerButton();
 
@@ -304,4 +301,10 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("tooltip.scope.system")
     String tooltipScopeSystem();
+
+    @Key("console.tooltip.scroll")
+    String consoleTooltipScroll();
+
+    @Key("console.tooltip.clear")
+    String consoleTooltipClear();
 }

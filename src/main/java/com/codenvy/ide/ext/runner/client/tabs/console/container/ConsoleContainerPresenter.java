@@ -40,6 +40,8 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
     private final WidgetFactory        widgetFactory;
     private final Map<Runner, Console> consoles;
 
+    private Console selectedConsole;
+
     @Inject
     public ConsoleContainerPresenter(ConsoleContainerView view, WidgetFactory widgetFactory, SelectionManager selectionManager) {
         this.view = view;
@@ -82,14 +84,6 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
 
     /** {@inheritDoc} */
     @Override
-    public void clear(@Nonnull Runner runner) {
-        Console console = getConsoleOrCreate(runner);
-
-        console.clear();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void reset() {
         for (Console console : consoles.values()) {
             view.removeWidget(console);
@@ -110,7 +104,8 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
             return;
         }
 
-        view.showWidget(getConsoleOrCreate(runner));
+        selectedConsole = getConsoleOrCreate(runner);
+        view.showWidget(selectedConsole);
     }
 
     @Nonnull
@@ -141,6 +136,26 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
     @Override
     public void go(AcceptsOneWidget container) {
         container.setWidget(view);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onScrollBottomClicked() {
+        if (selectedConsole == null) {
+            return;
+        }
+
+        selectedConsole.scrollBottom();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onCleanClicked() {
+        if (selectedConsole == null) {
+            return;
+        }
+
+        selectedConsole.clear();
     }
 
 }

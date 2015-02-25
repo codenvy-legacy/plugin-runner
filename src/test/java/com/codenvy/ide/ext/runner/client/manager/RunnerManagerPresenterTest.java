@@ -419,7 +419,21 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
+    public void shouldVerifyIsRunnerExitsTrue2() {
+        presenter.addRunnerId(PROCESS_ID);
+
+        assertThat(presenter.isRunnerExist(PROCESS_ID), is(true));
+    }
+
+    @Test
     public void shouldVerifyIsRunnerExitsFalse() {
+        assertThat(presenter.isRunnerExist(PROCESS_ID), is(false));
+    }
+
+    @Test
+    public void shouldVerifyIsRunnerExitsFalse2() {
+        presenter.addRunnerId(Long.MIN_VALUE);
+
         assertThat(presenter.isRunnerExist(PROCESS_ID), is(false));
     }
 
@@ -715,15 +729,6 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnCleanConsoleButtonClicked() {
-        presenter.addRunner(processDescriptor);
-
-        presenter.onCleanConsoleButtonClicked();
-
-        verify(consoleContainer).clear(runner);
-    }
-
-    @Test
     public void shouldOnDockerButtonClicked() {
         presenter.addRunner(processDescriptor);
 
@@ -904,7 +909,6 @@ public class RunnerManagerPresenterTest {
 
         verify(view).setEnableRunButton(false);
         verify(view).setEnableStopButton(false);
-        verify(view).setEnableCleanButton(false);
         verify(view).setEnableDockerButton(false);
 
         verify(view).setApplicationURl(null);

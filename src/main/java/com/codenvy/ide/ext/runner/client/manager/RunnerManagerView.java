@@ -110,14 +110,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void setEnableStopButton(boolean isEnable);
 
     /**
-     * Changes state of clean button.
-     *
-     * @param isEnable
-     *         <code>true</code> button is enable, <code>false</code> button is disable
-     */
-    void setEnableCleanButton(boolean isEnable);
-
-    /**
      * Changes state of docker button.
      *
      * @param isEnable
@@ -132,9 +124,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's clicking on the 'Stop' button. */
         void onStopButtonClicked();
-
-        /** Performs some actions in response to user's clicking on the 'Clean console' button. */
-        void onCleanConsoleButtonClicked();
 
         /** Performs some actions in response to user's clicking on the 'Docker' button. */
         void onDockerButtonClicked();

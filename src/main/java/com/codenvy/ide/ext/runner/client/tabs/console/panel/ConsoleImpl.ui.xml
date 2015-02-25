@@ -17,9 +17,7 @@
 
     <ui:style>
         .mainPanel {
-            padding-left: 7px;
-            padding-bottom: 5px;
-            padding-top: 5px;
+            border: 1px solid #000000;
         }
 
         .fontStyle pre {
@@ -28,8 +26,8 @@
         }
     </ui:style>
 
-    <g:FlowPanel ui:field="mainPanel" addStyleNames="{style.mainPanel} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
-        <g:ScrollPanel ui:field="panel" addStyleNames="{style.fontStyle} {res.runnerCss.consolePanel} {res.runnerCss.fullSize}">
+    <g:FlowPanel ui:field="mainPanel" addStyleNames="{style.mainPanel} {res.runnerCss.consoleBackground} {res.runnerCss.fullSize}">
+        <g:ScrollPanel ui:field="panel" addStyleNames="{style.fontStyle} {res.runnerCss.console} {res.runnerCss.fullSize}">
             <g:FlowPanel ui:field="output"/>
         </g:ScrollPanel>
     </g:FlowPanel>

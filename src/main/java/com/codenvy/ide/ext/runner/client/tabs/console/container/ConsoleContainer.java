@@ -67,14 +67,6 @@ public interface ConsoleContainer extends TabPresenter {
      */
     void printWarn(@Nonnull Runner runner, @Nonnull String message);
 
-    /**
-     * Clean console for a given runner.
-     *
-     * @param runner
-     *         runner that is bound wth console which needs to be cleaned
-     */
-    void clear(@Nonnull Runner runner);
-
     /** Cleans the data of the console widgets. */
     void reset();
 

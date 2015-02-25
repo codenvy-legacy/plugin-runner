@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static com.codenvy.ide.ext.runner.client.selection.Selection.RUNNER;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -36,10 +37,11 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Andrey Plotnikov
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class ConsoleContainerPresenterTest {
-    private static final String MESSAGE = "message";
+    private static final String MESSAGE  = "message";
     private static final String MESSAGE2 = "message";
 
     @Mock
@@ -55,7 +57,7 @@ public class ConsoleContainerPresenterTest {
     private Console console;
 
     @InjectMocks
-    private ConsoleContainerPresenter consoleContainerPresenter;
+    private ConsoleContainerPresenter presenter;
 
     @Before
     public void setUp() {
@@ -64,7 +66,7 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintWhenConsoleIsNull() {
-        consoleContainerPresenter.print(runner, MESSAGE);
+        presenter.print(runner, MESSAGE);
 
         verify(widgetFactory).createConsole(runner);
         verify(console).print(MESSAGE);
@@ -72,11 +74,11 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintWhenConsoleIsNotNull() {
-        consoleContainerPresenter.print(runner, MESSAGE);
+        presenter.print(runner, MESSAGE);
 
         reset(widgetFactory, console);
 
-        consoleContainerPresenter.print(runner, MESSAGE2);
+        presenter.print(runner, MESSAGE2);
 
         verify(widgetFactory, never()).createConsole(runner);
         verify(console).print(MESSAGE);
@@ -84,7 +86,7 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintInfoWhenConsoleIsNull() {
-        consoleContainerPresenter.printInfo(runner, MESSAGE);
+        presenter.printInfo(runner, MESSAGE);
 
         verify(widgetFactory).createConsole(runner);
         verify(console).printInfo(MESSAGE);
@@ -92,11 +94,11 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintInfoWhenConsoleIsNotNull() {
-        consoleContainerPresenter.printInfo(runner, MESSAGE);
+        presenter.printInfo(runner, MESSAGE);
 
         reset(widgetFactory, console);
 
-        consoleContainerPresenter.printInfo(runner, MESSAGE2);
+        presenter.printInfo(runner, MESSAGE2);
 
         verify(widgetFactory, never()).createConsole(runner);
         verify(console).printInfo(MESSAGE);
@@ -104,7 +106,7 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintErrorWhenConsoleIsNull() {
-        consoleContainerPresenter.printError(runner, MESSAGE);
+        presenter.printError(runner, MESSAGE);
 
         verify(widgetFactory).createConsole(runner);
         verify(console).printError(MESSAGE);
@@ -112,11 +114,11 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintErrorWhenConsoleIsNotNull() {
-        consoleContainerPresenter.printError(runner, MESSAGE);
+        presenter.printError(runner, MESSAGE);
 
         reset(widgetFactory, console);
 
-        consoleContainerPresenter.printError(runner, MESSAGE2);
+        presenter.printError(runner, MESSAGE2);
 
         verify(widgetFactory, never()).createConsole(runner);
         verify(console).printError(MESSAGE);
@@ -124,7 +126,7 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintWarnWhenConsoleIsNull() {
-        consoleContainerPresenter.printWarn(runner, MESSAGE);
+        presenter.printWarn(runner, MESSAGE);
 
         verify(widgetFactory).createConsole(runner);
         verify(console).printWarn(MESSAGE);
@@ -132,39 +134,19 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldPrintWarnWhenConsoleIsNotNull() {
-        consoleContainerPresenter.printWarn(runner, MESSAGE);
+        presenter.printWarn(runner, MESSAGE);
 
         reset(widgetFactory, console);
 
-        consoleContainerPresenter.printWarn(runner, MESSAGE2);
+        presenter.printWarn(runner, MESSAGE2);
 
         verify(widgetFactory, never()).createConsole(runner);
         verify(console).printWarn(MESSAGE);
     }
 
     @Test
-    public void shouldClearWhenConsoleIsNull() {
-        consoleContainerPresenter.clear(runner);
-
-        verify(widgetFactory).createConsole(runner);
-        verify(console).clear();
-    }
-
-    @Test
-    public void shouldClearWhenConsoleIsNotNull() {
-        consoleContainerPresenter.clear(runner);
-
-        reset(widgetFactory, console);
-
-        consoleContainerPresenter.clear(runner);
-
-        verify(widgetFactory, never()).createConsole(runner);
-        verify(console).clear();
-    }
-
-    @Test
     public void shouldOnSelectionChangedWhenSelectionIsEnvironment() {
-        consoleContainerPresenter.onSelectionChanged(Selection.ENVIRONMENT);
+        presenter.onSelectionChanged(Selection.ENVIRONMENT);
 
         verify(selectionManager, never()).getRunner();
         verify(view, never()).showWidget(any(IsWidget.class));
@@ -172,7 +154,7 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldOnSelectionChangedWhenSelectionIsRunnerIsNull() {
-        consoleContainerPresenter.onSelectionChanged(Selection.RUNNER);
+        presenter.onSelectionChanged(RUNNER);
 
         verify(selectionManager).getRunner();
         verify(view, never()).showWidget(any(IsWidget.class));
@@ -182,7 +164,7 @@ public class ConsoleContainerPresenterTest {
     public void shouldOnSelectionChangedWhenSelectionIsRunner() {
         when(selectionManager.getRunner()).thenReturn(runner);
 
-        consoleContainerPresenter.onSelectionChanged(Selection.RUNNER);
+        presenter.onSelectionChanged(RUNNER);
 
         verify(selectionManager).getRunner();
         verify(view).showWidget(console);
@@ -190,18 +172,18 @@ public class ConsoleContainerPresenterTest {
 
     @Test
     public void shouldGetView() {
-        assertThat(consoleContainerPresenter.getView(), CoreMatchers.<IsWidget>is(view));
+        assertThat(presenter.getView(), CoreMatchers.<IsWidget>is(view));
     }
 
     @Test
     public void shouldSetVisibleTrue() {
-        consoleContainerPresenter.setVisible(true);
+        presenter.setVisible(true);
         verify(view).setVisible(true);
     }
 
     @Test
     public void shouldSetVisibleFalse() {
-        consoleContainerPresenter.setVisible(false);
+        presenter.setVisible(false);
         verify(view).setVisible(false);
     }
 
@@ -209,8 +191,43 @@ public class ConsoleContainerPresenterTest {
     public void shouldGo() {
         AcceptsOneWidget container = mock(AcceptsOneWidget.class);
 
-        consoleContainerPresenter.go(container);
+        presenter.go(container);
 
         verify(container).setWidget(view);
     }
+
+    @Test
+    public void scrollToBottomShouldBeNotPerformed() throws Exception {
+        presenter.onScrollBottomClicked();
+
+        verify(console, never()).scrollBottom();
+    }
+
+    @Test
+    public void scrollToBottomShouldBePerformed() throws Exception {
+        when(selectionManager.getRunner()).thenReturn(runner);
+        presenter.onSelectionChanged(RUNNER);
+
+        presenter.onScrollBottomClicked();
+
+        verify(console).scrollBottom();
+    }
+
+    @Test
+    public void cleanSelectedConsoleShouldBeNotPerformed() throws Exception {
+        presenter.onCleanClicked();
+
+        verify(console, never()).clear();
+    }
+
+    @Test
+    public void cleanSelectedConsoleShouldBePerformed() throws Exception {
+        when(selectionManager.getRunner()).thenReturn(runner);
+        presenter.onSelectionChanged(RUNNER);
+
+        presenter.onCleanClicked();
+
+        verify(console).clear();
+    }
+
 }

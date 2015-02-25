@@ -15,6 +15,18 @@
 
     <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
 
-    <g:SimpleLayoutPanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize}"/>
+    <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize} {resources.runnerCss.consoleBackground}">
+        <g:north size="5">
+            <g:SimpleLayoutPanel/>
+        </g:north>
+
+        <g:west size="36">
+            <g:FlowPanel ui:field="buttons" addStyleNames="{resources.runnerCss.fullSize}"/>
+        </g:west>
+
+        <g:center>
+            <g:SimplePanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize}"/>
+        </g:center>
+    </g:DockLayoutPanel>
 
 </ui:UiBinder>

@@ -49,6 +49,11 @@ public interface ConsoleContainerView extends View<ConsoleContainerView.ActionDe
     void setVisible(boolean visible);
 
     interface ActionDelegate {
+        /** Performs some actions in response to user's clicking on 'Scroll bottom' button. */
+        void onScrollBottomClicked();
+
+        /** Performs some actions in response to user's clicking on 'Clean' button. */
+        void onCleanClicked();
     }
 
 }

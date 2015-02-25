@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.inject.factories;
 import com.codenvy.ide.ext.runner.client.manager.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.manager.info.MoreInfo;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.tabs.console.button.ConsoleButton;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.Console;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.FullLogMessageWidget;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType;
@@ -28,6 +29,7 @@ import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
 import com.google.gwt.resources.client.ImageResource;
 
 import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 
@@ -49,6 +51,18 @@ public interface WidgetFactory {
      */
     @Nonnull
     ButtonWidget createButton(@Nonnull String prompt, @Nonnull ImageResource resource);
+
+    /**
+     * Creates console button widget with special icon.
+     *
+     * @param prompt
+     *         prompt for current button which is displayed on special popup widget
+     * @param resource
+     *         icon which need set to button
+     * @return an instance of {@link ConsoleButton}
+     */
+    @Nonnull
+    ConsoleButton createConsoleButton(@Nonnull String prompt, @Nonnull SVGResource resource);
 
     /**
      * Creates tab widget with special title.

@@ -97,7 +97,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     private ButtonWidget run;
     private ButtonWidget stop;
-    private ButtonWidget clean;
     private ButtonWidget docker;
 
     private String url;
@@ -186,14 +185,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         };
         stop = createButton(resources.stopButton(), locale.tooltipStopButton(), stopDelegate, otherButtonsPanel);
 
-        ButtonWidget.ActionDelegate cleanDelegate = new ButtonWidget.ActionDelegate() {
-            @Override
-            public void onButtonClicked() {
-                delegate.onCleanConsoleButtonClicked();
-            }
-        };
-        clean = createButton(resources.cleanButton(), locale.tooltipCleanButton(), cleanDelegate, otherButtonsPanel);
-
         ButtonWidget.ActionDelegate dockerDelegate = new ButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
@@ -229,15 +220,12 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         if (appContext.getCurrentProject() == null) {
             run.setDisable();
             stop.setDisable();
-            clean.setDisable();
             docker.setDisable();
-
             return;
         }
 
         run.setEnable();
         stop.setEnable();
-        clean.setEnable();
         docker.setEnable();
 
         switch (runner.getStatus()) {
@@ -339,16 +327,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             stop.setEnable();
         } else {
             stop.setDisable();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setEnableCleanButton(boolean isEnable) {
-        if (isEnable) {
-            clean.setEnable();
-        } else {
-            clean.setDisable();
         }
     }
 

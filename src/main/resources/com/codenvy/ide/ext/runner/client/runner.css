@@ -9,6 +9,7 @@
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
 @eval backgroundColor com.codenvy.ide.api.theme.Style.getPartBackground();
+@eval consoleBackgroundColor com.codenvy.ide.api.theme.Style.getEditorBackgroundColor();
 @eval outputFontColor com.codenvy.ide.api.theme.Style.getOutputFontColor();
 
 .fullSize {
@@ -31,14 +32,26 @@
     color: #929292;
 }
 
-.consolePanel {
+.consoleBackground {
     background-color: backgroundColor;
+}
+
+.console {
+    background-color: consoleBackgroundColor;
     -moz-user-select: text;
     -webkit-user-select: text;
     user-select: text;
     color: outputFontColor;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+
+.consoleButtonShadow {
+    box-shadow: inset 0 1px 0 0 #4d4d4d;
+}
+
+.activeConsoleButton {
+    fill: #69d6f5;
 }
 
 .logLink {
