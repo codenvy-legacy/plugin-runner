@@ -64,6 +64,8 @@ public class ConsoleImpl extends Composite implements Console {
     private final WidgetFactory            widgetFactory;
     private final Runner                   runner;
 
+    private boolean isWrappedText;
+
     @Inject
     public ConsoleImpl(RunnerResources resources,
                        Provider<MessageBuilder> messageBuilderProvider,
@@ -132,6 +134,9 @@ public class ConsoleImpl extends Composite implements Console {
 
         HTML html = new HTML(message);
         html.getElement().getStyle().setPaddingLeft(2, Style.Unit.PX);
+        if (isWrappedText) {
+            html.addStyleName(res.runnerCss().wrappedText());
+        }
 
         output.add(html);
 
@@ -172,6 +177,29 @@ public class ConsoleImpl extends Composite implements Console {
     @Override
     public void clear() {
         output.clear();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeWrapTextParam() {
+        isWrappedText = !isWrappedText;
+        String wrappedText = res.runnerCss().wrappedText();
+
+        for (int i = 0; i < output.getWidgetCount(); i++) {
+            Widget widget = output.getWidget(i);
+
+            if (isWrappedText) {
+                widget.addStyleName(wrappedText);
+            } else {
+                widget.removeStyleName(wrappedText);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isWrapText() {
+        return isWrappedText;
     }
 
 }

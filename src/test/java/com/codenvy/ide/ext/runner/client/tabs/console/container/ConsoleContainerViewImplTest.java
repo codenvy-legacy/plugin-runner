@@ -52,6 +52,8 @@ public class ConsoleContainerViewImplTest {
     @Mock
     private ConsoleButton                       button2;
     @Mock
+    private ConsoleButton                       button3;
+    @Mock
     private ConsoleContainerView.ActionDelegate delegate;
 
     @Captor
@@ -62,7 +64,8 @@ public class ConsoleContainerViewImplTest {
     @Before
     public void setUp() throws Exception {
         when(widgetFactory.createConsoleButton(anyString(), any(SVGResource.class))).thenReturn(button1)
-                                                                                    .thenReturn(button2);
+                                                                                    .thenReturn(button2)
+                                                                                    .thenReturn(button3);
 
         when(locale.consoleTooltipScroll()).thenReturn(SOME_MESSAGE);
         when(locale.consoleTooltipClear()).thenReturn(SOME_MESSAGE);
@@ -90,8 +93,18 @@ public class ConsoleContainerViewImplTest {
     }
 
     @Test
+    public void wrapTextButtonActionShouldBePerformed() throws Exception {
+        verify(button1).setDelegate(delegateCaptor.capture());
+
+        ConsoleButton.ActionDelegate buttonDelegate = delegateCaptor.getValue();
+        buttonDelegate.onButtonClicked();
+
+        verify(delegate).onWrapTextClicked();
+    }
+
+    @Test
     public void cleanButtonActionShouldBePerformed() throws Exception {
-        verify(button2).setDelegate(delegateCaptor.capture());
+        verify(button3).setDelegate(delegateCaptor.capture());
 
         ConsoleButton.ActionDelegate buttonDelegate = delegateCaptor.getValue();
         buttonDelegate.onButtonClicked();
@@ -101,7 +114,7 @@ public class ConsoleContainerViewImplTest {
 
     @Test
     public void scrollBottomButtonActionShouldBePerformed() throws Exception {
-        verify(button1).setDelegate(delegateCaptor.capture());
+        verify(button2).setDelegate(delegateCaptor.capture());
 
         ConsoleButton.ActionDelegate buttonDelegate = delegateCaptor.getValue();
         buttonDelegate.onButtonClicked();

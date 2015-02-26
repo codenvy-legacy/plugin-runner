@@ -48,7 +48,18 @@ public interface ConsoleContainerView extends View<ConsoleContainerView.ActionDe
      */
     void setVisible(boolean visible);
 
+    /**
+     * Select 'Wrap Text' button.
+     *
+     * @param isChecked
+     *         selection state of button
+     */
+    void selectWrapTextButton(boolean isChecked);
+
     interface ActionDelegate {
+        /** Performs some actions in response to user's clicking on 'Wrap Text' button. */
+        void onWrapTextClicked();
+
         /** Performs some actions in response to user's clicking on 'Scroll bottom' button. */
         void onScrollBottomClicked();
 

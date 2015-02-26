@@ -72,4 +72,13 @@ public interface Console extends IsWidget {
      */
     void setVisible(boolean isVisible);
 
+    /** Changes wrap text param to opposite value that the widget has now. */
+    void changeWrapTextParam();
+
+    /**
+     * @return <code>true</code> when console output is wrapped it means that a content that does not fit in one line the widget will
+     * separate it, <code>false</code> otherwise
+     */
+    boolean isWrapText();
+
 }

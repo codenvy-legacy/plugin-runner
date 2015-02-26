@@ -120,7 +120,7 @@ public interface Runner {
     Link getStopUrl();
 
     /**
-     * @return <code>true</code> when status is IN_PROGRESS,RUNNING,DONE,IN_QUEUE,TIMEOUT
+     * @return <code>true</code> when status is IN_PROGRESS, RUNNING, DONE, IN_QUEUE, TIMEOUT
      * <code>false</code> when status is STOPPED, FAILED
      */
     boolean isAlive();

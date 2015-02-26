@@ -92,6 +92,9 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/console/arrow-bottom.svg")
     SVGResource arrowBottom();
 
+    @Source("images/console/wrap-text.svg")
+    SVGResource wrapText();
+
     @Source("images/console/erase.svg")
     SVGResource erase();
 
@@ -164,6 +167,8 @@ public interface RunnerResources extends ClientBundle {
         String consoleButtonShadow();
 
         String activeConsoleButton();
+
+        String wrappedText();
     }
 
 }

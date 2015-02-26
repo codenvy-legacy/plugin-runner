@@ -46,6 +46,7 @@ public class ConsoleContainerViewImpl extends Composite implements ConsoleContai
     final RunnerResources resources;
 
     private final WidgetFactory  widgetFactory;
+    private final ConsoleButton  btnWrapText;
     private       ActionDelegate delegate;
 
     @Inject
@@ -56,6 +57,14 @@ public class ConsoleContainerViewImpl extends Composite implements ConsoleContai
         this.widgetFactory = widgetFactory;
 
         initWidget(UI_BINDER.createAndBindUi(this));
+
+        ConsoleButton.ActionDelegate wrapTextDelegate = new ConsoleButton.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onWrapTextClicked();
+            }
+        };
+        btnWrapText = createButton(resources.wrapText(), locale.consoleTooltipWraptext(), wrapTextDelegate);
 
         ConsoleButton.ActionDelegate scrollBottomDelegate = new ConsoleButton.ActionDelegate() {
             @Override
@@ -102,6 +111,12 @@ public class ConsoleContainerViewImpl extends Composite implements ConsoleContai
     @Override
     public void removeWidget(@Nonnull IsWidget console) {
         mainPanel.remove(console);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectWrapTextButton(boolean isChecked) {
+        btnWrapText.setCheckedStatus(isChecked);
     }
 
 }

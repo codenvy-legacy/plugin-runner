@@ -150,6 +150,17 @@ public class ConsoleContainerPresenter implements ConsoleContainer,
 
     /** {@inheritDoc} */
     @Override
+    public void onWrapTextClicked() {
+        if (selectedConsole == null) {
+            return;
+        }
+
+        selectedConsole.changeWrapTextParam();
+        view.selectWrapTextButton(selectedConsole.isWrapText());
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void onCleanClicked() {
         if (selectedConsole == null) {
             return;
