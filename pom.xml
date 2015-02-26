@@ -29,6 +29,7 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
+        <!-- this argument needs for Jacoco for analyzing code coverage -->
         <argLine>-XX:MaxPermSize=256M</argLine>
     </properties>
     <dependencies>
