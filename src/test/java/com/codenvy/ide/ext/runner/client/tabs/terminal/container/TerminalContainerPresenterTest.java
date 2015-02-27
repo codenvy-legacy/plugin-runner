@@ -132,19 +132,19 @@ public class TerminalContainerPresenterTest {
     }
 
     @Test
-    public void shouldGetView() {
+    public void viewShouldBeReturned() {
         assertThat(presenter.getView(), CoreMatchers.<IsWidget>is(view));
     }
 
     @Test
-    public void shouldSetVisibleTrue() {
+    public void viewShouldBeVisible() {
         presenter.setVisible(true);
 
         view.setVisible(true);
     }
 
     @Test
-    public void shouldSetVisibleFalse() {
+    public void viewShouldNotBeVisible() {
         presenter.setVisible(false);
 
         view.setVisible(false);
@@ -160,12 +160,21 @@ public class TerminalContainerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateWhenTerminal() {
+    public void terminalShouldBeUpdated() {
         presenter.onSelectionChanged(Selection.RUNNER);
         reset(terminal);
 
         presenter.update(runner);
 
         verify(terminal).update(runner);
+    }
+
+    @Test
+    public void viewShouldBeReset() {
+        presenter.onSelectionChanged(Selection.RUNNER);
+
+        presenter.reset();
+
+        verify(view).removeWidget(terminal);
     }
 }

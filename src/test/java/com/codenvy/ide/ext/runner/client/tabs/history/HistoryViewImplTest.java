@@ -26,15 +26,22 @@ import static org.mockito.Mockito.verify;
 @RunWith(GwtMockitoTestRunner.class)
 public class HistoryViewImplTest {
     @Mock
-    private RunnerWidget runnerWidget;
-
+    private RunnerWidget    runnerWidget;
     @InjectMocks
     private HistoryViewImpl historyView;
 
     @Test
-    public void shouldAddRunner() {
+    public void runnerWidgetShouldBeAdded() {
         historyView.addRunner(runnerWidget);
 
         verify(historyView.runnersPanel).add(runnerWidget);
     }
+
+    @Test
+    public void runnersPanelShouldBeClear() {
+        historyView.clear();
+
+        verify(historyView.runnersPanel).clear();
+    }
+
 }
