@@ -17,6 +17,7 @@ import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
@@ -64,6 +65,8 @@ public class GetSystemEnvironmentsActionTest {
     private RunnerLocalizationConstant                            locale;
     @Mock
     private GetEnvironmentsUtil                                   environmentUtil;
+    @Mock
+    private ChooseRunnerAction                                    chooseRunnerAction;
 
     @Mock
     private Throwable reason;
@@ -101,6 +104,7 @@ public class GetSystemEnvironmentsActionTest {
                                                  callbackBuilderProvider,
                                                  locale,
                                                  environmentUtil,
+                                                 chooseRunnerAction,
                                                  templatesContainerProvider);
         //preparing callbacks for server
         when(templatesContainerProvider.get()).thenReturn(templatesContainer);
@@ -159,6 +163,7 @@ public class GetSystemEnvironmentsActionTest {
 
         verify(templatesContainer, times(3)).addButton(tree);
         verify(templatesContainer, times(3)).addEnvironments(environments, SYSTEM);
+        verify(chooseRunnerAction, times(3)).addSystemRunners(environments);
     }
 
     @Test

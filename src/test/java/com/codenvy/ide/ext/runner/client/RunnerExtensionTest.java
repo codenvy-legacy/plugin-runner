@@ -16,6 +16,7 @@ import com.codenvy.ide.api.constraints.Anchor;
 import com.codenvy.ide.api.constraints.Constraints;
 import com.codenvy.ide.api.parts.PartStackType;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
+import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.actions.CustomRunAction;
 import com.codenvy.ide.ext.runner.client.actions.EditRunnerAction;
 import com.codenvy.ide.ext.runner.client.actions.RunAction;
@@ -30,6 +31,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 
+import static com.codenvy.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN;
@@ -53,14 +55,14 @@ import static org.mockito.Mockito.when;
 public class RunnerExtensionTest {
 
     @Captor
-    private ArgumentCaptor<Constraints>         constraintsCaptor;
+    private ArgumentCaptor<Constraints>        constraintsCaptor;
     @Captor
-    private ArgumentCaptor<DefaultActionGroup>  actionGroupCaptor;
+    private ArgumentCaptor<DefaultActionGroup> actionGroupCaptor;
     @Mock
-    private RunnerResources.RunnerCss           runnerCss;
+    private RunnerResources.RunnerCss          runnerCss;
     @Mock
-    private RunnerResources                     resources;
-    private RunnerExtension                     extension;
+    private RunnerResources                    resources;
+    private RunnerExtension                    extension;
 
     @Before
     public void setUp() throws Exception {
@@ -92,6 +94,7 @@ public class RunnerExtensionTest {
         ActionManager actionManager = mock(ActionManager.class);
 
         RunAction runAction = mock(RunAction.class);
+        ChooseRunnerAction chooseRunnerAction = mock(ChooseRunnerAction.class);
         EditRunnerAction editRunnerAction = mock(EditRunnerAction.class);
         RunWithGroup runWithGroup = mock(RunWithGroup.class);
         CustomRunAction customRunAction = mock(CustomRunAction.class);
@@ -107,10 +110,11 @@ public class RunnerExtensionTest {
         when(actionManager.getAction(GROUP_MAIN_CONTEXT_MENU)).thenReturn(contextMenuGroup);
 
         // test step
-        extension.setUpRunActions(actionManager, runAction, editRunnerAction, runWithGroup, customRunAction);
+        extension.setUpRunActions(actionManager, runAction, chooseRunnerAction, editRunnerAction, runWithGroup, customRunAction);
 
         // check step
-        verify(mainToolbarGroup).add(actionGroupCaptor.capture());
+        verify(mainToolbarGroup).add(actionGroupCaptor.capture(), constraintsCaptor.capture());
+        verifyConstants(Anchor.AFTER, GROUP_BUILD_TOOLBAR);
 
         verify(runContextGroup).addSeparator();
         verify(runContextGroup).add(runAction);

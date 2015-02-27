@@ -19,6 +19,7 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
@@ -68,6 +69,8 @@ public class GetProjectEnvironmentsActionTest {
     private RunnerLocalizationConstant                            locale;
     @Mock
     private GetEnvironmentsUtil                                   environmentUtil;
+    @Mock
+    private ChooseRunnerAction                                    chooseRunnerAction;
 
     @Mock
     private Throwable reason;
@@ -108,6 +111,7 @@ public class GetProjectEnvironmentsActionTest {
                                                   callbackBuilderProvider,
                                                   locale,
                                                   environmentUtil,
+                                                  chooseRunnerAction,
                                                   templatesContainerProvider);
 
         when(templatesContainerProvider.get()).thenReturn(templatesContainer);
@@ -179,5 +183,6 @@ public class GetProjectEnvironmentsActionTest {
         verify(templatesContainer).addEnvironments(environments, Scope.PROJECT);
 
         verify(projectService).getRunnerEnvironments(PATH, asyncRequestCallback);
+        verify(chooseRunnerAction).addProjectRunners(environments);
     }
 }

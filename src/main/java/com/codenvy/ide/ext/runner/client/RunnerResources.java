@@ -169,6 +169,8 @@ public interface RunnerResources extends ClientBundle {
         String activeConsoleButton();
 
         String wrappedText();
+
+        String runnersAction();
     }
 
 }

@@ -10,11 +10,13 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
@@ -45,6 +47,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     private final Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider;
     private final RunnerLocalizationConstant                            locale;
     private final GetEnvironmentsUtil                                   environmentUtil;
+    private final ChooseRunnerAction                                    chooseRunnerAction;
 
     private RunnerEnvironmentTree environmentTree;
 
@@ -54,10 +57,12 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
                                        Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider,
                                        RunnerLocalizationConstant locale,
                                        GetEnvironmentsUtil environmentUtil,
+                                       ChooseRunnerAction chooseRunnerAction,
                                        Provider<TemplatesContainer> templatesPanelProvider) {
         this.templatesPanelProvider = templatesPanelProvider;
         this.runnerService = runnerService;
         this.notificationManager = notificationManager;
+        this.chooseRunnerAction = chooseRunnerAction;
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.locale = locale;
         this.environmentUtil = environmentUtil;
@@ -97,7 +102,10 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
 
         TemplatesContainer container = templatesPanelProvider.get();
 
-        container.addEnvironments(environmentUtil.getEnvironmentsFromNodes(environments), SYSTEM);
+        List<RunnerEnvironment> nodeEnvironments = environmentUtil.getEnvironmentsFromNodes(environments);
+        container.addEnvironments(nodeEnvironments, SYSTEM);
         container.addButton(tree);
+
+        chooseRunnerAction.addSystemRunners(nodeEnvironments);
     }
 }

@@ -28,6 +28,8 @@ import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.ShowDockerAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.state.PanelState;
@@ -147,6 +149,10 @@ public class RunnerManagerPresenterTest {
     private TimerFactory                 timerFactory;
     @Mock
     private RunnerCounter                runnerCounter;
+    @Mock
+    private GetSystemEnvironmentsAction  getSystemEnvironmentsAction;
+    @Mock
+    private GetProjectEnvironmentsAction getProjectEnvironmentsAction;
 
     @Mock
     private ShowDockerAction showDockerAction;
@@ -258,7 +264,9 @@ public class RunnerManagerPresenterTest {
                                                templates,
                                                runnerCounter,
                                                selectionManager,
-                                               timerFactory);
+                                               timerFactory,
+                                               getSystemEnvironmentsAction,
+                                               getProjectEnvironmentsAction);
 
         //adding runner
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);
@@ -877,6 +885,8 @@ public class RunnerManagerPresenterTest {
         verify(appContext).getCurrentProject();
         verify(getRunningProcessAction).perform();
         verify(timer).schedule(ONE_SEC.getValue());
+        verify(getSystemEnvironmentsAction).perform();
+        verify(getProjectEnvironmentsAction).perform();
     }
 
     @Test

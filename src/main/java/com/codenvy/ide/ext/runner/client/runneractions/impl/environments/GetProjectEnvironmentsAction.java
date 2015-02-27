@@ -11,18 +11,20 @@
 package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
+import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
-import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
+import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -37,6 +39,7 @@ import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Sco
  * The class contains business logic to get project environments which are added on templates panel.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 @Singleton
 public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
@@ -47,6 +50,7 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
     private final NotificationManager                                   notificationManager;
     private final Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider;
     private final RunnerLocalizationConstant                            locale;
+    private final ChooseRunnerAction                                    chooseRunnerAction;
     private final GetEnvironmentsUtil                                   environmentUtil;
 
     @Inject
@@ -56,8 +60,10 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
                                         Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider,
                                         RunnerLocalizationConstant locale,
                                         GetEnvironmentsUtil environmentUtil,
+                                        ChooseRunnerAction chooseRunnerAction,
                                         Provider<TemplatesContainer> templatesPanelProvider) {
         this.templatesPanelProvider = templatesPanelProvider;
+        this.chooseRunnerAction = chooseRunnerAction;
         this.appContext = appContext;
         this.projectService = projectService;
         this.notificationManager = notificationManager;
@@ -84,7 +90,9 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
 
                         List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(result);
 
-                        panel.addEnvironments(environmentUtil.getEnvironmentsFromNodes(environments), PROJECT);
+                        List<RunnerEnvironment> projectEnvironments = environmentUtil.getEnvironmentsFromNodes(environments);
+                        panel.addEnvironments(projectEnvironments, PROJECT);
+                        chooseRunnerAction.addProjectRunners(projectEnvironments);
                     }
                 })
                 .failure(new FailureCallback() {

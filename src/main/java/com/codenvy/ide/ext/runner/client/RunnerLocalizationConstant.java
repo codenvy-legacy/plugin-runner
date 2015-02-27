@@ -308,6 +308,9 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("console.tooltip.clear")
     String consoleTooltipClear();
 
+    @Key("action.choose.runner")
+    String actionChooseRunner();
+
     @Key("console.tooltip.wraptext")
     String consoleTooltipWraptext();
 }
