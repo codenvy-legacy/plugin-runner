@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.app.AppContext;
@@ -22,6 +21,7 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.models.RunnerCounter;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
@@ -182,29 +182,31 @@ public class RunnerManagerPresenterTest {
     private Tab propertiesTab;
 
     @Mock
-    private Runner                    runner;
+    private Runner                      runner;
     @Mock
-    private RunOptions                runOptions;
+    private RunOptions                  runOptions;
     @Mock
-    private LaunchAction              launchAction;
+    private LaunchAction                launchAction;
     @Mock
-    private CheckRamAndRunAction      checkRamAndRunAction;
+    private CheckRamAndRunAction        checkRamAndRunAction;
     @Mock
-    private CurrentProject            currentProject;
+    private CurrentProject              currentProject;
     @Mock
-    private RunnerEnvironment         runnerEnvironment;
+    private Environment                 runnerEnvironment;
     @Mock
-    private ProjectActionEvent        projectActionEvent;
+    private ProjectActionEvent          projectActionEvent;
     @Mock
-    private GetRunningProcessesAction getRunningProcessAction;
+    private GetRunningProcessesAction   getRunningProcessAction;
     @Mock
-    private PartStack                 partStack;
+    private PartStack                   partStack;
     @Mock
-    private StopAction                stopAction;
+    private StopAction                  stopAction;
     @Mock
-    private PartPresenter             activePart;
+    private PartPresenter               activePart;
     @Mock
-    private Timer                     timer;
+    private Timer                       timer;
+    @Mock
+    private GetSystemEnvironmentsAction systemEnvironmentsAction;
 
     private RunnerManagerPresenter presenter;
 
@@ -659,7 +661,7 @@ public class RunnerManagerPresenterTest {
         Map<String, String> options = new HashMap<>();
         when(selectionManager.getEnvironment()).thenReturn(runnerEnvironment);
         when(runnerEnvironment.getOptions()).thenReturn(options);
-        when(runnerEnvironment.getId()).thenReturn(TEXT);
+        when(runnerEnvironment.getName()).thenReturn(TEXT);
         when(runOptions.withOptions(options)).thenReturn(runOptions);
         when(modelsFactory.createRunner(runOptions, TEXT)).thenReturn(runner);
         when(panelState.getState()).thenReturn(TEMPLATE);
@@ -672,7 +674,7 @@ public class RunnerManagerPresenterTest {
 
         verify(panelState).getState();
         verify(runnerEnvironment).getOptions();
-        verify(runnerEnvironment).getId();
+        verify(runnerEnvironment).getName();
         verify(dtoFactory, times(2)).createDto(RunOptions.class);
         verify(runOptions).withOptions(options);
         verify(modelsFactory).createRunner(runOptions, TEXT);

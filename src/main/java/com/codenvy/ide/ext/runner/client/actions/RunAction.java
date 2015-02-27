@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.actions;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.app.AppContext;
@@ -19,6 +18,7 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManager;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
@@ -59,14 +59,14 @@ public class RunAction extends AbstractRunnerActions {
             return;
         }
 
-        RunnerEnvironment environment = chooseRunnerAction.getSelectedEnvironment();
+       Environment environment = chooseRunnerAction.getSelectedEnvironment();
 
-        if (environment == null || currentProject.getRunner().equals(environment.getId())) {
+        if (environment == null || currentProject.getRunner().equals(environment.getName())) {
             runnerManager.launchRunner();
         } else {
             RunOptions runOptions = dtoFactory.createDto(RunOptions.class).withOptions(environment.getOptions());
 
-            runnerManager.launchRunner(runOptions, environment.getId());
+            runnerManager.launchRunner(runOptions, environment.getName());
         }
     }
 }

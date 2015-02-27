@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates.environment;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.TestUtil;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.tabs.common.item.ItemWidget;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class EnvironmentWidgetTest {
@@ -51,7 +52,7 @@ public class EnvironmentWidgetTest {
     @Mock
     private RunnerResources.RunnerCss css;
     @Mock
-    private RunnerEnvironment         environment;
+    private Environment               environment;
 
     private EnvironmentWidget environmentWidget;
 
@@ -81,7 +82,7 @@ public class EnvironmentWidgetTest {
         ItemWidget.ActionDelegate delegate = delegateArgumentCaptor.getValue();
         delegate.onWidgetClicked();
 
-        verify(selectionManager).setEnvironment(any(RunnerEnvironment.class));
+        verify(selectionManager).setEnvironment(any(Environment.class));
     }
 
     @Test
@@ -100,7 +101,7 @@ public class EnvironmentWidgetTest {
 
     @Test
     public void shouldUpdateWhenDescriptionNotNull() {
-        when(environment.getId()).thenReturn(ID);
+        when(environment.getName()).thenReturn(ID);
         when(environment.getDescription()).thenReturn(TEXT);
 
         environmentWidget.setScope(Scope.PROJECT);
@@ -111,7 +112,7 @@ public class EnvironmentWidgetTest {
 
     @Test
     public void shouldUpdateWhenDescriptionIsNull() {
-        when(environment.getId()).thenReturn(ID);
+        when(environment.getName()).thenReturn(ID);
         when(environment.getDescription()).thenReturn(TEXT);
 
         environmentWidget.setScope(Scope.PROJECT);
@@ -122,7 +123,7 @@ public class EnvironmentWidgetTest {
 
     @Test
     public void shouldUpdateWhenScopeProject() throws Exception {
-        when(environment.getId()).thenReturn(ID);
+        when(environment.getName()).thenReturn(ID);
         when(environment.getDescription()).thenReturn(TEXT);
 
         environmentWidget.setScope(Scope.PROJECT);
@@ -135,7 +136,7 @@ public class EnvironmentWidgetTest {
 
     @Test
     public void shouldUpdateWhenScopeSystem() throws Exception {
-        when(environment.getId()).thenReturn(ID);
+        when(environment.getName()).thenReturn(ID);
         when(environment.getDescription()).thenReturn(TEXT);
 
         environmentWidget.setScope(Scope.SYSTEM);
@@ -155,10 +156,9 @@ public class EnvironmentWidgetTest {
     private void updateParameters() {
         environmentWidget.update(environment);
 
-        verify(environment).getId();
+        verify(environment).getName();
 
-        String NAME = "text";
-        verify(itemWidget).setName(NAME);
+        verify(itemWidget).setName(ID);
         verify(environment).getDescription();
         verify(itemWidget).setDescription(TEXT);
     }

@@ -13,6 +13,9 @@ package com.codenvy.ide.ext.runner.client.util;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
+import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
+import com.codenvy.ide.ext.runner.client.models.Environment;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Before;
@@ -28,16 +31,20 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class GetEnvironmentsUtilImplTest {
 
     @Mock
     private RunnerEnvironmentTree tree;
+    @Mock
+    private ModelsFactory         modelsFactory;
 
     //runnerEnvironmentTrees
     @Mock
@@ -141,15 +148,24 @@ public class GetEnvironmentsUtilImplTest {
 
     @Test
     public void shouldGetEnvironmentsFromNodes() {
+        Environment environment1 = mock(Environment.class);
+        Environment environment2 = mock(Environment.class);
         RunnerEnvironment runnerEnv1 = mock(RunnerEnvironment.class);
         RunnerEnvironment runnerEnv2 = mock(RunnerEnvironment.class);
+
         when(runnerEnvLeaf1.getEnvironment()).thenReturn(runnerEnv1);
         when(runnerEnvLeaf2.getEnvironment()).thenReturn(runnerEnv2);
+        when(modelsFactory.createEnvironment(runnerEnv1, Scope.SYSTEM)).thenReturn(environment1);
+        when(modelsFactory.createEnvironment(runnerEnv2, Scope.SYSTEM)).thenReturn(environment2);
 
-        List<RunnerEnvironment> result = getEnvironmentsUtil.getEnvironmentsFromNodes(Arrays.asList(runnerEnvLeaf1, runnerEnvLeaf2));
+        List<Environment> result = getEnvironmentsUtil.getEnvironmentsFromNodes(Arrays.asList(runnerEnvLeaf1, runnerEnvLeaf2),
+                                                                                Scope.SYSTEM);
 
         assertThat(result.size(), is(2));
-        assertThat(result, hasItems(runnerEnv1, runnerEnv2));
+        assertThat(result, hasItems(environment1, environment2));
+
+        verify(modelsFactory).createEnvironment(runnerEnv1, Scope.SYSTEM);
+        verify(modelsFactory).createEnvironment(runnerEnv2, Scope.SYSTEM);
     }
 
     /*

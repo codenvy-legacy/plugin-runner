@@ -35,11 +35,13 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Set;
 
 /**
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 public class PropertiesPanelViewImpl extends Composite implements PropertiesPanelView {
 
@@ -74,11 +76,13 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     final RunnerResources            resources;
 
     private final WidgetFactory widgetFactory;
+    private final Label         unAvailableMessage;
 
     private ActionDelegate delegate;
 
     private PropertyButtonWidget saveBtn;
     private PropertyButtonWidget cancelBtn;
+    private PropertyButtonWidget deleteBtn;
 
     @Inject
     public PropertiesPanelViewImpl(RunnerLocalizationConstant locale, RunnerResources resources, WidgetFactory widgetFactory) {
@@ -94,7 +98,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
         prepareField(boot, EnumSet.allOf(Boot.class));
         prepareField(shutdown, EnumSet.allOf(Shutdown.class));
 
-        Label unAvailableMessage = new Label(locale.editorNotReady());
+        unAvailableMessage = new Label(locale.editorNotReady());
         unAvailableMessage.addStyleName(resources.runnerCss().fullSize());
         unAvailableMessage.addStyleName(resources.runnerCss().unAvailableMessage());
 
@@ -122,7 +126,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
         };
 
         saveBtn = createButton(locale.propertiesButtonSave(), saveDelegate);
-        createButton(locale.propertiesButtonDelete(), deleteDelegate);
+        deleteBtn = createButton(locale.propertiesButtonDelete(), deleteDelegate);
         cancelBtn = createButton(locale.propertiesButtonCancel(), cancelDelegate);
     }
 
@@ -164,7 +168,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     /** {@inheritDoc} */
     @Nonnull
     @Override
-    public RAM getMemorySize() {
+    public RAM getRam() {
         String value = ram.getValue(ram.getSelectedIndex());
         return RAM.detect(value);
     }
@@ -244,8 +248,18 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     /** {@inheritDoc} */
     @Override
-    public void showEditor(@Nonnull EditorPartPresenter editor) {
-        editor.go(editorPanel);
+    public void setEnableDeleteButton(boolean enable) {
+        deleteBtn.setEnable(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showEditor(@Nullable EditorPartPresenter editor) {
+        if (editor == null) {
+            editorPanel.setWidget(unAvailableMessage);
+        } else {
+            editor.go(editorPanel);
+        }
     }
 
     @UiHandler({"name", "type"})

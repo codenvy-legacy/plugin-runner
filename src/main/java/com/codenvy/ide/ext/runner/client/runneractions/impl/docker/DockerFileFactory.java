@@ -72,6 +72,11 @@ public class DockerFileFactory {
      */
     @Nonnull
     public FileNode newInstance(@Nonnull String href) {
+        return newInstance(href, NAME, PATH);
+    }
+
+    @Nonnull
+    public FileNode newInstance(@Nonnull String href, @Nonnull String name, @Nonnull String path) {
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
             throw new IllegalStateException("No project is opened");
@@ -83,11 +88,12 @@ public class DockerFileFactory {
         List<Link> links = Arrays.asList(link);
 
         ItemReference recipeFileItem = dtoFactory.createDto(ItemReference.class)
-                                                 .withName(NAME)
-                                                 .withPath(PATH)
+                                                 .withName(name)
+                                                 .withPath(path)
                                                  .withMediaType(TYPE)
                                                  .withLinks(links);
 
         return new DockerFile(eventBus, projectServiceClient, dtoUnmarshallerFactory, recipeFileItem, currentProject.getCurrentTree());
     }
+
 }

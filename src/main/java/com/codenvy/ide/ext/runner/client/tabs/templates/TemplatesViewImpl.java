@@ -10,11 +10,11 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.common.item.RunnerItems;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
@@ -70,23 +70,25 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
     @UiField(provided = true)
     final RunnerLocalizationConstant locale;
 
-    private final Map<RunnerEnvironment, EnvironmentWidget> environments;
-    private final List<TypeButton>                          typeButtons;
-    private final WidgetFactory                             widgetFactory;
-    private final List<EnvironmentWidget>                   cashWidgets;
+    private final Map<Environment, EnvironmentWidget> environmentWidgets;
+    private final List<TypeButton>                    typeButtons;
+    private final WidgetFactory                       widgetFactory;
+    private final List<EnvironmentWidget>             cashWidgets;
 
     private ActionDelegate delegate;
     private TypeButton     allButton;
 
     @Inject
-    public TemplatesViewImpl(RunnerResources resources, RunnerLocalizationConstant locale, WidgetFactory widgetFactory) {
+    public TemplatesViewImpl(RunnerResources resources,
+                             RunnerLocalizationConstant locale,
+                             WidgetFactory widgetFactory) {
         this.resources = resources;
         this.locale = locale;
         this.widgetFactory = widgetFactory;
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
-        this.environments = new HashMap<>();
+        this.environmentWidgets = new HashMap<>();
         this.typeButtons = new ArrayList<>();
         this.cashWidgets = new ArrayList<>();
 
@@ -112,46 +114,42 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
 
     /** {@inheritDoc} */
     @Override
-    public void addEnvironment(@Nonnull Map<Scope, List<RunnerEnvironment>> environments) {
+    public void addEnvironment(@Nonnull Map<Scope, List<Environment>> environments) {
         clearEnvironmentsPanel();
         int i = 0;
 
-        if (environments.get(PROJECT) != null) {
-            for (RunnerEnvironment environment : environments.get(PROJECT)) {
-                addEnvironment(environment, PROJECT, i++);
-            }
+        for (Environment environment : environments.get(PROJECT)) {
+            addEnvironment(environment, PROJECT, i++);
         }
 
-        List<RunnerEnvironment> systemEnvironments = environments.get(SYSTEM);
+        List<Environment> systemEnvironments = environments.get(SYSTEM);
 
         if (systemEnvironments == null || systemEnvironments.isEmpty()) {
             selectTypeButton(allButton);
             return;
         }
 
-        for (RunnerEnvironment environment : systemEnvironments) {
+        for (Environment environment : systemEnvironments) {
             addEnvironment(environment, SYSTEM, i++);
         }
     }
 
-    private void addEnvironment(@Nonnull RunnerEnvironment environment, @Nonnull Scope scope, @Nonnegative int index) {
+    private void addEnvironment(@Nonnull Environment environment, @Nonnull Scope scope, @Nonnegative int index) {
         EnvironmentWidget widget = getItem(index);
 
         widget.setScope(scope);
         widget.update(environment);
 
-        if (environments.isEmpty()) {
-            widget.select();
-        }
-
-        environments.put(environment, widget);
+        environmentWidgets.put(environment, widget);
         environmentsPanel.add(widget);
     }
 
     @Nonnull
     private EnvironmentWidget getItem(@Nonnegative int index) {
         if (cashWidgets.size() > index) {
-            return cashWidgets.get(index);
+            EnvironmentWidget widget = cashWidgets.get(index);
+            widget.unSelect();
+            return widget;
         }
 
         EnvironmentWidget widget = widgetFactory.createEnvironment();
@@ -163,12 +161,12 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
 
     /** {@inheritDoc} */
     @Override
-    public void selectEnvironment(@Nonnull RunnerEnvironment selectedEnvironment) {
-        for (RunnerItems widget : environments.values()) {
+    public void selectEnvironment(@Nonnull Environment selectedEnvironment) {
+        for (RunnerItems widget : environmentWidgets.values()) {
             widget.unSelect();
         }
 
-        EnvironmentWidget selectedWidget = environments.get(selectedEnvironment);
+        EnvironmentWidget selectedWidget = environmentWidgets.get(selectedEnvironment);
         if(selectedWidget != null) {
             selectedWidget.select();
         }

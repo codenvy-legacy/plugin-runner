@@ -12,7 +12,6 @@ package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.app.AppContext;
@@ -23,7 +22,7 @@ import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
-import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
@@ -40,6 +39,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
 
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -91,7 +91,7 @@ public class GetProjectEnvironmentsActionTest {
     @Mock
     private List<RunnerEnvironmentLeaf>                 environmentLeaves;
     @Mock
-    private List<RunnerEnvironment>                     environments;
+    private List<Environment>                           environments;
     @Mock
     private RunnerEnvironmentTree                       result;
 
@@ -167,7 +167,7 @@ public class GetProjectEnvironmentsActionTest {
     @Test
     public void shouldPerformSuccessWithToRunnerEnvironment() {
         when(environmentUtil.getAllEnvironments(result)).thenReturn(environmentLeaves);
-        when(environmentUtil.getEnvironmentsFromNodes(environmentLeaves)).thenReturn(environments);
+        when(environmentUtil.getEnvironmentsFromNodes(environmentLeaves, PROJECT)).thenReturn(environments);
 
         action.perform();
 
@@ -178,9 +178,9 @@ public class GetProjectEnvironmentsActionTest {
         successCallback.onSuccess(result);
 
         verify(environmentUtil).getAllEnvironments(result);
-        verify(environmentUtil).getEnvironmentsFromNodes(environmentLeaves);
+        verify(environmentUtil).getEnvironmentsFromNodes(environmentLeaves, PROJECT);
 
-        verify(templatesContainer).addEnvironments(environments, Scope.PROJECT);
+        verify(templatesContainer).addEnvironments(environments, PROJECT);
 
         verify(projectService).getRunnerEnvironments(PATH, asyncRequestCallback);
         verify(chooseRunnerAction).addProjectRunners(environments);

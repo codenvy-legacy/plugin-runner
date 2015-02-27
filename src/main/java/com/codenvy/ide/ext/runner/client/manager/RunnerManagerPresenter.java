@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.app.AppContext;
@@ -23,6 +22,7 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.inject.factories.RunnerActionFactory;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.models.RunnerCounter;
 import com.codenvy.ide.ext.runner.client.runneractions.RunnerAction;
@@ -116,8 +116,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     private GetRunningProcessesAction getRunningProcessAction;
 
-    private Runner            selectedRunner;
-    private RunnerEnvironment selectedEnvironment;
+    private Runner      selectedRunner;
+    private Environment selectedEnvironment;
 
     @Inject
     public RunnerManagerPresenter(final RunnerManagerView view,
@@ -135,7 +135,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   TerminalContainer terminalContainer,
                                   PropertiesContainer propertiesContainer,
                                   HistoryPanel history,
-                                  TemplatesContainer templates,
+                                  TemplatesContainer templateContainer,
                                   RunnerCounter runnerCounter,
                                   SelectionManager selectionManager,
                                   TimerFactory timerFactory,
@@ -161,7 +161,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.panelState = panelState;
 
         this.consoleContainer = consoleContainer;
-        this.templateContainer = templates;
+        this.templateContainer = templateContainer;
         this.terminalContainer = terminalContainer;
         this.propertiesContainer = propertiesContainer;
 
@@ -181,7 +181,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
         runnersId = new HashSet<>();
 
-        initializeLeftPanel(panelState, leftTabContainer, tabBuilderProvider, history, templates);
+        initializeLeftPanel(panelState, leftTabContainer, tabBuilderProvider, history, templateContainer);
         initializeRightPanel(rightTabContainer, tabBuilderProvider, consoleContainer, terminalContainer, propertiesContainer);
 
         view.setLeftPanel(leftTabContainer);
@@ -198,7 +198,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                      @Nonnull TabContainer container,
                                      @Nonnull Provider<TabBuilder> tabBuilderProvider,
                                      @Nonnull HistoryPanel historyPanel,
-                                     @Nonnull TemplatesContainer templatesContainer) {
+                                     @Nonnull final TemplatesContainer templatesContainer) {
         TabSelectHandler historyHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
@@ -223,6 +223,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             @Override
             public void onTabSelected() {
                 panelState.setState(TEMPLATE);
+
+                templatesContainer.showSystemEnvironments();
 
                 view.hideOtherButtons();
             }
@@ -364,13 +366,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         if (TEMPLATE.equals(panelState.getState()) && selectedEnvironment != null) {
-            Map<String, String> options = selectedEnvironment.getOptions();
-            String environmentName = selectedEnvironment.getId();
+            RunOptions runOptions = dtoFactory.createDto(RunOptions.class).withOptions(selectedEnvironment.getOptions());
 
-            RunOptions runOptions = dtoFactory.createDto(RunOptions.class).withOptions(options);
-
-            launchRunner(runOptions, environmentName);
-
+            launchRunner(runOptions, selectedEnvironment.getName());
             return;
         }
 

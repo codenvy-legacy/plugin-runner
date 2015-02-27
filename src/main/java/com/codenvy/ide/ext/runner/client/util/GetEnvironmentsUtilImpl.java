@@ -11,9 +11,11 @@
 package com.codenvy.ide.ext.runner.client.util;
 
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
+import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
+import com.codenvy.ide.ext.runner.client.models.Environment;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -30,13 +32,13 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
 
     private final List<RunnerEnvironmentTree> languageTypeEnvironments;
     private final List<RunnerEnvironmentLeaf> allEnvironments;
-    private final List<RunnerEnvironment>     environments;
+    private final ModelsFactory               modelsFactory;
 
     @Inject
-    public GetEnvironmentsUtilImpl() {
+    public GetEnvironmentsUtilImpl(ModelsFactory modelsFactory) {
+        this.modelsFactory = modelsFactory;
         this.languageTypeEnvironments = new ArrayList<>();
         this.allEnvironments = new ArrayList<>();
-        this.environments = new ArrayList<>();
     }
 
     /** {@inheritDoc} */
@@ -58,7 +60,7 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
     }
 
     private void getEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnegative int deep) {
-        if(deep <= 0) {
+        if (deep <= 0) {
             return;
         }
 
@@ -91,11 +93,11 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
 
     /** {@inheritDoc} */
     @Override
-    public List<RunnerEnvironment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList) {
-        environments.clear();
+    public List<Environment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList, @Nonnull Scope scope) {
+        List<Environment> environments = new ArrayList<>();
 
         for (RunnerEnvironmentLeaf environmentLeaf : environmentList) {
-            environments.add(environmentLeaf.getEnvironment());
+            environments.add(modelsFactory.createEnvironment(environmentLeaf.getEnvironment(), scope));
         }
 
         return environments;

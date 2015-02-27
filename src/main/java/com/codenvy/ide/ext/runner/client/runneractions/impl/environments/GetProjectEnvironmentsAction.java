@@ -11,7 +11,6 @@
 package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.app.AppContext;
@@ -22,6 +21,7 @@ import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
@@ -90,7 +90,7 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
 
                         List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(result);
 
-                        List<RunnerEnvironment> projectEnvironments = environmentUtil.getEnvironmentsFromNodes(environments);
+                        List<Environment> projectEnvironments = environmentUtil.getEnvironmentsFromNodes(environments, PROJECT);
                         panel.addEnvironments(projectEnvironments, PROJECT);
                         chooseRunnerAction.addProjectRunners(projectEnvironments);
                     }

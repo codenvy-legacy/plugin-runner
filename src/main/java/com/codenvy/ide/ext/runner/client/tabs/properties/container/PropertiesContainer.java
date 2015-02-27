@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.properties.container;
 
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.tabs.common.TabPresenter;
 import com.google.inject.ImplementedBy;
@@ -20,6 +21,7 @@ import javax.annotation.Nonnull;
  * The container for properties panels.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 @ImplementedBy(PropertiesContainerPresenter.class)
 public interface PropertiesContainer extends TabPresenter {
@@ -31,6 +33,14 @@ public interface PropertiesContainer extends TabPresenter {
      */
     void show(@Nonnull Runner runner);
 
-    /** Cleans the data of the property widgets. */
+    /**
+     * Show properties panel for environment.
+     *
+     * @param environment
+     *         environment that is bound with properties panel
+     */
+    void show(@Nonnull Environment environment);
+
+    /** Cleans the data of the history panel. */
     void reset();
 }

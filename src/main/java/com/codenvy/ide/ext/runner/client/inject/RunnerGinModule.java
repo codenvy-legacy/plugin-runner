@@ -20,6 +20,8 @@ import com.codenvy.ide.ext.runner.client.manager.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.manager.button.ButtonWidgetImpl;
 import com.codenvy.ide.ext.runner.client.manager.info.MoreInfo;
 import com.codenvy.ide.ext.runner.client.manager.info.MoreInfoImpl;
+import com.codenvy.ide.ext.runner.client.models.Environment;
+import com.codenvy.ide.ext.runner.client.models.EnvironmentImpl;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.models.RunnerImpl;
 import com.codenvy.ide.ext.runner.client.tabs.console.button.ConsoleButton;
@@ -49,6 +51,7 @@ import com.google.inject.name.Named;
  *
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 @ExtensionGinModule
 public class RunnerGinModule extends AbstractGinModule {
@@ -56,6 +59,7 @@ public class RunnerGinModule extends AbstractGinModule {
     @Override
     protected void configure() {
         install(new GinFactoryModuleBuilder().implement(Runner.class, RunnerImpl.class)
+                                             .implement(Environment.class, EnvironmentImpl.class)
                                              .build(ModelsFactory.class));
 
         install(new GinFactoryModuleBuilder().build(HandlerFactory.class));

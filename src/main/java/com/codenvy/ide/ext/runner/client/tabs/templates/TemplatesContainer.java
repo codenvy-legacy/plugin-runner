@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.common.TabPresenter;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.inject.ImplementedBy;
@@ -32,7 +32,7 @@ public interface TemplatesContainer extends TabPresenter {
      * @param environment
      *         environment which was selected
      */
-    void select(@Nonnull RunnerEnvironment environment);
+    void select(@Nonnull Environment environment);
 
     /**
      * Calls method on view which adds environment widget on templates panel.
@@ -40,9 +40,9 @@ public interface TemplatesContainer extends TabPresenter {
      * @param environments
      *         list of environments which need add
      * @param scope
-     *         scope of environments
+     *         scope of environments which are saved in list
      */
-    void addEnvironments(@Nonnull List<RunnerEnvironment> environments, @Nonnull Scope scope);
+    void addEnvironments(@Nonnull List<Environment> environments, @Nonnull Scope scope);
 
     /**
      * Adds language type buttons on templates panel.
@@ -51,4 +51,8 @@ public interface TemplatesContainer extends TabPresenter {
      *         tree which need analyze to defined quantity of language type buttons which need add on panel
      */
     void addButton(@Nonnull RunnerEnvironmentTree tree);
+
+    /** Shows system environments when user click on templates tab the first time. */
+    void showSystemEnvironments();
+
 }

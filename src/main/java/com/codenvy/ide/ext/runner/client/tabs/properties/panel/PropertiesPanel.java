@@ -11,14 +11,56 @@
 package com.codenvy.ide.ext.runner.client.tabs.properties.panel;
 
 import com.codenvy.ide.api.mvp.Presenter;
-import com.google.inject.ImplementedBy;
+import com.codenvy.ide.ext.runner.client.models.Environment;
+import com.codenvy.ide.ext.runner.client.models.Runner;
+
+import javax.annotation.Nonnull;
 
 /**
  * The common representation of properties panel widget.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
-@ImplementedBy(PropertiesPanelPresenter.class)
 public interface PropertiesPanel extends Presenter {
+
+    /**
+     * Updates properties panel using values from current runner.
+     *
+     * @param runner
+     *         runner for which need update panel
+     */
+    void update(@Nonnull Runner runner);
+
+    /**
+     * Updates properties panel using values from current environment.
+     *
+     * @param environment
+     *         environment for which need update panel
+     */
+    void update(@Nonnull Environment environment);
+
+    /** Resets all parameters of the panel. */
+    void reset();
+
+    /**
+     * Adds a new listener for detecting removing panel.
+     *
+     * @param listener
+     *         listener that needs to be added
+     */
+    void addListener(@Nonnull RemovePanelListener listener);
+
+
+    public interface RemovePanelListener {
+
+        /**
+         * Methods calls by all listeners which must be notified that environment was deleted.
+         *
+         * @param environment
+         *         environment which was deleted
+         */
+        void onPanelRemoved(@Nonnull Environment environment);
+    }
 
 }

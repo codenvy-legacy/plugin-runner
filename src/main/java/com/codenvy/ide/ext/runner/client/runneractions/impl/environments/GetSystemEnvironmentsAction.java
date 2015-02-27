@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
@@ -20,6 +19,7 @@ import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
@@ -102,7 +102,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
 
         TemplatesContainer container = templatesPanelProvider.get();
 
-        List<RunnerEnvironment> nodeEnvironments = environmentUtil.getEnvironmentsFromNodes(environments);
+        List<Environment> nodeEnvironments = environmentUtil.getEnvironmentsFromNodes(environments, SYSTEM);
         container.addEnvironments(nodeEnvironments, SYSTEM);
         container.addButton(tree);
 

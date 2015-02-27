@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.actions;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.CustomComponentAction;
 import com.codenvy.ide.api.action.Presentation;
@@ -18,6 +17,7 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.ListBox;
@@ -34,15 +34,16 @@ import java.util.List;
  * Action which allows user select runner from all environments.
  *
  * @author Valeriy Svydenko
+ * @author Dmitry Shnurenko
  */
 @Singleton
 public class ChooseRunnerAction extends AbstractRunnerActions implements CustomComponentAction {
     private final ListBox    environments;
     private final AppContext appContext;
 
-    private RunnerEnvironment       selectedEnvironment;
-    private List<RunnerEnvironment> systemRunners;
-    private List<RunnerEnvironment> projectRunners;
+    private Environment       selectedEnvironment;
+    private List<Environment> systemRunners;
+    private List<Environment> projectRunners;
 
     @Inject
     public ChooseRunnerAction(RunnerResources resources,
@@ -84,7 +85,7 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
      * @param systemEnvironments
      *         list of system environments
      */
-    public void addSystemRunners(@Nonnull List<RunnerEnvironment> systemEnvironments) {
+    public void addSystemRunners(@Nonnull List<Environment> systemEnvironments) {
         systemRunners.addAll(systemEnvironments);
     }
 
@@ -94,20 +95,20 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
      * @param projectEnvironments
      *         list of system environments
      */
-    public void addProjectRunners(@Nonnull List<RunnerEnvironment> projectEnvironments) {
+    public void addProjectRunners(@Nonnull List<Environment> projectEnvironments) {
         projectRunners.clear();
         environments.clear();
 
         addDefaultRunner();
 
-        for (RunnerEnvironment environment : projectEnvironments) {
-            String name = getRunnerName(environment.getId());
+        for (Environment environment : projectEnvironments) {
+            String name = environment.getName();
 
             environments.addItem(name);
         }
 
-        for (RunnerEnvironment environment : systemRunners) {
-            environments.addItem(getRunnerName(environment.getId()));
+        for (Environment environment : systemRunners) {
+            environments.addItem(environment.getName());
         }
 
         projectRunners.addAll(projectEnvironments);
@@ -115,7 +116,7 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
 
     /** @return selected environment. */
     @Nullable
-    public RunnerEnvironment getSelectedEnvironment() {
+    public Environment getSelectedEnvironment() {
         return selectedEnvironment;
     }
 
@@ -127,15 +128,15 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
     private void selectEnvironment() {
         String selectedEnvironmentName = environments.getValue(environments.getSelectedIndex());
 
-        for (RunnerEnvironment environment : projectRunners) {
-            if (environment.getId().endsWith('/' + selectedEnvironmentName)) {
+        for (Environment environment : projectRunners) {
+            if (environment.getName().equals(selectedEnvironmentName)) {
                 selectedEnvironment = environment;
                 return;
             }
         }
 
-        for (RunnerEnvironment environment : systemRunners) {
-            if (environment.getId().endsWith('/' + selectedEnvironmentName)) {
+        for (Environment environment : systemRunners) {
+            if (environment.getName().equals(selectedEnvironmentName)) {
                 selectedEnvironment = environment;
                 return;
             }

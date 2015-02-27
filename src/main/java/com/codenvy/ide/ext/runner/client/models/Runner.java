@@ -13,6 +13,7 @@ package com.codenvy.ide.ext.runner.client.models;
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -87,6 +88,14 @@ public interface Runner {
     @Nonnull
     String getTitle();
 
+    /**
+     * Sets title to current runner.
+     *
+     * @param runnerTitle
+     *         title which need set
+     */
+    void setTitle(@Nonnull String runnerTitle);
+
     /** @return status of runner */
     @Nonnull
     Status getStatus();
@@ -118,6 +127,30 @@ public interface Runner {
     /** @return url where the rest service for stopping runner is located */
     @Nullable
     Link getStopUrl();
+
+    /** @return type of current runner */
+    @Nonnull
+    String getType();
+
+    /**
+     * Sets type to current runner.
+     *
+     * @param type
+     *         type which need set
+     */
+    void setType(@Nonnull String type);
+
+    /** @return scope of current runner */
+    @Nonnull
+    Scope getScope();
+
+    /**
+     * Sets scope to current runner.
+     *
+     * @param scope
+     *         scope which need set
+     */
+    void setScope(@Nonnull Scope scope);
 
     /**
      * @return <code>true</code> when status is IN_PROGRESS, RUNNING, DONE, IN_QUEUE, TIMEOUT

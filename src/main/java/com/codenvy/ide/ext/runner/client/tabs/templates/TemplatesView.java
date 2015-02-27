@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.mvp.View;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
 import com.google.inject.ImplementedBy;
@@ -35,7 +35,7 @@ public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
      * @param environments
      *         runner which was added
      */
-    void addEnvironment(@Nonnull Map<Scope, List<RunnerEnvironment>> environments);
+    void addEnvironment(@Nonnull Map<Scope, List<Environment>> environments);
 
     /**
      * The method creates and adds buttons to special place on view for each group of runner environments.
@@ -65,7 +65,7 @@ public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
      * @param selectedEnvironment
      *         environment which was selected
      */
-    void selectEnvironment(@Nonnull RunnerEnvironment selectedEnvironment);
+    void selectEnvironment(@Nonnull Environment selectedEnvironment);
 
     /**
      * Sets scope panel {@link ScopePanel}to special place on templates panel.

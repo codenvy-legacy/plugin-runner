@@ -10,11 +10,12 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
@@ -35,22 +36,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class TemplatesPresenterTest {
 
-    private List<RunnerEnvironment>     projectEnvironments;
-    private List<RunnerEnvironment>     systemEnvironments;
+    private List<Environment>           projectEnvironments;
+    private List<Environment>           systemEnvironments;
     private List<RunnerEnvironmentTree> runnerEnvironmentTrees;
 
     @Mock
@@ -65,15 +66,17 @@ public class TemplatesPresenterTest {
     private ScopePanel                   scopePanel;
     @Mock
     private RunnerResources              resources;
+    @Mock
+    private PropertiesContainer          propertiesContainer;
 
     @Mock
     private SVGResource           systemImage;
     @Mock
     private SVGResource           projectImage;
     @Mock
-    private RunnerEnvironment     runnerEnvironment1;
+    private Environment           runnerEnvironment1;
     @Mock
-    private RunnerEnvironment     runnerEnvironment2;
+    private Environment           runnerEnvironment2;
     @Mock
     private RunnerEnvironmentTree tree1;
     @Mock
@@ -99,18 +102,18 @@ public class TemplatesPresenterTest {
                                            systemEnvironmentsAction,
                                            environmentUtil,
                                            scopePanel,
-                                           resources);
+                                           resources,
+                                           propertiesContainer);
 
     }
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void constructorShouldBeVerified() {
         verify(view).setDelegate(presenter);
         verify(scopePanel).setDelegate(presenter);
         verify(scopePanel).addButton(SYSTEM, systemImage, false);
         verify(scopePanel).addButton(PROJECT, projectImage, true);
         verify(view).setScopePanel(scopePanel);
-        verify(systemEnvironmentsAction).perform();
     }
 
     @Test
@@ -127,12 +130,15 @@ public class TemplatesPresenterTest {
     @Test
     public void shouldOnAllTypeButtonClickedWhenScopeProject() {
         presenter.onButtonChecked(PROJECT);
+
+        reset(projectEnvironmentsAction);
+
         presenter.onAllTypeButtonClicked();
 
         verify(view).clearEnvironmentsPanel();
         verify(view).clearTypeButtonsPanel();
 
-        verify(systemEnvironmentsAction).perform();
+        verify(projectEnvironmentsAction).perform();
     }
 
     @Test
@@ -149,14 +155,15 @@ public class TemplatesPresenterTest {
         verify(view).clearEnvironmentsPanel();
         verify(view).clearTypeButtonsPanel();
 
-        verify(systemEnvironmentsAction, times(2)).perform();
+        verify(systemEnvironmentsAction).perform();
+        verify(projectEnvironmentsAction).perform();
     }
 
     @Test
     public void shouldOnLangTypeButtonClicked() {
         presenter.onLangTypeButtonClicked(tree1);
 
-        verify(view).addEnvironment(Matchers.<Map<Scope, List<RunnerEnvironment>>>anyObject());
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
     }
 
     @Test
@@ -167,11 +174,12 @@ public class TemplatesPresenterTest {
     }
 
     @Test
-    public void shouldAddEnvironmentsWhenScopeProject() {
+    public void projectEnvironmentsShouldBeShownWhenScopeIsProject() {
+        presenter.onButtonChecked(PROJECT);
         projectEnvironments.add(runnerEnvironment1);
 
         presenter.addEnvironments(projectEnvironments, PROJECT);
-        verify(view).addEnvironment(Matchers.<Map<Scope, List<RunnerEnvironment>>>anyObject());
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
     }
 
     @Test
@@ -179,7 +187,7 @@ public class TemplatesPresenterTest {
         projectEnvironments.add(runnerEnvironment1);
 
         presenter.addEnvironments(projectEnvironments, SYSTEM);
-        verify(view).addEnvironment(Matchers.<Map<Scope, List<RunnerEnvironment>>>anyObject());
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
     }
 
     @Test
@@ -214,7 +222,7 @@ public class TemplatesPresenterTest {
         presenter.onButtonUnchecked(SYSTEM);
 
         verify(view).clearEnvironmentsPanel();
-        verify(view).addEnvironment(Matchers.<Map<Scope, List<RunnerEnvironment>>>anyObject());
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
     }
 
     @Test
@@ -223,7 +231,7 @@ public class TemplatesPresenterTest {
         presenter.onButtonUnchecked(PROJECT);
 
         verify(view).clearEnvironmentsPanel();
-        verify(view).addEnvironment(Matchers.<Map<Scope, List<RunnerEnvironment>>>anyObject());
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
     }
 
     @Test

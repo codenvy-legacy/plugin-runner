@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.selection;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 
 import org.junit.Test;
@@ -19,9 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -37,7 +37,7 @@ public class SelectionManagerTest {
     @Mock
     private Runner                                   runner;
     @Mock
-    private RunnerEnvironment                        environment;
+    private Environment                              environment;
 
     @InjectMocks
     private SelectionManager selectionManager;

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.actions;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.app.AppContext;
@@ -19,6 +18,7 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManager;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +62,7 @@ public class RunActionTest {
     @Mock
     private CurrentProject     currentProject;
     @Mock
-    private RunnerEnvironment  environment;
+    private Environment        environment;
 
     @InjectMocks
     private RunAction action;
@@ -89,7 +89,7 @@ public class RunActionTest {
         when(chooseRunnerAction.getSelectedEnvironment()).thenReturn(environment);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getRunner()).thenReturn(SOME_STRING);
-        when(environment.getId()).thenReturn(SOME_STRING);
+        when(environment.getName()).thenReturn(SOME_STRING);
 
         action.actionPerformed(actionEvent);
 
@@ -111,14 +111,14 @@ public class RunActionTest {
         when(chooseRunnerAction.getSelectedEnvironment()).thenReturn(environment);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getRunner()).thenReturn(SOME_STRING + SOME_STRING);
-        when(environment.getId()).thenReturn(SOME_STRING);
+        when(environment.getName()).thenReturn(SOME_STRING);
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);
         when(runOptions.withOptions(Matchers.<Map<String, String>>any())).thenReturn(runOptions);
 
         action.actionPerformed(actionEvent);
 
         verify(environment).getOptions();
-        verify(environment, times(2)).getId();
+        verify(environment, times(2)).getName();
         verify(runOptions).withOptions(Matchers.<Map<String, String>>any());
         verify(runnerManager).launchRunner(runOptions, SOME_STRING);
     }

@@ -23,7 +23,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
@@ -40,7 +39,6 @@ public class DockerFile extends FileNode {
 
     public static final String GET_CONTENT = "get content";
 
-    @Inject
     public DockerFile(@Nonnull EventBus eventBus,
                       @Nonnull ProjectServiceClient projectServiceClient,
                       @Nonnull DtoUnmarshallerFactory dtoUnmarshallerFactory,

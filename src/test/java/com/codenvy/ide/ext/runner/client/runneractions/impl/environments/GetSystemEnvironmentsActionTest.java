@@ -11,7 +11,6 @@
 package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
@@ -21,6 +20,7 @@ import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
 import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
 import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import com.codenvy.ide.rest.AsyncRequestCallback;
@@ -88,7 +88,7 @@ public class GetSystemEnvironmentsActionTest {
     @Mock
     private List<RunnerEnvironmentLeaf>                            leaves;
     @Mock
-    private List<RunnerEnvironment>                                environments;
+    private List<Environment>                                      environments;
     @Mock
     private TemplatesContainer                                     templatesContainer;
     @Mock
@@ -109,7 +109,7 @@ public class GetSystemEnvironmentsActionTest {
         //preparing callbacks for server
         when(templatesContainerProvider.get()).thenReturn(templatesContainer);
         when(environmentUtil.getAllEnvironments(tree)).thenReturn(leaves);
-        when(environmentUtil.getEnvironmentsFromNodes(leaves)).thenReturn(environments);
+        when(environmentUtil.getEnvironmentsFromNodes(leaves, SYSTEM)).thenReturn(environments);
         when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.unmarshaller(RunnerEnvironmentTree.class)).thenReturn(asyncCallbackBuilder)
                                                                             .thenReturn(asyncCallbackBuilder);

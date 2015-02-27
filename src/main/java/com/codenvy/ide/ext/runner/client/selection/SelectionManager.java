@@ -11,6 +11,7 @@
 package com.codenvy.ide.ext.runner.client.selection;
 
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -30,7 +31,7 @@ public class SelectionManager {
 
     private final List<SelectionChangeListener> listeners;
     private       Runner                        selectedRunner;
-    private       RunnerEnvironment             selectedEnvironment;
+    private       Environment                   selectedEnvironment;
 
     @Inject
     public SelectionManager() {
@@ -56,7 +57,7 @@ public class SelectionManager {
 
     /** @return an instance of {@link RunnerEnvironment} that is selected */
     @Nullable
-    public RunnerEnvironment getEnvironment() {
+    public Environment getEnvironment() {
         return selectedEnvironment;
     }
 
@@ -66,7 +67,7 @@ public class SelectionManager {
      * @param environment
      *         environment that needs to be selected
      */
-    public void setEnvironment(@Nullable RunnerEnvironment environment) {
+    public void setEnvironment(@Nullable Environment environment) {
         this.selectedEnvironment = environment;
         notifyListeners(Selection.ENVIRONMENT);
     }

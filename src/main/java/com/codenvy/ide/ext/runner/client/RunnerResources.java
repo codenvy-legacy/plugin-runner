@@ -41,10 +41,10 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/runnerwidget/timeout.svg")
     SVGResource runnerTimeoutImage();
 
-    @Source("images/templates/scopeP.svg")
+    @Source("images/templates/scopeProject.svg")
     SVGResource scopeProject();
 
-    @Source("images/templates/scopeS.svg")
+    @Source("images/templates/scopeSystem.svg")
     SVGResource scopeSystem();
 
     @Source("images/mainwidget/run.png")

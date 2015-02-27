@@ -16,6 +16,7 @@ import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.api.runner.dto.RunnerMetric;
 import com.codenvy.api.runner.gwt.client.utils.RunnerUtils;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.util.StringUtils;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -53,13 +54,14 @@ public class RunnerImpl implements Runner {
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getDecimalFormat();
 
     private final RunOptions runOptions;
-    private final String     title;
 
+    private String                       title;
     private ApplicationProcessDescriptor descriptor;
     private Status                       status;
     private String                       activeTab;
     private long                         creationTime;
     private int                          ram;
+    private Scope                        scope;
 
     /**
      * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
@@ -271,6 +273,12 @@ public class RunnerImpl implements Runner {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void setTitle(@Nonnull String title) {
+        this.title = title;
+    }
+
+    /** {@inheritDoc} */
     @Nonnull
     @Override
     public Status getStatus() {
@@ -344,6 +352,33 @@ public class RunnerImpl implements Runner {
     @Override
     public Link getStopUrl() {
         return RunnerUtils.getLink(descriptor, LINK_REL_STOP);
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String getType() {
+        // TODO need to think how to do this
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setType(@Nonnull String type) {
+        // TODO need to think how to do this
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public Scope getScope() {
+        return scope;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setScope(@Nonnull Scope scope) {
+        this.scope = scope;
     }
 
     /** {@inheritDoc} */

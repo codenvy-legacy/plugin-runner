@@ -10,9 +10,10 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.util;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
+import com.codenvy.ide.ext.runner.client.models.Environment;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnegative;
@@ -54,5 +55,5 @@ public interface GetEnvironmentsUtil {
      *         list with nodes
      * @return list of environments
      */
-    List<RunnerEnvironment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList);
+    List<Environment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList, @Nonnull Scope scope);
 }

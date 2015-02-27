@@ -11,10 +11,12 @@
 package com.codenvy.ide.ext.runner.client.tabs.properties.container;
 
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.selection.Selection;
 import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelPresenter;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -28,27 +30,33 @@ import static com.codenvy.ide.ext.runner.client.selection.Selection.ENVIRONMENT;
 
 /**
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 @Singleton
 public class PropertiesContainerPresenter implements PropertiesContainer,
                                                      PropertiesContainerView.ActionDelegate,
-                                                     SelectionManager.SelectionChangeListener {
+                                                     SelectionManager.SelectionChangeListener,
+                                                     PropertiesPanelPresenter.RemovePanelListener {
 
-    private final PropertiesContainerView      view;
-    private final SelectionManager             selectionManager;
-    private final WidgetFactory                widgetFactory;
-    private final Map<Runner, PropertiesPanel> panels;
+    private final PropertiesContainerView           view;
+    private final SelectionManager                  selectionManager;
+    private final WidgetFactory                     widgetFactory;
+    private final Map<Runner, PropertiesPanel>      runnerPanels;
+    private final Map<Environment, PropertiesPanel> environmentsPanels;
 
     private PropertiesPanel currentPanel;
 
     @Inject
-    public PropertiesContainerPresenter(PropertiesContainerView view, WidgetFactory widgetFactory, SelectionManager selectionManager) {
+    public PropertiesContainerPresenter(PropertiesContainerView view,
+                                        WidgetFactory widgetFactory,
+                                        SelectionManager selectionManager) {
         this.view = view;
         this.selectionManager = selectionManager;
         this.view.setDelegate(this);
         this.widgetFactory = widgetFactory;
 
-        panels = new HashMap<>();
+        runnerPanels = new HashMap<>();
+        environmentsPanels = new HashMap<>();
 
         selectionManager.addListener(this);
     }
@@ -57,19 +65,35 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     @Override
     public void show(@Nonnull Runner runner) {
         // we save current panel if our container isn't shown and then we will show this panel when container is shown
-        currentPanel = panels.get(runner);
+        currentPanel = runnerPanels.get(runner);
         if (currentPanel == null) {
             currentPanel = widgetFactory.createPropertiesPanel(runner);
-            panels.put(runner, currentPanel);
+            runnerPanels.put(runner, currentPanel);
         }
 
+        currentPanel.update(runner);
+        view.showWidget(currentPanel);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void show(@Nonnull Environment environment) {
+        currentPanel = environmentsPanels.get(environment);
+
+        if (currentPanel == null) {
+            currentPanel = widgetFactory.createPropertiesPanel(environment);
+            currentPanel.addListener(this);
+            environmentsPanels.put(environment, currentPanel);
+        }
+
+        currentPanel.update(environment);
         view.showWidget(currentPanel);
     }
 
     /** {@inheritDoc} */
     @Override
     public void reset() {
-        panels.clear();
+        runnerPanels.clear();
     }
 
     /** {@inheritDoc} */
@@ -107,4 +131,9 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
         show(runner);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void onPanelRemoved(@Nonnull Environment environment) {
+        environmentsPanels.remove(environment);
+    }
 }

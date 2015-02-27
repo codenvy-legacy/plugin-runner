@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.inject.factories;
 
 import com.codenvy.ide.ext.runner.client.manager.button.ButtonWidget;
 import com.codenvy.ide.ext.runner.client.manager.info.MoreInfo;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.tabs.console.button.ConsoleButton;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.Console;
@@ -119,6 +120,16 @@ public interface WidgetFactory {
      */
     @Nonnull
     PropertiesPanel createPropertiesPanel(@Nonnull Runner runner);
+
+    /**
+     * Creates a properties panel widget for a given environment.
+     *
+     * @param environment
+     *         environment that needs to be bound with a widget
+     * @return an instance of {@link PropertiesPanel}
+     */
+    @Nonnull
+    PropertiesPanel createPropertiesPanel(@Nonnull Environment environment);
 
     /**
      * Creates more info popup widget.

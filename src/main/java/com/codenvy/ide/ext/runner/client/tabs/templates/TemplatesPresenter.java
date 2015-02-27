@@ -10,12 +10,13 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
 import com.codenvy.ide.ext.runner.client.util.GetEnvironmentsUtil;
@@ -41,15 +42,18 @@ import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Sco
 @Singleton
 public class TemplatesPresenter implements TemplatesContainer, TemplatesView.ActionDelegate, ScopePanel.ActionDelegate {
 
-    private final TemplatesView                       view;
-    private final GetProjectEnvironmentsAction        projectEnvironmentsAction;
-    private final GetSystemEnvironmentsAction         systemEnvironmentsAction;
-    private final GetEnvironmentsUtil                 environmentUtil;
-    private final List<RunnerEnvironment>             systemEnvironments;
-    private final List<RunnerEnvironment>             projectEnvironments;
-    private final Map<Scope, List<RunnerEnvironment>> environmentMap;
+    private final TemplatesView                 view;
+    private final GetProjectEnvironmentsAction  projectEnvironmentsAction;
+    private final GetSystemEnvironmentsAction   systemEnvironmentsAction;
+    private final GetEnvironmentsUtil           environmentUtil;
+    private final List<Environment>             systemEnvironments;
+    private final List<Environment>             projectEnvironments;
+    private final Map<Scope, List<Environment>> environmentMap;
+    private final PropertiesContainer           propertiesContainer;
 
-    private Scope scope;
+    private Scope   scope;
+    private boolean isFirstClick;
+    private boolean isProjectChecked;
 
     @Inject
     public TemplatesPresenter(TemplatesView view,
@@ -57,13 +61,15 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
                               GetSystemEnvironmentsAction systemEnvironmentsAction,
                               GetEnvironmentsUtil environmentUtil,
                               ScopePanel scopePanel,
-                              RunnerResources resources) {
+                              RunnerResources resources,
+                              PropertiesContainer propertiesContainer) {
         this.view = view;
         this.view.setDelegate(this);
 
         this.projectEnvironmentsAction = projectEnvironmentsAction;
         this.systemEnvironmentsAction = systemEnvironmentsAction;
         this.environmentUtil = environmentUtil;
+        this.propertiesContainer = propertiesContainer;
 
         this.projectEnvironments = new ArrayList<>();
         this.systemEnvironments = new ArrayList<>();
@@ -80,8 +86,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
         this.view.setScopePanel(scopePanel);
 
         this.scope = SYSTEM;
-
-        this.systemEnvironmentsAction.perform();
+        this.isFirstClick = true;
     }
 
     /** {@inheritDoc} */
@@ -131,7 +136,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
         List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(environmentTree);
 
-        systemEnvironments.addAll(environmentUtil.getEnvironmentsFromNodes(environments));
+        systemEnvironments.addAll(environmentUtil.getEnvironmentsFromNodes(environments, SYSTEM));
 
         environmentMap.put(SYSTEM, systemEnvironments);
 
@@ -140,13 +145,15 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
     /** {@inheritDoc} */
     @Override
-    public void select(@Nonnull RunnerEnvironment environment) {
+    public void select(@Nonnull Environment environment) {
+        propertiesContainer.show(environment);
+
         view.selectEnvironment(environment);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void addEnvironments(@Nonnull List<RunnerEnvironment> environmentList, @Nonnull Scope scope) {
+    public void addEnvironments(@Nonnull List<Environment> environmentList, @Nonnull Scope scope) {
         switch (scope) {
             case SYSTEM:
                 systemEnvironments.addAll(environmentList);
@@ -155,10 +162,13 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
                 view.addEnvironment(environmentMap);
                 break;
             case PROJECT:
+                projectEnvironments.clear();
                 projectEnvironments.addAll(environmentList);
                 environmentMap.put(scope, projectEnvironments);
 
-                view.addEnvironment(environmentMap);
+                if (isProjectChecked) {
+                    view.addEnvironment(environmentMap);
+                }
                 break;
             default:
         }
@@ -176,6 +186,16 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
     /** {@inheritDoc} */
     @Override
+    public void showSystemEnvironments() {
+        if (isFirstClick) {
+            onButtonChecked(SYSTEM);
+
+            isFirstClick = false;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void onButtonChecked(@Nonnull Scope scope) {
         this.scope = scope;
 
@@ -185,6 +205,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
                 break;
             case PROJECT:
                 projectEnvironmentsAction.perform();
+                isProjectChecked = true;
                 break;
             default:
         }
@@ -202,6 +223,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
                 environmentMap.get(scope).clear();
 
                 view.addEnvironment(environmentMap);
+                isProjectChecked = false;
                 break;
             case SYSTEM:
                 environmentMap.get(scope).clear();

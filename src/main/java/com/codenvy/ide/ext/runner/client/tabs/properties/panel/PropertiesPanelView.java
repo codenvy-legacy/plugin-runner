@@ -19,11 +19,13 @@ import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Shutdown;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The visual part of Properties panel that has an ability to show configuration of a runner.
  *
  * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
 @ImplementedBy(PropertiesPanelViewImpl.class)
 public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDelegate> {
@@ -42,7 +44,7 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
 
     /** @return chosen value of RAM field */
     @Nonnull
-    RAM getMemorySize();
+    RAM getRam();
 
     /**
      * Select a given value into RAM field.
@@ -117,12 +119,20 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
     void setEnableCancelButton(boolean enable);
 
     /**
+     * Changes enable state of 'Delete' button.
+     *
+     * @param enable
+     *         enable state of button
+     */
+    void setEnableDeleteButton(boolean enable);
+
+    /**
      * Show a given editor in the special place on the container.
      *
      * @param editor
      *         editor that needs to be shown
      */
-    void showEditor(@Nonnull EditorPartPresenter editor);
+    void showEditor(@Nullable EditorPartPresenter editor);
 
     interface ActionDelegate {
 

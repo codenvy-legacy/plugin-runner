@@ -122,8 +122,6 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                                             @Override
                                             public void accepted(String value) {
                                                 createEnvironment(value);
-
-                                                projectEnvironmentsAction.perform();
                                             }
                                         }, null).withValidator(nameValidator).show();
     }
@@ -206,6 +204,7 @@ public class CustomEnvironmentPresenter implements CustomEnvironmentView.ActionD
                                                                projectServiceClient,
                                                                dtoUnmarshallerFactory,
                                                                environmentName), FileEvent.FileOperation.OPEN));
+        projectEnvironmentsAction.perform();
     }
 
     /** Show dialog window to add,edit or remove custom environments. */

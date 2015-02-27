@@ -81,7 +81,7 @@
 
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
                     <g:Label text="{locale.propertiesType}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
-                    <g:TextBox ui:field="type" addStyleNames="{style.settingField} {resources.runnerCss.propertiesFont}"/>
+                    <g:TextBox ui:field="type" enabled="false" addStyleNames="{style.settingField} {resources.runnerCss.propertiesFont}"/>
                 </g:FlowPanel>
 
                 <g:FlowPanel addStyleNames="{style.itemPanel}">

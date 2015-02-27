@@ -10,11 +10,11 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
 import com.codenvy.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
@@ -29,10 +29,12 @@ import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -40,19 +42,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class TemplatesViewImplTest {
 
     private static final String TEXT = "some text";
-    private Map<Scope, List<RunnerEnvironment>> environments;
-    private List<RunnerEnvironment>             projectEnvironments;
-    private List<RunnerEnvironment>             systemEnvironments;
+    private Map<Scope, List<Environment>> environments;
+    private List<Environment>             projectEnvironments;
+    private List<Environment>             systemEnvironments;
 
     //mocks for variables
     @Mock
@@ -68,33 +69,33 @@ public class TemplatesViewImplTest {
     private TemplatesView.ActionDelegate delegate;
 
     @Mock
-    private RunnerEnvironment            runnerEnvironment1;
+    private Environment runnerEnvironment1;
     @Mock
-    private RunnerEnvironment            runnerEnvironment2;
+    private Environment runnerEnvironment2;
     @Mock
-    private RunnerEnvironment            runnerEnvironment3;
+    private Environment runnerEnvironment3;
     @Mock
-    private RunnerEnvironment            runnerEnvironment4;
+    private Environment runnerEnvironment4;
 
     @Mock
-    private EnvironmentWidget            widget1;
+    private EnvironmentWidget widget1;
     @Mock
-    private EnvironmentWidget            widget2;
+    private EnvironmentWidget widget2;
     @Mock
-    private EnvironmentWidget            widget3;
+    private EnvironmentWidget widget3;
     @Mock
-    private EnvironmentWidget            widget4;
+    private EnvironmentWidget widget4;
 
     @Mock
-    private ScopePanel                   scopePanel;
+    private ScopePanel scopePanel;
     @Mock
-    private TypeButton                   typeButton;
+    private TypeButton typeButton;
 
     private TemplatesViewImpl view;
 
     @Before
     public void setUp() {
-        environments = new HashMap<>();
+        environments = new EnumMap<>(Scope.class);
         projectEnvironments = Arrays.asList(runnerEnvironment1, runnerEnvironment2);
         systemEnvironments = Arrays.asList(runnerEnvironment3, runnerEnvironment4);
 
@@ -129,6 +130,8 @@ public class TemplatesViewImplTest {
 
     @Test
     public void shouldNotAddEnvironmentWhenMapOfEnvironmentsAreNull() {
+        environments.put(PROJECT, projectEnvironments);
+
         reset(allButton);
         view.addEnvironment(environments);
 
@@ -140,7 +143,8 @@ public class TemplatesViewImplTest {
     @Test
     public void shouldNotAddEnvironmentWhenMapOfEnvironmentsAreEmpty() {
         reset(allButton);
-        environments.put(SYSTEM, Collections.<RunnerEnvironment>emptyList());
+        environments.put(SYSTEM, Collections.<Environment>emptyList());
+        environments.put(PROJECT, projectEnvironments);
 
         view.addEnvironment(environments);
 
@@ -198,6 +202,7 @@ public class TemplatesViewImplTest {
     @Test
     public void shouldNotSelectEnvironmentIfEnvironmentNotExistInList() {
         environments.put(SYSTEM, systemEnvironments);
+        environments.put(PROJECT, projectEnvironments);
 
         view.addEnvironment(environments);
         view.selectEnvironment(runnerEnvironment1);
@@ -210,14 +215,13 @@ public class TemplatesViewImplTest {
 
     @Test
     public void shouldSelectEnvironmentIfEnvironmentExistInList() {
-        environments.put(PROJECT, systemEnvironments);
+        environments.put(PROJECT, projectEnvironments);
 
         view.addEnvironment(environments);
         view.selectEnvironment(runnerEnvironment1);
 
         verify(widget1).unSelect();
         verify(widget2).unSelect();
-        verify(widget1).select();
     }
 
     @Test

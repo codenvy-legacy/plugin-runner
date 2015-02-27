@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.tabs.templates.environment;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.selection.SelectionManager;
 import com.codenvy.ide.ext.runner.client.tabs.common.item.ItemWidget;
 import com.codenvy.ide.ext.runner.client.tabs.common.item.RunnerItems;
@@ -30,17 +30,16 @@ import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Sco
  *
  * @author Dmitry Shnurenko
  */
-public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
+public class EnvironmentWidget implements RunnerItems<Environment> {
 
     private static final String DEFAULT_DESCRIPTION = "DEFAULT";
 
     private final ItemWidget itemWidget;
+    private final SVGImage   projectScope;
+    private final SVGImage   systemScope;
 
-    private Scope             environmentScope;
-    private RunnerEnvironment environment;
-
-    private final SVGImage projectScope;
-    private final SVGImage systemScope;
+    private Scope       environmentScope;
+    private Environment environment;
 
     @Inject
     public EnvironmentWidget(final ItemWidget itemWidget, RunnerResources resources, final SelectionManager selectionManager) {
@@ -86,16 +85,10 @@ public class EnvironmentWidget implements RunnerItems<RunnerEnvironment> {
 
     /** {@inheritDoc} */
     @Override
-    public void update(@Nonnull RunnerEnvironment environment) {
+    public void update(@Nonnull Environment environment) {
         this.environment = environment;
 
-        String id = environment.getId();
-
-        int index = id.lastIndexOf('/') + 1;
-
-        String name = id.substring(index);
-
-        itemWidget.setName(name);
+        itemWidget.setName(environment.getName());
 
         String description = environment.getDescription();
 
