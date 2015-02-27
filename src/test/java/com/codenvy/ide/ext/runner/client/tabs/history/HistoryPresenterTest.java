@@ -75,7 +75,7 @@ public class HistoryPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerIfAddedSomeRunner() {
+    public void ifAddedNewRunnerShouldUpdateRunnerWidget() {
         historyPresenter.addRunner(runner);
         reset(runnerWidget);
         historyPresenter.update(runner);
@@ -84,14 +84,14 @@ public class HistoryPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerIfAddedNoneRunner() {
+    public void ifAddedNoneRunnerShouldUpdateRunnerWidget() {
         historyPresenter.update(runner);
 
         verify(runnerWidget, never()).update(runner);
     }
 
     @Test
-    public void shouldOnSelectOneRunnerFromOneRunners() {
+    public void oneRunnerShouldBeOnSelect() {
         historyPresenter.addRunner(runner);
         reset(runnerWidget);
 
@@ -102,7 +102,7 @@ public class HistoryPresenterTest {
     }
 
     @Test
-    public void shouldOnSelectOneRunnerFromTwoRunners() {
+    public void OneRunnerFromTwoRunnerShouldAreOnSelect() {
         historyPresenter.addRunner(runner);
         historyPresenter.addRunner(runner2);
         reset(runnerWidget);
@@ -117,7 +117,7 @@ public class HistoryPresenterTest {
     }
 
     @Test
-    public void shouldGetView() {
+    public void viewShouldBeReturned() {
         assertThat(historyPresenter.getView(), CoreMatchers.<IsWidget>is(view));
     }
 
@@ -134,12 +134,19 @@ public class HistoryPresenterTest {
     }
 
     @Test
-    public void shouldGo() {
+    public void shouldGoContainer() {
         AcceptsOneWidget container = mock(AcceptsOneWidget.class);
 
         historyPresenter.go(container);
 
         verify(container).setWidget(view);
+    }
+
+    @Test
+    public void viewShoulBeCleared() {
+        historyPresenter.clear();
+
+        verify(view).clear();
     }
 
 }

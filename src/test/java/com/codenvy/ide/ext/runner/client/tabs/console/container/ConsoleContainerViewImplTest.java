@@ -122,4 +122,26 @@ public class ConsoleContainerViewImplTest {
         verify(delegate).onScrollBottomClicked();
     }
 
+    @Test
+    public void shouldSelectWrapTextButtonIsTrue() {
+        view.selectWrapTextButton(true);
+
+        verify(button1).setCheckedStatus(true);
+    }
+
+    @Test
+    public void shouldRemoveWidget() {
+        IsWidget console  = mock(IsWidget.class);
+
+        view.removeWidget(console);
+
+        verify(view.mainPanel).remove(console);
+    }
+
+    @Test
+    public void shouldSelectWrapTextButtonIsFalse() {
+        view.selectWrapTextButton(false);
+
+        verify(button1).setCheckedStatus(false);
+    }
 }

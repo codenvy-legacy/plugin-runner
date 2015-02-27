@@ -81,12 +81,12 @@ public class TabTest {
     }
 
     @Test
-    public void shouldEqualsWhenObjectHasTypeNotTab() {
+    public void shouldNotEqualsWhenObjectHasTypeNotTab() {
         assertThat(tab.equals(new Object()), is(false));
     }
 
     @Test
-    public void shouldEqualsWhenObjectIsNewTabButTitleDifferent() {
+    public void shouldNotEqualsWhenObjectIsNewTabWithAnotherTitle() {
         Tab tab2 = new Tab("new Title", tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.VISIBLE);
         assertThat(tab.equals(tab2), is(false));
     }

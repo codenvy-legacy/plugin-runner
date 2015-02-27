@@ -50,6 +50,7 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 public class RunnerImpl implements Runner {
 
     private static final String RUNNER_NAME = "Runner ";
+    private static final NumberFormat NUMBER_FORMAT = NumberFormat.getDecimalFormat();
 
     private final RunOptions runOptions;
     private final String     title;
@@ -101,7 +102,7 @@ public class RunnerImpl implements Runner {
                      runnerCounter.getRunnerNumber() +
                      (environmentName == null ? "" : " - " + getCorrectName(environmentName));
         this.activeTab = locale.runnerTabConsole();
-        this.status = Status.IN_QUEUE;
+        this.status = IN_QUEUE;
 
         creationTime = System.currentTimeMillis();
     }
@@ -197,7 +198,7 @@ public class RunnerImpl implements Runner {
             return TIMER_STUB;
         }
 
-        double terminationTime = NumberFormat.getDecimalFormat().parse(timeout);
+        double terminationTime = NUMBER_FORMAT.parse(timeout);
         double terminationTimeout = terminationTime - System.currentTimeMillis();
 
         if (terminationTimeout <= 0) {
@@ -218,7 +219,7 @@ public class RunnerImpl implements Runner {
         if (lifeTimeValue == null) {
             return TIMER_STUB;
         }
-        double lifeTime = NumberFormat.getDecimalFormat().parse(lifeTimeValue);
+        double lifeTime = NUMBER_FORMAT.parse(lifeTimeValue);
 
         return StringUtils.timeMlsToHumanReadable((long)lifeTime);
     }
@@ -250,7 +251,7 @@ public class RunnerImpl implements Runner {
         if (stopTime == null) {
             return TIMER_STUB;
         }
-        double stopTimeMls = NumberFormat.getDecimalFormat().parse(stopTime);
+        double stopTimeMls = NUMBER_FORMAT.parse(stopTime);
 
         return DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss").format(new Date((long)stopTimeMls));
     }
@@ -367,12 +368,7 @@ public class RunnerImpl implements Runner {
     @Nullable
     private String getUrlByName(@Nonnull String name) {
         Link link = RunnerUtils.getLink(descriptor, name);
-
-        if (link == null) {
-            return null;
-        }
-
-        return link.getHref();
+        return link == null ? null : link.getHref();
     }
 
     /** {@inheritDoc} */

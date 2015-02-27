@@ -16,6 +16,7 @@ import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
 import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.inject.Provider;
 
@@ -31,12 +32,15 @@ import static com.codenvy.ide.ext.runner.client.tabs.console.panel.MessageType.D
 import static com.codenvy.ide.ext.runner.client.tabs.console.panel.MessageType.ERROR;
 import static com.codenvy.ide.ext.runner.client.tabs.console.panel.MessageType.INFO;
 import static com.codenvy.ide.ext.runner.client.tabs.console.panel.MessageType.WARNING;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,10 +61,16 @@ public class ConsoleImplTest {
     private SafeHtml       content;
     @Mock
     private MessageBuilder messageBuilder;
+    @Mock
+    private RunnerResources.RunnerCss css;
+    @Mock
+    private Widget widget1;
+    @Mock
+    private Widget widget2;
 
     // constructor field
     @Mock(answer = RETURNS_DEEP_STUBS)
-    private RunnerResources          resources;
+    private RunnerResources res;
     @Mock
     private Runner                   runner;
     @Mock
@@ -78,6 +88,8 @@ public class ConsoleImplTest {
         when(messageBuilder.type(any(MessageType.class))).thenReturn(messageBuilder);
         when(messageBuilder.message(anyString())).thenReturn(messageBuilder);
         when(messageBuilder.build()).thenReturn(content);
+        when(res.runnerCss()).thenReturn(css);
+        when(css.wrappedText()).thenReturn(SOME_TEXT);
     }
 
     @Test
@@ -219,6 +231,58 @@ public class ConsoleImplTest {
         verify(messageBuilder).message(content);
 
         verify(console.output).add(any(HTML.class));
+    }
+
+    @Test
+    public void shouldChangeWrapTextParamWhenIsWrappedTextIsTrue() {
+        when(console.output.getWidgetCount()).thenReturn(2);
+        when(console.output.getWidget(0)).thenReturn(widget1);
+        when(console.output.getWidget(1)).thenReturn(widget2);
+
+        console.changeWrapTextParam();
+
+        verify(res).runnerCss();
+        verify(css).wrappedText();
+
+        verify(console.output, times(3)).getWidgetCount();
+        verify(console.output).getWidget(0);
+        verify(console.output).getWidget(1);
+
+        verify(widget1).addStyleName(SOME_TEXT);
+        verify(widget2).addStyleName(SOME_TEXT);
+    }
+
+    @Test
+    public void shouldChangeWrapTextParamWhenIsWrappedTextIsFalse() {
+        when(console.output.getWidgetCount()).thenReturn(2);
+        when(console.output.getWidget(0)).thenReturn(widget1);
+        when(console.output.getWidget(1)).thenReturn(widget2);
+
+        console.changeWrapTextParam();
+        reset(widget1, widget2);
+
+        console.changeWrapTextParam();
+
+        verify(res, times(2)).runnerCss();
+        verify(css, times(2)).wrappedText();
+
+        verify(console.output, times(6)).getWidgetCount();
+        verify(console.output, times(2)).getWidget(0);
+        verify(console.output, times(2)).getWidget(1);
+
+        verify(widget1).removeStyleName(SOME_TEXT);
+        verify(widget2).removeStyleName(SOME_TEXT);
+    }
+
+    @Test
+    public void wrapTextShouldReturnFalse() {
+        assertThat(console.isWrapText(), is(false));
+    }
+
+    @Test
+    public void wrapTextShouldReturnTrue() {
+        console.changeWrapTextParam();
+        assertThat(console.isWrapText(), is(true));
     }
 
 }
