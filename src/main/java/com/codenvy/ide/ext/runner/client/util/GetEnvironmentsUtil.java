@@ -16,7 +16,6 @@ import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.inject.ImplementedBy;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.List;
 
@@ -29,31 +28,52 @@ import java.util.List;
 public interface GetEnvironmentsUtil {
 
     /**
-     * The method allows get nodes with environments which located on certain deep.
-     *
-     * @param tree
-     *         tree from which need get environments
-     * @param deep
-     *         deep of node selection
-     * @return list nodes from certain deep
-     */
-    List<RunnerEnvironmentTree> getAllEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnegative int deep);
-
-    /**
      * The method allows get all environments.
      *
      * @param tree
      *         node which contains environments
      * @return list environments.
      */
+    @Nonnull
     List<RunnerEnvironmentLeaf> getAllEnvironments(@Nonnull RunnerEnvironmentTree tree);
 
     /**
      * Gets all environments from nodes and adds them to list.
      *
-     * @param environmentList
+     * @param leaves
      *         list with nodes
+     * @param scope
+     *         scope of runner environments
      * @return list of environments
      */
-    List<Environment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList, @Nonnull Scope scope);
+    @Nonnull
+    List<Environment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> leaves, @Nonnull Scope scope);
+
+    /**
+     * Returns list of environments from environments tree which relate to current project type.
+     *
+     * @param tree
+     *         tree from which need get environments
+     * @param projectType
+     *         type of project for which need get environments
+     * @param scope
+     *         scope of runner environments
+     * @return list environments
+     */
+    @Nonnull
+    List<Environment> getEnvironmentsByProjectType(@Nonnull RunnerEnvironmentTree tree,
+                                                   @Nonnull String projectType,
+                                                   @Nonnull Scope scope);
+
+    /**
+     * Returns category of runner for current project type.
+     *
+     * @param tree
+     *         tree from which we get runner environments for current project type
+     * @param projectType
+     *         type of project
+     * @return tree which contains all runner environments for current project type
+     */
+    @Nonnull
+    RunnerEnvironmentTree getRunnerCategoryByProjectType(@Nonnull RunnerEnvironmentTree tree, @Nonnull String projectType);
 }

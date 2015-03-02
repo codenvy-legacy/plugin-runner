@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.codenvy.api.project.shared.dto.ProjectTypeDefinition;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.app.AppContext;
@@ -17,6 +19,7 @@ import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.parts.PartPresenter;
 import com.codenvy.ide.api.parts.PartStack;
+import com.codenvy.ide.api.projecttype.ProjectTypeRegistry;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
@@ -58,6 +61,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +98,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class RunnerManagerPresenterTest {
@@ -192,6 +197,8 @@ public class RunnerManagerPresenterTest {
     @Mock
     private CurrentProject              currentProject;
     @Mock
+    private ProjectDescriptor           descriptor;
+    @Mock
     private Environment                 runnerEnvironment;
     @Mock
     private ProjectActionEvent          projectActionEvent;
@@ -207,6 +214,10 @@ public class RunnerManagerPresenterTest {
     private Timer                       timer;
     @Mock
     private GetSystemEnvironmentsAction systemEnvironmentsAction;
+    @Mock
+    private ProjectTypeRegistry         typeRegistry;
+    @Mock
+    private ProjectTypeDefinition       definition;
 
     private RunnerManagerPresenter presenter;
 
@@ -268,7 +279,8 @@ public class RunnerManagerPresenterTest {
                                                selectionManager,
                                                timerFactory,
                                                getSystemEnvironmentsAction,
-                                               getProjectEnvironmentsAction);
+                                               getProjectEnvironmentsAction,
+                                               typeRegistry);
 
         //adding runner
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);
@@ -288,6 +300,10 @@ public class RunnerManagerPresenterTest {
 
         //init run options
         when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getProjectDescription()).thenReturn(descriptor);
+        when(descriptor.getType()).thenReturn(TEXT);
+        when(typeRegistry.getProjectType(TEXT)).thenReturn(definition);
+        when(definition.getRunnerCategories()).thenReturn(Arrays.asList(TEXT));
         when(currentProject.getAttributeValue("runner:skipBuild")).thenReturn("true");
         when(runOptions.withSkipBuild(true)).thenReturn(runOptions);
         when(runOptions.withMemorySize(_512.getValue())).thenReturn(runOptions);
@@ -570,7 +586,7 @@ public class RunnerManagerPresenterTest {
 
         presenter.onRunButtonClicked();
 
-        verify(appContext).getCurrentProject();
+        verify(appContext, times(2)).getCurrentProject();
         verify(dtoFactory, times(2)).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);
         verify(runOptions).withMemorySize(_512.getValue());
@@ -700,7 +716,7 @@ public class RunnerManagerPresenterTest {
 
         presenter.onRunButtonClicked();
 
-        verify(appContext).getCurrentProject();
+        verify(appContext, times(2)).getCurrentProject();
         verify(dtoFactory, times(2)).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);
         verify(runOptions).withMemorySize(_512.getValue());
@@ -771,7 +787,6 @@ public class RunnerManagerPresenterTest {
     @Test
     public void shouldLaunchRunner() {
         presenter.launchRunner();
-        verify(appContext).getCurrentProject();
 
         verifyLaunchRunnerWithNotNullCurrentProject();
     }
@@ -938,7 +953,7 @@ public class RunnerManagerPresenterTest {
     }
 
     private void verifyLaunchRunnerWithNotNullCurrentProject() {
-        verify(appContext).getCurrentProject();
+        verify(appContext, times(2)).getCurrentProject();
         verify(dtoFactory).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);
         verify(runOptions).withMemorySize(_512.getValue());

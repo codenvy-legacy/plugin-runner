@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class GetProjectEnvironmentsActionTest {
-    private static final String PATH = "somePath";
+    private static final String SOME_STRING = "somePath";
 
     //variables for constructor
     @Mock
@@ -94,6 +94,10 @@ public class GetProjectEnvironmentsActionTest {
     private List<Environment>                           environments;
     @Mock
     private RunnerEnvironmentTree                       result;
+    @Mock
+    private CurrentProject                              currentProject;
+    @Mock
+    private ProjectDescriptor                           descriptor;
 
     //captors
     @Captor
@@ -125,7 +129,7 @@ public class GetProjectEnvironmentsActionTest {
         when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         //preparing project data
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
-        when(projectDescriptor.getPath()).thenReturn(PATH);
+        when(projectDescriptor.getPath()).thenReturn(SOME_STRING);
     }
 
     @Test
@@ -161,13 +165,16 @@ public class GetProjectEnvironmentsActionTest {
         verify(locale).customRunnerGetEnvironmentFailed();
         verify(notificationManager).showError(errorMessage);
 
-        verify(projectService).getRunnerEnvironments(PATH, asyncRequestCallback);
+        verify(projectService).getRunnerEnvironments(SOME_STRING, asyncRequestCallback);
     }
 
     @Test
     public void shouldPerformSuccessWithToRunnerEnvironment() {
-        when(environmentUtil.getAllEnvironments(result)).thenReturn(environmentLeaves);
-        when(environmentUtil.getEnvironmentsFromNodes(environmentLeaves, PROJECT)).thenReturn(environments);
+        when(environmentUtil.getEnvironmentsByProjectType(result, SOME_STRING, PROJECT)).thenReturn(environments);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getProjectDescription()).thenReturn(descriptor);
+        when(descriptor.getPath()).thenReturn(SOME_STRING);
+        when(descriptor.getType()).thenReturn(SOME_STRING);
 
         action.perform();
 
@@ -177,12 +184,11 @@ public class GetProjectEnvironmentsActionTest {
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(result);
 
-        verify(environmentUtil).getAllEnvironments(result);
-        verify(environmentUtil).getEnvironmentsFromNodes(environmentLeaves, PROJECT);
+        verify(templatesContainerProvider).get();
 
-        verify(templatesContainer).addEnvironments(environments, PROJECT);
+        verify(environmentUtil).getEnvironmentsByProjectType(result, SOME_STRING, PROJECT);
 
-        verify(projectService).getRunnerEnvironments(PATH, asyncRequestCallback);
+        verify(projectService).getRunnerEnvironments(SOME_STRING, asyncRequestCallback);
         verify(chooseRunnerAction).addProjectRunners(environments);
     }
 }

@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,6 @@ public class TemplatesPresenterTest {
 
     private List<Environment>           projectEnvironments;
     private List<Environment>           systemEnvironments;
-    private List<RunnerEnvironmentTree> runnerEnvironmentTrees;
 
     @Mock
     private TemplatesView                view;
@@ -92,8 +90,6 @@ public class TemplatesPresenterTest {
         //empty lists
         projectEnvironments = new ArrayList<>();
         systemEnvironments = new ArrayList<>();
-
-        runnerEnvironmentTrees = Arrays.asList(tree1, tree2);
 
         when(resources.scopeSystem()).thenReturn(systemImage);
         when(resources.scopeProject()).thenReturn(projectImage);
@@ -203,13 +199,11 @@ public class TemplatesPresenterTest {
     }
 
     @Test
-    public void shouldAddButton() {
-        when(environmentUtil.getAllEnvironments(tree1, 1)).thenReturn(runnerEnvironmentTrees);
+    public void addButtonShouldBeAdded() {
         presenter.addButton(tree1);
 
         verify(view).clearTypeButtonsPanel();
         verify(view).addButton(tree1);
-        verify(view).addButton(tree2);
     }
 
     @Test

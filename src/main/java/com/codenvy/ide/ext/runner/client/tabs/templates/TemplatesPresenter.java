@@ -146,6 +146,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     /** {@inheritDoc} */
     @Override
     public void select(@Nonnull Environment environment) {
+        propertiesContainer.setVisible(true);
         propertiesContainer.show(environment);
 
         view.selectEnvironment(environment);
@@ -156,6 +157,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     public void addEnvironments(@Nonnull List<Environment> environmentList, @Nonnull Scope scope) {
         switch (scope) {
             case SYSTEM:
+                systemEnvironments.clear();
                 systemEnvironments.addAll(environmentList);
                 environmentMap.put(scope, systemEnvironments);
 
@@ -179,9 +181,7 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     public void addButton(@Nonnull RunnerEnvironmentTree tree) {
         view.clearTypeButtonsPanel();
 
-        for (RunnerEnvironmentTree environment : environmentUtil.getAllEnvironments(tree, 1)) {
-            view.addButton(environment);
-        }
+        view.addButton(tree);
     }
 
     /** {@inheritDoc} */

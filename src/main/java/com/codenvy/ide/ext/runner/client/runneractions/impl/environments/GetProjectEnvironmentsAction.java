@@ -11,7 +11,7 @@
 package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
-import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
+import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
@@ -75,10 +75,12 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform() {
-        CurrentProject currentProject = appContext.getCurrentProject();
+        final CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
             return;
         }
+
+        final ProjectDescriptor descriptor = currentProject.getProjectDescription();
 
         AsyncRequestCallback<RunnerEnvironmentTree> callback = callbackBuilderProvider
                 .get()
@@ -88,9 +90,9 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
                     public void onSuccess(RunnerEnvironmentTree result) {
                         TemplatesContainer panel = templatesPanelProvider.get();
 
-                        List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(result);
-
-                        List<Environment> projectEnvironments = environmentUtil.getEnvironmentsFromNodes(environments, PROJECT);
+                        List<Environment> projectEnvironments = environmentUtil.getEnvironmentsByProjectType(result,
+                                                                                                             descriptor.getType(),
+                                                                                                             PROJECT);
                         panel.addEnvironments(projectEnvironments, PROJECT);
                         chooseRunnerAction.addProjectRunners(projectEnvironments);
                     }
@@ -103,8 +105,6 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
                 })
                 .build();
 
-        String path = currentProject.getProjectDescription().getPath();
-
-        projectService.getRunnerEnvironments(path, callback);
+        projectService.getRunnerEnvironments(descriptor.getPath(), callback);
     }
 }

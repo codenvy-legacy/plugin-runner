@@ -50,7 +50,7 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
  */
 public class RunnerImpl implements Runner {
 
-    private static final String RUNNER_NAME = "Runner ";
+    private static final String       RUNNER_NAME   = "Runner ";
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getDecimalFormat();
 
     private final RunOptions runOptions;
@@ -62,6 +62,7 @@ public class RunnerImpl implements Runner {
     private long                         creationTime;
     private int                          ram;
     private Scope                        scope;
+    private String                       type;
 
     /**
      * This runner needs runner options (user configurations). It analyzes all given information and get necessary information.
@@ -358,14 +359,13 @@ public class RunnerImpl implements Runner {
     @Nonnull
     @Override
     public String getType() {
-        // TODO need to think how to do this
-        return null;
+        return type;
     }
 
     /** {@inheritDoc} */
     @Override
     public void setType(@Nonnull String type) {
-        // TODO need to think how to do this
+        this.type = type;
     }
 
     /** {@inheritDoc} */

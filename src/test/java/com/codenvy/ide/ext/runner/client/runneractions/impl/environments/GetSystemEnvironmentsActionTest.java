@@ -14,6 +14,8 @@ import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
+import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
@@ -40,6 +42,9 @@ import java.util.List;
 
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -93,6 +98,10 @@ public class GetSystemEnvironmentsActionTest {
     private TemplatesContainer                                     templatesContainer;
     @Mock
     private RunnerEnvironmentTree                                  tree;
+    @Mock
+    private AppContext                                             appContext;
+    @Mock
+    private CurrentProject                                         currentProject;
 
     @InjectMocks
     private GetSystemEnvironmentsAction action;
@@ -105,10 +114,12 @@ public class GetSystemEnvironmentsActionTest {
                                                  locale,
                                                  environmentUtil,
                                                  chooseRunnerAction,
+                                                 appContext,
                                                  templatesContainerProvider);
         //preparing callbacks for server
         when(templatesContainerProvider.get()).thenReturn(templatesContainer);
         when(environmentUtil.getAllEnvironments(tree)).thenReturn(leaves);
+        when(environmentUtil.getEnvironmentsByProjectType(tree, MESSAGE, SYSTEM)).thenReturn(environments);
         when(environmentUtil.getEnvironmentsFromNodes(leaves, SYSTEM)).thenReturn(environments);
         when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.unmarshaller(RunnerEnvironmentTree.class)).thenReturn(asyncCallbackBuilder)
@@ -145,7 +156,11 @@ public class GetSystemEnvironmentsActionTest {
     }
 
     @Test
-    public void shouldSuccessPerformWhenEnvironmentTreeIsNotNull() throws Exception {
+    public void getSystemEnvironmentsActionShouldBePerformedWhenEnvironmentTreeIsNotNull() throws Exception {
+        ProjectDescriptor descriptor = mock(ProjectDescriptor.class);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getProjectDescription()).thenReturn(descriptor);
+        when(descriptor.getType()).thenReturn(MESSAGE);
         //launch perform first time for set environmentTree not null
         action.perform();
 
@@ -153,17 +168,16 @@ public class GetSystemEnvironmentsActionTest {
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(tree);
 
+        reset(runnerService);
+
         action.perform();
 
-        verify(asyncCallbackBuilder, times(2)).success(successCallBackCaptor.capture());
-        SuccessCallback<RunnerEnvironmentTree> successCallback2 = successCallBackCaptor.getValue();
-        successCallback2.onSuccess(tree);
-
-        verify(runnerService).getRunners(asyncRequestCallback);
-
-        verify(templatesContainer, times(3)).addButton(tree);
-        verify(templatesContainer, times(3)).addEnvironments(environments, SYSTEM);
-        verify(chooseRunnerAction, times(3)).addSystemRunners(environments);
+        verify(runnerService, never()).getRunners(asyncRequestCallback);
+        verify(appContext, times(2)).getCurrentProject();
+        verify(environmentUtil, times(2)).getEnvironmentsByProjectType(tree, MESSAGE, SYSTEM);
+        verify(templatesContainerProvider, times(2)).get();
+        verify(environmentUtil, times(2)).getRunnerCategoryByProjectType(tree, MESSAGE);
+        verify(chooseRunnerAction, times(2)).addSystemRunners(environments);
     }
 
     @Test

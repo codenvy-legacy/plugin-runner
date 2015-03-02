@@ -10,9 +10,10 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.runneractions.impl.environments;
 
-import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.api.runner.gwt.client.RunnerServiceClient;
+import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
@@ -48,6 +49,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     private final RunnerLocalizationConstant                            locale;
     private final GetEnvironmentsUtil                                   environmentUtil;
     private final ChooseRunnerAction                                    chooseRunnerAction;
+    private final AppContext                                            appContext;
 
     private RunnerEnvironmentTree environmentTree;
 
@@ -58,6 +60,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
                                        RunnerLocalizationConstant locale,
                                        GetEnvironmentsUtil environmentUtil,
                                        ChooseRunnerAction chooseRunnerAction,
+                                       AppContext appContext,
                                        Provider<TemplatesContainer> templatesPanelProvider) {
         this.templatesPanelProvider = templatesPanelProvider;
         this.runnerService = runnerService;
@@ -66,6 +69,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.locale = locale;
         this.environmentUtil = environmentUtil;
+        this.appContext = appContext;
     }
 
     /** {@inheritDoc} */
@@ -98,14 +102,21 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     }
 
     private void getEnvironments(@Nonnull RunnerEnvironmentTree tree) {
-        List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(tree);
+        CurrentProject currentProject = appContext.getCurrentProject();
+
+        if (currentProject == null) {
+            return;
+        }
+
+        String projectType = currentProject.getProjectDescription().getType();
+
+        List<Environment> environments = environmentUtil.getEnvironmentsByProjectType(tree, projectType, SYSTEM);
 
         TemplatesContainer container = templatesPanelProvider.get();
 
-        List<Environment> nodeEnvironments = environmentUtil.getEnvironmentsFromNodes(environments, SYSTEM);
-        container.addEnvironments(nodeEnvironments, SYSTEM);
-        container.addButton(tree);
+        container.addEnvironments(environments, SYSTEM);
+        container.addButton(environmentUtil.getRunnerCategoryByProjectType(tree, projectType));
 
-        chooseRunnerAction.addSystemRunners(nodeEnvironments);
+        chooseRunnerAction.addSystemRunners(environments);
     }
 }

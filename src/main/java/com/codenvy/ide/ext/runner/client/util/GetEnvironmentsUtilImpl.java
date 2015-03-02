@@ -10,16 +10,16 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.util;
 
-
+import com.codenvy.api.project.shared.dto.ProjectTypeDefinition;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
+import com.codenvy.ide.api.projecttype.ProjectTypeRegistry;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,51 +30,20 @@ import java.util.List;
 @Singleton
 public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
 
-    private final List<RunnerEnvironmentTree> languageTypeEnvironments;
-    private final List<RunnerEnvironmentLeaf> allEnvironments;
-    private final ModelsFactory               modelsFactory;
+    private final ModelsFactory       modelsFactory;
+    private final ProjectTypeRegistry projectTypeRegistry;
 
     @Inject
-    public GetEnvironmentsUtilImpl(ModelsFactory modelsFactory) {
+    public GetEnvironmentsUtilImpl(ModelsFactory modelsFactory, ProjectTypeRegistry projectTypeRegistry) {
         this.modelsFactory = modelsFactory;
-        this.languageTypeEnvironments = new ArrayList<>();
-        this.allEnvironments = new ArrayList<>();
+        this.projectTypeRegistry = projectTypeRegistry;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public List<RunnerEnvironmentTree> getAllEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnegative int deep) {
-        languageTypeEnvironments.clear();
-
-        if (deep < 0) {
-            throw new IllegalArgumentException("deep value must be over zero");
-        }
-
-        if (deep == 0) {
-            languageTypeEnvironments.add(tree);
-        }
-
-        getEnvironments(tree, deep);
-
-        return languageTypeEnvironments;
-    }
-
-    private void getEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnegative int deep) {
-        if (deep <= 0) {
-            return;
-        }
-
-        for (RunnerEnvironmentTree environment : tree.getNodes()) {
-            languageTypeEnvironments.add(environment);
-
-            getEnvironments(environment, deep - 1);
-        }
-    }
-
-    /** {@inheritDoc} */
+    @Nonnull
     @Override
     public List<RunnerEnvironmentLeaf> getAllEnvironments(@Nonnull RunnerEnvironmentTree tree) {
-        allEnvironments.clear();
+        List<RunnerEnvironmentLeaf> allEnvironments = new ArrayList<>();
 
         getEnvironments(tree, allEnvironments);
 
@@ -92,15 +61,56 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
     }
 
     /** {@inheritDoc} */
+    @Nonnull
     @Override
-    public List<Environment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> environmentList, @Nonnull Scope scope) {
+    public List<Environment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> leaves, @Nonnull Scope scope) {
         List<Environment> environments = new ArrayList<>();
 
-        for (RunnerEnvironmentLeaf environmentLeaf : environmentList) {
+        for (RunnerEnvironmentLeaf environmentLeaf : leaves) {
             environments.add(modelsFactory.createEnvironment(environmentLeaf.getEnvironment(), scope));
         }
 
         return environments;
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public List<Environment> getEnvironmentsByProjectType(@Nonnull RunnerEnvironmentTree tree,
+                                                          @Nonnull String projectType,
+                                                          @Nonnull Scope scope) {
+        RunnerEnvironmentTree categoryNode = getRunnerCategoryByProjectType(tree, projectType);
+
+        List<RunnerEnvironmentLeaf> leaves = getAllEnvironments(categoryNode);
+
+        List<Environment> environments = getEnvironmentsFromNodes(leaves, scope);
+
+        for (Environment environment : environments) {
+            environment.setType(tree.getDisplayName());
+        }
+
+        return environments;
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public RunnerEnvironmentTree getRunnerCategoryByProjectType(@Nonnull RunnerEnvironmentTree tree, @Nonnull String projectType) {
+        ProjectTypeDefinition definition = projectTypeRegistry.getProjectType(projectType);
+
+        List<String> categories = definition.getRunnerCategories();
+
+        String category = categories.get(0);
+
+        tree.setDisplayName(category);
+
+        RunnerEnvironmentTree categoryNode = tree.getNode(category.toLowerCase());
+
+        if (categoryNode == null) {
+            return tree;
+        }
+
+        return categoryNode;
     }
 
 }

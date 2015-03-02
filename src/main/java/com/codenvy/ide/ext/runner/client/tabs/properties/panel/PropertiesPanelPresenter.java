@@ -28,6 +28,9 @@ import com.codenvy.ide.api.texteditor.HandlesUndoRedo;
 import com.codenvy.ide.api.texteditor.UndoableEditor;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
+import com.codenvy.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
+import com.codenvy.ide.ext.runner.client.callbacks.FailureCallback;
+import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.customenvironment.EnvironmentScript;
 import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -68,19 +71,20 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
     private static final String DOCKER_SCRIPT_NAME = "/Dockerfile";
 
-    private final List<RemovePanelListener>    listeners;
-    private final PropertiesPanelView          view;
-    private final DockerFileFactory            dockerFileFactory;
-    private final EditorRegistry               editorRegistry;
-    private final FileTypeRegistry             fileTypeRegistry;
-    private final ProjectServiceClient         projectService;
-    private final DialogFactory                dialogFactory;
-    private final RunnerLocalizationConstant   locale;
-    private final GetProjectEnvironmentsAction projectEnvironmentsAction;
-    private final NotificationManager          notificationManager;
-    private final DtoUnmarshallerFactory       unmarshallerFactory;
-    private final CurrentProject               currentProject;
-    private final EventBus                     eventBus;
+    private final List<RemovePanelListener>           listeners;
+    private final PropertiesPanelView                 view;
+    private final DockerFileFactory                   dockerFileFactory;
+    private final EditorRegistry                      editorRegistry;
+    private final FileTypeRegistry                    fileTypeRegistry;
+    private final ProjectServiceClient                projectService;
+    private final DialogFactory                       dialogFactory;
+    private final RunnerLocalizationConstant          locale;
+    private final GetProjectEnvironmentsAction        projectEnvironmentsAction;
+    private final NotificationManager                 notificationManager;
+    private final DtoUnmarshallerFactory              unmarshallerFactory;
+    private final CurrentProject                      currentProject;
+    private final EventBus                            eventBus;
+    private final AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder;
 
     private Timer               timer;
     private EditorPartPresenter editor;
@@ -99,7 +103,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     NotificationManager notificationManager,
                                     DtoUnmarshallerFactory unmarshallerFactory,
                                     EventBus eventBus,
-                                    AppContext appContext) {
+                                    AppContext appContext,
+                                    AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder) {
         this.view = view;
         this.view.setDelegate(this);
 
@@ -114,6 +119,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         this.unmarshallerFactory = unmarshallerFactory;
         this.eventBus = eventBus;
         this.listeners = new ArrayList<>();
+        this.asyncCallbackBuilder = asyncCallbackBuilder;
 
         currentProject = appContext.getCurrentProject();
     }
@@ -131,6 +137,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     DtoUnmarshallerFactory unmarshallerFactory,
                                     EventBus eventBus,
                                     AppContext appContext,
+                                    AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
                                     @Assisted @Nonnull final Runner runner) {
         this(view,
              dockerFileFactory,
@@ -143,7 +150,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
              notificationManager,
              unmarshallerFactory,
              eventBus,
-             appContext);
+             appContext,
+             asyncCallbackBuilder);
 
         // we're waiting for getting application descriptor from server. so we can't show editor without knowing about configuration file.
         timer = new Timer() {
@@ -180,6 +188,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     NotificationManager notificationManager,
                                     DtoUnmarshallerFactory unmarshallerFactory,
                                     TimerFactory timerFactory,
+                                    AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
                                     @Assisted @Nonnull final Environment environment) {
         this(view,
              dockerFileFactory,
@@ -192,7 +201,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
              notificationManager,
              unmarshallerFactory,
              eventBus,
-             appContext);
+             appContext,
+             asyncCallbackBuilder);
 
         this.environment = environment;
         this.environmentName = environment.getName();
@@ -323,19 +333,22 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     private void createEnvironment() {
         String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + view.getName();
 
-        Unmarshallable<ItemReference> unmarshaller = unmarshallerFactory.newUnmarshaller(ItemReference.class);
+        AsyncRequestCallback<ItemReference> callback = asyncCallbackBuilder.unmarshaller(ItemReference.class)
+                                                                           .success(new SuccessCallback<ItemReference>() {
+                                                                               @Override
+                                                                               public void onSuccess(ItemReference result) {
+                                                                                   getEditorContent();
+                                                                               }
+                                                                           })
+                                                                           .failure(new FailureCallback() {
+                                                                               @Override
+                                                                               public void onFailure(@Nonnull Throwable reason) {
+                                                                                   notificationManager.showError(reason.getMessage());
+                                                                               }
+                                                                           })
+                                                                           .build();
 
-        projectService.createFolder(path, new AsyncRequestCallback<ItemReference>(unmarshaller) {
-            @Override
-            protected void onSuccess(@Nonnull ItemReference result) {
-                getEditorContent();
-            }
-
-            @Override
-            protected void onFailure(@Nonnull Throwable exception) {
-                notificationManager.showError(exception.getMessage());
-            }
-        });
+        projectService.createFolder(path, callback);
     }
 
     private void getEditorContent() {
@@ -355,23 +368,28 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     private void createFile(@Nonnull String content) {
         String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER;
 
-        projectService.createFile(path,
-                                  view.getName() + DOCKER_SCRIPT_NAME,
-                                  content,
-                                  null,
-                                  new AsyncRequestCallback<ItemReference>() {
-                                      @Override
-                                      protected void onSuccess(@Nonnull ItemReference result) {
-                                          getProjectEnvironmentDocker();
+        AsyncRequestCallback<ItemReference> callback =
+                asyncCallbackBuilder.unmarshaller(ItemReference.class)
+                                    .success(new SuccessCallback<ItemReference>() {
+                                        @Override
+                                        public void onSuccess(ItemReference result) {
+                                            getProjectEnvironmentDocker();
 
-                                          projectEnvironmentsAction.perform();
-                                      }
+                                            view.setEnableSaveButton(false);
+                                            view.setEnableCancelButton(false);
 
-                                      @Override
-                                      protected void onFailure(@Nonnull Throwable ignore) {
-                                          Log.error(PropertiesPanelPresenter.class, ignore.getMessage());
-                                      }
-                                  });
+                                            projectEnvironmentsAction.perform();
+                                        }
+                                    })
+                                    .failure(new FailureCallback() {
+                                        @Override
+                                        public void onFailure(@Nonnull Throwable reason) {
+                                            Log.error(PropertiesPanelPresenter.class, reason.getMessage());
+                                        }
+                                    })
+                                    .build();
+
+        projectService.createFile(path, view.getName() + DOCKER_SCRIPT_NAME, content, null, callback);
     }
 
     /** {@inheritDoc} */
@@ -474,7 +492,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         view.setEnableSaveButton(false);
         view.setEnableCancelButton(false);
     }
-
 
     public void addListener(@Nonnull RemovePanelListener listener) {
         listeners.add(listener);

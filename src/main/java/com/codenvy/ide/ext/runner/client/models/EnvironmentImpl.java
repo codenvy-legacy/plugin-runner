@@ -43,6 +43,7 @@ public class EnvironmentImpl implements Environment {
     private String id;
     private String name;
     private Scope  scope;
+    private String type;
     private int    ram;
 
     @Inject
@@ -124,7 +125,6 @@ public class EnvironmentImpl implements Environment {
     /** {@inheritDoc} */
     @Override
     public int getRam() {
-        // TODO need to think about this
         return ram;
     }
 
@@ -138,14 +138,13 @@ public class EnvironmentImpl implements Environment {
     @Nonnull
     @Override
     public String getType() {
-        // TODO need to think how to do this
-        return null;
+        return type;
     }
 
     /** {@inheritDoc} */
     @Override
     public void setType(@Nonnull String type) {
-        // TODO need to think how to do this
+        this.type = type;
     }
 
     @Nonnull

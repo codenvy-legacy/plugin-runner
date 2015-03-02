@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.manager;
 
+import com.codenvy.api.project.shared.dto.ProjectTypeDefinition;
 import com.codenvy.api.runner.dto.ApplicationProcessDescriptor;
 import com.codenvy.api.runner.dto.RunOptions;
 import com.codenvy.ide.api.app.AppContext;
@@ -18,6 +19,7 @@ import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.parts.PartPresenter;
 import com.codenvy.ide.api.parts.base.BasePresenter;
+import com.codenvy.ide.api.projecttype.ProjectTypeRegistry;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
@@ -58,6 +60,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,6 +116,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final PanelState                   panelState;
     private final RunnerCounter                runnerCounter;
     private final Set<Long>                    runnersId;
+    private final ProjectTypeRegistry          typeRegistry;
 
     private GetRunningProcessesAction getRunningProcessAction;
 
@@ -140,7 +144,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   SelectionManager selectionManager,
                                   TimerFactory timerFactory,
                                   GetSystemEnvironmentsAction getSystemEnvironmentsAction,
-                                  GetProjectEnvironmentsAction getProjectEnvironmentsAction) {
+                                  GetProjectEnvironmentsAction getProjectEnvironmentsAction,
+                                  ProjectTypeRegistry typeRegistry) {
         this.view = view;
         this.view.setDelegate(this);
         this.locale = locale;
@@ -152,6 +157,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.runnerCounter = runnerCounter;
         this.getSystemEnvironmentsAction = getSystemEnvironmentsAction;
         this.getProjectEnvironmentsAction = getProjectEnvironmentsAction;
+        this.typeRegistry = typeRegistry;
 
         this.selectionManager = selectionManager;
         this.selectionManager.addListener(this);
@@ -453,6 +459,23 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
     @Nonnull
     private Runner launchRunner(@Nonnull Runner runner) {
+        CurrentProject currentProject = appContext.getCurrentProject();
+
+        if (currentProject == null) {
+            throw new IllegalStateException("Can't launch runner for current project. Current project is null...");
+        }
+
+        String typeId = currentProject.getProjectDescription().getType();
+        ProjectTypeDefinition definition = typeRegistry.getProjectType(typeId);
+
+        List<String> categories = definition.getRunnerCategories();
+
+        String type = categories.get(0);
+
+        if (type != null) {
+            runner.setType(type);
+        }
+
         selectedEnvironment = null;
 
         panelState.setState(HISTORY);

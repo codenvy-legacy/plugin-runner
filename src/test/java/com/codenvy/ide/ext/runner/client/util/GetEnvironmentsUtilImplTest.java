@@ -90,54 +90,6 @@ public class GetEnvironmentsUtilImplTest {
         generateDifficultTree();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotGetAllEnvironmentFromTreeAndDeepWhenDeepIsNegative() {
-        getEnvironmentsUtil.getAllEnvironments(tree, -1);
-    }
-
-    @Test
-    public void shouldGetOneEnvironmentsFromTreeAndDeepWhenDeepIsZero() {
-        List<RunnerEnvironmentTree> result = getEnvironmentsUtil.getAllEnvironments(tree, 0);
-
-        assertThat(result.size(), is(1));
-        assertThat(result.contains(tree), is(true));
-    }
-
-    @Test
-    public void shouldGetOneEnvironmentsFromTreeAndDeepWhenDeepIsOne() {
-        List<RunnerEnvironmentTree> result = getEnvironmentsUtil.getAllEnvironments(tree, 1);
-
-        assertThat(result.size(), is(3));
-        assertThat(result, hasItems(runnerEnvTree1, runnerEnvTree2, runnerEnvTree3));
-    }
-
-    @Test
-    public void shouldGetOneEnvironmentsFromTreeAndDeepWhenDeepIsTwo() {
-        List<RunnerEnvironmentTree> result = getEnvironmentsUtil.getAllEnvironments(tree, 2);
-
-        assertThat(result.size(), is(5));
-
-        assertThat(result, hasItems(runnerEnvTree1, runnerEnvTree2, runnerEnvTree3, runnerEnvTree4, runnerEnvTree4));
-    }
-
-    @Test
-    public void shouldGetOneEnvironmentsFromTreeAndDeepWhenDeepIsThree() {
-        List<RunnerEnvironmentTree> result = getEnvironmentsUtil.getAllEnvironments(tree, 3);
-
-        assertThat(result.size(), is(7));
-        assertThat(result, hasItems(runnerEnvTree1, runnerEnvTree2, runnerEnvTree3, runnerEnvTree4, runnerEnvTree5, runnerEnvTree6,
-                                    runnerEnvTree7));
-    }
-
-    @Test
-    public void shouldGetOneEnvironmentsFromTreeAndDeepWhenDeepIsFour() {
-        List<RunnerEnvironmentTree> result = getEnvironmentsUtil.getAllEnvironments(tree, 4);
-
-        assertThat(result.size(), is(10));
-        assertThat(result, hasItems(runnerEnvTree1, runnerEnvTree2, runnerEnvTree3, runnerEnvTree4, runnerEnvTree5, runnerEnvTree6,
-                                    runnerEnvTree7, runnerEnvTree8, runnerEnvTree9, runnerEnvTree10));
-    }
-
     @Test
     public void shouldGetAllEnvironments() {
         List<RunnerEnvironmentLeaf> result = getEnvironmentsUtil.getAllEnvironments(tree);
