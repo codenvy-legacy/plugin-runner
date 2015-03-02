@@ -86,6 +86,21 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
      *         list of system environments
      */
     public void addSystemRunners(@Nonnull List<Environment> systemEnvironments) {
+        systemRunners.clear();
+        environments.clear();
+
+        addDefaultRunner();
+
+        for (Environment environment : projectRunners) {
+            environments.addItem(environment.getName());
+        }
+
+        for (Environment environment : systemEnvironments) {
+            String name = environment.getName();
+
+            environments.addItem(name);
+        }
+
         systemRunners.addAll(systemEnvironments);
     }
 
