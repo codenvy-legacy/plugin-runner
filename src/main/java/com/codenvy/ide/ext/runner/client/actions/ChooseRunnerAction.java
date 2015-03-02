@@ -97,7 +97,6 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
 
         for (Environment environment : systemEnvironments) {
             String name = environment.getName();
-
             environments.addItem(name);
         }
 
@@ -118,7 +117,6 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
 
         for (Environment environment : projectEnvironments) {
             String name = environment.getName();
-
             environments.addItem(name);
         }
 

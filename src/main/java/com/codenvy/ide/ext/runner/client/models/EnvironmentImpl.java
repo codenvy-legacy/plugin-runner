@@ -29,6 +29,7 @@ import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Sco
 /**
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class EnvironmentImpl implements Environment {
 
@@ -39,6 +40,7 @@ public class EnvironmentImpl implements Environment {
     private final String              path;
     private final Map<String, String> options;
 
+    private String id;
     private String name;
     private Scope  scope;
     private int    ram;
@@ -52,7 +54,7 @@ public class EnvironmentImpl implements Environment {
 
         this.ram = _512.getValue();
 
-        String id = runnerEnvironment.getId();
+        id = runnerEnvironment.getId();
         int index = id.lastIndexOf('/') + 1;
         this.name = id.substring(index);
 
@@ -82,6 +84,19 @@ public class EnvironmentImpl implements Environment {
     @Override
     public void setName(@Nonnull String name) {
         this.name = name;
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setId(@Nonnull String id) {
+        this.id = id;
     }
 
     /** {@inheritDoc} */
