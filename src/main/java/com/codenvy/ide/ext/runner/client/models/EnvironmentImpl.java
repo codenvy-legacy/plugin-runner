@@ -54,7 +54,8 @@ public class EnvironmentImpl implements Environment {
 
         this.ram = _512.getValue();
 
-        id = runnerEnvironment.getId();
+        this.id = runnerEnvironment.getId();
+
         int index = id.lastIndexOf('/') + 1;
         this.name = id.substring(index);
 
@@ -91,12 +92,6 @@ public class EnvironmentImpl implements Environment {
     @Override
     public String getId() {
         return id;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setId(@Nonnull String id) {
-        this.id = id;
     }
 
     /** {@inheritDoc} */

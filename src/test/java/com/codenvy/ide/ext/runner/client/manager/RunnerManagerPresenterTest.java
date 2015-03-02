@@ -663,7 +663,9 @@ public class RunnerManagerPresenterTest {
         when(selectionManager.getEnvironment()).thenReturn(runnerEnvironment);
         when(runnerEnvironment.getOptions()).thenReturn(options);
         when(runnerEnvironment.getName()).thenReturn(TEXT);
+        when(runnerEnvironment.getId()).thenReturn(TEXT);
         when(runOptions.withOptions(options)).thenReturn(runOptions);
+        when(runOptions.withEnvironmentId(TEXT)).thenReturn(runOptions);
         when(modelsFactory.createRunner(runOptions, TEXT)).thenReturn(runner);
         when(panelState.getState()).thenReturn(TEMPLATE);
 
