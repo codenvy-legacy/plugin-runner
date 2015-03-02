@@ -113,7 +113,9 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     @Override
     public void go(AcceptsOneWidget container) {
         container.setWidget(view);
-        view.showWidget(currentPanel);
+        if (currentPanel != null) {
+            view.showWidget(currentPanel);
+        }
     }
 
     /** {@inheritDoc} */
