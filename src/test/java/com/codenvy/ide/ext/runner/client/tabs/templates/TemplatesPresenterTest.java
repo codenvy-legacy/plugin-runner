@@ -39,6 +39,7 @@ import java.util.Map;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -171,10 +172,21 @@ public class TemplatesPresenterTest {
         presenter.select(runnerEnvironment1);
 
         verify(view).selectEnvironment(runnerEnvironment1);
+        verify(propertiesContainer).show(runnerEnvironment1);
     }
 
     @Test
-    public void projectEnvironmentsShouldBeShownWhenScopeIsProject() {
+    public void projectEnvironmentsShouldBeShownWhenScopeIsProject1() {
+        projectEnvironments.add(runnerEnvironment1);
+        presenter.onButtonUnchecked(PROJECT);
+        reset(view);
+
+        presenter.addEnvironments(projectEnvironments, PROJECT);
+        verify(view, never()).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
+    }
+
+    @Test
+    public void projectEnvironmentsShouldBeShownWhenScopeIsProject2() {
         presenter.onButtonChecked(PROJECT);
         projectEnvironments.add(runnerEnvironment1);
 
@@ -260,4 +272,19 @@ public class TemplatesPresenterTest {
         verify(view).setVisible(false);
     }
 
+    @Test
+    public void systemEnvironmentsShouldBeShow() {
+        presenter.showSystemEnvironments();
+
+        verify(systemEnvironmentsAction).perform();
+    }
+
+    @Test
+    public void systemEnvironmentsShouldNotBeShow() {
+        presenter.showSystemEnvironments();
+        reset(systemEnvironmentsAction);
+
+        presenter.showSystemEnvironments();
+        verify(systemEnvironmentsAction, never()).perform();
+    }
 }

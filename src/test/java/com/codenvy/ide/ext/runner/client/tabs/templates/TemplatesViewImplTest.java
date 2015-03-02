@@ -141,6 +141,24 @@ public class TemplatesViewImplTest {
     }
 
     @Test
+    public void shouldAddEnvironmentWhenListProjectEnvironmentsIsNotEmptyAndCashWidgetsIsExist() {
+        reset(allButton);
+        environments.put(PROJECT, projectEnvironments);
+
+        view.addEnvironment(environments);
+        reset(view.environmentsPanel, widgetFactory, allButton);
+        view.addEnvironment(environments);
+
+        verify(view.environmentsPanel).clear();
+
+        verify(view.environmentsPanel, times(2)).add(any(EnvironmentWidget.class));
+
+        verify(allButton).unSelect();
+        verify(allButton).select();
+        verify(widget1).unSelect();
+    }
+
+    @Test
     public void shouldNotAddEnvironmentWhenMapOfEnvironmentsAreEmpty() {
         reset(allButton);
         environments.put(SYSTEM, Collections.<Environment>emptyList());

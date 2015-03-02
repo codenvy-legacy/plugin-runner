@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -29,17 +28,24 @@ import static org.mockito.Mockito.verify;
 public class TerminalContainerViewImplTest {
     @Mock
     private RunnerResources resources;
+    @Mock
+    private IsWidget        terminal;
 
     @InjectMocks
     private TerminalContainerViewImpl view;
 
     @Test
-    public void shouldAddWidget() {
-        IsWidget terminal = mock(IsWidget.class);
-
+    public void widgetShouldBeAddedIntoMainPanel() {
         view.addWidget(terminal);
 
         verify(view.mainPanel).add(terminal);
+    }
+
+    @Test
+    public void widgetShouldBeRemoved() {
+        view.removeWidget(terminal);
+
+        verify(view.mainPanel).remove(terminal);
     }
 
 }

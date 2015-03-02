@@ -25,4 +25,11 @@ public class RAMTest {
             assertThat(size, is(RAM.detect(size.toString())));
         }
     }
+
+    @Test
+    public void shouldReturnRamBySizeRam() throws Exception {
+        for (RAM size : RAM.values()) {
+            assertThat(RAM.detect(size.getValue()), is(size));
+        }
+    }
 }

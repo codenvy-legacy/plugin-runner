@@ -61,6 +61,7 @@ import static com.codenvy.api.runner.dto.RunnerMetric.ALWAYS_ON;
 import static com.codenvy.api.runner.dto.RunnerMetric.LIFETIME;
 import static com.codenvy.api.runner.dto.RunnerMetric.TERMINATION_TIME;
 import static com.codenvy.api.runner.dto.RunnerMetric.STOP_TIME;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * @author Andrienko Alexander
@@ -909,6 +910,12 @@ public class RunnerImplTest {
         verify(descriptor, times(1)).getStatus();
         verify(stat, times(2)).getName();
         verify(stat).getValue();
+    }
+
+    @Test
+    public void scopeShouldBeChanged() {
+        runner.setScope(SYSTEM);
+        assertThat(runner.getScope(), is(SYSTEM));
     }
 
 }
