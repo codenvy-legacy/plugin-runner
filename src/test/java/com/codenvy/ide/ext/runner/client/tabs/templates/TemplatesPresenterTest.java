@@ -109,7 +109,7 @@ public class TemplatesPresenterTest {
         verify(view).setDelegate(presenter);
         verify(scopePanel).setDelegate(presenter);
         verify(scopePanel).addButton(SYSTEM, systemImage, false);
-        verify(scopePanel).addButton(PROJECT, projectImage, true);
+        verify(scopePanel).addButton(PROJECT, projectImage, false);
         verify(view).setScopePanel(scopePanel);
     }
 
