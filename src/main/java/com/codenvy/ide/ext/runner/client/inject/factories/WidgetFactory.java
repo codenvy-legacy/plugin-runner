@@ -17,6 +17,7 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.codenvy.ide.ext.runner.client.tabs.console.button.ConsoleButton;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.Console;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.FullLogMessageWidget;
+import com.codenvy.ide.ext.runner.client.tabs.container.tab.Background;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabType;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
@@ -176,9 +177,11 @@ public interface WidgetFactory {
      *
      * @param title
      *         title of button
+     * @param background
+     *         background of button
      * @return an instance of {@link PropertyButtonWidget}
      */
     @Nonnull
-    PropertyButtonWidget createPropertyButton(@Nonnull String title);
+    PropertyButtonWidget createPropertyButton(@Nonnull String title, @Nonnull Background background);
 
 }

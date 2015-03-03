@@ -313,4 +313,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("console.tooltip.wraptext")
     String consoleTooltipWraptext();
+
+    @Key("properties.button.create")
+    String propertiesButtonCreate();
 }

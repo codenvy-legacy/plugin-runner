@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
  * @author Dmitry Shnurenko
  */
 public enum Background {
-    BLACK("#313335"), GREY("#474747");
+    BLACK("#313335"), GREY("#474747"), BLUE("#256c9f");
 
     private final String color;
 

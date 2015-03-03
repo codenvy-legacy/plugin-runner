@@ -14,6 +14,7 @@ import com.codenvy.ide.api.editor.EditorPartPresenter;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
 import com.codenvy.ide.ext.runner.client.inject.factories.WidgetFactory;
+import com.codenvy.ide.ext.runner.client.tabs.container.tab.Background;
 import com.codenvy.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Boot;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
@@ -38,6 +39,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Set;
+
+import static com.codenvy.ide.ext.runner.client.tabs.container.tab.Background.BLUE;
+import static com.codenvy.ide.ext.runner.client.tabs.container.tab.Background.GREY;
 
 /**
  * @author Andrey Plotnikov
@@ -80,6 +84,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     private ActionDelegate delegate;
 
+    private PropertyButtonWidget createBtn;
     private PropertyButtonWidget saveBtn;
     private PropertyButtonWidget cancelBtn;
     private PropertyButtonWidget deleteBtn;
@@ -104,12 +109,21 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
         editorPanel.setWidget(unAvailableMessage);
 
+        PropertyButtonWidget.ActionDelegate createDelegate = new PropertyButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onCreateButtonClicked();
+            }
+        };
+        createBtn = createButton(locale.propertiesButtonCreate(), createDelegate, BLUE);
+
         PropertyButtonWidget.ActionDelegate saveDelegate = new PropertyButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
                 delegate.onSaveButtonClicked();
             }
         };
+        saveBtn = createButton(locale.propertiesButtonSave(), saveDelegate, GREY);
 
         PropertyButtonWidget.ActionDelegate deleteDelegate = new PropertyButtonWidget.ActionDelegate() {
             @Override
@@ -117,6 +131,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
                 delegate.onDeleteButtonClicked();
             }
         };
+        deleteBtn = createButton(locale.propertiesButtonDelete(), deleteDelegate, GREY);
 
         PropertyButtonWidget.ActionDelegate cancelDelegate = new PropertyButtonWidget.ActionDelegate() {
             @Override
@@ -124,10 +139,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
                 delegate.onCancelButtonClicked();
             }
         };
-
-        saveBtn = createButton(locale.propertiesButtonSave(), saveDelegate);
-        deleteBtn = createButton(locale.propertiesButtonDelete(), deleteDelegate);
-        cancelBtn = createButton(locale.propertiesButtonCancel(), cancelDelegate);
+        cancelBtn = createButton(locale.propertiesButtonCancel(), cancelDelegate, GREY);
     }
 
     private void prepareField(@Nonnull ListBox field, @Nonnull Set<? extends Enum> items) {
@@ -137,8 +149,10 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     }
 
     @Nonnull
-    private PropertyButtonWidget createButton(@Nonnull String title, @Nonnull PropertyButtonWidget.ActionDelegate delegate) {
-        PropertyButtonWidget button = widgetFactory.createPropertyButton(title);
+    private PropertyButtonWidget createButton(@Nonnull String title,
+                                              @Nonnull PropertyButtonWidget.ActionDelegate delegate,
+                                              @Nonnull Background background) {
+        PropertyButtonWidget button = widgetFactory.createPropertyButton(title, background);
         button.setDelegate(delegate);
 
         buttonsPanel.add(button);
@@ -236,6 +250,12 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     /** {@inheritDoc} */
     @Override
+    public void setEnableCreateButton(boolean enable) {
+        createBtn.setEnable(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void setEnableSaveButton(boolean enable) {
         saveBtn.setEnable(enable);
     }
@@ -262,9 +282,9 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
         }
     }
 
-    @UiHandler({"name", "type"})
+    @UiHandler("name")
     public void onTextInputted(@SuppressWarnings("UnusedParameters") KeyUpEvent event) {
-        delegate.onConfigurationChanged();
+        delegate.onNameChanged();
     }
 
     @UiHandler({"ram", "scope", "boot", "shutdown"})

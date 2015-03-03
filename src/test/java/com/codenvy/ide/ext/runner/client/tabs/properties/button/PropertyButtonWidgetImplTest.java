@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.tabs.properties.button;
 
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.tabs.container.tab.Background;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
@@ -37,6 +38,8 @@ public class PropertyButtonWidgetImplTest {
     private RunnerLocalizationConstant locale;
     @Mock
     private RunnerResources            resources;
+    @Mock
+    private Background                 background;
 
     @Mock
     private RunnerResources.RunnerCss css;
@@ -46,9 +49,10 @@ public class PropertyButtonWidgetImplTest {
     @Before
     public void setUp() {
         when(resources.runnerCss()).thenReturn(css);
+        when(background.toString()).thenReturn(TEXT);
         when(css.opacityButton()).thenReturn(TEXT);
 
-        buttonWidget = new PropertyButtonWidgetImpl(locale, resources, TEXT);
+        buttonWidget = new PropertyButtonWidgetImpl(locale, resources, TEXT, background);
     }
 
     @Test

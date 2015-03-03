@@ -12,6 +12,7 @@ package com.codenvy.ide.ext.runner.client.tabs.properties.button;
 
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
 import com.codenvy.ide.ext.runner.client.RunnerResources;
+import com.codenvy.ide.ext.runner.client.tabs.container.tab.Background;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -48,11 +49,16 @@ public class PropertyButtonWidgetImpl extends Composite implements PropertyButto
     private boolean        isEnable;
 
     @Inject
-    public PropertyButtonWidgetImpl(RunnerLocalizationConstant locale, RunnerResources resources, @Assisted String title) {
+    public PropertyButtonWidgetImpl(RunnerLocalizationConstant locale,
+                                    RunnerResources resources,
+                                    @Assisted String title,
+                                    @Assisted Background background) {
         this.locale = locale;
         this.resources = resources;
 
         initWidget(UI_BINDER.createAndBindUi(this));
+
+        getElement().getStyle().setBackgroundColor(background.toString());
 
         button.setText(title);
 

@@ -25,6 +25,7 @@ import com.codenvy.ide.api.parts.PropertyListener;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.api.projecttree.generic.ProjectNode;
 import com.codenvy.ide.api.texteditor.HandlesUndoRedo;
+import com.codenvy.ide.api.texteditor.HasReadOnlyProperty;
 import com.codenvy.ide.api.texteditor.UndoableEditor;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
@@ -34,9 +35,11 @@ import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.customenvironment.EnvironmentScript;
 import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
+import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFile;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFileFactory;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.codenvy.ide.ext.runner.client.util.TimerFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -90,7 +93,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     private EditorPartPresenter editor;
     private int                 undoOperations;
     private Environment         environment;
-    private String              environmentName;
+    private Runner              runner;
 
     public PropertiesPanelPresenter(PropertiesPanelView view,
                                     DockerFileFactory dockerFileFactory,
@@ -122,6 +125,19 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         this.asyncCallbackBuilder = asyncCallbackBuilder;
 
         currentProject = appContext.getCurrentProject();
+
+        if (currentProject == null) {
+            return;
+        }
+
+        resetButtons();
+    }
+
+    private void resetButtons() {
+        view.setEnableCancelButton(false);
+        view.setEnableSaveButton(false);
+        view.setEnableDeleteButton(false);
+        view.setEnableCreateButton(false);
     }
 
     @AssistedInject
@@ -153,6 +169,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
              appContext,
              asyncCallbackBuilder);
 
+        this.runner = runner;
+
         // we're waiting for getting application descriptor from server. so we can't show editor without knowing about configuration file.
         timer = new Timer() {
             @Override
@@ -165,13 +183,15 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
                 timer.cancel();
 
-                FileNode file = dockerFileFactory.newInstance(dockerUrl);
+                DockerFile file = dockerFileFactory.newInstance(dockerUrl);
                 initializeEditor(file, editorRegistry, fileTypeRegistry);
 
                 view.selectMemory(RAM.detect(runner.getRAM()));
             }
         };
         timer.schedule(ONE_SEC.getValue());
+
+        view.selectMemory(RAM.detect(runner.getRAM()));
     }
 
     @AssistedInject
@@ -205,8 +225,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
              asyncCallbackBuilder);
 
         this.environment = environment;
-        this.environmentName = environment.getName();
-
 
         // we're waiting for getting application descriptor from server. so we can't show editor without knowing about configuration file.
         timer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
@@ -258,11 +276,11 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     }
 
     private void getSystemEnvironmentDocker() {
-        FileNode file = dockerFileFactory.newInstance(environment.getPath());
+        DockerFile file = dockerFileFactory.newInstance(environment.getPath());
         initializeEditor(file, editorRegistry, fileTypeRegistry);
     }
 
-    private void initializeEditor(@Nonnull FileNode file,
+    private void initializeEditor(@Nonnull final FileNode file,
                                   @Nonnull EditorRegistry editorRegistry,
                                   @Nonnull FileTypeRegistry fileTypeRegistry) {
         FileType fileType = fileTypeRegistry.getFileTypeByFile(file);
@@ -274,16 +292,17 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
             public void propertyChanged(PartPresenter source, int propId) {
                 switch (propId) {
                     case PROP_INPUT:
+                        if (editor instanceof HasReadOnlyProperty) {
+                            ((HasReadOnlyProperty)editor).setReadOnly(file.isReadOnly());
+                        }
                         view.showEditor(editor);
                         break;
-
                     case PROP_DIRTY:
                         if (validateUndoOperation()) {
                             view.setEnableSaveButton(true);
                             view.setEnableCancelButton(true);
                         }
                         break;
-
                     default:
                 }
             }
@@ -309,28 +328,24 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void onConfigurationChanged() {
-        view.setEnableSaveButton(true);
+        Scope scope = runner == null ? environment.getScope() : runner.getScope();
+
+        view.setEnableSaveButton(PROJECT.equals(scope));
         view.setEnableCancelButton(true);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onSaveButtonClicked() {
+    public void onNameChanged() {
+        view.setEnableCreateButton(true);
+        view.setEnableCancelButton(true);
         view.setEnableSaveButton(false);
-        view.setEnableCancelButton(false);
-
-        if (!environmentName.equals(view.getName())) {
-            createEnvironment();
-        } else {
-            environment.setRam(view.getRam().getValue());
-        }
-
-        if (editor.isDirty()) {
-            editor.doSave();
-        }
+        view.setEnableDeleteButton(false);
     }
 
-    private void createEnvironment() {
+    /** {@inheritDoc} */
+    @Override
+    public void onCreateButtonClicked() {
         String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + view.getName();
 
         AsyncRequestCallback<ItemReference> callback = asyncCallbackBuilder.unmarshaller(ItemReference.class)
@@ -373,10 +388,17 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     .success(new SuccessCallback<ItemReference>() {
                                         @Override
                                         public void onSuccess(ItemReference result) {
-                                            getProjectEnvironmentDocker();
+                                            resetButtons();
 
-                                            view.setEnableSaveButton(false);
-                                            view.setEnableCancelButton(false);
+                                            boolean isRunnerNull = runner == null;
+
+                                            view.setName(isRunnerNull ? environment.getName() : runner.getTitle());
+                                            view.setType(isRunnerNull ? environment.getType() : runner.getType());
+                                            view.selectScope(isRunnerNull ? environment.getScope() : runner.getScope());
+                                            view.selectMemory(isRunnerNull ? RAM.detect(environment.getRam()) :
+                                                              RAM.detect(runner.getRAM()));
+
+                                            getProjectEnvironmentDocker();
 
                                             projectEnvironmentsAction.perform();
                                         }
@@ -391,6 +413,21 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
         projectService.createFile(path, view.getName() + DOCKER_SCRIPT_NAME, content, null, callback);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onSaveButtonClicked() {
+        view.setEnableSaveButton(false);
+        view.setEnableCancelButton(false);
+        view.setEnableCreateButton(false);
+
+        environment.setRam(view.getRam().getValue());
+
+        if (editor.isDirty()) {
+            editor.doSave();
+        }
+    }
+
 
     /** {@inheritDoc} */
     @Override
@@ -432,8 +469,12 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void onCancelButtonClicked() {
+        Scope scope = environment == null ? runner.getScope() : environment.getScope();
+
         view.setEnableSaveButton(false);
         view.setEnableCancelButton(false);
+        view.setEnableDeleteButton(PROJECT.equals(scope));
+        view.setEnableCreateButton(false);
 
         if (editor instanceof UndoableEditor) {
             HandlesUndoRedo undoRedo = ((UndoableEditor)editor).getUndoRedo();
@@ -443,8 +484,17 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
             }
         }
 
-        view.setName(environment.getName());
-        view.selectMemory(RAM.detect(environment.getRam()));
+        if (environment != null) {
+            view.setName(environment.getName());
+            view.selectMemory(RAM.detect(environment.getRam()));
+            view.selectScope(environment.getScope());
+        }
+
+        if (runner != null) {
+            view.setName(runner.getTitle());
+            view.selectMemory(RAM.detect(runner.getRAM()));
+            view.selectScope(runner.getScope());
+        }
     }
 
     /** {@inheritDoc} */
@@ -465,6 +515,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     public void update(@Nonnull Runner runner) {
         view.setName(runner.getTitle());
         view.setType(runner.getType());
+        view.selectMemory(RAM.detect(runner.getRAM()));
+        view.selectScope(runner.getScope());
     }
 
     /** {@inheritDoc} */

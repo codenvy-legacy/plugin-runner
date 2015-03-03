@@ -14,7 +14,6 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.editor.EditorAgent;
 import com.codenvy.ide.api.editor.EditorPartPresenter;
-import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.api.texteditor.HasReadOnlyProperty;
 import com.codenvy.ide.collections.StringMap;
 import com.codenvy.ide.ext.runner.client.models.Runner;
@@ -49,7 +48,7 @@ public class ShowDockerActionTest {
 
     //editor variables
     @Mock
-    private FileNode                       recipeFile;
+    private DockerFile                     recipeFile;
     @Mock
     private StringMap<EditorPartPresenter> openedEditors;
     @Mock

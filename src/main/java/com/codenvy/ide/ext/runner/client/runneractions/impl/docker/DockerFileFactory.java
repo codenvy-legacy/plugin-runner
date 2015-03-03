@@ -15,7 +15,6 @@ import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ItemReference;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
-import com.codenvy.ide.api.projecttree.generic.FileNode;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.google.inject.Inject;
@@ -71,12 +70,12 @@ public class DockerFileFactory {
      *         when no project is opened
      */
     @Nonnull
-    public FileNode newInstance(@Nonnull String href) {
+    public DockerFile newInstance(@Nonnull String href) {
         return newInstance(href, NAME, PATH);
     }
 
     @Nonnull
-    public FileNode newInstance(@Nonnull String href, @Nonnull String name, @Nonnull String path) {
+    public DockerFile newInstance(@Nonnull String href, @Nonnull String name, @Nonnull String path) {
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
             throw new IllegalStateException("No project is opened");

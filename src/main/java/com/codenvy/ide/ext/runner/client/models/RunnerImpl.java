@@ -44,6 +44,9 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.RUNNING;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 
 /**
+ * The class contains methods which allows change settings of runner. By default runner has scope System,
+ * because it has read only type.
+ *
  * @author Andrey Plotnikov
  * @author Valeriy Svydenko
  * @author Dmitry Shnurenko
@@ -106,6 +109,7 @@ public class RunnerImpl implements Runner {
                      (environmentName == null ? "" : " - " + getCorrectName(environmentName));
         this.activeTab = locale.runnerTabConsole();
         this.status = IN_QUEUE;
+        this.scope = Scope.SYSTEM;
 
         creationTime = System.currentTimeMillis();
     }

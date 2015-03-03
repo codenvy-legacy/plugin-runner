@@ -103,6 +103,14 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
     void selectShutdown(@Nonnull Shutdown shutdown);
 
     /**
+     * Changes enable state of 'Create' button.
+     *
+     * @param enable
+     *         enable state of button
+     */
+    void setEnableCreateButton(boolean enable);
+
+    /**
      * Changes enable state of 'Save' button.
      *
      * @param enable
@@ -138,6 +146,12 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
 
         /** Performs some actions in response to user's changing some configuration. */
         void onConfigurationChanged();
+
+        /** Performs some actions in response to user's changing name of environment. */
+        void onNameChanged();
+
+        /** Performs some actions in response to user's clicking on the 'Create' button. */
+        void onCreateButtonClicked();
 
         /** Performs some actions in response to user's clicking on the 'Save' button. */
         void onSaveButtonClicked();
