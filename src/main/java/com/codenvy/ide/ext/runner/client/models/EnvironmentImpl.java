@@ -25,6 +25,8 @@ import java.util.Map;
 
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._512;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
+import static com.google.gwt.user.client.Window.Location.getHost;
+import static com.google.gwt.user.client.Window.Location.getProtocol;
 
 /**
  * @author Andrey Plotnikov
@@ -33,7 +35,6 @@ import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Sco
  */
 public class EnvironmentImpl implements Environment {
 
-    public static final String PATH        = "runner_recipe";
     public static final String ROOT_FOLDER = "/.codenvy/runners/environments/";
 
     private final RunnerEnvironment   runnerEnvironment;
@@ -67,7 +68,9 @@ public class EnvironmentImpl implements Environment {
         }
 
         if (SYSTEM.equals(scope)) {
-            path = PATH;
+            String wsId = currentProject.getProjectDescription().getWorkspaceId();
+
+            path = getProtocol() + "//" + getHost() + "/api/runner/" + wsId + "/recipe?id=" + id;
         } else {
             path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + name;
         }

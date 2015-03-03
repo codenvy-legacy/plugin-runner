@@ -217,7 +217,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                 if (PROJECT.equals(environment.getScope())) {
                     getProjectEnvironmentDocker();
                 } else {
-                    getSystemEnvironmentDocker(environment);
+                    getSystemEnvironmentDocker();
                 }
             }
         });
@@ -257,7 +257,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         });
     }
 
-    private void getSystemEnvironmentDocker(@Nonnull Environment environment) {
+    private void getSystemEnvironmentDocker() {
         FileNode file = dockerFileFactory.newInstance(environment.getPath());
         initializeEditor(file, editorRegistry, fileTypeRegistry);
     }
