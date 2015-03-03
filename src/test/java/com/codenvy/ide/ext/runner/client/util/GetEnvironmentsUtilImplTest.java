@@ -10,12 +10,14 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.runner.client.util;
 
+import com.codenvy.api.project.shared.dto.ProjectTypeDefinition;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import com.codenvy.ide.api.projecttype.ProjectTypeRegistry;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Before;
@@ -33,6 +35,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * @author Andrienko Alexander
@@ -41,10 +44,17 @@ import static org.mockito.Mockito.when;
 @RunWith(GwtMockitoTestRunner.class)
 public class GetEnvironmentsUtilImplTest {
 
+    private static final String PROJECT_TYPE = "some project type";
+    private static final String CATEGORY1    = "Category1";
+    private List<String> runnerCategoryList;
+
+    //mocks for constructor
     @Mock
     private RunnerEnvironmentTree tree;
     @Mock
     private ModelsFactory         modelsFactory;
+    @Mock
+    private ProjectTypeRegistry   projectTypeRegistry;
 
     //runnerEnvironmentTrees
     @Mock
@@ -82,16 +92,35 @@ public class GetEnvironmentsUtilImplTest {
     @Mock
     private RunnerEnvironmentLeaf runnerEnvLeaf6;
 
+    @Mock
+    private RunnerEnvironment runEnvironment1;
+    @Mock
+    private RunnerEnvironment runEnvironment2;
+
+    @Mock
+    private Environment environment1;
+    @Mock
+    private Environment environment2;
+
+    @Mock
+    private ProjectTypeDefinition definition;
+
     @InjectMocks
     private GetEnvironmentsUtilImpl getEnvironmentsUtil;
 
     @Before
     public void setUp() {
         generateDifficultTree();
+
+        runnerCategoryList = Arrays.asList(CATEGORY1, "Category2", "Category3");
+        when(projectTypeRegistry.getProjectType(PROJECT_TYPE)).thenReturn(definition);
+        when(definition.getRunnerCategories()).thenReturn(runnerCategoryList);
+        when(tree.getNode(CATEGORY1.toLowerCase())).thenReturn(runnerEnvTree6);
+        when(tree.getDisplayName()).thenReturn(CATEGORY1);
     }
 
     @Test
-    public void shouldGetAllEnvironments() {
+    public void allEnvironmentsShouldBeReturned() {
         List<RunnerEnvironmentLeaf> result = getEnvironmentsUtil.getAllEnvironments(tree);
 
         assertThat(result.size(), is(6));
@@ -99,7 +128,7 @@ public class GetEnvironmentsUtilImplTest {
     }
 
     @Test
-    public void shouldGetEnvironmentsFromNodes() {
+    public void environmentsFromNodeShouldBeReturned() {
         Environment environment1 = mock(Environment.class);
         Environment environment2 = mock(Environment.class);
         RunnerEnvironment runnerEnv1 = mock(RunnerEnvironment.class);
@@ -118,6 +147,64 @@ public class GetEnvironmentsUtilImplTest {
 
         verify(modelsFactory).createEnvironment(runnerEnv1, Scope.SYSTEM);
         verify(modelsFactory).createEnvironment(runnerEnv2, Scope.SYSTEM);
+    }
+
+    @Test
+    public void environmentShouldBeReturnedByProjectType() {
+        when(runnerEnvLeaf4.getEnvironment()).thenReturn(runEnvironment1);
+        when(runnerEnvLeaf5.getEnvironment()).thenReturn(runEnvironment2);
+        when(modelsFactory.createEnvironment(runEnvironment1, SYSTEM)).thenReturn(environment1);
+        when(modelsFactory.createEnvironment(runEnvironment2, SYSTEM)).thenReturn(environment2);
+
+        List<Environment> result = getEnvironmentsUtil.getEnvironmentsByProjectType(tree, PROJECT_TYPE, SYSTEM);
+
+        verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
+        verify(definition).getRunnerCategories();
+        verify(tree).setDisplayName(CATEGORY1);
+        verify(tree).getNode(CATEGORY1.toLowerCase());
+
+        verify(runnerEnvTree6).getLeaves();
+        verify(runnerEnvTree6).getNodes();
+        verify(runnerEnvTree8).getLeaves();
+        verify(runnerEnvTree8).getNodes();
+        verify(runnerEnvTree9).getLeaves();
+        verify(runnerEnvTree9).getNodes();
+
+        verify(runnerEnvLeaf4).getEnvironment();
+        verify(runnerEnvLeaf5).getEnvironment();
+        verify(modelsFactory).createEnvironment(runEnvironment1, SYSTEM);
+        verify(modelsFactory).createEnvironment(runEnvironment2, SYSTEM);
+
+        verify(environment1).setType(CATEGORY1);
+        verify(environment2).setType(CATEGORY1);
+
+        assertThat(result, hasItems(environment1, environment2));
+    }
+
+    @Test
+    public void allTreeShouldBeReturnedByProjectTypeIfThisProjectTypeIsNotExist() {
+        when(tree.getNode(CATEGORY1.toLowerCase())).thenReturn(null);
+
+        RunnerEnvironmentTree result = getEnvironmentsUtil.getRunnerCategoryByProjectType(tree, PROJECT_TYPE);
+
+        verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
+        verify(definition).getRunnerCategories();
+        verify(tree).setDisplayName(CATEGORY1);
+        verify(tree).getNode(CATEGORY1.toLowerCase());
+
+        assertThat(result, is(tree));
+    }
+
+    @Test
+    public void nodeForProjectTypeShouldBeReturned() {
+        RunnerEnvironmentTree result = getEnvironmentsUtil.getRunnerCategoryByProjectType(tree, PROJECT_TYPE);
+
+        verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
+        verify(definition).getRunnerCategories();
+        verify(tree).setDisplayName(CATEGORY1);
+        verify(tree).getNode(CATEGORY1.toLowerCase());
+
+        assertThat(result, is(runnerEnvTree6));
     }
 
     /*

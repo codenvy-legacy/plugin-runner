@@ -361,6 +361,8 @@ public class RunnerManagerPresenterTest {
         verify(timerFactory).newInstance(argumentCaptor.capture());
         argumentCaptor.getValue().onRun();
 
+        verify(runner, times(2)).getTimeout();
+        verify(view, times(2)).updateMoreInfoPopup(runner);
         verify(view, times(2)).setTimeout(TEXT);
         verify(timer, times(2)).schedule(ONE_SEC.getValue());
 
@@ -414,12 +416,12 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldGetView() {
+    public void viewShouldBeReturned() {
         assertThat(presenter.getView(), is(view));
     }
 
     @Test
-    public void shouldAddRunner() {
+    public void runnerShouldBeAdded() {
         presenter.addRunner(processDescriptor);
 
         verify(dtoFactory).createDto(RunOptions.class);
@@ -440,32 +442,32 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldVerifyIsRunnerExitsTrue() {
+    public void runnerIsExist1() {
         presenter.addRunner(processDescriptor);
         assertThat(presenter.isRunnerExist(PROCESS_ID), is(true));
     }
 
     @Test
-    public void shouldVerifyIsRunnerExitsTrue2() {
+    public void runnerIsExist2() {
         presenter.addRunnerId(PROCESS_ID);
 
         assertThat(presenter.isRunnerExist(PROCESS_ID), is(true));
     }
 
     @Test
-    public void shouldVerifyIsRunnerExitsFalse() {
+    public void runnerIsNotExist1() {
         assertThat(presenter.isRunnerExist(PROCESS_ID), is(false));
     }
 
     @Test
-    public void shouldVerifyIsRunnerExitsFalse2() {
+    public void runnerIsNotExist2() {
         presenter.addRunnerId(Long.MIN_VALUE);
 
         assertThat(presenter.isRunnerExist(PROCESS_ID), is(false));
     }
 
     @Test
-    public void shouldUpdateRunner() {
+    public void runnerShouldBeUpdated() {
         presenter.update(runner);
 
         verify(history).update(runner);
@@ -474,7 +476,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerWhichIsAlreadyExistWithStatusInProgress() {
+    public void runnerWhichIsAlreadyExistWithStatusInProgressShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
 
@@ -487,7 +489,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerWhichIsAlreadyExistWithStatusInQueue() {
+    public void runnerWhichIsAlreadyExistWithStatusInQueueShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
         when(runner.getStatus()).thenReturn(IN_QUEUE);
@@ -501,7 +503,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerWhichIsAlreadyExistWithStatusStopped() {
+    public void runnerWhichIsAlreadyExistWithStatusStoppedShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
         when(runner.getStatus()).thenReturn(STOPPED);
@@ -515,7 +517,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerWhichIsAlreadyExistWithStatusFailed() {
+    public void runnerWhichIsAlreadyExistWithStatusFailedShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
         when(runner.getStatus()).thenReturn(FAILED);
@@ -529,7 +531,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerWhichIsAlreadyExistWithStatusDoneAndUrlAppIsNotNull() {
+    public void runnerWhichIsAlreadyExistWithStatusDoneAndUrlAppIsNotNullShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
         when(runner.getStatus()).thenReturn(DONE);
@@ -543,7 +545,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerWhichIsAlreadyExistWithStatusDoneAndUrlAppIsNull() {
+    public void runnerWhichIsAlreadyExistWithStatusDoneAndUrlAppIsNullShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
         when(runner.getStatus()).thenReturn(DONE);
@@ -558,7 +560,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldUpdateRunnerWhichIsAlreadyExistWithStatusTimeOut() {
+    public void runnerWhichIsAlreadyExistWithStatusTimeOutShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
         when(runner.getStatus()).thenReturn(TIMEOUT);
@@ -572,14 +574,14 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerAndSelectedEnvironmentAreNull() {
+    public void runnerShouldNotBeRunIfRunnerAndSelectedEnvironmentAreNull() {
         presenter.onRunButtonClicked();
 
         verifyLaunchRunnerWithNotNullCurrentProject();
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerNotNullAndHasStatusInProgress() {
+    public void runnerShouldBeRunIfSelectedRunnerNotNullAndStatusIsInProgress() {
         when(runner.getStatus()).thenReturn(IN_PROGRESS);
         presenter.addRunner(processDescriptor);
         reset(view, history);
@@ -602,7 +604,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerNotNullAndHasStatusFailed() {
+    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsFailed() {
         when(runner.getStatus()).thenReturn(FAILED);
         presenter.addRunner(processDescriptor);
         reset(view, history);
@@ -620,7 +622,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerNotNullAndHasStatusFailedButRunnerActionNotInstanceOfLaunchAction() {
+    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsFailedAndRunnerActionNotInstanceOfLaunchAction() {
         when(runner.getStatus()).thenReturn(FAILED);
         presenter.addRunner(processDescriptor);
         reset(view, history);
@@ -638,7 +640,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerNotNullAndHasStatusStoppedButRunnerActionNotInstanceOfLaunchAction() {
+    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsStoppedAndRunnerActionNotInstanceOfLaunchAction() {
         when(runner.getStatus()).thenReturn(STOPPED);
         presenter.addRunner(processDescriptor);
         reset(view, history);
@@ -656,7 +658,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerNotNullAndHasStatusStopped() {
+    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsStopped() {
         when(runner.getStatus()).thenReturn(STOPPED);
         presenter.addRunner(processDescriptor);
         reset(view, history);
@@ -674,7 +676,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerNotNullAndHasStatusTemplate() {
+    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsTemplate() {
         Map<String, String> options = new HashMap<>();
         when(selectionManager.getEnvironment()).thenReturn(runnerEnvironment);
         when(runnerEnvironment.getOptions()).thenReturn(options);
@@ -708,7 +710,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnRunButtonClickedWhenSelectedRunnerNotNullAndHasStatusTemplateButEnvironmentIsNull() {
+    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsTemplateAndEnvironmentIsNull() {
         when(panelState.getState()).thenReturn(TEMPLATE);
 
         presenter.addRunner(processDescriptor);
@@ -732,7 +734,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void onStopButtonClicked() {
+    public void runnerShouldBeStoppedWhenButtonStopIsClicked() {
         StopAction stopAction = mock(StopAction.class);
         when(actionFactory.createStop()).thenReturn(stopAction);
         presenter.addRunner(processDescriptor);
@@ -747,7 +749,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldStopRunner() {
+    public void runnerShouldBeStopped() {
         when(actionFactory.createStop()).thenReturn(stopAction);
 
         presenter.addRunner(processDescriptor);
@@ -758,7 +760,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnDockerButtonClicked() {
+    public void dockerActionShouldBePerformedWhenDockerButtonIsClicked() {
         presenter.addRunner(processDescriptor);
 
         presenter.onDockerButtonClicked();
@@ -767,7 +769,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnMoreInfoBtnMouseOver() {
+    public void moreInfoPopupShouldBeShownWhenMouseIsOver() {
         presenter.addRunner(processDescriptor);
 
         presenter.onMoreInfoBtnMouseOver();
@@ -775,31 +777,29 @@ public class RunnerManagerPresenterTest {
         verify(view).showMoreInfoPopup(runner);
     }
 
-    @Test
-    public void shouldNotLaunchRunnerIfCurrentProjectIsNull() {
+    @Test(expected = IllegalStateException.class)
+    public void runnerShouldNotBeLaunchedIfCurrentProjectIsNull() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
         presenter.launchRunner();
-        verify(appContext).getCurrentProject();
-        verifyNoMoreInteractions(dtoFactory, modelsFactory);
     }
 
     @Test
-    public void shouldLaunchRunner() {
+    public void runnerShouldNotBeLaunched() {
         presenter.launchRunner();
 
         verifyLaunchRunnerWithNotNullCurrentProject();
     }
 
     @Test
-    public void shouldLaunchRunnerCreatedFromRunOptions() {
+    public void shouldCreateAndLaunchRunnerFromRunOptions() {
         presenter.launchRunner(runOptions);
 
         verify(modelsFactory).createRunner(runOptions);
     }
 
     @Test
-    public void shouldLaunchRunnerCreatedFromRunOptionsAndEnvironmentName() {
+    public void shouldCreateAndLaunchRunnerFromRunOptionsAndEnvironmentName() {
         when(modelsFactory.createRunner(runOptions, TEXT)).thenReturn(runner);
         presenter.launchRunner(runOptions, TEXT);
 
@@ -807,14 +807,14 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldGo() {
+    public void presenterShouldGoneContainer() {
         AcceptsOneWidget container = mock(AcceptsOneWidget.class);
         presenter.go(container);
         verify(container).setWidget(view);
     }
 
     @Test
-    public void shouldSetActive() {
+    public void partStackShouldBeActive() {
         presenter.setPartStack(partStack);
 
         presenter.setActive();
@@ -823,7 +823,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldNotSetActive() {
+    public void partStackShouldNotBeActive() {
         when(partStack.getActivePart()).thenReturn(presenter);
         presenter.setPartStack(partStack);
 
@@ -834,7 +834,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldGetTitle() {
+    public void titleShouldBeReturned() {
         when(locale.runnerTitle()).thenReturn(TEXT);
 
         presenter.getTitle();
@@ -844,12 +844,12 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldGetTitleImage() {
+    public void titleImageShouldBeReturned() {
         assertThat(presenter.getTitleImage(), nullValue());
     }
 
     @Test
-    public void shouldGetTitleToolTip() {
+    public void titleToolTipShouldBeReturned() {
         when(locale.tooltipRunnerPanel()).thenReturn(TEXT);
 
         presenter.getTitleToolTip();
@@ -859,7 +859,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnSelectionChangedWhenSelectionIsRunnerAndRunnerIsNull() {
+    public void selectionShouldNotBeChangedWhenSelectionIsRunnerAndRunnerIsNull() {
         when(selectionManager.getRunner()).thenReturn(null);
         reset(history, rightTabContainer, view);
 
@@ -870,7 +870,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnSelectionChangedWhenSelectionIsRunner() {
+    public void selectionShouldBeChangedWhenSelectionIsRunner() {
         presenter.onSelectionChanged(RUNNER);
 
         verify(selectionManager).getRunner();
@@ -879,7 +879,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnSelectionChangedWhenSelectionIsEnvironmentAndNull() {
+    public void selectionShouldBeChangedWhenSelectionIsEnvironmentAndRunnerEnvironmentIsNull() {
         presenter.onSelectionChanged(ENVIRONMENT);
 
         verify(selectionManager).getEnvironment();
@@ -887,7 +887,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnSelectionChangedWhenSelectionIsEnvironment() {
+    public void selectionShouldBeChangedWhenSelectionIsEnvironment() {
         when(selectionManager.getEnvironment()).thenReturn(runnerEnvironment);
         presenter.onSelectionChanged(ENVIRONMENT);
 
@@ -896,7 +896,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnProjectOpened() {
+    public void actionsShouldBePerformedWhenCurrentProjectIsNotNull() {
         presenter.onProjectOpened(projectActionEvent);
 
         verify(view).setEnableRunButton(true);
@@ -910,7 +910,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnProjectOpenedWhenCurrentProjectIsNull() {
+    public void runningProcessActionShouldNotBePerformedWhenCurrentProjectIsNull() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
         presenter.onProjectOpened(projectActionEvent);
@@ -923,7 +923,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldOnProjectClosed() {
+    public void projectShouldBeClosed() {
         presenter.addRunner(processDescriptor);
         presenter.onRunButtonClicked();
         presenter.setPartStack(partStack);
@@ -954,6 +954,12 @@ public class RunnerManagerPresenterTest {
 
     private void verifyLaunchRunnerWithNotNullCurrentProject() {
         verify(appContext, times(2)).getCurrentProject();
+        verify(currentProject).getProjectDescription();
+        verify(descriptor).getType();
+        verify(typeRegistry).getProjectType(TEXT);
+        verify(definition).getRunnerCategories();
+        verify(runner).setType(TEXT);
+
         verify(dtoFactory).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);
         verify(runOptions).withMemorySize(_512.getValue());
@@ -967,6 +973,12 @@ public class RunnerManagerPresenterTest {
         verify(checkRamAndRunAction).perform(runner);
         verify(runner).resetCreationTime();
         verify(timer).schedule(ONE_SEC.getValue());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void runnerShouldNotLaunchWhenCurrentProjectIsNull() {
+        when(appContext.getCurrentProject()).thenReturn(null);
+        presenter.launchRunner(runOptions);
     }
 
     private void verifyRunnerSelected() {
@@ -984,5 +996,19 @@ public class RunnerManagerPresenterTest {
         verify(runner).getTimeout();
         verify(view).setTimeout(TEXT);
         verify(view).updateMoreInfoPopup(runner);
+    }
+
+    @Test
+    public void timerShouldNotUpdateIfRunnerIsNull() {
+        when(selectionManager.getRunner()).thenReturn(null);
+        presenter.onSelectionChanged(RUNNER);
+        reset(view, timer);
+
+        ArgumentCaptor<TimerFactory.TimerCallBack> argumentCaptor = ArgumentCaptor.forClass(TimerFactory.TimerCallBack.class);
+        verify(timerFactory).newInstance(argumentCaptor.capture());
+        argumentCaptor.getValue().onRun();
+
+        verifyNoMoreInteractions(view);
+        verify(timer).schedule(ONE_SEC.getValue());
     }
 }

@@ -191,6 +191,7 @@ public class GetRunningProcessesActionTest {
         when(appContext.getCurrentProject()).thenReturn(project);
         when(dtoUnmarshallerFactory.newWSUnmarshaller(ApplicationProcessDescriptor.class)).thenReturn(processDescriptorUnmarshallable);
         when(processDescriptor.getProcessId()).thenReturn(1234567890L);
+        when(runnerManagerPresenter.isRunnerExist(1234567890L)).thenReturn(false);
 
         List<ApplicationProcessDescriptor> list = new ArrayList<>();
         list.add(processDescriptor1);
@@ -204,10 +205,11 @@ public class GetRunningProcessesActionTest {
 
         when(runnerManagerPresenter.addRunner(processDescriptor1)).thenReturn(runner1);
         when(runnerManagerPresenter.addRunner(processDescriptor2)).thenReturn(runner2);
+        when(runnerManagerPresenter.addRunner(processDescriptor)).thenReturn(runner);
     }
 
     @Test
-    public void shouldFailedPerformWhenStopLinkIsNull() {
+    public void performShouldNotBeCompletedIfProjectIsNull() {
         reset(logsAction, actionFactory);
         when(appContext.getCurrentProject()).thenReturn(null);
 
@@ -226,14 +228,13 @@ public class GetRunningProcessesActionTest {
     }
 
     @Test
-    public void shouldPerformWithSuccessCheckingAndSuccessPreparingRunnerWithRunningAppWhenStatusIsRunning() throws Exception {
-        when(runnerManagerPresenter.isRunnerExist(1234567890L)).thenReturn(false);
+    public void shouldPerformSuccessfullyCheckingAndSuccessPreparingRunnerWhenStatusIsRunning() throws Exception {
         when(processDescriptor.getStatus()).thenReturn(ApplicationStatus.RUNNING);
-        when(runnerManagerPresenter.addRunner(processDescriptor)).thenReturn(runner);
 
         getRunningProcessesAction.perform();
 
         verify(appContext).getCurrentProject();
+        verifyCreationChannel();
 
         verify(webSocketUtil).subscribeHandler(anyString(), handlerArgumentCaptor.capture());
         SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler = handlerArgumentCaptor.getValue();
@@ -243,30 +244,38 @@ public class GetRunningProcessesActionTest {
         method.invoke(processStartedHandler, processDescriptor);
 
         verify(runnerManagerPresenter).isRunnerExist(1234567890L);
+        verify(processDescriptor).getProcessId();
         verify(processDescriptor).getStatus();
         verify(runnerManagerPresenter).addRunner(processDescriptor);
         verify(logsAction).perform(runner);
 
+        verify(locale).projectRunningNow(PROJECT_NAME);
+        verify(project, times(3)).getProjectDescription();
+        verify(projectDescriptor).getName();
+
+        verifyShowNotification();
+
+        verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
+    }
+
+    private void verifyShowNotification() {
         verify(notificationManager).showNotification(notificationCaptor.capture());
         Notification notification = notificationCaptor.getValue();
         assertThat(notification.getMessage(), is(MESSAGE));
         assertThat(notification.isImportant(), is(true));
         assertThat(notification.isInfo(), is(true));
 
-        verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
-
-        sendSuccessData();
+        dataShouldBeSendSuccessfully();
     }
 
     @Test
-    public void shouldPerformWithSuccessCheckingAndSuccessPreparingRunnerWithRunningAppWhenStatusIsNEW() throws Exception {
-        when(runnerManagerPresenter.isRunnerExist(1234567890L)).thenReturn(false);
+    public void shouldPerformWithSuccessfullyCheckingAndSuccessPreparingRunnerWithRunningAppWhenStatusIsNEW() throws Exception {
         when(processDescriptor.getStatus()).thenReturn(ApplicationStatus.NEW);
-        when(runnerManagerPresenter.addRunner(processDescriptor)).thenReturn(runner);
 
         getRunningProcessesAction.perform();
 
         verify(appContext).getCurrentProject();
+        verifyCreationChannel();
 
         verify(webSocketUtil).subscribeHandler(anyString(), handlerArgumentCaptor.capture());
         SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler = handlerArgumentCaptor.getValue();
@@ -288,19 +297,18 @@ public class GetRunningProcessesActionTest {
 
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
 
-        sendSuccessData();
+        dataShouldBeSendSuccessfully();
     }
 
     @Test
-    public void shouldPerformWithSuccessCheckingAndSuccessPreparingRunnerWithRunningAppWhenStatusIsNotNEWOrRunning() throws Exception {
+    public void shouldPerformWithSuccessfullyCheckingAndSuccessPreparingRunnerWhenStatusIsNotNewOrRunning() throws Exception {
         reset(logsAction);
-        when(runnerManagerPresenter.isRunnerExist(1234567890L)).thenReturn(false);
         when(processDescriptor.getStatus()).thenReturn(null);
-        when(runnerManagerPresenter.addRunner(processDescriptor)).thenReturn(runner);
 
         getRunningProcessesAction.perform();
 
         verify(appContext).getCurrentProject();
+        verifyCreationChannel();
 
         verify(webSocketUtil).subscribeHandler(anyString(), handlerArgumentCaptor.capture());
         SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler = handlerArgumentCaptor.getValue();
@@ -308,24 +316,23 @@ public class GetRunningProcessesActionTest {
         TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", processDescriptor);
 
         verify(runnerManagerPresenter).isRunnerExist(1234567890L);
+        verify(processDescriptor).getProcessId();
         verify(processDescriptor).getStatus();
         verifyNoMoreInteractions(runnerManagerPresenter, logsAction, notificationManager, locale);
 
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
-
-        sendSuccessData();
     }
 
     @Test
-    public void shouldPerformWithSuccessCheckingAndSuccessPreparingRunnerWithRunningAppWhenRunnerIsExist() throws Exception {
+    public void shouldPerformWithSuccessfullyCheckingAndSuccessPreparingRunnerWhenRunnerIsExist() throws Exception {
         reset(logsAction);
         when(runnerManagerPresenter.isRunnerExist(1234567890L)).thenReturn(true);
         when(processDescriptor.getStatus()).thenReturn(ApplicationStatus.RUNNING);
-        when(runnerManagerPresenter.addRunner(processDescriptor)).thenReturn(runner);
 
         getRunningProcessesAction.perform();
 
         verify(appContext).getCurrentProject();
+        verifyCreationChannel();
 
         verify(webSocketUtil).subscribeHandler(anyString(), handlerArgumentCaptor.capture());
         SubscriptionHandler<ApplicationProcessDescriptor> processStartedHandler = handlerArgumentCaptor.getValue();
@@ -333,25 +340,37 @@ public class GetRunningProcessesActionTest {
         TestUtil.invokeMethodByName(processStartedHandler, "onMessageReceived", processDescriptor);
 
         verify(runnerManagerPresenter).isRunnerExist(1234567890L);
+        verify(processDescriptor).getProcessId();
         verifyNoMoreInteractions(runnerManagerPresenter, logsAction, notificationManager, locale);
 
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
 
-        sendSuccessData();
+        dataShouldBeSendSuccessfully();
+        verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
+    }
+
+    private void verifyCreationChannel() {
+        verify(project, times(2)).getProjectDescription();
+        verify(projectDescriptor, times(2)).getPath();
+        verify(appContext).getCurrentUser();
+        verify(currentUser).getProfile();
+        verify(profileDescriptor).getId();
     }
 
     @Test
-    public void shouldStopWhenChannelAndProcessStartedHandlerAndStopListenerAreNull() {
+    public void runnerProcessShouldNotBeStoppedWhenChannelAndProcessStartedHandlerAndStopListenerAreNull() {
         reset(logsAction);
+
         getRunningProcessesAction.stop();
 
         verifyNoMoreInteractions(webSocketUtil, logsAction);
     }
 
     @Test
-    public void shouldStopWhenChannelAndProcessStartedHandlerAreNullButStopListenerIsNotNull() {
+    public void runnerProcessShouldNotBeStoppedWhenChannelIsNullAndProcessStartedHandlerIsNullButStopListenerIsNotNull() {
         reset(logsAction);
         getRunningProcessesAction.setListener(listener);
+
         getRunningProcessesAction.stop();
 
         verify(listener, never()).onStopAction();
@@ -359,14 +378,10 @@ public class GetRunningProcessesActionTest {
     }
 
     @Test
-    public void shouldStopWhenChannelAndProcessStartedHandlerAndStopListenerNotNull() {
+    public void runnerProcessShouldBeStoppedWhenChannelAndProcessStartedHandlerAndStopListenerNotNull() {
         reset(logsAction);
-        getRunningProcessesAction.setListener(listener);
-
-        when(runnerManagerPresenter.isRunnerExist(1234567890L)).thenReturn(false);
         when(processDescriptor.getStatus()).thenReturn(ApplicationStatus.RUNNING);
-        when(runnerManagerPresenter.addRunner(processDescriptor)).thenReturn(runner);
-
+        getRunningProcessesAction.setListener(listener);
         getRunningProcessesAction.perform();
 
         verify(webSocketUtil).subscribeHandler(anyString(), handlerArgumentCaptor.capture());
@@ -379,7 +394,7 @@ public class GetRunningProcessesActionTest {
         verify(listener).onStopAction();
     }
 
-    public void sendSuccessData() {
+    public void dataShouldBeSendSuccessfully() {
         reset(notificationManager);
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());

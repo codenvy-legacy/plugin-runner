@@ -33,7 +33,6 @@ public interface RunnerManager {
      *
      * @return new instance of the runner
      */
-    @Nullable
     Runner launchRunner();
 
     /**

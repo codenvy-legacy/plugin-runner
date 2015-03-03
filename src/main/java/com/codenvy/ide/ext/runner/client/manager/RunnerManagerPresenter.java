@@ -431,12 +431,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     }
 
     /** {@inheritDoc} */
-    @Nullable
     @Override
     public Runner launchRunner() {
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
-            return null;
+            throw new IllegalStateException("Can't launch runner for current project. Current project is absent...");
         }
 
         RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
@@ -465,7 +464,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         CurrentProject currentProject = appContext.getCurrentProject();
 
         if (currentProject == null) {
-            throw new IllegalStateException("Can't launch runner for current project. Current project is null...");
+            throw new IllegalStateException("Can't launch runner for current project. Current project is absent...");
         }
 
         String typeId = currentProject.getProjectDescription().getType();
@@ -473,9 +472,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         List<String> categories = definition.getRunnerCategories();
 
-        String type = categories.get(0);
-
-        if (type != null) {
+        if (categories != null && !categories.isEmpty()) {
+            String type = categories.get(0);
             runner.setType(type);
         }
 
