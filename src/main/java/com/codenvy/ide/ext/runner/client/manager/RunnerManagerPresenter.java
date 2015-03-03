@@ -195,6 +195,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     }
 
     private void updateRunnerTimer() {
+        if (selectedRunner == null) {
+            return;
+        }
         view.setTimeout(selectedRunner.getTimeout());
 
         view.updateMoreInfoPopup(selectedRunner);
