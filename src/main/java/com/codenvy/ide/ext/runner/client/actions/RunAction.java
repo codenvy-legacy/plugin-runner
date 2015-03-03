@@ -59,12 +59,14 @@ public class RunAction extends AbstractRunnerActions {
             return;
         }
 
-       Environment environment = chooseRunnerAction.getSelectedEnvironment();
+        Environment environment = chooseRunnerAction.getSelectedEnvironment();
 
-        if (environment == null || currentProject.getRunner().equals(environment.getName())) {
+        if (environment == null || currentProject.getRunner().endsWith('/' + environment.getName())) {
             runnerManager.launchRunner();
         } else {
-            RunOptions runOptions = dtoFactory.createDto(RunOptions.class).withOptions(environment.getOptions());
+            RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
+                                              .withOptions(environment.getOptions())
+                                              .withEnvironmentId(environment.getId());
 
             runnerManager.launchRunner(runOptions, environment.getName());
         }

@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM.OTHER;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM.DEFAULT;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._1024;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._128;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._2048;
@@ -187,7 +187,7 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
         buttonsMap.put(_512, memory512);
         buttonsMap.put(_1024, memory1024);
         buttonsMap.put(_2048, memory2048);
-        buttonsMap.put(OTHER, otherMemory);
+        buttonsMap.put(DEFAULT, otherMemory);
 
         createButtons();
     }
@@ -265,7 +265,7 @@ public class CustomRunViewImpl extends Window implements CustomRunView {
     private int checkAndGetMemory(@Nonnull String memory) {
         RAM ram = RAM.detect(memory);
 
-        boolean isOtherRadioButton = OTHER.equals(ram);
+        boolean isOtherRadioButton = DEFAULT.equals(ram);
 
         return isOtherRadioButton ? getIntegerValue(otherValueMemory.getText()) : ram.getValue();
     }

@@ -42,6 +42,7 @@ import java.util.Set;
 
 import static com.codenvy.ide.ext.runner.client.tabs.container.tab.Background.BLUE;
 import static com.codenvy.ide.ext.runner.client.tabs.container.tab.Background.GREY;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM.DEFAULT;
 
 /**
  * @author Andrey Plotnikov
@@ -190,7 +191,20 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     /** {@inheritDoc} */
     @Override
     public void selectMemory(@Nonnull RAM size) {
-        ram.setItemSelected(size.ordinal(), true);
+        if (DEFAULT.equals(size)) {
+            selectDefaultMemory(Integer.toString(DEFAULT.getValue()));
+        } else {
+            ram.setItemSelected(size.ordinal(), true);
+        }
+    }
+
+    private void selectDefaultMemory(@Nonnull String size) {
+        for (int index = 0; index < ram.getItemCount(); index++) {
+            if (size.equals(ram.getValue(index))) {
+                ram.setItemSelected(index, true);
+                return;
+            }
+        }
     }
 
     /** {@inheritDoc} */

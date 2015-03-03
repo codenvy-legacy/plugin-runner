@@ -88,7 +88,7 @@ public class RunActionTest {
     public void actionShouldBeLaunchDefaultRunner() throws Exception {
         when(chooseRunnerAction.getSelectedEnvironment()).thenReturn(environment);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
-        when(currentProject.getRunner()).thenReturn(SOME_STRING);
+        when(currentProject.getRunner()).thenReturn('/'+SOME_STRING);
         when(environment.getName()).thenReturn(SOME_STRING);
 
         action.actionPerformed(actionEvent);
@@ -114,6 +114,7 @@ public class RunActionTest {
         when(environment.getName()).thenReturn(SOME_STRING);
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);
         when(runOptions.withOptions(Matchers.<Map<String, String>>any())).thenReturn(runOptions);
+        when(runOptions.withEnvironmentId(anyString())).thenReturn(runOptions);
 
         action.actionPerformed(actionEvent);
 

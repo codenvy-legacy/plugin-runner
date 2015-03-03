@@ -26,7 +26,7 @@ public enum RAM {
     _2048(2048),
     _4096(4096),
     _8192(8192),
-    OTHER(-1);
+    DEFAULT(512);
 
     private final int size;
 
@@ -61,7 +61,7 @@ public enum RAM {
             }
         }
 
-        return OTHER;
+        return DEFAULT;
     }
 
     /**
@@ -79,7 +79,7 @@ public enum RAM {
             }
         }
 
-        return OTHER;
+        return DEFAULT;
     }
 
 }
