@@ -58,7 +58,7 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
 
         environments = new ListBox();
         environments.addStyleName(resources.runnerCss().runnersAction());
-        environments.addStyleName(resources.runnerCss().fontStyle());
+        environments.addStyleName(resources.runnerCss().runnerFontStyle());
         environments.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {

@@ -85,7 +85,7 @@ public class ChooseRunnerActionTest {
         verify(locale, times(2)).actionChooseRunner();
         verify(resources, times(2)).runnerCss();
         verify(css).runnersAction();
-        verify(css).fontStyle();
+        verify(css).runnerFontStyle();
     }
 
     @Test

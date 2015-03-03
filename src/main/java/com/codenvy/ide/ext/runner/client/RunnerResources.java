@@ -171,6 +171,8 @@ public interface RunnerResources extends ClientBundle {
         String wrappedText();
 
         String runnersAction();
+
+        String runnerFontStyle();
     }
 
 }
