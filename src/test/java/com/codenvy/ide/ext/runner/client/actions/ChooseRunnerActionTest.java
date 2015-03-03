@@ -98,7 +98,6 @@ public class ChooseRunnerActionTest {
         chooseRunnerAction.addProjectRunners(projectEnvList);
 
         verify(appContext).getCurrentProject();
-        verify(currentProject).getRunner();
 
         verify(projectEnv1).getName();
         verify(projectEnv2).getName();

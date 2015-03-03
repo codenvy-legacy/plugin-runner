@@ -89,8 +89,6 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
         systemRunners.clear();
         environments.clear();
 
-        addDefaultRunner();
-
         for (Environment environment : projectRunners) {
             environments.addItem(environment.getName());
         }
@@ -101,6 +99,8 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
         }
 
         systemRunners.addAll(systemEnvironments);
+
+        selectDefaultRunner();
     }
 
     /**
@@ -113,8 +113,6 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
         projectRunners.clear();
         environments.clear();
 
-        addDefaultRunner();
-
         for (Environment environment : projectEnvironments) {
             String name = environment.getName();
             environments.addItem(name);
@@ -125,6 +123,8 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
         }
 
         projectRunners.addAll(projectEnvironments);
+
+        selectDefaultRunner();
     }
 
     /** @return selected environment. */
@@ -156,10 +156,16 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
         }
     }
 
-    private void addDefaultRunner() {
+    private void selectDefaultRunner() {
         CurrentProject currentProject = appContext.getCurrentProject();
-        if (currentProject != null) {
-            environments.addItem(getRunnerName(currentProject.getRunner()));
+        if (currentProject == null) {
+            return;
+        }
+        for (int index = 0; index < environments.getItemCount(); index++) {
+            if (getRunnerName(currentProject.getRunner()).equals(environments.getValue(index))) {
+                environments.setItemSelected(index, true);
+                return;
+            }
         }
     }
 }

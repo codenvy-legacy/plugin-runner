@@ -104,7 +104,8 @@ public class EnvironmentActionManager implements ProjectActionHandler {
     /** {@inheritDoc} */
     @Override
     public void onProjectClosed(@Nonnull ProjectActionEvent event) {
-        removeAllActions();
+        //TODO Seems it isn't need for us
+        //removeAllActions();
     }
 
     /**
