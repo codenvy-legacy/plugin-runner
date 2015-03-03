@@ -81,12 +81,13 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
         scopePanel.setDelegate(this);
 
         scopePanel.addButton(SYSTEM, resources.scopeSystem(), false);
-        scopePanel.addButton(PROJECT, resources.scopeProject(), true);
+        scopePanel.addButton(PROJECT, resources.scopeProject(), false);
 
         this.view.setScopePanel(scopePanel);
 
         this.scope = SYSTEM;
         this.isFirstClick = true;
+        this.isProjectChecked = true;
     }
 
     /** {@inheritDoc} */
@@ -102,7 +103,6 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
         if (!systemEnvironments.isEmpty() && !projectEnvironments.isEmpty()) {
             performSystemEnvironments();
             performProjectEnvironments();
-
             return;
         }
 
@@ -119,13 +119,11 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
     private void performSystemEnvironments() {
         systemEnvironments.clear();
-
         systemEnvironmentsAction.perform();
     }
 
     private void performProjectEnvironments() {
         projectEnvironments.clear();
-
         projectEnvironmentsAction.perform();
     }
 
@@ -133,22 +131,18 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     @Override
     public void onLangTypeButtonClicked(@Nonnull RunnerEnvironmentTree environmentTree) {
         systemEnvironments.clear();
-
         List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(environmentTree);
-
         systemEnvironments.addAll(environmentUtil.getEnvironmentsFromNodes(environments, SYSTEM));
 
         environmentMap.put(SYSTEM, systemEnvironments);
-
         view.addEnvironment(environmentMap);
+        selectFirstEnvironment();
     }
 
     /** {@inheritDoc} */
     @Override
     public void select(@Nonnull Environment environment) {
-        propertiesContainer.setVisible(true);
         propertiesContainer.show(environment);
-
         view.selectEnvironment(environment);
     }
 
@@ -157,22 +151,47 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     public void addEnvironments(@Nonnull List<Environment> environmentList, @Nonnull Scope scope) {
         switch (scope) {
             case SYSTEM:
-                systemEnvironments.clear();
-                systemEnvironments.addAll(environmentList);
-                environmentMap.put(scope, systemEnvironments);
-
-                view.addEnvironment(environmentMap);
+                addEnvironments(systemEnvironments, environmentList, scope, true);
                 break;
             case PROJECT:
-                projectEnvironments.clear();
-                projectEnvironments.addAll(environmentList);
-                environmentMap.put(scope, projectEnvironments);
-
-                if (isProjectChecked) {
-                    view.addEnvironment(environmentMap);
-                }
+                addEnvironments(projectEnvironments, environmentList, scope, isProjectChecked);
                 break;
             default:
+        }
+    }
+
+    private void addEnvironments(@Nonnull List<Environment> sourceList,
+                                 @Nonnull List<Environment> targetList,
+                                 @Nonnull Scope scope,
+                                 boolean isChecked) {
+        sourceList.clear();
+        sourceList.addAll(targetList);
+
+        environmentMap.put(scope, sourceList);
+        if (isChecked) {
+            view.addEnvironment(environmentMap);
+            selectFirstEnvironment();
+        }
+    }
+
+    private void selectFirstEnvironment() {
+        propertiesContainer.setVisible(true);
+        Environment environment = null;
+
+        for (Map.Entry<Scope, List<Environment>> entry : environmentMap.entrySet()) {
+            List<Environment> value = entry.getValue();
+            if (value.isEmpty()) {
+                continue;
+            }
+
+            environment = value.get(0);
+            break;
+        }
+
+        if (environment == null) {
+            propertiesContainer.setVisible(false);
+        } else {
+            select(environment);
         }
     }
 
@@ -180,7 +199,6 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     @Override
     public void addButton(@Nonnull RunnerEnvironmentTree tree) {
         view.clearTypeButtonsPanel();
-
         view.addButton(tree);
     }
 
@@ -189,7 +207,6 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     public void showSystemEnvironments() {
         if (isFirstClick) {
             onButtonChecked(SYSTEM);
-
             isFirstClick = false;
         }
     }
@@ -233,6 +250,8 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
                 break;
             default:
         }
+
+        selectFirstEnvironment();
     }
 
     /** {@inheritDoc} */

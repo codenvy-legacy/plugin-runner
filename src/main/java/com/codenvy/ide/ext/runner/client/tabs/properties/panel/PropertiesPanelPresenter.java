@@ -41,7 +41,6 @@ import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFileFac
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.codenvy.ide.ext.runner.client.util.TimerFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
@@ -208,7 +207,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     GetProjectEnvironmentsAction projectEnvironmentsAction,
                                     NotificationManager notificationManager,
                                     DtoUnmarshallerFactory unmarshallerFactory,
-                                    TimerFactory timerFactory,
                                     AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
                                     @Assisted @Nonnull final Environment environment) {
         this(view,
@@ -227,20 +225,11 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
         this.environment = environment;
 
-        // we're waiting for getting application descriptor from server. so we can't show editor without knowing about configuration file.
-        timer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
-            @Override
-            public void onRun() {
-                timer.cancel();
-
-                if (PROJECT.equals(environment.getScope())) {
-                    getProjectEnvironmentDocker();
-                } else {
-                    getSystemEnvironmentDocker();
-                }
-            }
-        });
-        timer.schedule(ONE_SEC.getValue());
+        if (PROJECT.equals(environment.getScope())) {
+            getProjectEnvironmentDocker();
+        } else {
+            getSystemEnvironmentDocker();
+        }
     }
 
     private void getProjectEnvironmentDocker() {

@@ -19,8 +19,6 @@ import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
-
 /**
  * Contains business logic of button's click processing, and general methods for current button.
  *
@@ -44,14 +42,11 @@ public class ScopeButtonPresenter implements ScopeButton, ScopeButtonView.Action
         this.view = view;
         this.view.setDelegate(this);
         this.view.setImage(image);
-        this.locale = locale;
+        this.view.select();
 
+        this.locale = locale;
         this.buttonScope = buttonScope;
         this.isUnChecked = isUnChecked;
-
-        if (SYSTEM.equals(buttonScope)) {
-            view.select();
-        }
 
         setPrompt(buttonScope);
     }
@@ -73,17 +68,13 @@ public class ScopeButtonPresenter implements ScopeButton, ScopeButtonView.Action
     public void onButtonClicked() {
         if (isUnChecked) {
             delegate.onButtonChecked(buttonScope);
-
             view.select();
-
-            isUnChecked = false;
         } else {
             delegate.onButtonUnchecked(buttonScope);
-
             view.unSelect();
-
-            isUnChecked = true;
         }
+
+        isUnChecked = !isUnChecked;
     }
 
     /** {@inheritDoc} */
