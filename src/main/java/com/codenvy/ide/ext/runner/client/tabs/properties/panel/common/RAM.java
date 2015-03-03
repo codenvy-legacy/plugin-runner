@@ -19,7 +19,14 @@ import javax.annotation.Nonnull;
  * @author Dmitry Shnurenko
  */
 public enum RAM {
-    _128(128), _256(256), _512(512), _1024(1024), _2048(2048), OTHER(-1);
+    _128(128),
+    _256(256),
+    _512(512),
+    _1024(1024),
+    _2048(2048),
+    _4096(4096),
+    _8192(8192),
+    OTHER(-1);
 
     private final int size;
 

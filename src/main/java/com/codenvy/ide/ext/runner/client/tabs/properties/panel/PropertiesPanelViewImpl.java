@@ -98,7 +98,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
         this.widgetFactory = widgetFactory;
 
-        prepareField(ram, EnumSet.range(RAM._128, RAM._2048));
+        prepareField(ram, EnumSet.range(RAM._128, RAM._8192));
         prepareField(scope, EnumSet.allOf(Scope.class));
         prepareField(boot, EnumSet.allOf(Boot.class));
         prepareField(shutdown, EnumSet.allOf(Shutdown.class));

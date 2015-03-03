@@ -15,6 +15,7 @@ import com.codenvy.api.project.shared.dto.ItemReference;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.editor.EditorInitException;
+import com.codenvy.ide.api.editor.EditorInput;
 import com.codenvy.ide.api.editor.EditorPartPresenter;
 import com.codenvy.ide.api.editor.EditorRegistry;
 import com.codenvy.ide.api.filetypes.FileType;
@@ -398,8 +399,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                             view.selectMemory(isRunnerNull ? RAM.detect(environment.getRam()) :
                                                               RAM.detect(runner.getRAM()));
 
-                                            getProjectEnvironmentDocker();
-
                                             projectEnvironmentsAction.perform();
                                         }
                                     })
@@ -417,14 +416,22 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void onSaveButtonClicked() {
-        view.setEnableSaveButton(false);
-        view.setEnableCancelButton(false);
-        view.setEnableCreateButton(false);
-
         environment.setRam(view.getRam().getValue());
 
         if (editor.isDirty()) {
-            editor.doSave();
+            editor.doSave(new AsyncCallback<EditorInput>() {
+                @Override
+                public void onSuccess(EditorInput editorInput) {
+                    view.setEnableSaveButton(false);
+                    view.setEnableCancelButton(false);
+                    view.setEnableCreateButton(false);
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    Log.error(getClass(), throwable.getMessage());
+                }
+            });
         }
     }
 
