@@ -90,7 +90,6 @@ public class RunnerExtension {
         runWithGroup.add(editRunnerAction);
         runWithGroup.addSeparator();
 
-        //runToolbarGroup.add(runWithGroup, new Constraints(AFTER, RUN_APP_ID.getId()));
         runToolbarGroup.add(runAction);
         runToolbarGroup.add(chooseRunner, new Constraints(AFTER, RUN_APP_ID.getId()));
 

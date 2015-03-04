@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM._512;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM.DEFAULT;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static com.google.gwt.user.client.Window.Location.getHost;
 import static com.google.gwt.user.client.Window.Location.getProtocol;
@@ -54,7 +54,7 @@ public class EnvironmentImpl implements Environment {
         this.runnerEnvironment = runnerEnvironment;
         this.scope = scope;
 
-        this.ram = _512.getValue();
+        this.ram = DEFAULT.getValue();
 
         this.id = runnerEnvironment.getId();
 
