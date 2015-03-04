@@ -18,10 +18,7 @@ import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.api.parts.PartStackType;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
-import com.codenvy.ide.ext.runner.client.actions.CustomRunAction;
-import com.codenvy.ide.ext.runner.client.actions.EditRunnerAction;
 import com.codenvy.ide.ext.runner.client.actions.RunAction;
-import com.codenvy.ide.ext.runner.client.actions.RunWithGroup;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -29,14 +26,10 @@ import com.google.inject.Singleton;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
-import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 import static com.codenvy.ide.api.constraints.Anchor.AFTER;
-import static com.codenvy.ide.api.constraints.Constraints.FIRST;
 import static com.codenvy.ide.ext.runner.client.constants.ActionId.CHOOSE_RUNNER_ID;
-import static com.codenvy.ide.ext.runner.client.constants.ActionId.CUSTOM_RUN_APP;
-import static com.codenvy.ide.ext.runner.client.constants.ActionId.GROUP_RUN_WITH;
 import static com.codenvy.ide.ext.runner.client.constants.ActionId.RUN_APP_ID;
 
 /**
@@ -65,20 +58,15 @@ public class RunnerExtension {
     @Inject
     public void setUpRunActions(ActionManager actionManager,
                                 RunAction runAction,
-                                ChooseRunnerAction chooseRunner,
-                                EditRunnerAction editRunnerAction,
-                                RunWithGroup runWithGroup,
-                                CustomRunAction customRunAction) {
+                                ChooseRunnerAction chooseRunner) {
 
         //add actions in main toolbar
         DefaultActionGroup mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
         DefaultActionGroup runToolbarGroup = new DefaultActionGroup(GROUP_RUN_TOOLBAR, false, actionManager);
 
-        actionManager.registerAction(CUSTOM_RUN_APP.getId(), customRunAction);
-        actionManager.registerAction(RUN_APP_ID.getId(), runAction);
         actionManager.registerAction(CHOOSE_RUNNER_ID.getId(), chooseRunner);
+        actionManager.registerAction(RUN_APP_ID.getId(), runAction);
         actionManager.registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
-        actionManager.registerAction(GROUP_RUN_WITH.getId(), runWithGroup);
 
         // add actions in context menu
         DefaultActionGroup contextMenuGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_CONTEXT_MENU);
@@ -87,19 +75,9 @@ public class RunnerExtension {
         runContextGroup.add(runAction);
         contextMenuGroup.add(runContextGroup);
 
-        runWithGroup.add(editRunnerAction);
-        runWithGroup.addSeparator();
-
+        runToolbarGroup.add(chooseRunner);
         runToolbarGroup.add(runAction);
-        runToolbarGroup.add(chooseRunner, new Constraints(AFTER, RUN_APP_ID.getId()));
-
         mainToolbarGroup.add(runToolbarGroup, new Constraints(Anchor.AFTER, GROUP_BUILD_TOOLBAR));
-
-        //add actions in Run menu
-        DefaultActionGroup runMenuActionGroup = (DefaultActionGroup)actionManager.getAction(GROUP_RUN);
-        runMenuActionGroup.add(runAction, FIRST);
-        runMenuActionGroup.add(runWithGroup, new Constraints(AFTER, RUN_APP_ID.getId()));
-        runMenuActionGroup.add(customRunAction, new Constraints(AFTER, GROUP_RUN_WITH.getId()));
     }
 
 }

@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker;
+package com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;

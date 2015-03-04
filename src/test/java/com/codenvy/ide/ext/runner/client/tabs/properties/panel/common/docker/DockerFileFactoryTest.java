@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker;
+package com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
@@ -33,10 +33,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
 
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFile.GET_CONTENT;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFileFactory.NAME;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFileFactory.PATH;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFileFactory.TYPE;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFile.GET_CONTENT;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory.NAME;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory.PATH;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory.TYPE;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;

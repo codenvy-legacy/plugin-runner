@@ -17,10 +17,7 @@ import com.codenvy.ide.api.constraints.Constraints;
 import com.codenvy.ide.api.parts.PartStackType;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.ext.runner.client.actions.ChooseRunnerAction;
-import com.codenvy.ide.ext.runner.client.actions.CustomRunAction;
-import com.codenvy.ide.ext.runner.client.actions.EditRunnerAction;
 import com.codenvy.ide.ext.runner.client.actions.RunAction;
-import com.codenvy.ide.ext.runner.client.actions.RunWithGroup;
 import com.codenvy.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
@@ -34,12 +31,9 @@ import org.mockito.Mock;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
-import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 import static com.codenvy.ide.ext.runner.client.RunnerExtension.BUILDER_PART_ID;
-import static com.codenvy.ide.ext.runner.client.constants.ActionId.GROUP_RUN_WITH;
-import static com.codenvy.ide.ext.runner.client.constants.ActionId.RUN_APP_ID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
@@ -95,22 +89,17 @@ public class RunnerExtensionTest {
 
         RunAction runAction = mock(RunAction.class);
         ChooseRunnerAction chooseRunnerAction = mock(ChooseRunnerAction.class);
-        EditRunnerAction editRunnerAction = mock(EditRunnerAction.class);
-        RunWithGroup runWithGroup = mock(RunWithGroup.class);
-        CustomRunAction customRunAction = mock(CustomRunAction.class);
 
         DefaultActionGroup mainToolbarGroup = mock(DefaultActionGroup.class);
-        DefaultActionGroup runMenuActionGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup runContextGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup contextMenuGroup = mock(DefaultActionGroup.class);
 
         when(actionManager.getAction(GROUP_MAIN_TOOLBAR)).thenReturn(mainToolbarGroup);
-        when(actionManager.getAction(GROUP_RUN)).thenReturn(runMenuActionGroup);
         when(actionManager.getAction(GROUP_RUN_CONTEXT_MENU)).thenReturn(runContextGroup);
         when(actionManager.getAction(GROUP_MAIN_CONTEXT_MENU)).thenReturn(contextMenuGroup);
 
         // test step
-        extension.setUpRunActions(actionManager, runAction, chooseRunnerAction, editRunnerAction, runWithGroup, customRunAction);
+        extension.setUpRunActions(actionManager, runAction, chooseRunnerAction);
 
         // check step
         verify(mainToolbarGroup).add(actionGroupCaptor.capture(), constraintsCaptor.capture());
@@ -124,18 +113,8 @@ public class RunnerExtensionTest {
         assertThat(runToolbarGroup.getChildrenCount(), is(2));
 
         verify(actionManager).registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
-        verify(actionManager).registerAction(GROUP_RUN_WITH.getId(), runWithGroup);
 
-        verify(runWithGroup).add(editRunnerAction);
-        verify(runWithGroup).addSeparator();
-
-        verify(runMenuActionGroup).add(runAction, Constraints.FIRST);
-
-        verify(runMenuActionGroup).add(eq(runWithGroup), constraintsCaptor.capture());
-        verifyConstants(Anchor.AFTER, RUN_APP_ID.getId());
-
-        verify(runMenuActionGroup).add(eq(customRunAction), constraintsCaptor.capture());
-        verifyConstants(Anchor.AFTER, GROUP_RUN_WITH.getId());
+        verifyConstants(Anchor.AFTER, GROUP_BUILD_TOOLBAR);
     }
 
     private void verifyConstants(Anchor anchor, String actionId) {

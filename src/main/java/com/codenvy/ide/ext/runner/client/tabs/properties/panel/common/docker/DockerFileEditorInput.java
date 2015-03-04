@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker;
+package com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker;
 
 import com.codenvy.ide.api.editor.EditorInput;
 import com.codenvy.ide.api.filetypes.FileType;
