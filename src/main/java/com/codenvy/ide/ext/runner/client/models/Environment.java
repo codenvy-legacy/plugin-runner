@@ -29,14 +29,6 @@ public interface Environment {
     @Nonnull
     String getName();
 
-    /**
-     * Sets name of current environment.
-     *
-     * @param name
-     *         name which need set to environment
-     */
-    void setName(@Nonnull String name);
-
     /** @return id of current environment */
     @Nonnull
     String getId();

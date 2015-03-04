@@ -86,12 +86,6 @@ public class EnvironmentImpl implements Environment {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setName(@Nonnull String name) {
-        this.name = name;
-    }
-
-    /** {@inheritDoc} */
     @Nonnull
     @Override
     public String getId() {

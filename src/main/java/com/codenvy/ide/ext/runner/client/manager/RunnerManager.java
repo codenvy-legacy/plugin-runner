@@ -15,7 +15,6 @@ import com.codenvy.ide.ext.runner.client.models.Runner;
 import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * It is the main class of structure. It provides an ability to launch a new runner. It can launch default runner or custom runner. Default
