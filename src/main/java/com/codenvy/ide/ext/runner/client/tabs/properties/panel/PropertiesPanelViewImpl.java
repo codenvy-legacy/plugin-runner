@@ -85,7 +85,6 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     private ActionDelegate delegate;
 
-    private PropertyButtonWidget createBtn;
     private PropertyButtonWidget saveBtn;
     private PropertyButtonWidget cancelBtn;
     private PropertyButtonWidget deleteBtn;
@@ -113,10 +112,10 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
         PropertyButtonWidget.ActionDelegate createDelegate = new PropertyButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
-                delegate.onCreateButtonClicked();
+                delegate.onCopyButtonClicked();
             }
         };
-        createBtn = createButton(locale.propertiesButtonCreate(), createDelegate, BLUE);
+        createButton(locale.propertiesButtonCreate(), createDelegate, BLUE);
 
         PropertyButtonWidget.ActionDelegate saveDelegate = new PropertyButtonWidget.ActionDelegate() {
             @Override
@@ -264,12 +263,6 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     /** {@inheritDoc} */
     @Override
-    public void setEnableCreateButton(boolean enable) {
-        createBtn.setEnable(enable);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void setEnableSaveButton(boolean enable) {
         saveBtn.setEnable(enable);
     }
@@ -288,6 +281,24 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     /** {@inheritDoc} */
     @Override
+    public void setEnableProperties(boolean enable) {
+        name.setEnabled(enable);
+        ram.setEnabled(enable);
+        boot.setEnabled(enable);
+        shutdown.setEnabled(enable);
+        scope.setEnabled(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setVisibleButtons(boolean visible) {
+        saveBtn.setVisible(visible);
+        deleteBtn.setVisible(visible);
+        cancelBtn.setVisible(visible);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void showEditor(@Nullable EditorPartPresenter editor) {
         if (editor == null) {
             editorPanel.setWidget(unAvailableMessage);
@@ -298,7 +309,7 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     @UiHandler("name")
     public void onTextInputted(@SuppressWarnings("UnusedParameters") KeyUpEvent event) {
-        delegate.onNameChanged();
+        delegate.onConfigurationChanged();
     }
 
     @UiHandler({"ram", "scope", "boot", "shutdown"})

@@ -36,11 +36,15 @@ import com.codenvy.ide.ext.runner.client.callbacks.SuccessCallback;
 import com.codenvy.ide.ext.runner.client.customenvironment.EnvironmentScript;
 import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.models.Runner;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFile;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFileFactory;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
+import com.codenvy.ide.ext.runner.client.tabs.container.TabContainer;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFile;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFileEditorInput;
+import com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFileFactory;
+import com.codenvy.ide.ext.runner.client.util.NameGenerator;
+import com.codenvy.ide.ext.runner.client.util.annotations.LeftPanel;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
@@ -88,6 +92,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     private final CurrentProject                      currentProject;
     private final EventBus                            eventBus;
     private final AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder;
+    private final TabContainer                        tabContainer;
 
     private Timer               timer;
     private EditorPartPresenter editor;
@@ -95,19 +100,20 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     private Environment         environment;
     private Runner              runner;
 
-    public PropertiesPanelPresenter(PropertiesPanelView view,
-                                    DockerFileFactory dockerFileFactory,
-                                    EditorRegistry editorRegistry,
-                                    FileTypeRegistry fileTypeRegistry,
-                                    ProjectServiceClient projectService,
-                                    DialogFactory dialogFactory,
-                                    RunnerLocalizationConstant locale,
-                                    GetProjectEnvironmentsAction projectEnvironmentsAction,
-                                    NotificationManager notificationManager,
-                                    DtoUnmarshallerFactory unmarshallerFactory,
-                                    EventBus eventBus,
-                                    AppContext appContext,
-                                    AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder) {
+    private PropertiesPanelPresenter(PropertiesPanelView view,
+                                     DockerFileFactory dockerFileFactory,
+                                     EditorRegistry editorRegistry,
+                                     FileTypeRegistry fileTypeRegistry,
+                                     ProjectServiceClient projectService,
+                                     DialogFactory dialogFactory,
+                                     RunnerLocalizationConstant locale,
+                                     GetProjectEnvironmentsAction projectEnvironmentsAction,
+                                     NotificationManager notificationManager,
+                                     DtoUnmarshallerFactory unmarshallerFactory,
+                                     EventBus eventBus,
+                                     AppContext appContext,
+                                     @LeftPanel TabContainer tabContainer,
+                                     AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder) {
         this.view = view;
         this.view.setDelegate(this);
 
@@ -123,6 +129,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         this.eventBus = eventBus;
         this.listeners = new ArrayList<>();
         this.asyncCallbackBuilder = asyncCallbackBuilder;
+        this.tabContainer = tabContainer;
 
         currentProject = appContext.getCurrentProject();
 
@@ -137,7 +144,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         view.setEnableCancelButton(false);
         view.setEnableSaveButton(false);
         view.setEnableDeleteButton(false);
-        view.setEnableCreateButton(false);
     }
 
     @AssistedInject
@@ -154,6 +160,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     EventBus eventBus,
                                     AppContext appContext,
                                     AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
+                                    @LeftPanel TabContainer tabContainer,
                                     @Assisted @Nonnull final Runner runner) {
         this(view,
              dockerFileFactory,
@@ -167,6 +174,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
              unmarshallerFactory,
              eventBus,
              appContext,
+             tabContainer,
              asyncCallbackBuilder);
 
         this.runner = runner;
@@ -191,6 +199,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         };
         timer.schedule(ONE_SEC.getValue());
 
+        view.setEnableProperties(false);
+        view.setVisibleButtons(false);
         view.selectMemory(RAM.detect(runner.getRAM()));
     }
 
@@ -208,6 +218,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     NotificationManager notificationManager,
                                     DtoUnmarshallerFactory unmarshallerFactory,
                                     AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
+                                    @LeftPanel TabContainer tabContainer,
                                     @Assisted @Nonnull final Environment environment) {
         this(view,
              dockerFileFactory,
@@ -221,11 +232,17 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
              unmarshallerFactory,
              eventBus,
              appContext,
+             tabContainer,
              asyncCallbackBuilder);
 
         this.environment = environment;
 
-        if (PROJECT.equals(environment.getScope())) {
+        boolean isProjectScope = PROJECT.equals(environment.getScope());
+
+        view.setEnableProperties(isProjectScope);
+        view.setVisibleButtons(isProjectScope);
+
+        if (isProjectScope) {
             getProjectEnvironmentDocker();
         } else {
             getSystemEnvironmentDocker();
@@ -322,27 +339,20 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
         view.setEnableSaveButton(PROJECT.equals(scope));
         view.setEnableCancelButton(true);
+        view.setEnableSaveButton(true);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onNameChanged() {
-        view.setEnableCreateButton(true);
-        view.setEnableCancelButton(true);
-        view.setEnableSaveButton(false);
-        view.setEnableDeleteButton(false);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onCreateButtonClicked() {
-        String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + view.getName();
+    public void onCopyButtonClicked() {
+        final String fileName = NameGenerator.generate();
+        String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + fileName;
 
         AsyncRequestCallback<ItemReference> callback = asyncCallbackBuilder.unmarshaller(ItemReference.class)
                                                                            .success(new SuccessCallback<ItemReference>() {
                                                                                @Override
                                                                                public void onSuccess(ItemReference result) {
-                                                                                   getEditorContent();
+                                                                                   getEditorContent(fileName);
                                                                                }
                                                                            })
                                                                            .failure(new FailureCallback() {
@@ -356,11 +366,11 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         projectService.createFolder(path, callback);
     }
 
-    private void getEditorContent() {
+    private void getEditorContent(@Nonnull final String fileName) {
         editor.getEditorInput().getFile().getContent(new AsyncCallback<String>() {
             @Override
             public void onSuccess(String content) {
-                createFile(content);
+                createFile(content, fileName);
             }
 
             @Override
@@ -370,7 +380,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         });
     }
 
-    private void createFile(@Nonnull String content) {
+    private void createFile(@Nonnull String content, @Nonnull String fileName) {
         String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER;
 
         AsyncRequestCallback<ItemReference> callback =
@@ -379,6 +389,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                         @Override
                                         public void onSuccess(ItemReference result) {
                                             resetButtons();
+                                            tabContainer.showTab(locale.runnerTabTemplates());
 
                                             boolean isRunnerNull = runner == null;
 
@@ -399,7 +410,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     })
                                     .build();
 
-        projectService.createFile(path, view.getName() + DOCKER_SCRIPT_NAME, content, null, callback);
+        projectService.createFile(path, fileName + DOCKER_SCRIPT_NAME, content, null, callback);
     }
 
     /** {@inheritDoc} */
@@ -407,13 +418,26 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     public void onSaveButtonClicked() {
         environment.setRam(view.getRam().getValue());
 
+        String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + environment.getName();
+
+        projectService.rename(path, view.getName(), null, new AsyncRequestCallback<Void>() {
+            @Override
+            protected void onSuccess(Void aVoid) {
+                projectEnvironmentsAction.perform();
+            }
+
+            @Override
+            protected void onFailure(Throwable throwable) {
+                notificationManager.showError(throwable.getMessage());
+            }
+        });
+
         if (editor.isDirty()) {
             editor.doSave(new AsyncCallback<EditorInput>() {
                 @Override
                 public void onSuccess(EditorInput editorInput) {
                     view.setEnableSaveButton(false);
                     view.setEnableCancelButton(false);
-                    view.setEnableCreateButton(false);
                 }
 
                 @Override
@@ -470,7 +494,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         view.setEnableSaveButton(false);
         view.setEnableCancelButton(false);
         view.setEnableDeleteButton(PROJECT.equals(scope));
-        view.setEnableCreateButton(false);
 
         if (editor instanceof UndoableEditor) {
             HandlesUndoRedo undoRedo = ((UndoableEditor)editor).getUndoRedo();

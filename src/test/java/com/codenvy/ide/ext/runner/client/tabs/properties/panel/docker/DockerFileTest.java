@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.docker;
+package com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
@@ -26,7 +26,7 @@ import org.mockito.Mock;
 
 import java.util.Arrays;
 
-import static com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFile.GET_CONTENT;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFile.GET_CONTENT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;

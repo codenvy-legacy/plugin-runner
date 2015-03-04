@@ -28,6 +28,8 @@ import com.codenvy.ide.ext.runner.client.tabs.console.button.ConsoleButton;
 import com.codenvy.ide.ext.runner.client.tabs.console.button.ConsoleButtonImpl;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.Console;
 import com.codenvy.ide.ext.runner.client.tabs.console.panel.ConsoleImpl;
+import com.codenvy.ide.ext.runner.client.tabs.container.TabContainer;
+import com.codenvy.ide.ext.runner.client.tabs.container.TabContainerPresenter;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import com.codenvy.ide.ext.runner.client.tabs.container.tab.TabWidgetImpl;
 import com.codenvy.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
@@ -40,6 +42,8 @@ import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButtonImpl;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.TerminalImpl;
+import com.codenvy.ide.ext.runner.client.util.annotations.LeftPanel;
+import com.codenvy.ide.ext.runner.client.util.annotations.RightPanel;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 import com.google.inject.Provides;
@@ -58,6 +62,9 @@ public class RunnerGinModule extends AbstractGinModule {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        bind(TabContainer.class).annotatedWith(LeftPanel.class).to(TabContainerPresenter.class).in(Singleton.class);
+        bind(TabContainer.class).annotatedWith(RightPanel.class).to(TabContainerPresenter.class).in(Singleton.class);
+
         install(new GinFactoryModuleBuilder().implement(Runner.class, RunnerImpl.class)
                                              .implement(Environment.class, EnvironmentImpl.class)
                                              .build(ModelsFactory.class));

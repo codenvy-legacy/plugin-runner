@@ -97,7 +97,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     private ButtonWidget run;
     private ButtonWidget stop;
-    private ButtonWidget docker;
 
     private String url;
 
@@ -184,14 +183,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             }
         };
         stop = createButton(resources.stopButton(), locale.tooltipStopButton(), stopDelegate, otherButtonsPanel);
-
-        ButtonWidget.ActionDelegate dockerDelegate = new ButtonWidget.ActionDelegate() {
-            @Override
-            public void onButtonClicked() {
-                delegate.onDockerButtonClicked();
-            }
-        };
-        docker = createButton(resources.dockerButton(), locale.tooltipDockerButton(), dockerDelegate, otherButtonsPanel);
     }
 
     @Nonnull
@@ -220,24 +211,20 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         if (appContext.getCurrentProject() == null) {
             run.setDisable();
             stop.setDisable();
-            docker.setDisable();
             return;
         }
 
         run.setEnable();
         stop.setEnable();
-        docker.setEnable();
 
         switch (runner.getStatus()) {
             case IN_QUEUE:
                 run.setDisable();
-                docker.setDisable();
                 stop.setDisable();
                 break;
 
             case FAILED:
                 stop.setDisable();
-                docker.setDisable();
                 break;
 
             case STOPPED:
@@ -327,16 +314,6 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             stop.setEnable();
         } else {
             stop.setDisable();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setEnableDockerButton(boolean isEnable) {
-        if (isEnable) {
-            docker.setEnable();
-        } else {
-            docker.setDisable();
         }
     }
 

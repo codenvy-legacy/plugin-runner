@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.runneractions.impl.docker;
+package com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.codenvy.ide.ext.runner.client.runneractions.impl.docker.DockerFile.GET_CONTENT;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker.DockerFile.GET_CONTENT;
 
 /**
  * The factory that provides an ability to create instances of {@link DockerFile}. The main idea of this class is to simplify work flow of

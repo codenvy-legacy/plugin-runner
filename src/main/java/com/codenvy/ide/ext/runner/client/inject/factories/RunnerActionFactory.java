@@ -16,7 +16,6 @@ import com.codenvy.ide.ext.runner.client.runneractions.impl.GetLogsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.RunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.ShowDockerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.subactions.CheckHealthStatusAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.subactions.OutputAction;
@@ -52,10 +51,6 @@ public interface RunnerActionFactory {
      */
     @Nonnull
     CheckHealthStatusAction createCheckHealthStatus(@Nonnull Notification notification);
-
-    /** @return an instance of {@link ShowDockerAction} */
-    @Nonnull
-    ShowDockerAction createShowDocker();
 
     /** @return an instance of {@link OutputAction} */
     @Nonnull

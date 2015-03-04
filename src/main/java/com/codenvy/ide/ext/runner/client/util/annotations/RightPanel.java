@@ -8,13 +8,22 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.state;
+package com.codenvy.ide.ext.runner.client.util.annotations;
+
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The enum of available states for 'Multi runner panel'.
+ * The annotation is added to left tab container to do it as singleton.
  *
- * @author Andrey Plotnikov
+ * @author Dmitry Shnurenko
  */
-public enum State {
-    TEMPLATE, RUNNERS
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER})
+@BindingAnnotation
+public @interface RightPanel {
 }

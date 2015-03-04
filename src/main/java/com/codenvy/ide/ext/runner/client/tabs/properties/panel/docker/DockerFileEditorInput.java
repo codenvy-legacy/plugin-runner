@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.ext.runner.client.tabs.properties.panel;
+package com.codenvy.ide.ext.runner.client.tabs.properties.panel.docker;
 
 import com.codenvy.ide.api.editor.EditorInput;
 import com.codenvy.ide.api.filetypes.FileType;
@@ -26,10 +26,10 @@ import javax.annotation.Nonnull;
  */
 public class DockerFileEditorInput implements EditorInput {
 
-    private VirtualFile file;
-    private FileType    fileType;
+    private final FileType    fileType;
+    private       VirtualFile file;
 
-    DockerFileEditorInput(FileType fileType, VirtualFile file) {
+    public DockerFileEditorInput(@Nonnull FileType fileType, @Nonnull VirtualFile file) {
         this.fileType = fileType;
         this.file = file;
     }

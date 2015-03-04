@@ -209,6 +209,9 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
             onButtonChecked(SYSTEM);
             isFirstClick = false;
         }
+
+        //TODO need select element which was selected before
+        selectFirstEnvironment();
     }
 
     /** {@inheritDoc} */

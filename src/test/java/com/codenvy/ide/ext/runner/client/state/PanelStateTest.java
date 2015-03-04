@@ -43,7 +43,7 @@ public class PanelStateTest {
 
     @Test
     public void shouldDefaultGetState() {
-        assertThat(panelState.getState(), is(State.HISTORY));
+        assertThat(panelState.getState(), is(State.RUNNERS));
     }
 
     @Test
@@ -54,15 +54,15 @@ public class PanelStateTest {
 
     @Test
     public void shouldGetStateHistory() {
-        panelState.setState(State.HISTORY);
-        assertThat(panelState.getState(), is(State.HISTORY));
+        panelState.setState(State.RUNNERS);
+        assertThat(panelState.getState(), is(State.RUNNERS));
     }
 
     @Test
     public void shouldSetStateHistory() {
-        panelState.setState(State.HISTORY);
+        panelState.setState(State.RUNNERS);
 
-        assertThat(panelState.getState(), is(State.HISTORY));
+        assertThat(panelState.getState(), is(State.RUNNERS));
         verify(listener1).onStateChanged();
         verify(listener2).onStateChanged();
     }

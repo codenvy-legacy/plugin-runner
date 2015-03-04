@@ -62,7 +62,7 @@ public class TabContainerPresenterTest {
         when(tab1.getTitle()).thenReturn(TITLE1);
         when(tab2.getTitle()).thenReturn(TITLE2);
 
-        when(panelState.getState()).thenReturn(State.HISTORY);
+        when(panelState.getState()).thenReturn(State.RUNNERS);
     }
 
     @Test
@@ -157,8 +157,8 @@ public class TabContainerPresenterTest {
 
     @Test
     public void shouldOnStateChangedWhenOneTabIsVisible() {
-        when(tab1.isAvailableScope(State.HISTORY)).thenReturn(true);
-        when(tab2.isAvailableScope(State.HISTORY)).thenReturn(false);
+        when(tab1.isAvailableScope(State.RUNNERS)).thenReturn(true);
+        when(tab2.isAvailableScope(State.RUNNERS)).thenReturn(false);
 
         addTwoTabs();
 
@@ -166,8 +166,8 @@ public class TabContainerPresenterTest {
 
         verify(panelState).getState();
 
-        verify(tab1).isAvailableScope(State.HISTORY);
-        verify(tab2).isAvailableScope(State.HISTORY);
+        verify(tab1).isAvailableScope(State.RUNNERS);
+        verify(tab2).isAvailableScope(State.RUNNERS);
 
         verify(tab1, times(2)).getTitle();
         verify(tab2, times(2)).getTitle();
@@ -180,8 +180,8 @@ public class TabContainerPresenterTest {
 
     @Test
     public void shouldOnStateChangedWhenNoneTabIsVisible() {
-        when(tab1.isAvailableScope(State.HISTORY)).thenReturn(false);
-        when(tab2.isAvailableScope(State.HISTORY)).thenReturn(false);
+        when(tab1.isAvailableScope(State.RUNNERS)).thenReturn(false);
+        when(tab2.isAvailableScope(State.RUNNERS)).thenReturn(false);
 
         addTwoTabs();
 
@@ -189,8 +189,8 @@ public class TabContainerPresenterTest {
 
         verify(panelState).getState();
 
-        verify(tab1).isAvailableScope(State.HISTORY);
-        verify(tab2).isAvailableScope(State.HISTORY);
+        verify(tab1).isAvailableScope(State.RUNNERS);
+        verify(tab2).isAvailableScope(State.RUNNERS);
 
         verify(tab1, times(2)).getTitle();
         verify(tab2, times(2)).getTitle();
@@ -215,8 +215,8 @@ public class TabContainerPresenterTest {
     @Test
     /* Two tabs are visible, but we should select first of them */
     public void shouldOnStateChangedWhenTwoTabAreVisible() {
-        when(tab1.isAvailableScope(State.HISTORY)).thenReturn(true);
-        when(tab2.isAvailableScope(State.HISTORY)).thenReturn(true);
+        when(tab1.isAvailableScope(State.RUNNERS)).thenReturn(true);
+        when(tab2.isAvailableScope(State.RUNNERS)).thenReturn(true);
 
         addTwoTabs();
 
@@ -224,8 +224,8 @@ public class TabContainerPresenterTest {
 
         verify(panelState).getState();
 
-        verify(tab1).isAvailableScope(State.HISTORY);
-        verify(tab2).isAvailableScope(State.HISTORY);
+        verify(tab1).isAvailableScope(State.RUNNERS);
+        verify(tab2).isAvailableScope(State.RUNNERS);
 
         verify(tab1, times(2)).getTitle();
         verify(tab2, times(2)).getTitle();

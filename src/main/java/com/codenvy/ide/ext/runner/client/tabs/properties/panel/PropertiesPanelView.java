@@ -103,14 +103,6 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
     void selectShutdown(@Nonnull Shutdown shutdown);
 
     /**
-     * Changes enable state of 'Create' button.
-     *
-     * @param enable
-     *         enable state of button
-     */
-    void setEnableCreateButton(boolean enable);
-
-    /**
      * Changes enable state of 'Save' button.
      *
      * @param enable
@@ -135,6 +127,22 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
     void setEnableDeleteButton(boolean enable);
 
     /**
+     * Sets enable state of all properties fields on properties panel.
+     *
+     * @param enable
+     *         enable state of properties
+     */
+    void setEnableProperties(boolean enable);
+
+    /**
+     * Sets visibility of buttons.
+     *
+     * @param visible
+     *         state buttons visibility
+     */
+    void setVisibleButtons(boolean visible);
+
+    /**
      * Show a given editor in the special place on the container.
      *
      * @param editor
@@ -147,11 +155,8 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
         /** Performs some actions in response to user's changing some configuration. */
         void onConfigurationChanged();
 
-        /** Performs some actions in response to user's changing name of environment. */
-        void onNameChanged();
-
         /** Performs some actions in response to user's clicking on the 'Create' button. */
-        void onCreateButtonClicked();
+        void onCopyButtonClicked();
 
         /** Performs some actions in response to user's clicking on the 'Save' button. */
         void onSaveButtonClicked();

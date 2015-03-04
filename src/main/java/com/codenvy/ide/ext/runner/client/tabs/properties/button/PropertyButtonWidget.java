@@ -25,9 +25,17 @@ public interface PropertyButtonWidget extends View<PropertyButtonWidget.ActionDe
      * Performs some actions when button is enable or disable.
      *
      * @param isEnable
-     *         <code>true</code> button is enable,<code>false</code> button is disable
+     *         <code>true</code> button is enable, <code>false</code> button is disable
      */
     void setEnable(boolean isEnable);
+
+    /**
+     * Sets visibility of buttons.
+     *
+     * @param visible
+     *         <code>true</code> button is visible, <code>false</code> button isn't visible
+     */
+    void setVisible(boolean visible);
 
     interface ActionDelegate {
         /** Performs some actions when user click on button. */

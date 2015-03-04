@@ -109,14 +109,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void setEnableStopButton(boolean isEnable);
 
-    /**
-     * Changes state of docker button.
-     *
-     * @param isEnable
-     *         <code>true</code> button is enable, <code>false</code> button is disable
-     */
-    void setEnableDockerButton(boolean isEnable);
-
     interface ActionDelegate extends BaseActionDelegate {
 
         /** Performs some actions in response to user's clicking on the 'Run' button. */
@@ -124,9 +116,6 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's clicking on the 'Stop' button. */
         void onStopButtonClicked();
-
-        /** Performs some actions in response to user's clicking on the 'Docker' button. */
-        void onDockerButtonClicked();
 
         /** Performs some actions in response to user's over mouse on timeout label. */
         void onMoreInfoBtnMouseOver();

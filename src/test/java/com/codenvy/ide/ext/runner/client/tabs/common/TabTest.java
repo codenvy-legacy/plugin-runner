@@ -45,7 +45,7 @@ public class TabTest {
 
     @Before
     public void setUp() {
-        scopes.add(State.HISTORY);
+        scopes.add(State.RUNNERS);
         tab = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.VISIBLE);
     }
 
@@ -53,7 +53,7 @@ public class TabTest {
     public void shouldGetCorrectParameter() {
         assertThat(tab.getTitle(), is(title));
         assertThat(tab.getTab(), is(tabPresenter));
-        assertThat(tab.isAvailableScope(State.HISTORY), is(true));
+        assertThat(tab.isAvailableScope(State.RUNNERS), is(true));
         assertThat(tab.isAvailableScope(State.TEMPLATE), is(false));
         assertThat(tab.getTabType(), is(TabType.LEFT_PANEL));
         assertThat(tab.isRemovable(), is(false));

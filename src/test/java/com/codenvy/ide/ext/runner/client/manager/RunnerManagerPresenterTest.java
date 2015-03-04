@@ -30,7 +30,6 @@ import com.codenvy.ide.ext.runner.client.models.RunnerCounter;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.StopAction;
-import com.codenvy.ide.ext.runner.client.runneractions.impl.docker.ShowDockerAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import com.codenvy.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
@@ -77,7 +76,7 @@ import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.TIMEOUT;
 import static com.codenvy.ide.ext.runner.client.selection.Selection.ENVIRONMENT;
 import static com.codenvy.ide.ext.runner.client.selection.Selection.RUNNER;
-import static com.codenvy.ide.ext.runner.client.state.State.HISTORY;
+import static com.codenvy.ide.ext.runner.client.state.State.RUNNERS;
 import static com.codenvy.ide.ext.runner.client.state.State.TEMPLATE;
 import static com.codenvy.ide.ext.runner.client.tabs.common.Tab.VisibleState.REMOVABLE;
 import static com.codenvy.ide.ext.runner.client.tabs.common.Tab.VisibleState.VISIBLE;
@@ -159,9 +158,6 @@ public class RunnerManagerPresenterTest {
     @Mock
     private GetProjectEnvironmentsAction getProjectEnvironmentsAction;
 
-    @Mock
-    private ShowDockerAction showDockerAction;
-
     //tab builder mocks
     @Mock
     private TabBuilder tabBuilderHistory;
@@ -223,9 +219,6 @@ public class RunnerManagerPresenterTest {
 
     @Before
     public void setUp() {
-        when(actionFactory.createShowDocker()).thenReturn(showDockerAction);
-
-
         when(locale.runnerTabHistory()).thenReturn(HISTORY_TAB);
         when(locale.runnerTabTemplates()).thenReturn(TEMPLATES);
         when(locale.runnerTabConsole()).thenReturn(CONSOLE);
@@ -246,11 +239,11 @@ public class RunnerManagerPresenterTest {
         when(tabBuilderTemplate.build()).thenReturn(templateTab);
 
         //init console tab
-        initTab(tabBuilderConsole, consoleContainer, REMOVABLE, RIGHT_PANEL, EnumSet.of(HISTORY), CONSOLE);
+        initTab(tabBuilderConsole, consoleContainer, REMOVABLE, RIGHT_PANEL, EnumSet.of(RUNNERS), CONSOLE);
         when(tabBuilderConsole.build()).thenReturn(consoleTab);
 
         //init terminal tab
-        initTab(tabBuilderTerminal, terminalContainer, VISIBLE, RIGHT_PANEL, EnumSet.of(HISTORY), TERMINAL);
+        initTab(tabBuilderTerminal, terminalContainer, VISIBLE, RIGHT_PANEL, EnumSet.of(RUNNERS), TERMINAL);
         when(tabBuilderTerminal.build()).thenReturn(terminalTab);
 
         //init properties tab
@@ -333,7 +326,6 @@ public class RunnerManagerPresenterTest {
     @Test
     public void shouldVerifyConstructor() {
         verify(view).setDelegate(presenter);
-        verify(actionFactory).createShowDocker();
         verify(selectionManager).addListener(presenter);
         verify(eventBus).addHandler(ProjectActionEvent.TYPE, presenter);
 
@@ -343,7 +335,7 @@ public class RunnerManagerPresenterTest {
         verify(leftTabContainer).addTab(historyTab);
 
         verifyTabSelectHandler(tabBuilderHistory);
-        verify(panelState).setState(HISTORY);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
 
         //init template tab
@@ -368,7 +360,7 @@ public class RunnerManagerPresenterTest {
 
         /* verify initialize RightPanel*/
         //init console tab
-        verifyInitTab(tabBuilderConsole, consoleContainer, REMOVABLE, RIGHT_PANEL, EnumSet.of(HISTORY), CONSOLE);
+        verifyInitTab(tabBuilderConsole, consoleContainer, REMOVABLE, RIGHT_PANEL, EnumSet.of(RUNNERS), CONSOLE);
         verify(rightTabContainer).addTab(consoleTab);
 
         //verify consoleHandler
@@ -376,7 +368,7 @@ public class RunnerManagerPresenterTest {
         verify(runner).setActiveTab(CONSOLE);
 
         //init terminal tab
-        verifyInitTab(tabBuilderTerminal, terminalContainer, VISIBLE, RIGHT_PANEL, EnumSet.of(HISTORY), TERMINAL);
+        verifyInitTab(tabBuilderTerminal, terminalContainer, VISIBLE, RIGHT_PANEL, EnumSet.of(RUNNERS), TERMINAL);
         verify(rightTabContainer).addTab(terminalTab);
 
         //verify terminalHandler
@@ -595,7 +587,7 @@ public class RunnerManagerPresenterTest {
         verify(modelsFactory, times(2)).createRunner(runOptions);
 
         //verify launch runner
-        verify(panelState).setState(HISTORY);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -613,7 +605,7 @@ public class RunnerManagerPresenterTest {
 
         verify(runner, times(2)).getStatus();
 
-        verify(panelState).setState(HISTORY);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -667,7 +659,7 @@ public class RunnerManagerPresenterTest {
 
         verify(runner, times(3)).getStatus();
 
-        verify(panelState).setState(HISTORY);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -701,7 +693,7 @@ public class RunnerManagerPresenterTest {
         verify(modelsFactory).createRunner(runOptions, TEXT);
 
         //verify launch runner
-        verify(panelState).setState(HISTORY);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -725,7 +717,7 @@ public class RunnerManagerPresenterTest {
         verify(modelsFactory, times(2)).createRunner(runOptions);
 
         //verify launch runner
-        verify(panelState).setState(HISTORY);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -757,15 +749,6 @@ public class RunnerManagerPresenterTest {
         presenter.stopRunner(runner);
         verify(launchAction).stop();
         verify(stopAction).perform(runner);
-    }
-
-    @Test
-    public void dockerActionShouldBePerformedWhenDockerButtonIsClicked() {
-        presenter.addRunner(processDescriptor);
-
-        presenter.onDockerButtonClicked();
-
-        verify(showDockerAction).perform(runner);
     }
 
     @Test
@@ -939,7 +922,6 @@ public class RunnerManagerPresenterTest {
 
         verify(view).setEnableRunButton(false);
         verify(view).setEnableStopButton(false);
-        verify(view).setEnableDockerButton(false);
 
         verify(view).setApplicationURl(null);
         verify(view).setTimeout(TIMER_STUB);
@@ -966,7 +948,7 @@ public class RunnerManagerPresenterTest {
         verify(modelsFactory).createRunner(runOptions);
 
         //verify launch runner
-        verify(panelState).setState(HISTORY);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();

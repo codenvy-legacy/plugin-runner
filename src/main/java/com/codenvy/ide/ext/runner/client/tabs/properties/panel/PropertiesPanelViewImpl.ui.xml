@@ -52,6 +52,7 @@
 
         .label {
             margin-top: 3px;
+            margin-left: 6px;
             float: left;
         }
 

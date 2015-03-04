@@ -45,7 +45,7 @@ public class TabBuilderTest {
     public void setUp() {
         tabBuilder = new TabBuilder();
 
-        scopes.add(State.HISTORY);
+        scopes.add(State.RUNNERS);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class TabBuilderTest {
         assertThat(tab.isRemovable(), is(false));
         assertThat(tab.getTitle(), is(title));
         assertThat(tab.getTab(), is(presenter));
-        assertThat(tab.isAvailableScope(State.HISTORY), is(true));
+        assertThat(tab.isAvailableScope(State.RUNNERS), is(true));
         assertThat(tab.isAvailableScope(State.TEMPLATE), is(false));
         assertThat(tab.getTabType(), is(TabType.LEFT_PANEL));
     }

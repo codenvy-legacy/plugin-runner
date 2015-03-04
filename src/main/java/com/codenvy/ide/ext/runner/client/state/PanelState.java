@@ -31,7 +31,7 @@ public class PanelState {
     @Inject
     public PanelState() {
         listeners = new ArrayList<>();
-        state = State.HISTORY;
+        state = State.RUNNERS;
     }
 
     /** @return current state of the panel */
