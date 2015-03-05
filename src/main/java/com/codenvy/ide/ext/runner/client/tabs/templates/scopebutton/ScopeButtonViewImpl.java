@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 
@@ -71,7 +72,6 @@ public class ScopeButtonViewImpl extends Composite implements ScopeButtonView, C
     @Override
     public void select() {
         image.addClassNameBaseVal(resources.runnerCss().blueColor());
-
         scope.getElement().setInnerHTML(image.toString());
     }
 
@@ -79,16 +79,14 @@ public class ScopeButtonViewImpl extends Composite implements ScopeButtonView, C
     @Override
     public void unSelect() {
         image.removeClassNameBaseVal(resources.runnerCss().blueColor());
-
         scope.getElement().setInnerHTML(image.toString());
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setImage(@Nonnull SVGImage image) {
-        this.image = image;
-
-        scope.getElement().setInnerHTML(image.toString());
+    public void setImage(@Nonnull SVGResource image) {
+        this.image = new SVGImage(image);
+        scope.getElement().setInnerHTML(this.image.toString());
     }
 
     /** {@inheritDoc} */
@@ -119,7 +117,6 @@ public class ScopeButtonViewImpl extends Composite implements ScopeButtonView, C
     @Override
     public void onMouseOver(MouseOverEvent event) {
         tooltip.setPopupPosition(getAbsoluteLeft() - LEFT_TOOLTIP_SHIFT, getAbsoluteTop() + TOP_TOOLTIP_SHIFT);
-
         tooltip.show();
     }
 }

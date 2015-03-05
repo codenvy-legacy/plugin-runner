@@ -26,7 +26,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -39,6 +38,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -173,7 +174,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onRunButtonClicked();
             }
         };
-        run = createButton(resources.runButton(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
+        run = createButton(resources.runAppImage(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
         run.setEnable();
 
         ButtonWidget.ActionDelegate stopDelegate = new ButtonWidget.ActionDelegate() {
@@ -186,7 +187,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     }
 
     @Nonnull
-    private ButtonWidget createButton(@Nonnull ImageResource icon,
+    private ButtonWidget createButton(@Nonnull SVGResource icon,
                                       @Nonnull String prompt,
                                       @Nonnull ButtonWidget.ActionDelegate delegate,
                                       @Nonnull FlowPanel buttonPanel) {

@@ -47,47 +47,14 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/templates/scopeSystem.svg")
     SVGResource scopeSystem();
 
-    @Source("images/mainwidget/run.png")
-    ImageResource runButton();
+    @Source("images/mainwidget/run.svg")
+    SVGResource runAppImage();
 
-    @Source("images/mainwidget/docker.png")
-    ImageResource dockerButton();
-
-    @Source("images/mainwidget/clean.png")
-    ImageResource cleanButton();
-
-    @Source("images/mainwidget/stop.png")
-    ImageResource stopButton();
+    @Source("images/mainwidget/stop.svg")
+    SVGResource stopButton();
 
     @Source("images/mainwidget/more-icon.png")
     ImageResource moreIcon();
-
-    @Source("images/templates/scope-user.png")
-    ImageResource scopeUser();
-
-    @Source("images/templates/scope-workspace.png")
-    ImageResource scopeWorkspace();
-
-    @Source("images/run.svg")
-    SVGResource runAppImage();
-
-    @Source("images/edit-custom-environments.svg")
-    SVGResource editEnvironmentsImage();
-
-    @Source("images/run-with.svg")
-    SVGResource runWithImage();
-
-    @Source("images/addEnvironment.svg")
-    SVGResource addEnvironmentImage();
-
-    @Source("images/editEnvironment.svg")
-    SVGResource editEnvironmentImage();
-
-    @Source("images/removeEnvironment.svg")
-    SVGResource removeEnvironmentImage();
-
-    @Source("images/environment.svg")
-    SVGResource environmentImage();
 
     @Source("images/console/arrow-bottom.svg")
     SVGResource arrowBottom();
@@ -98,6 +65,7 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/console/erase.svg")
     SVGResource erase();
 
+    // TODO unused template. May be need to remove it
     @Source("docker-template.txt")
     TextResource dockerTemplate();
 
@@ -111,14 +79,6 @@ public interface RunnerResources extends ClientBundle {
         String consoleBackground();
 
         String logLink();
-
-        String blueButton();
-
-        String treeIcon();
-
-        String runButton();
-
-        String cancelButton();
 
         String fontStyle();
 
@@ -173,6 +133,8 @@ public interface RunnerResources extends ClientBundle {
         String runnersAction();
 
         String runnerFontStyle();
+
+        String mainButtonIcon();
     }
 
 }

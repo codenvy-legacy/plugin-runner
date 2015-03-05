@@ -68,6 +68,8 @@ public class ConsoleButtonImpl extends Composite implements ConsoleButton, Click
         initWidget(UI_BINDER.createAndBindUi(this));
 
         icon = new SVGImage(image);
+        icon.getElement().setAttribute("class", resources.runnerCss().mainButtonIcon());
+
         setCheckedStatus(false);
 
         addDomHandler(this, ClickEvent.getType());

@@ -11,21 +11,21 @@
 package com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton;
 
 import com.codenvy.ide.ext.runner.client.RunnerLocalizationConstant;
-
 import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * @author Andrienko Alexander
@@ -41,7 +41,7 @@ public class ScopeButtonPresenterTest {
     @Mock
     private RunnerLocalizationConstant locale;
     @Mock
-    private SVGImage                   image;
+    private SVGResource                image;
 
     @Mock
     private ScopeButton.ActionDelegate delegate;

@@ -16,32 +16,24 @@
     <ui:with field="resources" type="com.codenvy.ide.ext.runner.client.RunnerResources"/>
 
     <ui:style>
-        .innerPanel {
-            width: 25px;
-            height: 30px;
-            margin-top: 2px;
-            cursor: pointer;
-        }
-
-        .innerPanel:active {
-            opacity: 0.4;
-        }
-
         .outerPanel {
-            width: 25px;
-            height: 33px;
+            width: 22px;
+            height: 22px;
+            padding-top: 6px;
+            padding-left: 6px;
         }
 
         .buttonImage {
-            margin-left: 2px;
-            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        .buttonImage:active {
+            opacity: 0.4;
         }
     </ui:style>
 
     <g:FlowPanel addStyleNames="{style.outerPanel}">
-        <g:FlowPanel ui:field="buttonPanel" addStyleNames="{style.innerPanel}">
-            <g:Image ui:field="image" addStyleNames="{style.buttonImage}"/>
-        </g:FlowPanel>
+        <g:SimpleLayoutPanel ui:field="image" addStyleNames="{style.buttonImage}"/>
     </g:FlowPanel>
 
 </ui:UiBinder>

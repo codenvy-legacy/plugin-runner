@@ -15,13 +15,13 @@ import com.codenvy.ide.ext.runner.client.manager.tooltip.TooltipWidget;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.anyInt;
@@ -39,8 +39,8 @@ public class ButtonWidgetImplTest {
 
     @Mock(answer = RETURNS_DEEP_STUBS)
     private RunnerResources             resources;
-    @Mock
-    private ImageResource               image;
+    @Mock(answer = RETURNS_DEEP_STUBS)
+    private SVGResource                 image;
     @Mock
     private TooltipWidget               tooltipWidget;
     @Mock
@@ -65,7 +65,6 @@ public class ButtonWidgetImplTest {
 
     @Test
     public void constructorShouldBeVerified() throws Exception {
-        verify(button.image).setResource(image);
         verify(tooltipWidget).setDescription(SOME_TEXT);
     }
 

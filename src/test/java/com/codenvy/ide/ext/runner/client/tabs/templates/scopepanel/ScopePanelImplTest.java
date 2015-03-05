@@ -55,7 +55,7 @@ public class ScopePanelImplTest {
 
     @Test
     public void shouldAddButton() {
-        when(widgetFactory.createScopeButton(eq(PROJECT), any(SVGImage.class), eq(true))).thenReturn(button);
+        when(widgetFactory.createScopeButton(eq(PROJECT), any(SVGResource.class), eq(true))).thenReturn(button);
         ScopePanel.ActionDelegate actionDelegate = mock(ScopePanel.ActionDelegate.class);
         scopePanel.setDelegate(actionDelegate);
         scopePanel.addButton(PROJECT, resource, true);

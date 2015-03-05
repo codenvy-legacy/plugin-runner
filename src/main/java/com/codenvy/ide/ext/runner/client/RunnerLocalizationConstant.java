@@ -86,73 +86,13 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("action.run")
     String actionRun();
 
-    @Key("action.custom.run")
-    String actionCustomRun();
-
     @Key("action.run.description")
     String actionRunDescription();
-
-    @Key("action.edit.run")
-    String actionEditRun();
-
-    @Key("action.edit.run.description")
-    String actionEditRunDescription();
-
-    @Key("action.group.run.with")
-    String actionGroupRunWith();
-
-    @Key("action.group.run.with.description")
-    String actionGroupRunWithDescription();
-
-    @Key("action.custom.run.description")
-    String actionCustomRunDescription();
 
     @Key("get.resources.failed")
     String getResourcesFailed();
 
     String fullLogTraceConsoleLink();
-
-    @Key("custom.environments.title")
-    String customEnvironmentsTitle();
-
-    @Key("custom.environments.button.add")
-    String customEnvironmentsButtonAdd();
-
-    @Key("custom.environments.button.Remove")
-    String customEnvironmentsButtonRemove();
-
-    @Key("custom.environments.button.close")
-    String customEnvironmentsButtonClose();
-
-    @Key("custom.environments.button.edit")
-    String customEnvironmentsButtonEdit();
-
-    @Key("custom.environments.empty.table")
-    String customEnvironmentsEmptyTable();
-
-    @Key("action.manager.environment.text")
-    String actionManagerEnvironmentText(@Nonnull String text);
-
-    @Key("action.manager.environment.description")
-    String actionManagerEnvironmentDescription(@Nonnull String description);
-
-    @Key("validator.space.not.allowed")
-    String validatorSpaceNotAllowed();
-
-    @Key("validator.dots.not.allowed")
-    String validatorDotsNotAllowed();
-
-    @Key("validator.name.invalid")
-    String validatorNameInvalid();
-
-    @Key("add.environment.dialog.title")
-    String addEnvironmentDialogTitle();
-
-    @Key("add.environment.dialog.label")
-    String addEnvironmentDialogLabel();
-
-    @Key("retrieve.images.failed")
-    String retrieveImagesFailed(@Nonnull String error);
 
     @Key("remove.environment")
     String removeEnvironment();
@@ -160,32 +100,8 @@ public interface RunnerLocalizationConstant extends Messages {
     @Key("remove.environment.message")
     String removeEnvironmentMessage(@Nonnull String environmentName);
 
-    @Key("custom.runner.title")
-    String customRunnerTitle();
-
     @Key("custom.runner.get.environment.failed")
     String customRunnerGetEnvironmentFailed();
-
-    @Key("custom.runner.memory.runner")
-    String customRunnerMemoryRunner();
-
-    @Key("custom.runner.memory.total")
-    String customRunnerMemoryTotal();
-
-    @Key("custom.runner.memory.available")
-    String customRunnerMemoryAvailable();
-
-    @Key("custom.runner.skip.build")
-    String customRunnerSkipBuild();
-
-    @Key("custom.runner.environment")
-    String customRunnerEnvironment();
-
-    @Key("custom.runner.button.cancel")
-    String customRunnerButtonCancel();
-
-    @Key("message.fail.remember.options")
-    String messageFailRememberOptions();
 
     @Key("messages.un.multiple.ram.value")
     String ramSizeMustBeMultipleOf(@Nonnegative int multiple);

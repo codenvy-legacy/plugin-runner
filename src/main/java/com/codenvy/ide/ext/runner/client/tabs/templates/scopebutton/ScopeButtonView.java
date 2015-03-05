@@ -13,7 +13,7 @@ package com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton;
 import com.codenvy.ide.api.mvp.View;
 import com.google.inject.ImplementedBy;
 
-import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 
@@ -37,7 +37,7 @@ public interface ScopeButtonView extends View<ScopeButtonView.ActionDelegate> {
      * @param image
      *         image which need set
      */
-    void setImage(@Nonnull SVGImage image);
+    void setImage(@Nonnull SVGResource image);
 
     /**
      * Sets prompt to current scope button.

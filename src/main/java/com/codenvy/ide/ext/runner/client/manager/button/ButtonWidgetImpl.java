@@ -19,15 +19,16 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+
+import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 
@@ -46,10 +47,7 @@ public class ButtonWidgetImpl extends Composite implements ButtonWidget, ClickHa
     private static final ButtonWidgetImplUiBinder UI_BINDER = GWT.create(ButtonWidgetImplUiBinder.class);
 
     @UiField
-    FlowPanel buttonPanel;
-    @UiField
-    Image     image;
-
+    SimpleLayoutPanel image;
     @UiField(provided = true)
     final RunnerResources resources;
 
@@ -60,16 +58,19 @@ public class ButtonWidgetImpl extends Composite implements ButtonWidget, ClickHa
 
     @Inject
     public ButtonWidgetImpl(RunnerResources resources,
-                            final TooltipWidget tooltip,
+                            TooltipWidget tooltip,
                             @Nonnull @Assisted String prompt,
-                            @Nonnull @Assisted ImageResource image) {
+                            @Nonnull @Assisted SVGResource image) {
         this.resources = resources;
         this.tooltip = tooltip;
         this.tooltip.setDescription(prompt);
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
-        this.image.setResource(image);
+        SVGImage icon = new SVGImage(image);
+        icon.getElement().setAttribute("class", resources.runnerCss().mainButtonIcon());
+
+        this.image.getElement().setInnerHTML(icon.toString());
 
         addDomHandler(this, ClickEvent.getType());
         addDomHandler(this, MouseOutEvent.getType());

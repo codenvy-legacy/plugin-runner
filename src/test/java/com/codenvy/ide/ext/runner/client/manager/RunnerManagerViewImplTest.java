@@ -24,7 +24,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -83,11 +82,11 @@ public class RunnerManagerViewImplTest {
     @Mock
     private SplitLayoutPanel                  splitLayoutPanel;
     @Mock
-    private ImageResource                     imageRun;
+    private SVGResource                       imageRun;
     @Mock
     private ButtonWidget                      run;
     @Mock
-    private ImageResource                     imageStop;
+    private SVGResource                       imageStop;
     @Mock
     private ButtonWidget                      stop;
     @Mock
@@ -108,7 +107,7 @@ public class RunnerManagerViewImplTest {
         when(resources.runnerCss()).thenReturn(runnerCss);
         when(runnerCss.opacityButton()).thenReturn(TEXT);
 
-        when(resources.runButton()).thenReturn(imageRun);
+        when(resources.runAppImage()).thenReturn(imageRun);
         when(locale.tooltipRunButton()).thenReturn(TEXT);
         when(widgetFactory.createButton(TEXT, imageRun)).thenReturn(run);
 
@@ -166,7 +165,7 @@ public class RunnerManagerViewImplTest {
         verify(actionDelegate).onStopButtonClicked();
     }
 
-    private void verifyButton(ImageResource imageResource, ButtonWidget btnWidget, FlowPanel buttonPanel) {
+    private void verifyButton(SVGResource imageResource, ButtonWidget btnWidget, FlowPanel buttonPanel) {
         ArgumentCaptor<ButtonWidget.ActionDelegate> btnCaptor = ArgumentCaptor.forClass(ButtonWidget.ActionDelegate.class);
 
         verify(widgetFactory).createButton(TEXT, imageResource);

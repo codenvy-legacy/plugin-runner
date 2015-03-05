@@ -15,7 +15,7 @@ import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
 
@@ -37,7 +37,7 @@ public class ScopeButtonPresenter implements ScopeButton, ScopeButtonView.Action
     public ScopeButtonPresenter(ScopeButtonView view,
                                 RunnerLocalizationConstant locale,
                                 @Assisted Scope buttonScope,
-                                @Assisted SVGImage image,
+                                @Assisted SVGResource image,
                                 @Assisted boolean isUnChecked) {
         this.view = view;
         this.view.setDelegate(this);

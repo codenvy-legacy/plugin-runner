@@ -28,9 +28,7 @@ import com.codenvy.ide.ext.runner.client.tabs.templates.environment.EnvironmentW
 import com.codenvy.ide.ext.runner.client.tabs.templates.scopebutton.ScopeButton;
 import com.codenvy.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import com.codenvy.ide.ext.runner.client.tabs.terminal.panel.Terminal;
-import com.google.gwt.resources.client.ImageResource;
 
-import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
@@ -52,7 +50,7 @@ public interface WidgetFactory {
      * @return an instance of {@link ButtonWidget}
      */
     @Nonnull
-    ButtonWidget createButton(@Nonnull String prompt, @Nonnull ImageResource resource);
+    ButtonWidget createButton(@Nonnull String prompt, @Nonnull SVGResource resource);
 
     /**
      * Creates console button widget with special icon.
@@ -170,7 +168,7 @@ public interface WidgetFactory {
      * @return an instance of {@link ScopeButton}
      */
     @Nonnull
-    ScopeButton createScopeButton(@Nonnull Scope buttonScope, @Nonnull SVGImage image, boolean isChecked);
+    ScopeButton createScopeButton(@Nonnull Scope buttonScope, @Nonnull SVGResource image, boolean isChecked);
 
     /**
      * Creates property button widget.

@@ -23,7 +23,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
-import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
@@ -64,9 +63,7 @@ public class ScopePanelImpl extends Composite implements ScopePanel {
     /** {@inheritDoc} */
     @Override
     public void addButton(@Nonnull Scope scope, @Nonnull SVGResource resource, boolean isUnChecked) {
-        SVGImage image = new SVGImage(resource);
-
-        ScopeButton button = widgetFactory.createScopeButton(scope, image, isUnChecked);
+        ScopeButton button = widgetFactory.createScopeButton(scope, resource, isUnChecked);
         button.setDelegate(new ScopeButton.ActionDelegate() {
             @Override
             public void onButtonChecked(@Nonnull Scope buttonScope) {

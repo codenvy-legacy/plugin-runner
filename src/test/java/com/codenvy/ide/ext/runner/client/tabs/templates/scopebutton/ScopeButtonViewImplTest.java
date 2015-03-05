@@ -23,8 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGResource;
 
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,9 +43,8 @@ public class ScopeButtonViewImplTest {
     @Mock
     private TooltipWidget   tooltip;
 
-    @Mock
-    private SVGImage image;
-
+    @Mock(answer = RETURNS_DEEP_STUBS)
+    private SVGResource                    image;
     @Mock
     private RunnerResources.RunnerCss      css;
     @Mock
@@ -56,10 +56,9 @@ public class ScopeButtonViewImplTest {
     private ScopeButtonViewImpl scopeButtonView;
 
     @Before
-    public void shouldBefore() {
+    public void setUp() {
         when(resources.runnerCss()).thenReturn(css);
         when(css.blueColor()).thenReturn(TEXT);
-        when(image.toString()).thenReturn(TEXT);
         when(scopeButtonView.scope.getElement()).thenReturn(element);
     }
 
@@ -68,9 +67,8 @@ public class ScopeButtonViewImplTest {
         scopeButtonView.setImage(image);
         scopeButtonView.select();
 
-        verify(image).addClassNameBaseVal(TEXT);
         verify(scopeButtonView.scope, times(2)).getElement();
-        verify(element, times(2)).setInnerHTML(TEXT);
+        verify(element, times(2)).setInnerHTML("");
     }
 
     @Test
@@ -78,9 +76,8 @@ public class ScopeButtonViewImplTest {
         scopeButtonView.setImage(image);
         scopeButtonView.unSelect();
 
-        verify(image).removeClassNameBaseVal(TEXT);
         verify(scopeButtonView.scope, times(2)).getElement();
-        verify(element, times(2)).setInnerHTML(TEXT);
+        verify(element, times(2)).setInnerHTML("");
     }
 
     @Test
@@ -88,7 +85,7 @@ public class ScopeButtonViewImplTest {
         scopeButtonView.setImage(image);
 
         verify(scopeButtonView.scope).getElement();
-        verify(element).setInnerHTML(TEXT);
+        verify(element).setInnerHTML("");
     }
 
     @Test
