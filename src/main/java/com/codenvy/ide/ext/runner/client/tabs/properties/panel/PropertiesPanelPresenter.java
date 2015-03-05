@@ -199,7 +199,12 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         };
         timer.schedule(ONE_SEC.getValue());
 
-        view.setEnableProperties(false);
+        view.setEnableNameProperty(false);
+        view.setEnableRamProperty(false);
+        view.setEnableBootProperty(false);
+        view.setEnableShutdownProperty(false);
+        view.setEnableScopeProperty(false);
+
         view.setVisibleButtons(false);
         view.selectMemory(RAM.detect(runner.getRAM()));
     }
@@ -239,7 +244,12 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
         boolean isProjectScope = PROJECT.equals(environment.getScope());
 
-        view.setEnableProperties(isProjectScope);
+        view.setEnableNameProperty(isProjectScope);
+        view.setEnableRamProperty(isProjectScope);
+        view.setEnableBootProperty(false);
+        view.setEnableShutdownProperty(false);
+        view.setEnableScopeProperty(false);
+
         view.setVisibleButtons(isProjectScope);
 
         if (isProjectScope) {

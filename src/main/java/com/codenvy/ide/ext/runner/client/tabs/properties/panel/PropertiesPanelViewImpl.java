@@ -281,11 +281,31 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     /** {@inheritDoc} */
     @Override
-    public void setEnableProperties(boolean enable) {
+    public void setEnableNameProperty(boolean enable) {
         name.setEnabled(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableRamProperty(boolean enable) {
         ram.setEnabled(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableBootProperty(boolean enable) {
         boot.setEnabled(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableShutdownProperty(boolean enable) {
         shutdown.setEnabled(enable);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableScopeProperty(boolean enable) {
         scope.setEnabled(enable);
     }
 

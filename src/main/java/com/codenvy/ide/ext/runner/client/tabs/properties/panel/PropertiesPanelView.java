@@ -127,12 +127,45 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
     void setEnableDeleteButton(boolean enable);
 
     /**
-     * Sets enable state of all properties fields on properties panel.
+     * Sets enable name property fields on properties panel.
      *
      * @param enable
-     *         enable state of properties
+     *         enable state of name property
      */
-    void setEnableProperties(boolean enable);
+    void setEnableNameProperty(boolean enable);
+
+    /**
+     * Sets enable ram property fields on properties panel.
+     *
+     * @param enable
+     *         enable state of ram property
+     */
+    void setEnableRamProperty(boolean enable);
+
+    /**
+     * Sets enable boot property fields on properties panel.
+     *
+     * @param enable
+     *         enable boot of ram property
+     */
+    void setEnableBootProperty(boolean enable);
+
+    /**
+     * Sets enable shutdown property fields on properties panel.
+     *
+     * @param enable
+     *         enable state of shutdown property
+     */
+    void setEnableShutdownProperty(boolean enable);
+
+    /**
+     * Sets enable scope property fields on properties panel.
+     *
+     * @param enable
+     *         enable state of scope property
+     */
+    void setEnableScopeProperty(boolean enable);
+
 
     /**
      * Sets visibility of buttons.
