@@ -198,7 +198,8 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     }
 
     private void selectDefaultMemory(@Nonnull String size) {
-        for (int index = 0; index < ram.getItemCount(); index++) {
+        int amountItems = ram.getItemCount();
+        for (int index = 0; index < amountItems; index++) {
             if (size.equals(ram.getValue(index))) {
                 ram.setItemSelected(index, true);
                 return;
