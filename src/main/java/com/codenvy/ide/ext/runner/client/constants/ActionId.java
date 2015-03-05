@@ -18,10 +18,7 @@ import javax.annotation.Nonnull;
  * @author Valeriy Svydenko
  */
 public enum ActionId {
-    RUN_APP_ID("runApp"),
-    CHOOSE_RUNNER_ID("chooseRunner"),
-    CUSTOM_RUN_APP("customRunApp"),
-    GROUP_RUN_WITH("RunWithGroup");
+    RUN_APP_ID("runApp"), CHOOSE_RUNNER_ID("chooseRunner");
 
     private final String id;
 

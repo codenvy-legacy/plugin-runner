@@ -64,9 +64,9 @@ public class RunnerExtension {
         DefaultActionGroup mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
         DefaultActionGroup runToolbarGroup = new DefaultActionGroup(GROUP_RUN_TOOLBAR, false, actionManager);
 
+        actionManager.registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
         actionManager.registerAction(CHOOSE_RUNNER_ID.getId(), chooseRunner);
         actionManager.registerAction(RUN_APP_ID.getId(), runAction);
-        actionManager.registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
 
         // add actions in context menu
         DefaultActionGroup contextMenuGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_CONTEXT_MENU);
@@ -76,7 +76,7 @@ public class RunnerExtension {
         contextMenuGroup.add(runContextGroup);
 
         runToolbarGroup.add(chooseRunner);
-        runToolbarGroup.add(runAction);
+        runToolbarGroup.add(runAction, new Constraints(AFTER, CHOOSE_RUNNER_ID.getId()));
         mainToolbarGroup.add(runToolbarGroup, new Constraints(Anchor.AFTER, GROUP_BUILD_TOOLBAR));
     }
 
