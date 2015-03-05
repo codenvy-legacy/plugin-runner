@@ -62,6 +62,7 @@ import static com.codenvy.api.runner.dto.RunnerMetric.LIFETIME;
 import static com.codenvy.api.runner.dto.RunnerMetric.TERMINATION_TIME;
 import static com.codenvy.api.runner.dto.RunnerMetric.STOP_TIME;
 import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 
 /**
  * @author Andrienko Alexander
@@ -92,6 +93,8 @@ public class RunnerImplTest {
     private RunnerMetric stat;
     @Mock
     private Link         link;
+    @Mock
+    private Link         link1;
 
     private RunnerImpl runner;
 
@@ -159,19 +162,28 @@ public class RunnerImplTest {
 
     @Test
     public void applicationDescriptorShouldBeChanged() {
+        assertThat(runner.getDescriptor(), nullValue());
+
         runner.setProcessDescriptor(descriptor);
+
         assertThat(runner.getDescriptor(), is(descriptor));
     }
 
     @Test
     public void activeTabShouldBeChanged() {
-        runner.setActiveTab(TEXT);
         assertThat(runner.getActiveTab(), is(TEXT));
+
+        runner.setActiveTab(RUNNER_NAME);
+
+        assertThat(runner.getActiveTab(), is(RUNNER_NAME));
     }
 
     @Test
     public void ramShouldBeChanged() {
+        assertThat(runner.getRAM(), is(_2048.getValue()));
+
         runner.setRAM(_1024.getValue());
+
         assertThat(runner.getRAM(), is(_1024.getValue()));
     }
 
@@ -358,7 +370,13 @@ public class RunnerImplTest {
     }
 
     @Test
-    public void applicationUrlShouldBeReturnedWhenDescriptorIsNull() {
+    public void applicationUrlShouldBeReturnedNullWhenDescriptorIsNull() {
+        assertThat(runner.getApplicationURL(), nullValue());
+    }
+
+    @Test
+    public void applicationUrlShouldBeReturnedNull() {
+        runner.setProcessDescriptor(descriptor);
         assertThat(runner.getApplicationURL(), nullValue());
     }
 
@@ -370,6 +388,7 @@ public class RunnerImplTest {
 
         assertThat(runner.getApplicationURL(), is(URL));
         verify(descriptor, times(2)).getLinks();
+        verify(link).getHref();
     }
 
     @Test
@@ -380,7 +399,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
 
         assertThat(runner.getApplicationURL(), is(URL + "?h=http://server&p=1"));
-        verify(descriptor, times(2)).getLinks();
+        verify(link1).getHref();
     }
 
     @Test
@@ -390,8 +409,8 @@ public class RunnerImplTest {
 
         runner.setProcessDescriptor(descriptor);
 
-        assertThat(runner.getApplicationURL(), is(URL));
-        verify(descriptor, times(2)).getLinks();
+        assertThat(runner.getTerminalURL(), is(URL));
+        verify(link1).getHref();
     }
 
     @Test
@@ -401,8 +420,7 @@ public class RunnerImplTest {
 
         runner.setProcessDescriptor(descriptor);
 
-        assertThat(runner.getApplicationURL(), is(URL));
-        verify(descriptor, times(2)).getLinks();
+        assertThat(runner.getLogUrl(), is(link1));
     }
 
     @Test
@@ -412,8 +430,9 @@ public class RunnerImplTest {
 
         runner.setProcessDescriptor(descriptor);
 
-        assertThat(runner.getApplicationURL(), is(URL));
-        verify(descriptor, times(2)).getLinks();
+        assertThat(runner.getDockerUrl(), is(URL));
+        verify(descriptor, times(1)).getLinks();
+        verify(link1).getHref();
     }
 
     @Test
@@ -444,7 +463,6 @@ public class RunnerImplTest {
     }
 
     private void addLinkToList(String name, String url) {
-        Link link1 = mock(Link.class);
         when(link1.getRel()).thenReturn(name);
         when(link1.getHref()).thenReturn(url);
 
@@ -474,8 +492,12 @@ public class RunnerImplTest {
     }
 
     @Test
-    public void titleShouldBeReturned() {
+    public void titleShouldBeChanged() {
         assertThat(runner.getTitle(), is(RUNNER_NAME + RUNNER_NUMBER));
+
+        runner.setTitle(TEXT);
+
+        assertThat(runner.getTitle(), is(TEXT));
     }
 
     @Test
@@ -914,8 +936,19 @@ public class RunnerImplTest {
 
     @Test
     public void scopeShouldBeChanged() {
-        runner.setScope(SYSTEM);
         assertThat(runner.getScope(), is(SYSTEM));
+
+        runner.setScope(PROJECT);
+
+        assertThat(runner.getScope(), is(PROJECT));
     }
 
+    @Test
+    public void typeShouldBeChanged() {
+        assertThat(runner.getType(), nullValue());
+
+        runner.setType(TEXT);
+
+        assertThat(runner.getType(), is(TEXT));
+    }
 }

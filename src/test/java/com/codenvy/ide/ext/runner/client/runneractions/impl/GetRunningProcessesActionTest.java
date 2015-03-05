@@ -265,7 +265,7 @@ public class GetRunningProcessesActionTest {
         assertThat(notification.isImportant(), is(true));
         assertThat(notification.isInfo(), is(true));
 
-        dataShouldBeSendSuccessfully();
+        runnerAndApplicationShouldBePrepared();
     }
 
     @Test
@@ -297,7 +297,7 @@ public class GetRunningProcessesActionTest {
 
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
 
-        dataShouldBeSendSuccessfully();
+        runnerAndApplicationShouldBePrepared();
     }
 
     @Test
@@ -345,7 +345,7 @@ public class GetRunningProcessesActionTest {
 
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
 
-        dataShouldBeSendSuccessfully();
+        runnerAndApplicationShouldBePrepared();
         verify(webSocketUtil).subscribeHandler(CHANNEL, processStartedHandler);
     }
 
@@ -394,7 +394,7 @@ public class GetRunningProcessesActionTest {
         verify(listener).onStopAction();
     }
 
-    public void dataShouldBeSendSuccessfully() {
+    public void runnerAndApplicationShouldBePrepared() {
         reset(notificationManager);
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -422,5 +422,21 @@ public class GetRunningProcessesActionTest {
         assertThat(notification2.isInfo(), is(true));
 
         verify(service).getRunningProcesses(PATH_TO_PROJECT, callback);
+    }
+
+    @Test
+    public void runnerAndApplicationShouldNotBePreparedBecauseDescriptorsArrayIsEmpty() {
+        result = new JsonArrayListAdapter<>(new ArrayList<ApplicationProcessDescriptor>());
+        reset(notificationManager,logsAction);
+
+        getRunningProcessesAction.perform();
+
+        verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
+        SuccessCallback<Array<ApplicationProcessDescriptor>> successCallback = successCallBackCaptor.getValue();
+
+        successCallback.onSuccess(result);
+
+        verify(service).getRunningProcesses(PATH_TO_PROJECT, callback);
+        verifyNoMoreInteractions(service, propertiesContainer, notificationManager, logsAction);
     }
 }

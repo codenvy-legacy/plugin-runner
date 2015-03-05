@@ -31,6 +31,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * @author Andrienko Alexander
@@ -72,6 +73,16 @@ public class HistoryPresenterTest {
 
         verify(runnerWidget).unSelect();
         verify(runnerWidget).select();
+    }
+
+    @Test
+    public void runnerShouldNotBeAddedIfWidgetForThisRunningIsAlreadyCreated() {
+        historyPresenter.addRunner(runner);
+        reset(selectionManager, widgetFactory, view, runnerWidget);
+
+        historyPresenter.addRunner(runner);
+
+        verifyNoMoreInteractions(selectionManager, widgetFactory, view, runnerWidget);
     }
 
     @Test
@@ -143,7 +154,7 @@ public class HistoryPresenterTest {
     }
 
     @Test
-    public void viewShoulBeCleared() {
+    public void viewShouldBeCleared() {
         historyPresenter.clear();
 
         verify(view).clear();

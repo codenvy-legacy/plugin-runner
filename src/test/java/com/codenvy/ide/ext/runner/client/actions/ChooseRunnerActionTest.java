@@ -116,6 +116,21 @@ public class ChooseRunnerActionTest {
     }
 
     @Test
+    public void systemEnvironmentsShouldBeAddedWhenProjectRunnerAreAlreadyAdded() {
+        when(appContext.getCurrentProject()).thenReturn(null);
+        chooseRunnerAction.addProjectRunners(projectEnvList);
+
+        chooseRunnerAction.addSystemRunners(systemEnvList);
+
+        verify(appContext, times(2)).getCurrentProject();
+
+        verify(projectEnv1, times(2)).getName();
+        verify(projectEnv2, times(2)).getName();
+        verify(systemEnv1).getName();
+        verify(systemEnv2).getName();
+    }
+
+    @Test
     public void onlyProjectEnvironmentsShouldBeAdded() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
@@ -127,4 +142,18 @@ public class ChooseRunnerActionTest {
         verify(projectEnv2).getName();
     }
 
+    @Test
+    public void projectEnvironmentsShouldBeAddedWhenSystemRunnerAreAlreadyAdded() {
+        when(appContext.getCurrentProject()).thenReturn(null);
+        chooseRunnerAction.addSystemRunners(systemEnvList);
+
+        chooseRunnerAction.addProjectRunners(projectEnvList);
+
+        verify(appContext, times(2)).getCurrentProject();
+
+        verify(systemEnv1, times(2)).getName();
+        verify(systemEnv2, times(2)).getName();
+        verify(projectEnv1).getName();
+        verify(projectEnv2).getName();
+    }
 }

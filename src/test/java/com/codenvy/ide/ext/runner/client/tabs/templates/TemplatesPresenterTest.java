@@ -108,6 +108,8 @@ public class TemplatesPresenterTest {
     public void constructorShouldBeVerified() {
         verify(view).setDelegate(presenter);
         verify(scopePanel).setDelegate(presenter);
+        verify(resources).scopeSystem();
+        verify(resources).scopeProject();
         verify(scopePanel).addButton(SYSTEM, systemImage, false);
         verify(scopePanel).addButton(PROJECT, projectImage, false);
         verify(view).setScopePanel(scopePanel);
@@ -116,6 +118,7 @@ public class TemplatesPresenterTest {
     @Test
     public void shouldOnAllTypeButtonClickedWhenScopeSystem() {
         reset(systemEnvironmentsAction);
+
         presenter.onAllTypeButtonClicked();
 
         verify(view).clearEnvironmentsPanel();

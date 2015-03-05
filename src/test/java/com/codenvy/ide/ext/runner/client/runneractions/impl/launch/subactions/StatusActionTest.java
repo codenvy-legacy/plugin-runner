@@ -43,6 +43,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 
+import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.reset;
@@ -139,6 +140,8 @@ public class StatusActionTest {
         when(appContext.getCurrentProject()).thenReturn(project);
         when(runner.getProcessId()).thenReturn(PROCESS_ID);
         when(locale.applicationStarting(PROJECT_NAME)).thenReturn(MESSAGE);
+
+        when(locale.applicationCanceled(PROJECT_NAME)).thenReturn(MESSAGE);
     }
 
     @Test
@@ -284,7 +287,7 @@ public class StatusActionTest {
     @Test
     public void shouldOnPerformWithStatusCancelled() throws Exception {
         when(locale.applicationFailed(PROJECT_NAME)).thenReturn(FailedMessage);
-        when(descriptor.getStatus()).thenReturn(ApplicationStatus.FAILED);
+        when(descriptor.getStatus()).thenReturn(ApplicationStatus.CANCELLED);
 
         statusAction.perform(runner);
 
@@ -297,21 +300,19 @@ public class StatusActionTest {
         verify(runner).setProcessDescriptor(descriptor);
 
         verify(descriptor).getStatus();
+        verify(runner).setStatus(FAILED);
 
-        verify(runner).setStatus(Runner.Status.FAILED);
         verify(presenter).update(runner);
 
         verify(project).setIsRunningEnabled(true);
 
-        verify(logsAction).perform(runner);
-
         verify(project).getProjectDescription();
         verify(projectDescriptor).getName();
-        verify(locale).applicationFailed(PROJECT_NAME);
+        verify(locale).applicationCanceled(PROJECT_NAME);
 
-        verify(notification).update(FailedMessage, Notification.Type.ERROR, Notification.Status.FINISHED, null, true);
+        verify(notification).update(MESSAGE, Notification.Type.ERROR, Notification.Status.FINISHED, null, true);
 
-        verify(consoleContainer).printError(runner, FailedMessage);
+        verify(consoleContainer).printError(runner, MESSAGE);
 
         verify(webSocketUtil).unSubscribeHandler(WEB_SOCKET_CHANNEL, processStartedHandler);
         verify(checkHealthStatusAction).stop();

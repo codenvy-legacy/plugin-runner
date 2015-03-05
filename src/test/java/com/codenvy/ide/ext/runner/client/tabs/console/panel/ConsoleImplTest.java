@@ -44,6 +44,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * @author Andrey Plotnikov
@@ -193,6 +194,27 @@ public class ConsoleImplTest {
         verify(messageBuilder).message(message);
 
         verify(console.output).add(any(HTML.class));
+    }
+
+    @Test
+    public void wrappedTextCssShouldNotBeApplied() {
+        String message = INFO.getPrefix() + SOME_TEXT;
+        console.changeWrapTextParam();
+        console.print(message);
+        verify(res, times(2)).runnerCss();
+        verify(css, times(2)).wrappedText();
+
+        verify(messageBuilder).type(INFO);
+        verify(messageBuilder).message(message);
+
+        verify(console.output).add(any(HTML.class));
+    }
+
+    @Test
+    public void emptyMessageShouldNotBePrinted() {
+        console.print("");
+
+        verifyNoMoreInteractions(messageBuilderProvider);
     }
 
     @Test

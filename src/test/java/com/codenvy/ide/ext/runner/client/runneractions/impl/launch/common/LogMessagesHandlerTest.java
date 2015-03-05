@@ -23,6 +23,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.FIVE_SEC;
@@ -96,6 +97,19 @@ public class LogMessagesHandlerTest {
         when(logMessage3.getText()).thenReturn(MESSAGE3);
 
         when(unmarshaller.getPayload()).thenReturn(logMessage1).thenReturn(logMessage2).thenReturn(logMessage3);
+    }
+
+    @Test
+    public void shouldVerifyConstructor() {
+        when(logMessage1.getNumber()).thenReturn(2);
+        logMessagesHandler.onMessage(message1);
+
+        ArgumentCaptor<TimerFactory.TimerCallBack> timerCaptor = ArgumentCaptor.forClass(TimerFactory.TimerCallBack.class);
+        verify(timerFactory).newInstance(timerCaptor.capture());
+        timerCaptor.getValue().onRun();
+        verify(logMessage1).getText();
+        verify(consoleContainer).print(runner, MESSAGE1);
+        verify(logMessage1, times(2)).getNumber();
     }
 
     @Test
