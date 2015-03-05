@@ -21,7 +21,12 @@ import java.util.Date;
  * @author Dmitry Shnurenko
  */
 public class NameGenerator {
-    private static final DateTimeFormat DATE_TIME_FORMAT = DateTimeFormat.getFormat("hh-mm-ss_dd-mm-yyyy");
+    public static final DateTimeFormat DATE_TIME_FORMAT = DateTimeFormat.getFormat("hh-mm-ss_dd-mm-yyyy");
+    public static final String PREFIX_NAME = "Environment_";
+
+    private NameGenerator() {
+        throw new UnsupportedOperationException("Creation instance for this class is unsupported operation");
+    }
 
     /** @return environment name which consists of string 'Environment ' and current date */
     @Nonnull
