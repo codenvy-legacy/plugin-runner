@@ -80,9 +80,7 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
                                                           @Nonnull String projectType,
                                                           @Nonnull Scope scope) {
         RunnerEnvironmentTree categoryNode = getRunnerCategoryByProjectType(tree, projectType);
-
         List<RunnerEnvironmentLeaf> leaves = getAllEnvironments(categoryNode);
-
         List<Environment> environments = getEnvironmentsFromNodes(leaves, scope);
 
         for (Environment environment : environments) {
@@ -99,13 +97,10 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
         ProjectTypeDefinition definition = projectTypeRegistry.getProjectType(projectType);
 
         List<String> categories = definition.getRunnerCategories();
-
         String category = categories.get(0);
-
         tree.setDisplayName(category);
 
         RunnerEnvironmentTree categoryNode = tree.getNode(category.toLowerCase());
-
         if (categoryNode == null) {
             return tree;
         }

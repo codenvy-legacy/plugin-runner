@@ -53,13 +53,16 @@ public class EnvironmentImpl implements Environment {
                            @Assisted @Nonnull Scope scope) {
         this.runnerEnvironment = runnerEnvironment;
         this.scope = scope;
-
         this.ram = DEFAULT.getValue();
-
         this.id = runnerEnvironment.getId();
 
         int index = id.lastIndexOf('/') + 1;
-        this.name = id.substring(index);
+        String lastIdPart = id.substring(index);
+
+        this.name = runnerEnvironment.getDisplayName();
+        if (name == null || name.isEmpty()) {
+            name = lastIdPart;
+        }
 
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
@@ -69,10 +72,9 @@ public class EnvironmentImpl implements Environment {
 
         if (SYSTEM.equals(scope)) {
             String wsId = currentProject.getProjectDescription().getWorkspaceId();
-
             path = getProtocol() + "//" + getHost() + "/api/runner/" + wsId + "/recipe?id=" + id;
         } else {
-            path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + name;
+            path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + lastIdPart;
         }
 
         options = Collections.unmodifiableMap(runnerEnvironment.getOptions());

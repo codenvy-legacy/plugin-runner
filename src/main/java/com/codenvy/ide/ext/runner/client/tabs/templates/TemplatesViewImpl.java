@@ -73,7 +73,7 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
     private final Map<Environment, EnvironmentWidget> environmentWidgets;
     private final List<TypeButton>                    typeButtons;
     private final WidgetFactory                       widgetFactory;
-    private final List<EnvironmentWidget>             cashWidgets;
+    private final List<EnvironmentWidget>             cacheWidgets;
 
     private ActionDelegate delegate;
     private TypeButton     allButton;
@@ -90,7 +90,7 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
 
         this.environmentWidgets = new HashMap<>();
         this.typeButtons = new ArrayList<>();
-        this.cashWidgets = new ArrayList<>();
+        this.cacheWidgets = new ArrayList<>();
 
         initializeActions();
     }
@@ -146,15 +146,15 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
 
     @Nonnull
     private EnvironmentWidget getItem(@Nonnegative int index) {
-        if (cashWidgets.size() > index) {
-            EnvironmentWidget widget = cashWidgets.get(index);
+        if (cacheWidgets.size() > index) {
+            EnvironmentWidget widget = cacheWidgets.get(index);
             widget.unSelect();
             return widget;
         }
 
         EnvironmentWidget widget = widgetFactory.createEnvironment();
 
-        cashWidgets.add(widget);
+        cacheWidgets.add(widget);
 
         return widget;
     }

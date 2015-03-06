@@ -14,10 +14,10 @@ import com.codenvy.api.project.shared.dto.ProjectTypeDefinition;
 import com.codenvy.api.project.shared.dto.RunnerEnvironment;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentLeaf;
 import com.codenvy.api.project.shared.dto.RunnerEnvironmentTree;
+import com.codenvy.ide.api.projecttype.ProjectTypeRegistry;
 import com.codenvy.ide.ext.runner.client.inject.factories.ModelsFactory;
 import com.codenvy.ide.ext.runner.client.models.Environment;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.codenvy.ide.api.projecttype.ProjectTypeRegistry;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Before;
@@ -29,13 +29,13 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * @author Andrienko Alexander
@@ -46,7 +46,6 @@ public class GetEnvironmentsUtilImplTest {
 
     private static final String PROJECT_TYPE = "some project type";
     private static final String CATEGORY1    = "Category1";
-    private List<String> runnerCategoryList;
 
     //mocks for constructor
     @Mock
@@ -112,7 +111,7 @@ public class GetEnvironmentsUtilImplTest {
     public void setUp() {
         generateDifficultTree();
 
-        runnerCategoryList = Arrays.asList(CATEGORY1, "Category2", "Category3");
+        List<String> runnerCategoryList = Arrays.asList(CATEGORY1, "Category2", "Category3");
         when(projectTypeRegistry.getProjectType(PROJECT_TYPE)).thenReturn(definition);
         when(definition.getRunnerCategories()).thenReturn(runnerCategoryList);
         when(tree.getNode(CATEGORY1.toLowerCase())).thenReturn(runnerEnvTree6);
@@ -136,6 +135,7 @@ public class GetEnvironmentsUtilImplTest {
 
         when(runnerEnvLeaf1.getEnvironment()).thenReturn(runnerEnv1);
         when(runnerEnvLeaf2.getEnvironment()).thenReturn(runnerEnv2);
+
         when(modelsFactory.createEnvironment(runnerEnv1, Scope.SYSTEM)).thenReturn(environment1);
         when(modelsFactory.createEnvironment(runnerEnv2, Scope.SYSTEM)).thenReturn(environment2);
 
@@ -153,6 +153,7 @@ public class GetEnvironmentsUtilImplTest {
     public void environmentShouldBeReturnedByProjectType() {
         when(runnerEnvLeaf4.getEnvironment()).thenReturn(runEnvironment1);
         when(runnerEnvLeaf5.getEnvironment()).thenReturn(runEnvironment2);
+
         when(modelsFactory.createEnvironment(runEnvironment1, SYSTEM)).thenReturn(environment1);
         when(modelsFactory.createEnvironment(runEnvironment2, SYSTEM)).thenReturn(environment2);
 

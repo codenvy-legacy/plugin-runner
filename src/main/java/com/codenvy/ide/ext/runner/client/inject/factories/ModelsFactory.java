@@ -52,7 +52,7 @@ public interface ModelsFactory {
     Runner createRunner(@Nonnull RunOptions runOptions, @Nullable String environmentName);
 
     /**
-     * Creates environments with options and special name.
+     * Creates environments with environment and scope.
      *
      * @param runnerEnvironment
      *         runner environment which we get from server

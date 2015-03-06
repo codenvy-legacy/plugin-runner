@@ -41,8 +41,10 @@ import static org.mockito.Mockito.when;
 @RunWith(GwtMockitoTestRunner.class)
 public class EnvironmentImplTest {
 
-    private static final String TEXT = "someid/tomcat/environment";
-    private static final String TEXT2 = "new text";
+    private static final String LAST_PART    = "environment";
+    private static final String TEXT         = "someid/tomcat/" + LAST_PART;
+    private static final String TEXT2        = "new text";
+    private static final String DISPLAY_NAME = "display name";
 
     @Mock
     private AppContext        appContext;
@@ -62,13 +64,16 @@ public class EnvironmentImplTest {
         options.put("someKey1", "someValue1");
         options.put("someKey2", "someValue2");
 
-        when(runnerEnvironment.getId()).thenReturn(TEXT);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getProjectDescription()).thenReturn(descriptor);
+
         when(descriptor.getWorkspaceId()).thenReturn(TEXT);
         when(descriptor.getPath()).thenReturn(TEXT);
+
+        when(runnerEnvironment.getId()).thenReturn(TEXT);
         when(runnerEnvironment.getOptions()).thenReturn(options);
         when(runnerEnvironment.getDescription()).thenReturn(TEXT);
+        when(runnerEnvironment.getDisplayName()).thenReturn(DISPLAY_NAME);
 
         environment = new EnvironmentImpl(appContext, runnerEnvironment, SYSTEM);
     }
@@ -108,7 +113,45 @@ public class EnvironmentImplTest {
 
         assertThat(environment.getScope(), is(PROJECT));
         verifyInitializationConstructor();
-        assertThat(environment.getName(), is("environment"));
+        assertThat(environment.getName(), is(DISPLAY_NAME));
+    }
+
+    @Test
+    public void shouldVerifyConstructorWhenDisplayNameIsNull() {
+        when(runnerEnvironment.getDisplayName()).thenReturn(null);
+
+        environment = new EnvironmentImpl(appContext, runnerEnvironment, PROJECT);
+
+        verify(runnerEnvironment, times(2)).getId();
+        verify(appContext, times(2)).getCurrentProject();
+
+        verify(currentProject, times(2)).getProjectDescription();
+        verify(descriptor).getPath();
+
+        verify(runnerEnvironment, times(2)).getOptions();
+
+        assertThat(environment.getScope(), is(PROJECT));
+        verifyInitializationConstructor();
+        assertThat(environment.getName(), is(LAST_PART));
+    }
+
+    @Test
+    public void shouldVerifyConstructorWhenDisplayNameIsEmpty() {
+        when(runnerEnvironment.getDisplayName()).thenReturn("");
+
+        environment = new EnvironmentImpl(appContext, runnerEnvironment, PROJECT);
+
+        verify(runnerEnvironment, times(2)).getId();
+        verify(appContext, times(2)).getCurrentProject();
+
+        verify(currentProject, times(2)).getProjectDescription();
+        verify(descriptor).getPath();
+
+        verify(runnerEnvironment, times(2)).getOptions();
+
+        assertThat(environment.getScope(), is(PROJECT));
+        verifyInitializationConstructor();
+        assertThat(environment.getName(), is(LAST_PART));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -120,7 +163,7 @@ public class EnvironmentImplTest {
 
     @Test
     public void nameShouldBeReturned() {
-        assertThat(environment.getName(), is("environment"));
+        assertThat(environment.getName(), is(DISPLAY_NAME));
     }
 
     @Test
