@@ -596,15 +596,14 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsFailed() {
-        when(runner.getStatus()).thenReturn(FAILED);
+    public void newRunnerShouldBeRunIfPanelStateIsNotTemplate() {
+        when(panelState.getState()).thenReturn(RUNNERS);
         presenter.addRunner(processDescriptor);
         reset(view, history);
 
         presenter.onRunButtonClicked();
 
-        verify(runner, times(2)).getStatus();
-
+        //verify launch runner
         verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
@@ -614,50 +613,64 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsFailedAndRunnerActionNotInstanceOfLaunchAction() {
-        when(runner.getStatus()).thenReturn(FAILED);
+    public void newRunnerShouldBeRunIfPanelStateIsTemplate() {
+        Map<String, String> options = new HashMap<>();
+        when(selectionManager.getEnvironment()).thenReturn(runnerEnvironment);
+        when(runnerEnvironment.getOptions()).thenReturn(options);
+        when(runnerEnvironment.getName()).thenReturn(TEXT);
+        when(runnerEnvironment.getId()).thenReturn(TEXT);
+        when(runOptions.withOptions(options)).thenReturn(runOptions);
+        when(runOptions.withEnvironmentId(TEXT)).thenReturn(runOptions);
+        when(modelsFactory.createRunner(runOptions, TEXT)).thenReturn(runner);
+        when(panelState.getState()).thenReturn(TEMPLATE);
+
+        presenter.onSelectionChanged(ENVIRONMENT);
+
+        presenter.onRunButtonClicked();
+
+        verify(panelState).getState();
+        verify(runnerEnvironment).getOptions();
+        verify(runnerEnvironment).getName();
+        verify(dtoFactory).createDto(RunOptions.class);
+        verify(runOptions).withOptions(options);
+        verify(modelsFactory).createRunner(runOptions, TEXT);
+
+        //verify launch runner
+        verify(panelState).setState(RUNNERS);
+        verify(view).showOtherButtons();
+        verify(history).addRunner(runner);
+        verify(actionFactory).createCheckRamAndRun();
+        verify(checkRamAndRunAction).perform(runner);
+        verify(runner).resetCreationTime();
+    }
+
+    @Test
+    public void runnerShouldBeRerunIfRunnerActionIsNull() throws Exception {
         presenter.addRunner(processDescriptor);
         reset(view, history);
 
         presenter.launchRunner(runOptions);
-        presenter.onRunButtonClicked();
+        presenter.onRerunButtonClicked();
 
-        verify(runner, times(3)).getStatus();
+        verify(runner, times(2)).getStatus();
         verify(history).update(runner);
         verify(terminalContainer, times(2)).update(runner);
         verify(view).update(runner);
-        verify(view).setApplicationURl(null);
+        verify(view).setApplicationURl(TEXT);
 
         verify(runner, times(3)).resetCreationTime();
+
     }
 
     @Test
-    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsStoppedAndRunnerActionNotInstanceOfLaunchAction() {
+    public void runnerShouldBeRerunIfRunnerNotNullAndStatusIsStopped() {
         when(runner.getStatus()).thenReturn(STOPPED);
         presenter.addRunner(processDescriptor);
         reset(view, history);
 
-        presenter.launchRunner(runOptions);
-        presenter.onRunButtonClicked();
+        presenter.onRerunButtonClicked();
 
-        verify(runner, times(4)).getStatus();
-        verify(history).update(runner);
-        verify(terminalContainer, times(2)).update(runner);
-        verify(view).update(runner);
-        verify(view).setApplicationURl(STOPPED_RUNNER);
-
-        verify(runner, times(3)).resetCreationTime();
-    }
-
-    @Test
-    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsStopped() {
-        when(runner.getStatus()).thenReturn(STOPPED);
-        presenter.addRunner(processDescriptor);
-        reset(view, history);
-
-        presenter.onRunButtonClicked();
-
-        verify(runner, times(3)).getStatus();
+        verify(runner, times(1)).getStatus();
 
         verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
@@ -691,30 +704,6 @@ public class RunnerManagerPresenterTest {
         verify(dtoFactory, times(2)).createDto(RunOptions.class);
         verify(runOptions).withOptions(options);
         verify(modelsFactory).createRunner(runOptions, TEXT);
-
-        //verify launch runner
-        verify(panelState).setState(RUNNERS);
-        verify(view).showOtherButtons();
-        verify(history).addRunner(runner);
-        verify(actionFactory).createCheckRamAndRun();
-        verify(checkRamAndRunAction).perform(runner);
-        verify(runner, times(2)).resetCreationTime();
-    }
-
-    @Test
-    public void runnerShouldBeRunIfRunnerNotNullAndStatusIsTemplateAndEnvironmentIsNull() {
-        when(panelState.getState()).thenReturn(TEMPLATE);
-
-        presenter.addRunner(processDescriptor);
-        reset(view, history);
-
-        presenter.onRunButtonClicked();
-
-        verify(appContext, times(2)).getCurrentProject();
-        verify(dtoFactory, times(2)).createDto(RunOptions.class);
-        verify(runOptions).withSkipBuild(true);
-        verify(runOptions).withMemorySize(_512.getValue());
-        verify(modelsFactory, times(2)).createRunner(runOptions);
 
         //verify launch runner
         verify(panelState).setState(RUNNERS);

@@ -232,4 +232,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("properties.button.create")
     String propertiesButtonCreate();
+
+    @Key("tooltip.rerun.button")
+    String tooltipRerunButton();
 }

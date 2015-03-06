@@ -50,6 +50,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Valeriy Svydenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class RunnerManagerViewImplTest {
@@ -82,6 +83,10 @@ public class RunnerManagerViewImplTest {
     @Mock
     private SplitLayoutPanel                  splitLayoutPanel;
     @Mock
+    private SVGResource                       imageReRun;
+    @Mock
+    private ButtonWidget                      reRun;
+    @Mock
     private SVGResource                       imageRun;
     @Mock
     private ButtonWidget                      run;
@@ -110,6 +115,10 @@ public class RunnerManagerViewImplTest {
         when(resources.runAppImage()).thenReturn(imageRun);
         when(locale.tooltipRunButton()).thenReturn(TEXT);
         when(widgetFactory.createButton(TEXT, imageRun)).thenReturn(run);
+
+        when(resources.reRunAppImage()).thenReturn(imageReRun);
+        when(locale.tooltipRerunButton()).thenReturn(TEXT);
+        when(widgetFactory.createButton(TEXT, imageReRun)).thenReturn(reRun);
 
         when(resources.stopButton()).thenReturn(imageStop);
         when(locale.tooltipStopButton()).thenReturn(TEXT);
@@ -159,6 +168,10 @@ public class RunnerManagerViewImplTest {
         verify(actionDelegate).onRunButtonClicked();
         verify(run).setEnable();
 
+        //re-run button
+        verify(widgetFactory).createButton(TEXT, imageReRun);
+        verifyButton(imageReRun, reRun, view.otherButtonsPanel);
+
         //stop button
         verify(widgetFactory).createButton(TEXT, imageStop);
         verifyButton(imageStop, stop, view.otherButtonsPanel);
@@ -189,20 +202,19 @@ public class RunnerManagerViewImplTest {
 
     @Test
     public void shouldUpdateWhenRunnerInStatusInQueue() {
-        reset(run, stop);
+        reset(run, stop, reRun);
         when(runner.getStatus()).thenReturn(IN_QUEUE);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
         view.update(runner);
 
         verifyEnableAllButton();
-        verify(run).setDisable();
         verify(stop).setDisable();
     }
 
     @Test
     public void shouldUpdateWhenRunnerInStatusFailed() {
-        reset(run, stop);
+        reset(run, stop, reRun);
         when(runner.getStatus()).thenReturn(FAILED);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -210,11 +222,12 @@ public class RunnerManagerViewImplTest {
 
         verifyEnableAllButton();
         verify(stop).setDisable();
+        verify(reRun).setEnable();
     }
 
     @Test
     public void shouldUpdateWhenRunnerInStatusStopped() {
-        reset(run, stop);
+        reset(run, stop, reRun);
         when(runner.getStatus()).thenReturn(STOPPED);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -222,10 +235,12 @@ public class RunnerManagerViewImplTest {
 
         verifyEnableAllButton();
         verify(stop).setDisable();
+        verify(reRun).setEnable();
     }
 
     private void verifyEnableAllButton() {
         verify(run).setEnable();
+        verify(reRun).setDisable();
         verify(stop).setEnable();
     }
 
@@ -325,6 +340,24 @@ public class RunnerManagerViewImplTest {
 
         verify(run, never()).setEnable();
         verify(run).setDisable();
+    }
+
+    @Test
+    public void reRunButtonShouldBeEnabled() throws Exception {
+        reset(reRun);
+        view.setEnableReRunButton(true);
+
+        verify(reRun).setEnable();
+        verify(reRun, never()).setDisable();
+    }
+
+    @Test
+    public void reRunButtonShouldBeDisabled() throws Exception {
+        reset(reRun);
+        view.setEnableReRunButton(false);
+
+        verify(reRun, never()).setEnable();
+        verify(reRun).setDisable();
     }
 
     @Test

@@ -97,6 +97,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private final MoreInfo      moreInfoWidget;
 
     private ButtonWidget run;
+    private ButtonWidget reRun;
     private ButtonWidget stop;
 
     private String url;
@@ -177,6 +178,14 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         run = createButton(resources.runAppImage(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
         run.setEnable();
 
+        ButtonWidget.ActionDelegate reRunDelegate = new ButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onRerunButtonClicked();
+            }
+        };
+        reRun = createButton(resources.reRunAppImage(), locale.tooltipRerunButton(), reRunDelegate, otherButtonsPanel);
+
         ButtonWidget.ActionDelegate stopDelegate = new ButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
@@ -212,24 +221,27 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         if (appContext.getCurrentProject() == null) {
             run.setDisable();
             stop.setDisable();
+            reRun.setDisable();
             return;
         }
 
         run.setEnable();
+        reRun.setDisable();
         stop.setEnable();
 
         switch (runner.getStatus()) {
             case IN_QUEUE:
-                run.setDisable();
                 stop.setDisable();
                 break;
 
             case FAILED:
                 stop.setDisable();
+                reRun.setEnable();
                 break;
 
             case STOPPED:
                 stop.setDisable();
+                reRun.setEnable();
                 break;
 
             default:
@@ -305,6 +317,16 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             run.setEnable();
         } else {
             run.setDisable();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableReRunButton(boolean isEnable) {
+        if (isEnable) {
+            reRun.setEnable();
+        } else {
+            reRun.setDisable();
         }
     }
 

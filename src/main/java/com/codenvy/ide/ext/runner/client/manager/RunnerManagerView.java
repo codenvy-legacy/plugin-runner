@@ -102,6 +102,14 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
     void setEnableRunButton(boolean isEnable);
 
     /**
+     * Changes state of re-run button.
+     *
+     * @param isEnable
+     *         <code>true</code> button is enable, <code>false</code> button is disable
+     */
+    void setEnableReRunButton(boolean isEnable);
+
+    /**
      * Changes state of stop button.
      *
      * @param isEnable
@@ -113,6 +121,9 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's clicking on the 'Run' button. */
         void onRunButtonClicked();
+
+        /** Performs some actions in response to user's clicking on the 'Re-Run' button. */
+        void onRerunButtonClicked();
 
         /** Performs some actions in response to user's clicking on the 'Stop' button. */
         void onStopButtonClicked();

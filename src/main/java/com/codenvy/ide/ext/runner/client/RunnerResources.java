@@ -50,6 +50,9 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/mainwidget/run.svg")
     SVGResource runAppImage();
 
+    @Source("images/mainwidget/re-run.svg")
+    SVGResource reRunAppImage();
+
     @Source("images/mainwidget/stop.svg")
     SVGResource stopButton();
 

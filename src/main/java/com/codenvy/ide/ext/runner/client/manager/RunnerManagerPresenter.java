@@ -68,8 +68,6 @@ import java.util.Set;
 
 import static com.codenvy.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 import static com.codenvy.ide.ext.runner.client.models.Runner.Status.DONE;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.FAILED;
-import static com.codenvy.ide.ext.runner.client.models.Runner.Status.STOPPED;
 import static com.codenvy.ide.ext.runner.client.selection.Selection.RUNNER;
 import static com.codenvy.ide.ext.runner.client.state.State.RUNNERS;
 import static com.codenvy.ide.ext.runner.client.state.State.TEMPLATE;
@@ -368,33 +366,29 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRunButtonClicked() {
-        if (selectedRunner == null && selectedEnvironment == null) {
-            launchRunner();
-
-            return;
-        }
-
-        if (TEMPLATE.equals(panelState.getState()) && selectedEnvironment != null) {
+        if (TEMPLATE.equals(panelState.getState())) {
             RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
                                               .withOptions(selectedEnvironment.getOptions())
                                               .withEnvironmentId(selectedEnvironment.getId());
 
             launchRunner(runOptions, selectedEnvironment.getName());
-            return;
-        }
-
-        if (FAILED.equals(selectedRunner.getStatus()) || STOPPED.equals(selectedRunner.getStatus())) {
-            RunnerAction runnerAction = runnerActions.get(selectedRunner);
-            if (runnerAction == null || runnerAction instanceof LaunchAction) {
-                launchRunner(selectedRunner);
-            } else {
-                runnerAction.perform(selectedRunner);
-
-                update(selectedRunner);
-                selectedRunner.resetCreationTime();
-            }
         } else {
             launchRunner();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onRerunButtonClicked() {
+        RunnerAction runnerAction = runnerActions.get(selectedRunner);
+        if (runnerAction == null || runnerAction instanceof LaunchAction) {
+            //Create new CheckRamAndRunAction and update selected runner
+            launchRunner(selectedRunner);
+        } else {
+            runnerAction.perform(selectedRunner);
+
+            update(selectedRunner);
+            selectedRunner.resetCreationTime();
         }
     }
 
