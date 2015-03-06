@@ -44,6 +44,7 @@ import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker.Doc
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileEditorInput;
 import com.codenvy.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory;
 import com.codenvy.ide.ext.runner.client.util.NameGenerator;
+import com.codenvy.ide.ext.runner.client.util.TimerFactory;
 import com.codenvy.ide.ext.runner.client.util.annotations.LeftPanel;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -161,7 +162,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                                     AppContext appContext,
                                     AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
                                     @LeftPanel TabContainer tabContainer,
-                                    @Assisted @Nonnull final Runner runner) {
+                                    @Assisted @Nonnull final Runner runner,
+                                    TimerFactory timerFactory) {
         this(view,
              dockerFileFactory,
              editorRegistry,
@@ -180,9 +182,9 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         this.runner = runner;
 
         // we're waiting for getting application descriptor from server. so we can't show editor without knowing about configuration file.
-        timer = new Timer() {
+        timer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
             @Override
-            public void run() {
+            public void onRun() {
                 String dockerUrl = runner.getDockerUrl();
                 if (dockerUrl == null) {
                     timer.schedule(ONE_SEC.getValue());
@@ -196,7 +198,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
                 view.selectMemory(RAM.detect(runner.getRAM()));
             }
-        };
+        });
         timer.schedule(ONE_SEC.getValue());
 
         view.setEnableNameProperty(false);
@@ -349,7 +351,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
         view.setEnableSaveButton(PROJECT.equals(scope));
         view.setEnableCancelButton(true);
-        view.setEnableSaveButton(true);
+        //Todo why we erase command view.setEnableSaveButton(PROJECT.equals(scope))?
+//        view.setEnableSaveButton(true);
     }
 
     /** {@inheritDoc} */
