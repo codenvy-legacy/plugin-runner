@@ -10,6 +10,15 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.manager;
 
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.parts.PartStackUIResources;
@@ -20,15 +29,6 @@ import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidget;
 import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfo;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,9 +94,9 @@ public class RunnerManagerViewImplTest {
     @Mock
     private Runner                            runner;
     @Mock
-    private CurrentProject                    currentProject;
-    @Mock
     private TabContainer                      containerPresenter;
+    @Mock
+    private CurrentProject                    currentProject;
 
     private RunnerManagerViewImpl view;
 
@@ -125,6 +125,7 @@ public class RunnerManagerViewImplTest {
 
         when(widgetFactory.createMoreInfo()).thenReturn(moreInfoWidget);
         when(locale.runnersPanelTitle()).thenReturn(TEXT);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
         view = new RunnerManagerViewImpl(partStackUIResources, resources, locale, widgetFactory, appContext, popupPanel);
     }
 

@@ -178,10 +178,10 @@ public interface Runner {
         RUNNING,
         IN_PROGRESS,
         IN_QUEUE,
-        FAILED,
         TIMEOUT,
+        DONE,
         STOPPED,
-        DONE
+        FAILED
     }
 
 }

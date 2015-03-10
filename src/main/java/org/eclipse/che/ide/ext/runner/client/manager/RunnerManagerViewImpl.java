@@ -10,16 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.manager;
 
-import org.eclipse.che.ide.api.app.AppContext;
-import org.eclipse.che.ide.api.parts.PartStackUIResources;
-import org.eclipse.che.ide.api.parts.base.BaseView;
-import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
-import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidget;
-import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfo;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -39,6 +29,16 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.parts.PartStackUIResources;
+import org.eclipse.che.ide.api.parts.base.BaseView;
+import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
+import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidget;
+import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfo;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
@@ -176,7 +176,9 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             }
         };
         run = createButton(resources.runAppImage(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
-        run.setEnable();
+        if (appContext.getCurrentProject() != null) {
+            run.setEnable();
+        }
 
         ButtonWidget.ActionDelegate reRunDelegate = new ButtonWidget.ActionDelegate() {
             @Override

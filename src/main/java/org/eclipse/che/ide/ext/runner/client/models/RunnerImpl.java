@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.models;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.dto.RunOptions;
@@ -18,15 +23,12 @@ import org.eclipse.che.api.runner.gwt.client.utils.RunnerUtils;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.util.StringUtils;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.NumberFormat;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Objects;
 
 import static org.eclipse.che.api.runner.ApplicationStatus.NEW;
@@ -388,20 +390,7 @@ public class RunnerImpl implements Runner {
     /** {@inheritDoc} */
     @Override
     public boolean isAlive() {
-        switch (status) {
-            case IN_QUEUE:
-                return true;
-            case IN_PROGRESS:
-                return true;
-            case RUNNING:
-                return true;
-            case TIMEOUT:
-                return true;
-            case DONE:
-                return true;
-            default:
-                return false;
-        }
+        return EnumSet.range(RUNNING, DONE).contains(status);
     }
 
     @Nullable
