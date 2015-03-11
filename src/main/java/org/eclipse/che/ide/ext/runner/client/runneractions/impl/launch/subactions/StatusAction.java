@@ -11,7 +11,6 @@
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.subactions;
 
 import org.eclipse.che.api.core.rest.shared.dto.ServiceError;
-import org.eclipse.che.api.runner.ApplicationStatus;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
@@ -39,7 +38,6 @@ import com.google.web.bindery.event.shared.EventBus;
 import javax.annotation.Nonnull;
 
 import static org.eclipse.che.ide.api.notification.Notification.Status.FINISHED;
-import static org.eclipse.che.ide.api.notification.Notification.Type.ERROR;
 import static org.eclipse.che.ide.api.notification.Notification.Type.INFO;
 
 /**

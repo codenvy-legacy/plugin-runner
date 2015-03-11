@@ -31,7 +31,6 @@ import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.state.State;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.TabBuilder;
 import org.eclipse.che.ide.ext.runner.client.tabs.history.HistoryPanel;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
 import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
 import org.eclipse.che.ide.ext.runner.client.util.annotations.RightPanel;
