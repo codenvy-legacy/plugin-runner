@@ -22,8 +22,12 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.L
 @RunWith(MockitoJUnitRunner.class)
 public class TabTypeTest {
     @Test
-    public void shouldReturnTabHeight() throws Exception {
-        assertThat(LEFT_PANEL.getHeight(), is("21px"));
+    public void shouldReturnTabHeight1() throws Exception {
         assertThat(RIGHT_PANEL.getHeight(), is("20px"));
+    }
+
+    @Test
+    public void shouldReturnTabHeight2() throws Exception {
+        assertThat(LEFT_PANEL.getHeight(), is("21px"));
     }
 }
