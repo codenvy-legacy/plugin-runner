@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.eclipse.che.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget.DEFAULT_DESCRIPTION;
 
 /**
  * @author Andrienko Alexander
@@ -113,10 +114,17 @@ public class EnvironmentWidgetTest {
     @Test
     public void shouldUpdateWhenDescriptionIsNull() {
         when(environment.getName()).thenReturn(ID);
-        when(environment.getDescription()).thenReturn(TEXT);
+        when(environment.getDescription()).thenReturn(null);
 
         environmentWidget.setScope(Scope.PROJECT);
-        updateParameters();
+
+        environmentWidget.update(environment);
+
+        verify(environment).getName();
+
+        verify(itemWidget).setName(ID);
+        verify(environment).getDescription();
+        verify(itemWidget).setDescription(DEFAULT_DESCRIPTION);
 
         verify(itemWidget).setImage(any(SVGImage.class));
     }

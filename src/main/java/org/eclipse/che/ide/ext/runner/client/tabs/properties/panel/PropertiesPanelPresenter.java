@@ -311,15 +311,12 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
             public void propertyChanged(PartPresenter source, int propId) {
                 switch (propId) {
                     case PROP_INPUT:
-                        if (editor instanceof HasReadOnlyProperty) {
-                            ((HasReadOnlyProperty)editor).setReadOnly(file.isReadOnly());
-                        }
+                        setReadOnlyProperty(file);
                         view.showEditor(editor);
                         break;
                     case PROP_DIRTY:
                         if (validateUndoOperation()) {
-                            view.setEnableSaveButton(true);
-                            view.setEnableCancelButton(true);
+                           enableSaveAndCancelButtons();
                         }
                         break;
                     default:
@@ -332,6 +329,17 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         } catch (EditorInitException e) {
             Log.error(getClass(), e);
         }
+    }
+
+    private void setReadOnlyProperty(FileNode file) {
+        if (editor instanceof HasReadOnlyProperty) {
+            ((HasReadOnlyProperty)editor).setReadOnly(file.isReadOnly());
+        }
+    }
+
+    private void enableSaveAndCancelButtons() {
+        view.setEnableSaveButton(true);
+        view.setEnableCancelButton(true);
     }
 
     private boolean validateUndoOperation() {
@@ -351,8 +359,6 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
         view.setEnableSaveButton(PROJECT.equals(scope));
         view.setEnableCancelButton(true);
-        //Todo why we erase command view.setEnableSaveButton(PROJECT.equals(scope))?
-//        view.setEnableSaveButton(true);
     }
 
     /** {@inheritDoc} */

@@ -82,13 +82,13 @@ public class StatusActionTest {
     @Mock
     private RunnerUtil                 runnerUtil;
     @Mock
-    private ConsoleContainer           consoleContainer;
+    private ConsoleContainer    consoleContainer;
     @Mock
-    private RunnerManagerView          view;
+    private RunnerManagerView   view;
     @Mock
-    private RunnerActionFactory        actionFactory;
+    private RunnerActionFactory actionFactory;
     @Mock
-    private Notification               notification;
+    private Notification        notification;
 
     @Mock
     private ServerException                                                   serverException;
@@ -216,20 +216,14 @@ public class StatusActionTest {
 
         verify(descriptor).getStatus();
 
-        verify(runner).setStatus(Runner.Status.FAILED);
-        verify(presenter).update(runner);
-
-        verify(project).setIsRunningEnabled(true);
+        verify(runnerUtil).showError(runner, FailedMessage, null, notification);
 
         verify(logsAction).perform(runner);
+        verify(project).setIsRunningEnabled(true);
 
         verify(project).getProjectDescription();
         verify(projectDescriptor).getName();
         verify(locale).applicationFailed(PROJECT_NAME);
-
-        verify(notification).update(FailedMessage, Notification.Type.ERROR, Notification.Status.FINISHED, null, true);
-
-        verify(consoleContainer).printError(runner, FailedMessage);
 
         verify(webSocketUtil).unSubscribeHandler(WEB_SOCKET_CHANNEL, processStartedHandler);
         verify(checkHealthStatusAction).stop();
@@ -299,19 +293,14 @@ public class StatusActionTest {
         verify(runner).setProcessDescriptor(descriptor);
 
         verify(descriptor).getStatus();
-        verify(runner).setStatus(Runner.Status.FAILED);
 
-        verify(presenter).update(runner);
+        verify(runnerUtil).showError(runner, MESSAGE, null, notification);
 
         verify(project).setIsRunningEnabled(true);
 
         verify(project).getProjectDescription();
         verify(projectDescriptor).getName();
         verify(locale).applicationCanceled(PROJECT_NAME);
-
-        verify(notification).update(MESSAGE, Notification.Type.ERROR, Notification.Status.FINISHED, null, true);
-
-        verify(consoleContainer).printError(runner, MESSAGE);
 
         verify(webSocketUtil).unSubscribeHandler(WEB_SOCKET_CHANNEL, processStartedHandler);
         verify(checkHealthStatusAction).stop();

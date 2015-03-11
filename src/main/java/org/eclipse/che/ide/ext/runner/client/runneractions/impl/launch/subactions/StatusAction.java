@@ -11,6 +11,7 @@
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.subactions;
 
 import org.eclipse.che.api.core.rest.shared.dto.ServiceError;
+import org.eclipse.che.api.runner.ApplicationStatus;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
@@ -121,19 +122,7 @@ public class StatusAction extends AbstractRunnerAction {
             protected void onErrorReceived(Throwable exception) {
                 runner.setStatus(Runner.Status.FAILED);
 
-                if (exception instanceof ServerException && ((ServerException)exception).getHTTPStatus() == 500) {
-                    ServiceError error = dtoFactory.createDtoFromJson(exception.getMessage(), ServiceError.class);
-                    runnerUtil.showError(runner,
-                                         locale.startApplicationFailed(project.getProjectDescription().getName()) + ": " +
-                                         error.getMessage(),
-                                         null,
-                                         notification);
-                } else {
-                    runnerUtil.showError(runner,
-                                         locale.startApplicationFailed(project.getProjectDescription().getName()),
-                                         exception,
-                                         notification);
-                }
+                showError(exception);
 
                 stop();
 
@@ -144,6 +133,21 @@ public class StatusAction extends AbstractRunnerAction {
         webSocketUtil.subscribeHandler(webSocketChannel, runnerStatusHandler);
 
         notification.setStatus(FINISHED);
+    }
+
+    private void showError(Throwable exception) {
+        String projectName = project.getProjectDescription().getName();
+
+        if (exception instanceof ServerException && ((ServerException)exception).getHTTPStatus() == 500) {
+            ServiceError error = dtoFactory.createDtoFromJson(exception.getMessage(), ServiceError.class);
+
+            runnerUtil.showError(runner,
+                                 locale.startApplicationFailed(projectName) + ": " + error.getMessage(),
+                                 null,
+                                 notification);
+        } else {
+            runnerUtil.showError(runner, locale.startApplicationFailed(projectName), exception, notification);
+        }
     }
 
     private void onApplicationStatusUpdated(@Nonnull ApplicationProcessDescriptor descriptor) {
@@ -210,35 +214,25 @@ public class StatusAction extends AbstractRunnerAction {
     }
 
     private void processFailedMessage() {
-        runner.setStatus(Runner.Status.FAILED);
+        String projectName = project.getProjectDescription().getName();
+        String message = locale.applicationFailed(projectName);
 
-        presenter.update(runner);
+        runnerUtil.showError(runner, message, null, notification);
 
         project.setIsRunningEnabled(true);
 
         logsAction.perform(runner);
 
-        String projectName = project.getProjectDescription().getName();
-        String message = locale.applicationFailed(projectName);
-        notification.update(message, ERROR, FINISHED, null, true);
-
-        consoleContainer.printError(runner, message);
-
         stop();
     }
 
     private void processCancelledMessage() {
-        runner.setStatus(Runner.Status.FAILED);
-
-        presenter.update(runner);
-
-        project.setIsRunningEnabled(true);
-
         String projectName = project.getProjectDescription().getName();
         String message = locale.applicationCanceled(projectName);
-        notification.update(message, ERROR, FINISHED, null, true);
 
-        consoleContainer.printError(runner, message);
+        runnerUtil.showError(runner, message, null, notification);
+
+        project.setIsRunningEnabled(true);
 
         stop();
     }

@@ -44,7 +44,6 @@ import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType;
 import org.eclipse.che.ide.ext.runner.client.tabs.history.HistoryPanel;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
 import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
@@ -81,6 +80,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Andrienko Alexander
@@ -266,7 +266,7 @@ public class RunnerManagerPresenterTest {
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);
         when(modelsFactory.createRunner(runOptions)).thenReturn(runner);
         when(processDescriptor.getProcessId()).thenReturn(PROCESS_ID);
-        when(processDescriptor.getMemorySize()).thenReturn(RAM._512.getValue());
+        when(processDescriptor.getMemorySize()).thenReturn(MB_512.getValue());
         when(actionFactory.createLaunch()).thenReturn(launchAction);
         when(runner.getTimeout()).thenReturn(TEXT);
         when(selectionManager.getRunner()).thenReturn(runner);
@@ -286,7 +286,7 @@ public class RunnerManagerPresenterTest {
         when(definition.getRunnerCategories()).thenReturn(Arrays.asList(TEXT));
         when(currentProject.getAttributeValue("runner:skipBuild")).thenReturn("true");
         when(runOptions.withSkipBuild(true)).thenReturn(runOptions);
-        when(runOptions.withMemorySize(RAM._512.getValue())).thenReturn(runOptions);
+        when(runOptions.withMemorySize(MB_512.getValue())).thenReturn(runOptions);
         when(actionFactory.createCheckRamAndRun()).thenReturn(checkRamAndRunAction);
 
         //part stack
@@ -407,7 +407,7 @@ public class RunnerManagerPresenterTest {
         verify(modelsFactory).createRunner(runOptions);
         verify(processDescriptor).getProcessId();
         verify(runner).setProcessDescriptor(processDescriptor);
-        verify(runner).setRAM(RAM._512.getValue());
+        verify(runner).setRAM(MB_512.getValue());
         verify(runner).setStatus(Runner.Status.DONE);
         verify(runner).resetCreationTime();
         verify(history).addRunner(runner);
@@ -570,7 +570,7 @@ public class RunnerManagerPresenterTest {
         verify(appContext, times(2)).getCurrentProject();
         verify(dtoFactory, times(2)).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);
-        verify(runOptions).withMemorySize(RAM._512.getValue());
+        verify(runOptions).withMemorySize(MB_512.getValue());
         verify(modelsFactory, times(2)).createRunner(runOptions);
 
         //verify launch runner
@@ -920,7 +920,7 @@ public class RunnerManagerPresenterTest {
 
         verify(dtoFactory).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);
-        verify(runOptions).withMemorySize(RAM._512.getValue());
+        verify(runOptions).withMemorySize(MB_512.getValue());
         verify(modelsFactory).createRunner(runOptions);
 
         //verify launch runner

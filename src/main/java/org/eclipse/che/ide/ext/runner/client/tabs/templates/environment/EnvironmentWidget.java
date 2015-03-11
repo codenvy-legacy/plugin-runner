@@ -32,7 +32,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
  */
 public class EnvironmentWidget implements RunnerItems<Environment> {
 
-    private static final String DEFAULT_DESCRIPTION = "DEFAULT";
+    public static final String DEFAULT_DESCRIPTION = "DEFAULT";
 
     private final ItemWidget itemWidget;
     private final SVGImage   projectScope;

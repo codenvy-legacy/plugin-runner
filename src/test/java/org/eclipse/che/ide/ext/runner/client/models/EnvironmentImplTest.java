@@ -19,7 +19,6 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,12 +88,12 @@ public class EnvironmentImplTest {
 
         verify(runnerEnvironment).getOptions();
 
-        MatcherAssert.assertThat(environment.getScope(), Is.is(Scope.SYSTEM));
+        MatcherAssert.assertThat(environment.getScope(), is(Scope.SYSTEM));
         verifyInitializationConstructor();
     }
 
     private void verifyInitializationConstructor() {
-        assertThat(environment.getRam(), Is.is(RAM.DEFAULT.getValue()));
+        assertThat(environment.getRam(), is(RAM.DEFAULT.getValue()));
         assertThat(environment.getId(), is(TEXT));
         assertThat(environment.getOptions().keySet(), hasItems("someKey1", "someKey2"));
         assertThat(environment.getOptions().values(), hasItems("someValue1", "someValue2"));
@@ -112,7 +111,7 @@ public class EnvironmentImplTest {
 
         verify(runnerEnvironment, times(2)).getOptions();
 
-        MatcherAssert.assertThat(environment.getScope(), Is.is(Scope.PROJECT));
+        MatcherAssert.assertThat(environment.getScope(), is(Scope.PROJECT));
         verifyInitializationConstructor();
         assertThat(environment.getName(), is(DISPLAY_NAME));
     }
@@ -131,7 +130,7 @@ public class EnvironmentImplTest {
 
         verify(runnerEnvironment, times(2)).getOptions();
 
-        MatcherAssert.assertThat(environment.getScope(), Is.is(Scope.PROJECT));
+        MatcherAssert.assertThat(environment.getScope(), is(Scope.PROJECT));
         verifyInitializationConstructor();
         assertThat(environment.getName(), is(LAST_PART));
     }
@@ -150,7 +149,7 @@ public class EnvironmentImplTest {
 
         verify(runnerEnvironment, times(2)).getOptions();
 
-        MatcherAssert.assertThat(environment.getScope(), Is.is(Scope.PROJECT));
+        MatcherAssert.assertThat(environment.getScope(), is(Scope.PROJECT));
         verifyInitializationConstructor();
         assertThat(environment.getName(), is(LAST_PART));
     }
@@ -176,11 +175,11 @@ public class EnvironmentImplTest {
 
     @Test
     public void scopeShouldBeReturned() {
-        MatcherAssert.assertThat(environment.getScope(), Is.is(Scope.SYSTEM));
+        MatcherAssert.assertThat(environment.getScope(), is(Scope.SYSTEM));
 
         environment.setScope(Scope.PROJECT);
 
-        MatcherAssert.assertThat(environment.getScope(), Is.is(Scope.PROJECT));
+        MatcherAssert.assertThat(environment.getScope(), is(Scope.PROJECT));
     }
 
     @Test
@@ -190,7 +189,7 @@ public class EnvironmentImplTest {
 
     @Test
     public void ramShouldBeChanged() {
-        assertThat(environment.getRam(), Is.is(RAM.DEFAULT.getValue()));
+        assertThat(environment.getRam(), is(RAM.DEFAULT.getValue()));
 
         environment.setRam(4096);
 

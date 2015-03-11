@@ -24,7 +24,6 @@ import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactor
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -43,6 +42,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Alexander Andrienko
@@ -131,7 +131,7 @@ public class RunActionTest {
     @Test
     public void shouldSuccessPerform() {
         //preparing descriptor data
-        when(descriptor.getMemorySize()).thenReturn(RAM._512.getValue());
+        when(descriptor.getMemorySize()).thenReturn(MB_512.getValue());
         when(descriptor.getProcessId()).thenReturn(12345678L);
 
         when(runner.getOptions()).thenReturn(runOptions);
@@ -145,7 +145,7 @@ public class RunActionTest {
         successCallback.onSuccess(descriptor);
 
         verify(runner).setProcessDescriptor(descriptor);
-        verify(runner).setRAM(RAM._512.getValue());
+        verify(runner).setRAM(MB_512.getValue());
         verify(runner).setStatus(Runner.Status.IN_PROGRESS);
 
         verify(presenter).addRunnerId(12345678L);

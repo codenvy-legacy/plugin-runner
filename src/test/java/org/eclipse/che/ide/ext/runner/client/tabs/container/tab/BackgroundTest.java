@@ -16,14 +16,27 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background.BLACK;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background.GREY;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background.BLUE;
 
+/**
+ * @author Andrienko Alexander
+ */
 @RunWith(MockitoJUnitRunner.class)
-public class TabTypeTest {
+public class BackgroundTest {
     @Test
-    public void shouldReturnTabHeight() throws Exception {
-        assertThat(LEFT_PANEL.getHeight(), is("21px"));
-        assertThat(RIGHT_PANEL.getHeight(), is("20px"));
+    public void shouldReturnTabHeight1() throws Exception {
+        assertThat(BLACK.toString(), is("#313335"));
+    }
+
+    @Test
+    public void shouldReturnTabHeight2() throws Exception {
+        assertThat(GREY.toString(), is("#474747"));
+    }
+
+    @Test
+    public void shouldReturnTabHeight3() throws Exception {
+        assertThat(BLUE.toString(), is("#256c9f"));
     }
 }

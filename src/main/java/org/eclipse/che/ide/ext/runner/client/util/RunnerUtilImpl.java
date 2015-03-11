@@ -10,16 +10,16 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.util;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 
 import static org.eclipse.che.ide.api.notification.Notification.Status.FINISHED;
 import static org.eclipse.che.ide.api.notification.Notification.Type.ERROR;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_128;
 
 /**
  * Contains implementations of methods which are general for runner plugin classes.
@@ -63,8 +64,8 @@ public class RunnerUtilImpl implements RunnerUtil {
             return false;
         }
 
-        if (usedMemory % RAM._128.getValue() != 0) {
-            showWarning(locale.ramSizeMustBeMultipleOf(RAM._128.getValue()));
+        if (usedMemory % MB_128.getValue() != 0) {
+            showWarning(locale.ramSizeMustBeMultipleOf(MB_128.getValue()));
             return false;
         }
 

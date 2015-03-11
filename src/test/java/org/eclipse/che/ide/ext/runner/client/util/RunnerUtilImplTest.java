@@ -17,7 +17,6 @@ import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleConta
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.ui.dialogs.message.MessageDialog;
@@ -43,6 +42,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_128;
 
 /**
  * @author Dmitry Shnurenko
@@ -116,12 +116,12 @@ public class RunnerUtilImplTest {
 
     @Test
     public void errorMessageShouldBeShownWhenMemoryNotMultiple128() throws Exception {
-        when(locale.ramSizeMustBeMultipleOf(RAM._128.getValue())).thenReturn(SOME_TEXT);
+        when(locale.ramSizeMustBeMultipleOf(MB_128.getValue())).thenReturn(SOME_TEXT);
 
         boolean isCorrect = util.isRunnerMemoryCorrect(125, 123, 125);
 
         verifyShowWarning();
-        verify(locale).ramSizeMustBeMultipleOf(RAM._128.getValue());
+        verify(locale).ramSizeMustBeMultipleOf(MB_128.getValue());
 
         assertThat(isCorrect, is(false));
     }

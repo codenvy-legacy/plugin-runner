@@ -20,9 +20,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +53,8 @@ import static org.eclipse.che.api.runner.dto.RunnerMetric.ALWAYS_ON;
 import static org.eclipse.che.api.runner.dto.RunnerMetric.LIFETIME;
 import static org.eclipse.che.api.runner.dto.RunnerMetric.TERMINATION_TIME;
 import static org.eclipse.che.api.runner.dto.RunnerMetric.STOP_TIME;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_1024;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_2048;
 
 /**
  * @author Andrienko Alexander
@@ -110,7 +110,7 @@ public class RunnerImplTest {
     }
 
     private void initConstructorParameter() {
-        when(runOptions.getMemorySize()).thenReturn(RAM._2048.getValue());
+        when(runOptions.getMemorySize()).thenReturn(MB_2048.getValue());
         when(runnerCounter.getRunnerNumber()).thenReturn(RUNNER_NUMBER);
         when(locale.runnerTabConsole()).thenReturn(TEXT);
     }
@@ -127,8 +127,8 @@ public class RunnerImplTest {
         verify(locale).runnerTabConsole();
 
         assertThat(runner.getActiveTab(), is(TEXT));
-        assertThat(runner.getRAM(), Is.is(RAM._2048.getValue()));
-        assertThat(runner.getStatus(), Is.is(Runner.Status.IN_QUEUE));
+        assertThat(runner.getRAM(), is(MB_2048.getValue()));
+        assertThat(runner.getStatus(), is(Runner.Status.IN_QUEUE));
     }
 
     @Test
@@ -172,11 +172,11 @@ public class RunnerImplTest {
 
     @Test
     public void ramShouldBeChanged() {
-        assertThat(runner.getRAM(), Is.is(RAM._2048.getValue()));
+        assertThat(runner.getRAM(), is(MB_2048.getValue()));
 
-        runner.setRAM(RAM._1024.getValue());
+        runner.setRAM(MB_1024.getValue());
 
-        assertThat(runner.getRAM(), Is.is(RAM._1024.getValue()));
+        assertThat(runner.getRAM(), is(MB_1024.getValue()));
     }
 
     @Test
@@ -317,21 +317,21 @@ public class RunnerImplTest {
     public void shouldGetActiveTimeWhenRunnerIsNotAlive() {
         runner.setStatus(Runner.Status.STOPPED);
 
-        assertThat(runner.getActiveTime(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getActiveTime(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
     @Test
     public void shouldGetStopTimeWhenRunnerIsAlive() {
         runner.setStatus(Runner.Status.RUNNING);
 
-        assertThat(runner.getStopTime(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getStopTime(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
     @Test
     public void shouldGetStopTimeWhenRunnerIsNotAliveAndStopTimeMetricIsNull() {
         runner.setStatus(Runner.Status.FAILED);
 
-        assertThat(runner.getStopTime(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getStopTime(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
     @Test
@@ -341,7 +341,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.FAILED);
 
-        assertThat(runner.getStopTime(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getStopTime(), is(RunnerManagerPresenter.TIMER_STUB));
         verify(descriptor).getRunStats();
         verify(stat).getName();
     }
@@ -472,7 +472,7 @@ public class RunnerImplTest {
     @Test
     public void shouldSetAndGetStatus() {
         runner.setStatus(Runner.Status.IN_QUEUE);
-        assertThat(runner.getStatus(), Is.is(Runner.Status.IN_QUEUE));
+        assertThat(runner.getStatus(), is(Runner.Status.IN_QUEUE));
     }
 
     @Test
@@ -490,6 +490,11 @@ public class RunnerImplTest {
         runner.setTitle(TEXT);
 
         assertThat(runner.getTitle(), is(TEXT));
+    }
+
+    @Test
+    public void equalsShouldReturnTrueWhenObjectIsNull() {
+        assertThat(runner.equals(null), is(false));
     }
 
     @Test
@@ -594,21 +599,21 @@ public class RunnerImplTest {
     public void shouldGetTimeOutWhenRunnerStatusQueue() {
         runner.setStatus(Runner.Status.IN_QUEUE);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
     @Test
     public void shouldGetTimeOutWhenStatusProgress() {
         runner.setStatus(Runner.Status.IN_PROGRESS);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
     @Test
     public void shouldGetTimeOutWhenStatusTimeOut() {
         runner.setStatus(Runner.Status.TIMEOUT);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
 
@@ -616,14 +621,14 @@ public class RunnerImplTest {
     public void shouldGetTimeOutWhenStatusFailed() {
         runner.setStatus(Runner.Status.FAILED);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
     @Test
     public void shouldGetTimeOutWhenStatusStopped() {
         runner.setStatus(Runner.Status.STOPPED);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
     }
 
     @Test
@@ -650,7 +655,7 @@ public class RunnerImplTest {
         runner.setStatus(Runner.Status.DONE);
         runner.setProcessDescriptor(descriptor);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
         verify(stat, times(1)).getName();
@@ -690,7 +695,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.DONE);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
         verify(stat, times(1)).getName();
@@ -705,7 +710,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.DONE);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor, times(2)).getRunStats();
     }
@@ -718,7 +723,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.DONE);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor, times(2)).getRunStats();
         verify(stat, times(2)).getName();
@@ -770,7 +775,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.DONE);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor, times(2)).getRunStats();
         verify(descriptor).getStatus();
@@ -802,7 +807,7 @@ public class RunnerImplTest {
         runner.setStatus(Runner.Status.DONE);
         runner.setProcessDescriptor(descriptor);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
         verify(stat, times(1)).getName();
@@ -838,7 +843,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.RUNNING);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
         verify(stat, times(1)).getName();
@@ -853,7 +858,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.RUNNING);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor, times(2)).getRunStats();
     }
@@ -866,7 +871,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.RUNNING);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor, times(2)).getRunStats();
         verify(stat, times(2)).getName();
@@ -918,7 +923,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.RUNNING);
 
-        assertThat(runner.getTimeout(), Is.is(RunnerManagerPresenter.TIMER_STUB));
+        assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor, times(2)).getRunStats();
         verify(descriptor, times(1)).getStatus();
@@ -928,11 +933,11 @@ public class RunnerImplTest {
 
     @Test
     public void scopeShouldBeChanged() {
-        assertThat(runner.getScope(), Is.is(Scope.SYSTEM));
+        assertThat(runner.getScope(), is(Scope.SYSTEM));
 
         runner.setScope(Scope.PROJECT);
 
-        assertThat(runner.getScope(), Is.is(Scope.PROJECT));
+        assertThat(runner.getScope(), is(Scope.PROJECT));
     }
 
     @Test

@@ -111,32 +111,21 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
         changeAppAliveTimer.schedule(THIRTY_SEC.getValue());
 
         webSocketChannel = APP_HEALTH_CHANNEL + runner.getProcessId();
+
+        final String projectName = project.getProjectDescription().getName();
+        final String notificationMessage = locale.applicationStarted(projectName);
         runnerHealthHandler = new SubscriptionHandler<String>(new StringUnmarshallerWS()) {
             @Override
             protected void onMessageReceived(String result) {
                 JSONObject jsonObject = JSONParser.parseStrict(result).isObject();
-
-                if (jsonObject == null || !jsonObject.containsKey(URL) || !jsonObject.containsKey(STATUS)) {
+                if(!jsonObjectIsValid(jsonObject)) {
                     return;
                 }
-
-                String urlStatus = jsonObject.get(STATUS).isString().stringValue();
-                if (!OK_STATUS.equals(urlStatus)) {
-                    return;
-                }
-
                 changeAppAliveTimer.cancel();
-
                 runner.setStatus(Runner.Status.DONE);
-
                 presenter.update(runner);
-
-                String projectName = project.getProjectDescription().getName();
-                String notificationMessage = locale.applicationStarted(projectName);
-
                 notification.update(notificationMessage, INFO, FINISHED, null, true);
                 consoleContainer.printInfo(runner, notificationMessage);
-
                 stop();
             }
 
@@ -147,6 +136,16 @@ public class CheckHealthStatusAction extends AbstractRunnerAction {
         };
 
         webSocketUtil.subscribeHandler(webSocketChannel, runnerHealthHandler);
+    }
+
+    private boolean jsonObjectIsValid(JSONObject jsonObject) {
+        if (jsonObject == null || !jsonObject.containsKey(URL) || !jsonObject.containsKey(STATUS)) {
+            return false;
+        }
+
+        String urlStatus = jsonObject.get(STATUS).isString().stringValue();
+
+        return OK_STATUS.equals(urlStatus);
     }
 
     /** {@inheritDoc} */

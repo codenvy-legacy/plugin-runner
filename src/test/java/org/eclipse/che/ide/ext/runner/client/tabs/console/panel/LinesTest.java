@@ -8,22 +8,28 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.eclipse.che.ide.ext.runner.client.tabs.container.tab;
+package org.eclipse.che.ide.ext.runner.client.tabs.console.panel;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.eclipse.che.ide.ext.runner.client.tabs.console.panel.Lines.CLEANED;
+import static org.eclipse.che.ide.ext.runner.client.tabs.console.panel.Lines.MAXIMUM;
 import static org.junit.Assert.assertThat;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
-
+import static org.hamcrest.CoreMatchers.is;
+/**
+ * @author Andrienko Alexander
+ */
 @RunWith(MockitoJUnitRunner.class)
-public class TabTypeTest {
+public class LinesTest {
     @Test
-    public void shouldReturnTabHeight() throws Exception {
-        assertThat(LEFT_PANEL.getHeight(), is("21px"));
-        assertThat(RIGHT_PANEL.getHeight(), is("20px"));
+    public void shouldReturnTabHeight1() throws Exception {
+        assertThat(CLEANED.getValue(), is(100));
+    }
+
+    @Test
+    public void shouldReturnTabHeight2() throws Exception {
+        assertThat(MAXIMUM.getValue(), is(1_000));
     }
 }

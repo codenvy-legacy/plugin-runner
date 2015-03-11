@@ -8,22 +8,29 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.eclipse.che.ide.ext.runner.client.tabs.container.tab;
+package org.eclipse.che.ide.ext.runner.client.constants;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.eclipse.che.ide.ext.runner.client.constants.ActionId.CHOOSE_RUNNER_ID;
+import static org.eclipse.che.ide.ext.runner.client.constants.ActionId.RUN_APP_ID;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
 
+/**
+ * @author Andrienko Alexander
+ */
 @RunWith(MockitoJUnitRunner.class)
-public class TabTypeTest {
+public class ActionIdTest {
     @Test
-    public void shouldReturnTabHeight() throws Exception {
-        assertThat(LEFT_PANEL.getHeight(), is("21px"));
-        assertThat(RIGHT_PANEL.getHeight(), is("20px"));
+    public void timeIntervalShouldBeReturned1() {
+        assertThat(RUN_APP_ID.getId(), is("runApp"));
+    }
+
+    @Test
+    public void timeIntervalShouldBeReturned2() {
+        assertThat(CHOOSE_RUNNER_ID.getId(), is("chooseRunner"));
     }
 }

@@ -50,7 +50,6 @@ import org.eclipse.che.ide.imageviewer.ImageViewer;
 import org.eclipse.che.ide.imageviewer.ImageViewerResources;
 
 import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
@@ -88,6 +87,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Alexander Andrienko
@@ -193,14 +193,14 @@ public class PropertiesPanelPresenterTest {
         result = new JsonArrayListAdapter<>(Arrays.asList(itemReference1, itemReference2));
         when(timerFactory.newInstance(any(TimerFactory.TimerCallBack.class))).thenReturn(timer);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
-        when(runner.getRAM()).thenReturn(RAM._512.getValue());
+        when(runner.getRAM()).thenReturn(MB_512.getValue());
         when(unmarshallerFactory.newArrayUnmarshaller(ItemReference.class)).thenReturn(unmarshaller);
 
         when(environment.getScope()).thenReturn(Scope.SYSTEM);
         when(environment.getPath()).thenReturn(TEXT);
         when(environment.getName()).thenReturn(TEXT);
         when(environment.getType()).thenReturn(TEXT);
-        when(environment.getRam()).thenReturn(RAM._512.getValue());
+        when(environment.getRam()).thenReturn(MB_512.getValue());
 
         when(currentProject.getCurrentTree()).thenReturn(treeStructure);
         when(currentProject.getProjectDescription()).thenReturn(descriptor);
@@ -274,7 +274,7 @@ public class PropertiesPanelPresenterTest {
 
         verify(view).setVisibleButtons(false);
         verify(runner).getRAM();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
     }
 
     @Test
@@ -297,7 +297,7 @@ public class PropertiesPanelPresenterTest {
         verify(editor).init(any(DockerFileEditorInput.class));
 
         verify(runner, times(2)).getRAM();
-        verify(view, times(2)).selectMemory(RAM._512);
+        verify(view, times(2)).selectMemory(MB_512);
     }
 
     @Test
@@ -365,7 +365,7 @@ public class PropertiesPanelPresenterTest {
     private void initFirstConstructor() {
         reset(appContext, view, timer, timerFactory, runner);
         when(timerFactory.newInstance(any(TimerFactory.TimerCallBack.class))).thenReturn(timer);
-        when(runner.getRAM()).thenReturn(RAM._512.getValue());
+        when(runner.getRAM()).thenReturn(MB_512.getValue());
         when(appContext.getCurrentProject()).thenReturn(null);
 
         presenter = new PropertiesPanelPresenter(view,
@@ -630,7 +630,7 @@ public class PropertiesPanelPresenterTest {
         verify(view).setName(TEXT);
         verify(view).setType(TEXT);
         verify(view).selectScope(Scope.SYSTEM);
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
 
         verify(asyncCallbackBuilder, times(2)).failure(any(FailureCallback.class));
         verify(asyncCallbackBuilder, times(2)).build();
@@ -731,7 +731,7 @@ public class PropertiesPanelPresenterTest {
     public void saveButtonShouldBeClickedWhenEditorIsNotDirty() throws Exception {
         when(editorProvider.getEditor()).thenReturn(editor);
         initSecondConstructor();
-        when(view.getRam()).thenReturn(RAM._512);
+        when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
 
         presenter.onSaveButtonClicked();
@@ -757,7 +757,7 @@ public class PropertiesPanelPresenterTest {
     public void saveButtonShouldBeClickedButRenameFileFailed() throws Exception {
         when(editorProvider.getEditor()).thenReturn(editor);
         initSecondConstructor();
-        when(view.getRam()).thenReturn(RAM._512);
+        when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
         when(exception.getMessage()).thenReturn(TEXT);
 
@@ -783,7 +783,7 @@ public class PropertiesPanelPresenterTest {
     public void saveButtonShouldBeClickedWhenEditorIsDirty() throws Exception {
         when(editorProvider.getEditor()).thenReturn(editor);
         initSecondConstructor();
-        when(view.getRam()).thenReturn(RAM._512);
+        when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
         when(editor.isDirty()).thenReturn(true);
 
@@ -816,7 +816,7 @@ public class PropertiesPanelPresenterTest {
     public void saveButtonShouldBeClickedButSaveEditorFailed() throws Exception {
         when(editorProvider.getEditor()).thenReturn(editor);
         initSecondConstructor();
-        when(view.getRam()).thenReturn(RAM._512);
+        when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
         when(editor.isDirty()).thenReturn(true);
 
@@ -937,7 +937,7 @@ public class PropertiesPanelPresenterTest {
         verify(runner).getTitle();
         verify(view).setName(TEXT);
         verify(runner, times(2)).getRAM();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(runner, times(2)).getScope();
         verify(view).selectScope(Scope.SYSTEM);
     }
@@ -957,7 +957,7 @@ public class PropertiesPanelPresenterTest {
         verify(runner).getTitle();
         verify(view).setName(TEXT);
         verify(runner, times(2)).getRAM();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(runner, times(2)).getScope();
         verify(view).selectScope(Scope.PROJECT);
     }
@@ -976,7 +976,7 @@ public class PropertiesPanelPresenterTest {
         verify(environment).getName();
         verify(view).setName(TEXT);
         verify(environment).getRam();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(environment, times(3)).getScope();
         verify(view).selectScope(Scope.SYSTEM);
     }
@@ -996,7 +996,7 @@ public class PropertiesPanelPresenterTest {
         verify(environment).getName();
         verify(view).setName(TEXT);
         verify(environment).getRam();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(environment, times(3)).getScope();
         verify(view).selectScope(Scope.PROJECT);
     }
@@ -1027,7 +1027,7 @@ public class PropertiesPanelPresenterTest {
         verify(environment).getName();
         verify(view).setName(TEXT);
         verify(environment).getRam();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(environment, times(3)).getScope();
         verify(view).selectScope(Scope.SYSTEM);
     }
@@ -1067,7 +1067,7 @@ public class PropertiesPanelPresenterTest {
         verify(environment).getType();
         verify(view).setType(TEXT);
         verify(environment).getRam();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(environment, times(2)).getScope();
         verify(view).selectScope(Scope.SYSTEM);
     }
@@ -1087,7 +1087,7 @@ public class PropertiesPanelPresenterTest {
         verify(environment).getType();
         verify(view).setType(TEXT);
         verify(environment).getRam();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(environment, times(2)).getScope();
         verify(view).selectScope(Scope.PROJECT);
     }
@@ -1095,7 +1095,7 @@ public class PropertiesPanelPresenterTest {
     @Test
     public void runnerShouldBeUpdated() {
         Runner runner1 = mock(Runner.class);
-        when(runner1.getRAM()).thenReturn(RAM._512.getValue());
+        when(runner1.getRAM()).thenReturn(MB_512.getValue());
 
         reset(view);
         presenter.update(runner1);
@@ -1103,7 +1103,7 @@ public class PropertiesPanelPresenterTest {
         verify(view).setName(runner1.getTitle());
         verify(view).setType(runner1.getType());
         verify(runner1).getRAM();
-        verify(view).selectMemory(RAM._512);
+        verify(view).selectMemory(MB_512);
         verify(view).selectScope(runner1.getScope());
     }
 

@@ -16,6 +16,8 @@ import java.util.EnumSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_128;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_8192;
 
 /**
  * @author Andrey Plotnikov
@@ -24,14 +26,14 @@ import static org.junit.Assert.assertThat;
 public class RAMTest {
     @Test
     public void valueShouldBeDetected() throws Exception {
-        for (RAM size : EnumSet.range(RAM._128, RAM._8192)) {
+        for (RAM size : EnumSet.range(MB_128, MB_8192)) {
             assertThat(size, is(RAM.detect(size.toString())));
         }
     }
 
     @Test
     public void shouldReturnRamBySizeRam() throws Exception {
-        for (RAM size : EnumSet.range(RAM._128, RAM._8192)) {
+        for (RAM size : EnumSet.range(MB_128, MB_8192)) {
             assertThat(RAM.detect(size.getValue()), is(size));
         }
     }

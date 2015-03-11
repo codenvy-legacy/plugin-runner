@@ -14,7 +14,6 @@ import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.item.ItemWidget;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.junit.Before;
@@ -31,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Andrienko Alexander
@@ -68,7 +68,7 @@ public class RunnerWidgetTest {
 
         when(resources.runnerCss()).thenReturn(css);
         when(runner.getTitle()).thenReturn(TEXT);
-        when(runner.getRAM()).thenReturn(RAM._512.getValue());
+        when(runner.getRAM()).thenReturn(MB_512.getValue());
         when(runner.getCreationTime()).thenReturn(CREATION_TIME);
     }
 
@@ -188,7 +188,7 @@ public class RunnerWidgetTest {
         verify(runner).getTitle();
         verify(itemWidget).setName(TEXT);
         verify(runner).getRAM();
-        verify(itemWidget).setDescription(RAM._512.toString());
+        verify(itemWidget).setDescription(MB_512.toString());
         verify(runner).getCreationTime();
         verify(itemWidget).setStartTime(CREATION_TIME);
     }

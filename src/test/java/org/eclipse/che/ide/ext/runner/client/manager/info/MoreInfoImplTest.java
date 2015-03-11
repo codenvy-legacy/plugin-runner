@@ -20,7 +20,7 @@ import org.mockito.Mock;
 
 import java.util.Date;
 
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM._128;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_128;
 import static org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfoImpl.DATE_TIME_FORMAT;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ public class MoreInfoImplTest {
         when(runner.getStopTime()).thenReturn(SOME_TEXT);
         when(runner.getTimeout()).thenReturn(SOME_TEXT);
         when(runner.getActiveTime()).thenReturn(SOME_TEXT);
-        when(runner.getRAM()).thenReturn(_128.getValue());
+        when(runner.getRAM()).thenReturn(MB_128.getValue());
 
         widget.update(runner);
 
@@ -55,6 +55,6 @@ public class MoreInfoImplTest {
         verify(widget.finished).setText(SOME_TEXT);
         verify(widget.timeout).setText(SOME_TEXT);
         verify(widget.activeTime).setText(SOME_TEXT);
-        verify(widget.ram).setText(_128.toString());
+        verify(widget.ram).setText(MB_128.toString());
     }
 }

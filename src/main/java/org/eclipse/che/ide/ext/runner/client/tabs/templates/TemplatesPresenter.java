@@ -180,12 +180,10 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
         for (Map.Entry<Scope, List<Environment>> entry : environmentMap.entrySet()) {
             List<Environment> value = entry.getValue();
-            if (value.isEmpty()) {
-                continue;
+            if (!value.isEmpty()) {
+                environment = value.get(0);
+                break;
             }
-
-            environment = value.get(0);
-            break;
         }
 
         if (environment == null) {
@@ -240,19 +238,16 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
         switch (scope) {
             case PROJECT:
                 this.scope = SYSTEM;
-                environmentMap.get(scope).clear();
-
-                view.addEnvironment(environmentMap);
                 isProjectChecked = false;
                 break;
             case SYSTEM:
-                environmentMap.get(scope).clear();
                 view.clearTypeButtonsPanel();
-
-                view.addEnvironment(environmentMap);
                 break;
             default:
         }
+
+        environmentMap.get(scope).clear();
+        view.addEnvironment(environmentMap);
 
         selectFirstEnvironment();
     }

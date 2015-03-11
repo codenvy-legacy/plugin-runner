@@ -75,6 +75,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer.TabSelectHandler;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * The class provides much business logic:
@@ -426,7 +427,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
                                           .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")))
-                                          .withMemorySize(RAM._512.getValue());
+                                          .withMemorySize(MB_512.getValue());
 
         return launchRunner(modelsFactory.createRunner(runOptions));
     }
