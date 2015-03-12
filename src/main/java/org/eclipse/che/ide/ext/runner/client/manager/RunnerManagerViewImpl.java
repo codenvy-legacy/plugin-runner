@@ -21,9 +21,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,6 +39,7 @@ import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidget;
 import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfo;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
+import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
@@ -78,13 +79,13 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     //info panel
     @UiField
-    Label     appReference;
+    Label             appReference;
     @UiField
-    FlowPanel moreInfoPanel;
+    FlowPanel         moreInfoPanel;
     @UiField
-    Label     timeout;
+    Label             timeout;
     @UiField
-    Image     image;
+    SimpleLayoutPanel image;
 
     @UiField(provided = true)
     final RunnerResources            resources;
@@ -126,6 +127,10 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.popupPanel = popupPanel;
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
         this.popupPanel.add(moreInfoWidget);
+
+        SVGImage icon = new SVGImage(resources.moreIcon());
+        icon.getElement().setAttribute("class", resources.runnerCss().mainButtonIcon());
+        image.getElement().setInnerHTML(icon.toString());
 
         addMoreInfoPanelHandler();
 
@@ -272,7 +277,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
 
     /** {@inheritDoc} */
     @Override
-    public void showMoreInfoPopup(@Nonnull Runner runner) {
+    public void showMoreInfoPopup(@Nullable Runner runner) {
         moreInfoWidget.update(runner);
 
         int x = timeout.getAbsoluteLeft() - SHIFT_LEFT;

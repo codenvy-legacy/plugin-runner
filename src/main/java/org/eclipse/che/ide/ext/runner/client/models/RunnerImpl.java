@@ -55,8 +55,9 @@ import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.STOPPED
  */
 public class RunnerImpl implements Runner {
 
-    private static final String       RUNNER_NAME   = "Runner ";
-    private static final NumberFormat NUMBER_FORMAT = NumberFormat.getDecimalFormat();
+    public static final  DateTimeFormat DATE_TIME_FORMAT = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss");
+    private static final String         RUNNER_NAME      = "Runner ";
+    private static final NumberFormat   NUMBER_FORMAT    = NumberFormat.getDecimalFormat();
 
     private final RunOptions runOptions;
 
@@ -157,8 +158,8 @@ public class RunnerImpl implements Runner {
 
     /** {@inheritDoc} */
     @Override
-    public long getCreationTime() {
-        return creationTime;
+    public String getCreationTime() {
+        return DATE_TIME_FORMAT.format(new Date(creationTime));
     }
 
     /** {@inheritDoc} */

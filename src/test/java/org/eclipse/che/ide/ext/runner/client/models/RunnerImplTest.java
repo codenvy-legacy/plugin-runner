@@ -10,18 +10,16 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.models;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.dto.RunOptions;
 import org.eclipse.che.api.runner.dto.RunnerMetric;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,11 +31,20 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.eclipse.che.api.runner.internal.Constants.LINK_REL_SHELL_URL;
-import static org.eclipse.che.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
+import static org.eclipse.che.api.runner.ApplicationStatus.NEW;
+import static org.eclipse.che.api.runner.dto.RunnerMetric.ALWAYS_ON;
+import static org.eclipse.che.api.runner.dto.RunnerMetric.LIFETIME;
+import static org.eclipse.che.api.runner.dto.RunnerMetric.STOP_TIME;
+import static org.eclipse.che.api.runner.dto.RunnerMetric.TERMINATION_TIME;
 import static org.eclipse.che.api.runner.internal.Constants.LINK_REL_RUNNER_RECIPE;
+import static org.eclipse.che.api.runner.internal.Constants.LINK_REL_SHELL_URL;
 import static org.eclipse.che.api.runner.internal.Constants.LINK_REL_STOP;
+import static org.eclipse.che.api.runner.internal.Constants.LINK_REL_VIEW_LOG;
 import static org.eclipse.che.api.runner.internal.Constants.LINK_REL_WEB_URL;
+import static org.eclipse.che.ide.ext.runner.client.models.RunnerImpl.DATE_TIME_FORMAT;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_1024;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_2048;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -48,13 +55,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.eclipse.che.api.runner.ApplicationStatus.NEW;
-import static org.eclipse.che.api.runner.dto.RunnerMetric.ALWAYS_ON;
-import static org.eclipse.che.api.runner.dto.RunnerMetric.LIFETIME;
-import static org.eclipse.che.api.runner.dto.RunnerMetric.TERMINATION_TIME;
-import static org.eclipse.che.api.runner.dto.RunnerMetric.STOP_TIME;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_1024;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_2048;
 
 /**
  * @author Andrienko Alexander
@@ -67,6 +67,8 @@ public class RunnerImplTest {
     private static final String TEXT          = "some text/runner/tomcat";
     private static final int    RUNNER_NUMBER = 1;
     private static final long   LONG_CONSTANT = 1234567L;
+
+    private String TIME_CONSTANT;
 
     private List<RunnerMetric> metricList;
     private List<Link>         links;
@@ -92,6 +94,9 @@ public class RunnerImplTest {
 
     @Before
     public void setUp() {
+        // it have to be in this case. in other case we will have problems with initializing tests.
+        TIME_CONSTANT = DATE_TIME_FORMAT.format(new Date(LONG_CONSTANT));
+
         initConstructorParameter();
 
         runner = new RunnerImpl(locale, runnerCounter, runOptions);
@@ -185,7 +190,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
         runner.resetCreationTime();
 
-        assertThat(runner.getCreationTime(), is(LONG_CONSTANT));
+        assertThat(runner.getCreationTime(), equalTo(TIME_CONSTANT));
     }
 
     @Test
@@ -194,7 +199,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        Assert.assertEquals(runner.getCreationTime(), System.currentTimeMillis(), TimeInterval.FIVE_SEC.getValue());
+        assertThat(runner.getCreationTime(), equalTo(DATE_TIME_FORMAT.format(new Date(System.currentTimeMillis()))));
     }
 
     @Test
@@ -203,7 +208,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        Assert.assertEquals(runner.getCreationTime(), System.currentTimeMillis(), TimeInterval.FIVE_SEC.getValue());
+        assertThat(runner.getCreationTime(), equalTo(DATE_TIME_FORMAT.format(new Date(System.currentTimeMillis()))));
     }
 
     @Test
@@ -212,7 +217,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        Assert.assertEquals(runner.getCreationTime(), System.currentTimeMillis(), TimeInterval.FIVE_SEC.getValue());
+        assertThat(runner.getCreationTime(), equalTo(DATE_TIME_FORMAT.format(new Date(System.currentTimeMillis()))));
     }
 
     @Test
@@ -221,7 +226,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        Assert.assertEquals(runner.getCreationTime(), System.currentTimeMillis(), TimeInterval.FIVE_SEC.getValue());
+        assertThat(runner.getCreationTime(), equalTo(DATE_TIME_FORMAT.format(new Date(System.currentTimeMillis()))));
     }
 
     @Test
@@ -230,7 +235,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        Assert.assertEquals(runner.getCreationTime(), System.currentTimeMillis(), TimeInterval.FIVE_SEC.getValue());
+        assertThat(runner.getCreationTime(), equalTo(DATE_TIME_FORMAT.format(new Date(System.currentTimeMillis()))));
     }
 
     @Test
@@ -239,7 +244,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        Assert.assertEquals(runner.getCreationTime(), System.currentTimeMillis(), TimeInterval.FIVE_SEC.getValue());
+        assertThat(runner.getCreationTime(), equalTo(DATE_TIME_FORMAT.format(new Date(System.currentTimeMillis()))));
     }
 
     @Test
@@ -248,7 +253,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        Assert.assertEquals(runner.getCreationTime(), System.currentTimeMillis(), TimeInterval.FIVE_SEC.getValue());
+        assertThat(runner.getCreationTime(), equalTo(DATE_TIME_FORMAT.format(new Date(System.currentTimeMillis()))));
     }
 
     @Test
@@ -259,7 +264,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        assertThat(runner.getCreationTime(), is(LONG_CONSTANT));
+        assertThat(runner.getCreationTime(), equalTo(TIME_CONSTANT));
         verify(descriptor).getCreationTime();
     }
 
@@ -271,7 +276,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        assertThat(runner.getCreationTime(), is(LONG_CONSTANT));
+        assertThat(runner.getCreationTime(), equalTo(TIME_CONSTANT));
         verify(descriptor).getCreationTime();
     }
 
@@ -283,7 +288,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        assertThat(runner.getCreationTime(), is(LONG_CONSTANT));
+        assertThat(runner.getCreationTime(), equalTo(TIME_CONSTANT));
         verify(descriptor).getCreationTime();
     }
 
@@ -295,7 +300,7 @@ public class RunnerImplTest {
 
         runner.resetCreationTime();
 
-        assertThat(runner.getCreationTime(), is(LONG_CONSTANT));
+        assertThat(runner.getCreationTime(), equalTo(TIME_CONSTANT));
         verify(descriptor).getCreationTime();
     }
 
@@ -353,7 +358,7 @@ public class RunnerImplTest {
         when(stat.getValue()).thenReturn(String.valueOf(LONG_CONSTANT));
         runner.setProcessDescriptor(descriptor);
         runner.setStatus(Runner.Status.FAILED);
-        String expectedDate = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss").format(new Date(LONG_CONSTANT));
+        String expectedDate = DATE_TIME_FORMAT.format(new Date(LONG_CONSTANT));
 
         assertThat(runner.getStopTime(), is(expectedDate));
         verify(descriptor).getRunStats();

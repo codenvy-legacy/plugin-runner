@@ -56,8 +56,8 @@ public interface RunnerResources extends ClientBundle {
     @Source("images/mainwidget/stop.svg")
     SVGResource stopButton();
 
-    @Source("images/mainwidget/more-icon.png")
-    ImageResource moreIcon();
+    @Source("images/mainwidget/more-detail.svg")
+    SVGResource moreIcon();
 
     @Source("images/console/arrow-bottom.svg")
     SVGResource arrowBottom();

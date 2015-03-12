@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.common.item;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -25,12 +23,11 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.vectomatic.dom.svg.ui.SVGImage;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Date;
 
 /**
  * Class provides general view representation for runners and environments.
@@ -43,8 +40,7 @@ public class ItemWidgetImpl extends Composite implements ItemWidget, ClickHandle
     interface RunnerViewImplUiBinder extends UiBinder<Widget, ItemWidgetImpl> {
     }
 
-    public static final  DateTimeFormat         DATE_TIME_FORMAT = DateTimeFormat.getFormat("dd-MM-yy HH:mm");
-    private static final RunnerViewImplUiBinder UI_BINDER        = GWT.create(RunnerViewImplUiBinder.class);
+    private static final RunnerViewImplUiBinder UI_BINDER = GWT.create(RunnerViewImplUiBinder.class);
 
     @UiField
     Label             runnerName;
@@ -116,8 +112,8 @@ public class ItemWidgetImpl extends Composite implements ItemWidget, ClickHandle
 
     /** {@inheritDoc} */
     @Override
-    public void setStartTime(@Nonnegative long time) {
-        startTime.setText(DATE_TIME_FORMAT.format(new Date(time)));
+    public void setStartTime(@Nonnull String time) {
+        startTime.setText(time);
     }
 
     /** {@inheritDoc} */

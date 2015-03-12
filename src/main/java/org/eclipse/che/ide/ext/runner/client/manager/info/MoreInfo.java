@@ -13,7 +13,7 @@ package org.eclipse.che.ide.ext.runner.client.manager.info;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import com.google.gwt.user.client.ui.IsWidget;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Provides methods which allow update info about runner and display it on special widget.
@@ -27,5 +27,5 @@ public interface MoreInfo extends IsWidget {
      * @param runner
      *         runner for which need update info
      */
-    void update(@Nonnull Runner runner);
+    void update(@Nullable Runner runner);
 }

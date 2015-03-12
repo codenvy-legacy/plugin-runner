@@ -10,11 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.manager.info;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -22,8 +18,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
-import javax.annotation.Nonnull;
-import java.util.Date;
+import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
+
+import javax.annotation.Nullable;
+
+import static org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter.TIMER_STUB;
 
 /**
  * Class provides view representation of panel which contains additional information about runner.
@@ -36,8 +37,7 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
     interface MoreInfoPopupImplUiBinder extends UiBinder<Widget, MoreInfoImpl> {
     }
 
-    public static final  DateTimeFormat            DATE_TIME_FORMAT = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss");
-    private static final MoreInfoPopupImplUiBinder UI_BINDER        = GWT.create(MoreInfoPopupImplUiBinder.class);
+    private static final MoreInfoPopupImplUiBinder UI_BINDER = GWT.create(MoreInfoPopupImplUiBinder.class);
 
     @UiField
     Label started;
@@ -65,14 +65,21 @@ public class MoreInfoImpl extends Composite implements MoreInfo {
 
     /** {@inheritDoc} */
     @Override
-    public void update(@Nonnull Runner runner) {
-        String startedTime = DATE_TIME_FORMAT.format(new Date(runner.getCreationTime()));
+    public void update(@Nullable Runner runner) {
+        if (runner == null) {
+            started.setText(TIMER_STUB);
+            finished.setText(TIMER_STUB);
+            timeout.setText(TIMER_STUB);
+            activeTime.setText(TIMER_STUB);
 
-        started.setText(startedTime);
-        finished.setText(runner.getStopTime());
-        timeout.setText(runner.getTimeout());
-        activeTime.setText(runner.getActiveTime());
+            ram.setText(0 + "MB");
+        } else {
+            started.setText(runner.getCreationTime());
+            finished.setText(runner.getStopTime());
+            timeout.setText(runner.getTimeout());
+            activeTime.setText(runner.getActiveTime());
 
-        ram.setText(runner.getRAM() + "MB");
+            ram.setText(runner.getRAM() + "MB");
+        }
     }
 }

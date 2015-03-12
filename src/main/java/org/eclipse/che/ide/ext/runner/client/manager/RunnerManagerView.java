@@ -61,7 +61,7 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      * @param runner
      *         runner for which need display additional info
      */
-    void showMoreInfoPopup(@Nonnull Runner runner);
+    void showMoreInfoPopup(@Nullable Runner runner);
 
     /**
      * Updates special popup window which contains info about current runner.

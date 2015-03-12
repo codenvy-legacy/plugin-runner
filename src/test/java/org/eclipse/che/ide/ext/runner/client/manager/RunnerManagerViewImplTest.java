@@ -121,6 +121,8 @@ public class RunnerManagerViewImplTest {
         when(locale.tooltipStopButton()).thenReturn(TEXT);
         when(widgetFactory.createButton(TEXT, imageStop)).thenReturn(stop);
 
+        when(resources.moreIcon()).thenReturn(mock(SVGResource.class, RETURNS_DEEP_STUBS));
+
         when(locale.tooltipDockerButton()).thenReturn(TEXT);
 
         when(widgetFactory.createMoreInfo()).thenReturn(moreInfoWidget);
@@ -154,7 +156,7 @@ public class RunnerManagerViewImplTest {
         MouseOutHandler mouseOutHandler = mouseOutHandlerCaptor.getValue();
         mouseOutHandler.onMouseOut(mock(MouseOutEvent.class));
 
-        verify(resources, times(2)).runnerCss();
+        verify(resources, times(3)).runnerCss();
         verify(runnerCss, times(2)).opacityButton();
         verify(view.image).removeStyleName(TEXT);
         verify(popupPanel).hide();

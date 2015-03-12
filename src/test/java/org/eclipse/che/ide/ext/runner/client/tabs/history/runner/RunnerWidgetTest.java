@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.history.runner;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.item.ItemWidget;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,21 +24,21 @@ import org.mockito.Mock;
 import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Andrienko Alexander
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class RunnerWidgetTest {
-    private static final String TEXT          = "text";
-    private static final long   CREATION_TIME = 1234567L;
+    private static final String TEXT = "text";
+
     @Mock
     private ItemWidget       itemWidget;
     @Mock
@@ -69,7 +69,7 @@ public class RunnerWidgetTest {
         when(resources.runnerCss()).thenReturn(css);
         when(runner.getTitle()).thenReturn(TEXT);
         when(runner.getRAM()).thenReturn(MB_512.getValue());
-        when(runner.getCreationTime()).thenReturn(CREATION_TIME);
+        when(runner.getCreationTime()).thenReturn(TEXT);
     }
 
     @Test
@@ -190,6 +190,6 @@ public class RunnerWidgetTest {
         verify(runner).getRAM();
         verify(itemWidget).setDescription(MB_512.toString());
         verify(runner).getCreationTime();
-        verify(itemWidget).setStartTime(CREATION_TIME);
+        verify(itemWidget).setStartTime(TEXT);
     }
 }

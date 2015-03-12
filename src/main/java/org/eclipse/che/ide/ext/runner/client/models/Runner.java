@@ -56,7 +56,7 @@ public interface Runner {
     void setRAM(@Nonnegative int ram);
 
     /** @return the date when this runner was launched */
-    long getCreationTime();
+    String getCreationTime();
 
     /**
      * Sets system time as runner creation time when runner description is null and sets creation time from descriptor when it isn't null.

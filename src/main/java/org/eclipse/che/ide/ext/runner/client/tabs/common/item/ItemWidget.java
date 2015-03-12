@@ -10,13 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.common.item;
 
-import org.eclipse.che.ide.api.mvp.View;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.ImplementedBy;
 
+import org.eclipse.che.ide.api.mvp.View;
 import org.vectomatic.dom.svg.ui.SVGImage;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -57,7 +56,7 @@ public interface ItemWidget extends View<ItemWidget.ActionDelegate> {
      * @param time
      *         time which need set
      */
-    void setStartTime(@Nonnegative long time);
+    void setStartTime(@Nonnull String time);
 
     /**
      * Sets svg image to special place on widget.

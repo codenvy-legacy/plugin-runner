@@ -10,20 +10,18 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.common.item;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.vectomatic.dom.svg.ui.SVGImage;
-
-import java.util.Date;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -97,12 +95,9 @@ public class ItemWidgetImplTest {
 
     @Test
     public void shouldSetStartTime() {
-        long time = 1424258546812l;
-        String date = ItemWidgetImpl.DATE_TIME_FORMAT.format(new Date(time));
+        itemWidget.setStartTime(TEST_TEXT);
 
-        itemWidget.setStartTime(time);
-
-        verify(itemWidget.startTime).setText(date);
+        verify(itemWidget.startTime).setText(TEST_TEXT);
     }
 
     @Test
