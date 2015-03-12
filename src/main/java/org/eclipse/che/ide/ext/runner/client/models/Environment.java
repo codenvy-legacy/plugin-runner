@@ -41,14 +41,6 @@ public interface Environment {
     @Nonnull
     Scope getScope();
 
-    /**
-     * Sets scope of current environment.
-     *
-     * @param scope
-     *         scope which need set
-     */
-    void setScope(@Nonnull Scope scope);
-
     /** @return path to current environment */
     @Nonnull
     String getPath();
@@ -68,14 +60,6 @@ public interface Environment {
     /** @return type of current environment */
     @Nonnull
     String getType();
-
-    /**
-     * Sets type to environment.
-     *
-     * @param type
-     *         type which need set
-     */
-    void setType(@Nonnull String type);
 
     /** @return map which contains options for current environment */
     @Nonnull

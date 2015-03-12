@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.util;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
@@ -17,8 +20,6 @@ import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -81,13 +82,8 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
                                                           @Nonnull Scope scope) {
         RunnerEnvironmentTree categoryNode = getRunnerCategoryByProjectType(tree, projectType);
         List<RunnerEnvironmentLeaf> leaves = getAllEnvironments(categoryNode);
-        List<Environment> environments = getEnvironmentsFromNodes(leaves, scope);
 
-        for (Environment environment : environments) {
-            environment.setType(tree.getDisplayName());
-        }
-
-        return environments;
+        return getEnvironmentsFromNodes(leaves, scope);
     }
 
     /** {@inheritDoc} */

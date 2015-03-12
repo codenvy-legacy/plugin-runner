@@ -10,13 +10,16 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.models;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironment;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
+import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -24,9 +27,9 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static com.google.gwt.user.client.Window.Location.getHost;
 import static com.google.gwt.user.client.Window.Location.getProtocol;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * @author Andrey Plotnikov
@@ -35,20 +38,23 @@ import static com.google.gwt.user.client.Window.Location.getProtocol;
  */
 public class EnvironmentImpl implements Environment {
 
-    public static final String ROOT_FOLDER = "/.codenvy/runners/environments/";
+    public static final String ROOT_FOLDER          = "/.codenvy/runners/environments/";
+    public static final String PROJECT_SCOPE_PREFIX = "project://";
+    public static final String SYSTEM_SCOPE_PREFIX  = "system:/";
 
     private final RunnerEnvironment   runnerEnvironment;
     private final String              path;
     private final Map<String, String> options;
+    private final String              id;
+    private final String              name;
+    private final Scope               scope;
+    private final String              type;
 
-    private String id;
-    private String name;
-    private Scope  scope;
-    private String type;
-    private int    ram;
+    private int ram;
 
     @Inject
     public EnvironmentImpl(AppContext appContext,
+                           ProjectTypeRegistry projectTypeRegistry,
                            @Assisted @Nonnull RunnerEnvironment runnerEnvironment,
                            @Assisted @Nonnull Scope scope) {
         this.runnerEnvironment = runnerEnvironment;
@@ -59,9 +65,11 @@ public class EnvironmentImpl implements Environment {
         int index = id.lastIndexOf('/') + 1;
         String lastIdPart = id.substring(index);
 
-        this.name = runnerEnvironment.getDisplayName();
+        String name = runnerEnvironment.getDisplayName();
         if (name == null || name.isEmpty()) {
-            name = lastIdPart;
+            this.name = lastIdPart;
+        } else {
+            this.name = name;
         }
 
         CurrentProject currentProject = appContext.getCurrentProject();
@@ -78,6 +86,19 @@ public class EnvironmentImpl implements Environment {
         }
 
         options = Collections.unmodifiableMap(runnerEnvironment.getOptions());
+
+        String type = id.replaceFirst(SYSTEM.equals(scope) ? SYSTEM_SCOPE_PREFIX : PROJECT_SCOPE_PREFIX, "");
+        index = type.lastIndexOf('/');
+        type = type.substring(0, index);
+
+        if (type.isEmpty()) {
+            String projectType = currentProject.getProjectDescription().getType();
+            ProjectTypeDefinition typeDefinition = projectTypeRegistry.getProjectType(projectType);
+
+            this.type = typeDefinition.getRunnerCategories().get(0);
+        } else {
+            this.type = type;
+        }
     }
 
     /** {@inheritDoc} */
@@ -109,12 +130,6 @@ public class EnvironmentImpl implements Environment {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setScope(@Nonnull Scope scope) {
-        this.scope = scope;
-    }
-
-    /** {@inheritDoc} */
     @Nonnull
     @Override
     public String getPath() {
@@ -138,12 +153,6 @@ public class EnvironmentImpl implements Environment {
     @Override
     public String getType() {
         return type;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setType(@Nonnull String type) {
-        this.type = type;
     }
 
     @Nonnull

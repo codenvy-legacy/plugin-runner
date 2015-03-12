@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.util;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironment;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
@@ -18,8 +20,6 @@ import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -175,9 +175,6 @@ public class GetEnvironmentsUtilImplTest {
         verify(runnerEnvLeaf5).getEnvironment();
         verify(modelsFactory).createEnvironment(runEnvironment1, SYSTEM);
         verify(modelsFactory).createEnvironment(runEnvironment2, SYSTEM);
-
-        verify(environment1).setType(CATEGORY1);
-        verify(environment2).setType(CATEGORY1);
 
         assertThat(result, hasItems(environment1, environment2));
     }
