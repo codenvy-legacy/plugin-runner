@@ -38,6 +38,6 @@ public class TabTypeTest {
 
     @Test
     public void shouldReturnTabWidthOfLeftPanel() throws Exception {
-        assertThat(LEFT.getWidth(), is("94px"));
+        assertThat(LEFT.getWidth(), is("70px"));
     }
 }
