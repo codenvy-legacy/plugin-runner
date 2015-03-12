@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
  * @author Valeriy Svydenko
  */
 public enum TabType {
-    LEFT("21px", "94px"),
+    LEFT("21px", "70px"),
     RIGHT("20px", "70px");
 
     private final String height;
