@@ -104,6 +104,7 @@ public class ItemWidgetImpl extends Composite implements ItemWidget, ClickHandle
     /** {@inheritDoc} */
     @Override
     public void setName(@Nonnull String name) {
+        this.ensureDebugId(name);
         runnerName.setText(name);
     }
 
