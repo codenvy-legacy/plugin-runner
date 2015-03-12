@@ -10,6 +10,14 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.manager;
 
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.dto.RunOptions;
@@ -23,40 +31,32 @@ import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.runneractions.RunnerAction;
-import org.eclipse.che.ide.ext.runner.client.runneractions.impl.StopAction;
-import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
-import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
-import org.eclipse.che.ide.ext.runner.client.state.State;
-import org.eclipse.che.ide.ext.runner.client.tabs.common.TabBuilder;
-import org.eclipse.che.ide.ext.runner.client.tabs.history.HistoryPanel;
-import org.eclipse.che.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
-import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
-import org.eclipse.che.ide.ext.runner.client.util.annotations.RightPanel;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.models.RunnerCounter;
+import org.eclipse.che.ide.ext.runner.client.runneractions.RunnerAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
+import org.eclipse.che.ide.ext.runner.client.runneractions.impl.StopAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
+import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import org.eclipse.che.ide.ext.runner.client.selection.Selection;
+import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.state.PanelState;
+import org.eclipse.che.ide.ext.runner.client.state.State;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.Tab;
+import org.eclipse.che.ide.ext.runner.client.tabs.common.TabBuilder;
 import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
+import org.eclipse.che.ide.ext.runner.client.tabs.history.HistoryPanel;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
+import org.eclipse.che.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
+import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
 import org.eclipse.che.ide.ext.runner.client.util.annotations.LeftPanel;
-
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.google.web.bindery.event.shared.EventBus;
+import org.eclipse.che.ide.ext.runner.client.util.annotations.RightPanel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -72,8 +72,8 @@ import static org.eclipse.che.ide.ext.runner.client.selection.Selection.RUNNER;
 import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState.REMOVABLE;
 import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState.VISIBLE;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer.TabSelectHandler;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
@@ -219,7 +219,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                            .title(locale.runnerTabHistory())
                                            .visible(REMOVABLE)
                                            .scope(EnumSet.allOf(State.class))
-                                           .type(LEFT_PANEL)
+                                           .tabType(LEFT)
                                            .build();
 
         container.addTab(historyTab);
@@ -241,7 +241,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                             .title(locale.runnerTabTemplates())
                                             .visible(REMOVABLE)
                                             .scope(EnumSet.allOf(State.class))
-                                            .type(LEFT_PANEL)
+                                            .tabType(LEFT)
                                             .build();
 
         container.addTab(templateTab);
@@ -268,7 +268,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                            .visible(REMOVABLE)
                                            .selectHandler(consoleHandler)
                                            .scope(EnumSet.of(State.RUNNERS))
-                                           .type(RIGHT_PANEL)
+                                           .tabType(RIGHT)
                                            .build();
 
         container.addTab(consoleTab);
@@ -288,7 +288,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                             .visible(VISIBLE)
                                             .selectHandler(terminalHandler)
                                             .scope(EnumSet.of(State.RUNNERS))
-                                            .type(RIGHT_PANEL)
+                                            .tabType(RIGHT)
                                             .build();
 
         container.addTab(terminalTab);
@@ -311,7 +311,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                               .title(locale.runnerTabProperties())
                                               .visible(REMOVABLE)
                                               .scope(EnumSet.allOf(State.class))
-                                              .type(RIGHT_PANEL)
+                                              .tabType(RIGHT)
                                               .build();
 
         container.addTab(propertiesTab);
@@ -520,6 +520,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     @Override
     public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
         view.setEnableRunButton(true);
+        view.setEnableReRunButton(false);
 
         templateContainer.setVisible(true);
 

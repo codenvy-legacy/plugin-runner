@@ -33,9 +33,6 @@
             position: relative;
             width: 18px;
             height: 18px;
-            border-radius: 2px;
-            border: 1px solid #202020;
-            background: #373737;
             margin: 6px 0 6px 9px;
         }
     </ui:style>

@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.container;
 
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.Tab;
@@ -17,9 +20,6 @@ import org.eclipse.che.ide.ext.runner.client.tabs.common.TabPresenter;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,9 +92,9 @@ public class TabContainerViewImplTest {
         when(tab2.getTitle()).thenReturn(TITLE2);
         when(tab3.getTitle()).thenReturn(TITLE3);
 
-        when(tab1.getTabType()).thenReturn(TabType.LEFT_PANEL);
-        when(tab2.getTabType()).thenReturn(TabType.LEFT_PANEL);
-        when(tab3.getTabType()).thenReturn(TabType.RIGHT_PANEL);
+        when(tab1.getTabType()).thenReturn(TabType.LEFT);
+        when(tab2.getTabType()).thenReturn(TabType.LEFT);
+        when(tab3.getTabType()).thenReturn(TabType.RIGHT);
 
         when(widgetFactory.createTab(anyString(), any(TabType.class))).thenReturn(tabWidget1)
                                                                       .thenReturn(tabWidget2)
@@ -116,7 +116,7 @@ public class TabContainerViewImplTest {
         verify(tab1).getTitle();
         verify(tab1).getTabType();
 
-        verify(widgetFactory).createTab(TITLE1, TabType.LEFT_PANEL);
+        verify(widgetFactory).createTab(TITLE1, TabType.LEFT);
 
         verify(tabWidget1).setDelegate(tabActionDelegateCaptor.capture());
         TabWidget.ActionDelegate delegate = tabActionDelegateCaptor.getValue();

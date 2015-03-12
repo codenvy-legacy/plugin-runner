@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.container.tab;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,12 +22,15 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+
 import javax.annotation.Nonnull;
 
 /**
  * Class provides view representation of tab.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class TabWidgetImpl extends Composite implements TabWidget, ClickHandler {
 
@@ -56,6 +58,8 @@ public class TabWidgetImpl extends Composite implements TabWidget, ClickHandler 
         initWidget(UI_BINDER.createAndBindUi(this));
 
         setHeight(tabType.getHeight());
+        setWidth(tabType.getWidth());
+
         this.tabTitle.setText(title);
 
         addDomHandler(this, ClickEvent.getType());

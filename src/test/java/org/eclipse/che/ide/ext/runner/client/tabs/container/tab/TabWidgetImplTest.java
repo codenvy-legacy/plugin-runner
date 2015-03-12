@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.container.tab;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget.ActionDelegate;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget.ActionDelegate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +49,7 @@ public class TabWidgetImplTest {
     public void constructorShouldBeVerified() throws Exception {
         verify(widget.tabTitle).setText(SOME_TEXT);
         verify(tabType).getHeight();
+        verify(tabType).getWidth();
     }
 
     @Test

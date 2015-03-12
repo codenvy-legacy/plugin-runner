@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.common;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.ext.runner.client.state.State;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +28,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * @author Andrienko Alexander
+ * @author Valeriy Svydenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class TabBuilderTest {
@@ -55,7 +56,7 @@ public class TabBuilderTest {
                   .presenter(presenter)
                   .scope(scopes)
                   .selectHandler(handler)
-                  .type(TabType.RIGHT_PANEL);
+                  .tabType(TabType.RIGHT);
 
         assertThat(tabBuilder.build().isRemovable(), is(true));
     }
@@ -67,7 +68,7 @@ public class TabBuilderTest {
                             .presenter(presenter)
                             .scope(scopes)
                             .selectHandler(handler)
-                            .type(TabType.LEFT_PANEL)
+                            .tabType(TabType.LEFT)
                             .build();
 
         assertThat(tab.isRemovable(), is(false));
@@ -75,18 +76,19 @@ public class TabBuilderTest {
         assertThat(tab.getTab(), is(presenter));
         assertThat(tab.isAvailableScope(State.RUNNERS), is(true));
         assertThat(tab.isAvailableScope(State.TEMPLATE), is(false));
-        assertThat(tab.getTabType(), is(TabType.LEFT_PANEL));
+        assertThat(tab.getTabType(), is(TabType.LEFT));
     }
 
     @Test
     public void shouldTitleIsNull() {
         String errorMessage = null;
         try {
-            tabBuilder.visible(Tab.VisibleState.VISIBLE).
-                       presenter(presenter).
-                       scope(scopes).
-                       selectHandler(handler).type(TabType.LEFT_PANEL).
-                       build();
+            tabBuilder.visible(Tab.VisibleState.VISIBLE)
+                      .presenter(presenter)
+                      .scope(scopes)
+                      .selectHandler(handler)
+                      .tabType(TabType.LEFT)
+                      .build();
         } catch (IllegalStateException e) {
             errorMessage = e.getMessage();
         }
@@ -101,7 +103,7 @@ public class TabBuilderTest {
                       .title("")
                       .presenter(presenter)
                       .selectHandler(handler)
-                      .type(TabType.LEFT_PANEL)
+                      .tabType(TabType.LEFT)
                       .build();
         } catch (IllegalStateException e) {
             errorMessage = e.getMessage();
@@ -117,7 +119,7 @@ public class TabBuilderTest {
                       .title("")
                       .scope(scopes)
                       .selectHandler(handler)
-                      .type(TabType.LEFT_PANEL)
+                      .tabType(TabType.LEFT)
                       .build();
         } catch (IllegalStateException e) {
             errorMessage = e.getMessage();
@@ -126,7 +128,7 @@ public class TabBuilderTest {
     }
 
     @Test
-    public void shouldTabTypeIsNull() {
+    public void shouldTabWidthIsNull() {
         String errorMessage = null;
         try {
             tabBuilder.visible(Tab.VisibleState.VISIBLE)

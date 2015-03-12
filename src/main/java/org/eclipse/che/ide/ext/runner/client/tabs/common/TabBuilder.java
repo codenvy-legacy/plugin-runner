@@ -10,11 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.common;
 
+import com.google.inject.Inject;
+
 import org.eclipse.che.ide.ext.runner.client.state.State;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer.TabSelectHandler;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType;
-import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -27,6 +28,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState
  *
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public class TabBuilder {
 
@@ -95,15 +97,15 @@ public class TabBuilder {
     }
 
     /**
-     * Adds type to configuration of tab.
+     * Adds height to configuration of tab.
      *
-     * @param type
-     *         type that needs to be added
+     * @param tabType
+     *         height of tab that needs to be added
      * @return an instance of {@link TabBuilder}
      */
     @Nonnull
-    public TabBuilder type(@Nonnull TabType type) {
-        tabType = type;
+    public TabBuilder tabType(@Nonnull TabType tabType) {
+        this.tabType = tabType;
         return this;
     }
 

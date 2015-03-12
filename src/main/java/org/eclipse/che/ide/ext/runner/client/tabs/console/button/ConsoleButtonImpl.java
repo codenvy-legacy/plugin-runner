@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.console.button;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.manager.tooltip.TooltipWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -28,6 +26,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.manager.tooltip.TooltipWidget;
 import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
 
 /**
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class ConsoleButtonImpl extends Composite implements ConsoleButton, ClickHandler, MouseOverHandler, MouseOutHandler {
 
@@ -85,11 +86,9 @@ public class ConsoleButtonImpl extends Composite implements ConsoleButton, Click
         if (isChecked) {
             icon.removeClassNameBaseVal(runnerCss.whiteColor());
             icon.addClassNameBaseVal(runnerCss.activeConsoleButton());
-            removeStyleName(runnerCss.consoleButtonShadow());
         } else {
             icon.removeClassNameBaseVal(runnerCss.activeConsoleButton());
             icon.addClassNameBaseVal(runnerCss.whiteColor());
-            addStyleName(runnerCss.consoleButtonShadow());
         }
 
         image.getElement().setInnerHTML(icon.toString());

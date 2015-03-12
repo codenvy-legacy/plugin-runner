@@ -10,11 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.container;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
-import org.eclipse.che.ide.ext.runner.client.tabs.common.Tab;
-import org.eclipse.che.ide.ext.runner.client.tabs.common.TabPresenter;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -23,7 +18,12 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
+import org.eclipse.che.ide.ext.runner.client.tabs.common.Tab;
+import org.eclipse.che.ide.ext.runner.client.tabs.common.TabPresenter;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT;
 
 /**
  * @author Andrey Plotnikov
@@ -99,7 +99,7 @@ public class TabContainerViewImpl extends Composite implements TabContainerView 
             widget.unSelect();
         }
 
-        boolean isLeftPanel = LEFT_PANEL.equals(tab.getTabType());
+        boolean isLeftPanel = LEFT.equals(tab.getTabType());
 
         titles.get(tab.getTitle()).select(isLeftPanel ? Background.BLACK : Background.GREY);
     }

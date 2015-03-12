@@ -13,22 +13,32 @@ package org.eclipse.che.ide.ext.runner.client.tabs.container.tab;
 import javax.annotation.Nonnull;
 
 /**
- * The class contains values of tabs height
+ * The class contains values of tabs size
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 public enum TabType {
-    LEFT_PANEL("21px"), RIGHT_PANEL("20px");
+    LEFT("21px", "94px"),
+    RIGHT("20px", "70px");
 
     private final String height;
+    private final String width;
 
-    TabType(@Nonnull String height) {
+    TabType(@Nonnull String height, @Nonnull String width) {
         this.height = height;
+        this.width = width;
     }
 
     /** @return string value of height. */
     @Nonnull
     public String getHeight() {
         return height;
+    }
+
+    /** @return string value of width. */
+    @Nonnull
+    public String getWidth() {
+        return width;
     }
 }

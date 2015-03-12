@@ -127,8 +127,6 @@ public interface RunnerResources extends ClientBundle {
 
         String console();
 
-        String consoleButtonShadow();
-
         String activeConsoleButton();
 
         String wrappedText();

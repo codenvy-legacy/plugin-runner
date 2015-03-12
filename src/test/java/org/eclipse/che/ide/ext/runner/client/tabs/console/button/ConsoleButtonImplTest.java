@@ -10,14 +10,14 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.console.button;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.manager.tooltip.TooltipWidget;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.button.ConsoleButton.ActionDelegate;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.manager.tooltip.TooltipWidget;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.button.ConsoleButton.ActionDelegate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class ConsoleButtonImplTest {
@@ -62,7 +63,6 @@ public class ConsoleButtonImplTest {
 
         verify(runnerCss).activeConsoleButton();
         verify(runnerCss).whiteColor();
-        verify(runnerCss).consoleButtonShadow();
     }
 
     @Test
@@ -73,7 +73,6 @@ public class ConsoleButtonImplTest {
 
         verify(runnerCss).activeConsoleButton();
         verify(runnerCss).whiteColor();
-        verify(runnerCss).consoleButtonShadow();
     }
 
     @Test
@@ -84,7 +83,6 @@ public class ConsoleButtonImplTest {
 
         verify(runnerCss).activeConsoleButton();
         verify(runnerCss).whiteColor();
-        verify(runnerCss).consoleButtonShadow();
     }
 
     @Test

@@ -37,17 +37,13 @@
 }
 
 .console {
-    background-color: consoleBackgroundColor;
+    background-color: #373737;
     -moz-user-select: text;
     -webkit-user-select: text;
     user-select: text;
     color: outputFontColor;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-}
-
-.consoleButtonShadow {
-    box-shadow: inset 0 1px 0 0 #4d4d4d;
 }
 
 .activeConsoleButton {

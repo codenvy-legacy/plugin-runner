@@ -10,6 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.manager;
 
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwtmockito.GwtMockitoTestRunner;
+import com.google.inject.Provider;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
@@ -22,6 +28,7 @@ import org.eclipse.che.ide.api.parts.PartStack;
 import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
@@ -33,6 +40,7 @@ import org.eclipse.che.ide.ext.runner.client.runneractions.impl.StopAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
+import org.eclipse.che.ide.ext.runner.client.selection.Selection;
 import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.state.PanelState;
 import org.eclipse.che.ide.ext.runner.client.state.State;
@@ -47,14 +55,6 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.Propertie
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
 import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.inject.Provider;
-import com.google.web.bindery.event.shared.EventBus;
-
-import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
-import org.eclipse.che.ide.ext.runner.client.selection.Selection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,8 +67,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -80,11 +81,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Andrienko Alexander
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class RunnerManagerPresenterTest {
@@ -218,23 +219,23 @@ public class RunnerManagerPresenterTest {
                                       .thenReturn(tabBuilderTerminal)
                                       .thenReturn(tabBuilderProperties);
         //init new historyTab
-        initTab(tabBuilderHistory, history, Tab.VisibleState.REMOVABLE, LEFT_PANEL, EnumSet.allOf(State.class), HISTORY_TAB);
+        initTab(tabBuilderHistory, history, Tab.VisibleState.REMOVABLE, LEFT, EnumSet.allOf(State.class), HISTORY_TAB);
         when(tabBuilderHistory.build()).thenReturn(historyTab);
 
         //init template tab
-        initTab(tabBuilderTemplate, templates, Tab.VisibleState.REMOVABLE, LEFT_PANEL, EnumSet.allOf(State.class), TEMPLATES);
+        initTab(tabBuilderTemplate, templates, Tab.VisibleState.REMOVABLE, LEFT, EnumSet.allOf(State.class), TEMPLATES);
         when(tabBuilderTemplate.build()).thenReturn(templateTab);
 
         //init console tab
-        initTab(tabBuilderConsole, consoleContainer, Tab.VisibleState.REMOVABLE, RIGHT_PANEL, EnumSet.of(State.RUNNERS), CONSOLE);
+        initTab(tabBuilderConsole, consoleContainer, Tab.VisibleState.REMOVABLE, RIGHT, EnumSet.of(State.RUNNERS), CONSOLE);
         when(tabBuilderConsole.build()).thenReturn(consoleTab);
 
         //init terminal tab
-        initTab(tabBuilderTerminal, terminalContainer, Tab.VisibleState.VISIBLE, RIGHT_PANEL, EnumSet.of(State.RUNNERS), TERMINAL);
+        initTab(tabBuilderTerminal, terminalContainer, Tab.VisibleState.VISIBLE, RIGHT, EnumSet.of(State.RUNNERS), TERMINAL);
         when(tabBuilderTerminal.build()).thenReturn(terminalTab);
 
         //init properties tab
-        initTab(tabBuilderProperties, propertiesContainer, Tab.VisibleState.REMOVABLE, RIGHT_PANEL, EnumSet.allOf(State.class), PROPERTIES);
+        initTab(tabBuilderProperties, propertiesContainer, Tab.VisibleState.REMOVABLE, RIGHT, EnumSet.allOf(State.class), PROPERTIES);
         when(tabBuilderProperties.build()).thenReturn(propertiesTab);
 
         when(timerFactory.newInstance(any(TimerFactory.TimerCallBack.class))).thenReturn(timer);
@@ -307,7 +308,7 @@ public class RunnerManagerPresenterTest {
         when(tabBuilder.title(title)).thenReturn(tabBuilder);
         when(tabBuilder.visible(state)).thenReturn(tabBuilder);
         when(tabBuilder.scope(stateSet)).thenReturn(tabBuilder);
-        when(tabBuilder.type(tabType)).thenReturn(tabBuilder);
+        when(tabBuilder.tabType(tabType)).thenReturn(tabBuilder);
     }
 
     @Test
@@ -318,7 +319,7 @@ public class RunnerManagerPresenterTest {
 
         /* verify initialize LeftPanel */
         //init new historyTab
-        verifyInitTab(tabBuilderHistory, history, Tab.VisibleState.REMOVABLE, LEFT_PANEL, EnumSet.allOf(State.class), HISTORY_TAB);
+        verifyInitTab(tabBuilderHistory, history, Tab.VisibleState.REMOVABLE, LEFT, EnumSet.allOf(State.class), HISTORY_TAB);
         verify(leftTabContainer).addTab(historyTab);
 
         verifyTabSelectHandler(tabBuilderHistory);
@@ -326,7 +327,7 @@ public class RunnerManagerPresenterTest {
         verify(view).showOtherButtons();
 
         //init template tab
-        verifyInitTab(tabBuilderTemplate, templates, Tab.VisibleState.REMOVABLE, LEFT_PANEL, EnumSet.allOf(State.class), TEMPLATES);
+        verifyInitTab(tabBuilderTemplate, templates, Tab.VisibleState.REMOVABLE, LEFT, EnumSet.allOf(State.class), TEMPLATES);
         verify(leftTabContainer).addTab(templateTab);
 
         verifyTabSelectHandler(tabBuilderTemplate);
@@ -347,7 +348,7 @@ public class RunnerManagerPresenterTest {
 
         /* verify initialize RightPanel*/
         //init console tab
-        verifyInitTab(tabBuilderConsole, consoleContainer, Tab.VisibleState.REMOVABLE, RIGHT_PANEL, EnumSet.of(State.RUNNERS), CONSOLE);
+        verifyInitTab(tabBuilderConsole, consoleContainer, Tab.VisibleState.REMOVABLE, RIGHT, EnumSet.of(State.RUNNERS), CONSOLE);
         verify(rightTabContainer).addTab(consoleTab);
 
         //verify consoleHandler
@@ -355,7 +356,7 @@ public class RunnerManagerPresenterTest {
         verify(runner).setActiveTab(CONSOLE);
 
         //init terminal tab
-        verifyInitTab(tabBuilderTerminal, terminalContainer, Tab.VisibleState.VISIBLE, RIGHT_PANEL, EnumSet.of(State.RUNNERS), TERMINAL);
+        verifyInitTab(tabBuilderTerminal, terminalContainer, Tab.VisibleState.VISIBLE, RIGHT, EnumSet.of(State.RUNNERS), TERMINAL);
         verify(rightTabContainer).addTab(terminalTab);
 
         //verify terminalHandler
@@ -363,7 +364,7 @@ public class RunnerManagerPresenterTest {
         verify(runner).setActiveTab(TERMINAL);
 
         //init properties tab
-        verifyInitTab(tabBuilderProperties, propertiesContainer, Tab.VisibleState.REMOVABLE, RIGHT_PANEL, EnumSet.allOf(State.class), PROPERTIES);
+        verifyInitTab(tabBuilderProperties, propertiesContainer, Tab.VisibleState.REMOVABLE, RIGHT, EnumSet.allOf(State.class), PROPERTIES);
         verify(rightTabContainer).addTab(propertiesTab);
 
         //verify templatesHandler
@@ -385,7 +386,7 @@ public class RunnerManagerPresenterTest {
         verify(tabBuilder).title(title);
         verify(tabBuilder).visible(state);
         verify(tabBuilder).scope(states);
-        verify(tabBuilder).type(type);
+        verify(tabBuilder).tabType(type);
     }
 
     private void verifyTabSelectHandler(TabBuilder tabBuilder) {

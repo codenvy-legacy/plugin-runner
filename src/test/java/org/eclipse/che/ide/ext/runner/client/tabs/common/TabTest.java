@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.common;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.ext.runner.client.state.State;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +46,7 @@ public class TabTest {
     @Before
     public void setUp() {
         scopes.add(State.RUNNERS);
-        tab = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.VISIBLE);
+        tab = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT, Tab.VisibleState.VISIBLE);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class TabTest {
         assertThat(tab.getTab(), is(tabPresenter));
         assertThat(tab.isAvailableScope(State.RUNNERS), is(true));
         assertThat(tab.isAvailableScope(State.TEMPLATE), is(false));
-        assertThat(tab.getTabType(), is(TabType.LEFT_PANEL));
+        assertThat(tab.getTabType(), is(TabType.LEFT));
         assertThat(tab.isRemovable(), is(false));
     }
 
@@ -68,7 +68,7 @@ public class TabTest {
 
     @Test
     public void shouldPerformHandlerWhenHandlerIsNull() {
-        tab = new Tab(title, tabPresenter, scopes, null, TabType.LEFT_PANEL, Tab.VisibleState.VISIBLE);
+        tab = new Tab(title, tabPresenter, scopes, null, TabType.LEFT, Tab.VisibleState.VISIBLE);
 
         tab.performHandler();
 
@@ -87,27 +87,27 @@ public class TabTest {
 
     @Test
     public void shouldNotEqualsWhenObjectIsNewTabWithAnotherTitle() {
-        Tab tab2 = new Tab("new Title", tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.VISIBLE);
+        Tab tab2 = new Tab("new Title", tabPresenter, scopes, handler, TabType.LEFT, Tab.VisibleState.VISIBLE);
         assertThat(tab.equals(tab2), is(false));
     }
 
     @Test
     public void shouldEqualsWhenObjectIsNewTabButTitleIsSame() {
-        Tab tab2 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
+        Tab tab2 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT, Tab.VisibleState.REMOVABLE);
         assertThat(tab.equals(tab2), is(true));
     }
 
     @Test
     public void shouldCheckHashCodeForEquivalentObjects() {
-        Tab tab1 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
-        Tab tab2 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
+        Tab tab1 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT, Tab.VisibleState.REMOVABLE);
+        Tab tab2 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT, Tab.VisibleState.REMOVABLE);
         assertThat(tab1.hashCode(), is(tab2.hashCode()));
     }
 
     @Test
     public void shouldCheckHashCodeForNotEquivalentObjects() {
-        Tab tab1 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
-        Tab tab2 = new Tab("title", tabPresenter, scopes, handler, TabType.LEFT_PANEL, Tab.VisibleState.REMOVABLE);
+        Tab tab1 = new Tab(title, tabPresenter, scopes, handler, TabType.LEFT, Tab.VisibleState.REMOVABLE);
+        Tab tab2 = new Tab("title", tabPresenter, scopes, handler, TabType.LEFT, Tab.VisibleState.REMOVABLE);
         assertThat(tab1.hashCode(), is(not(tab2.hashCode())));
     }
 

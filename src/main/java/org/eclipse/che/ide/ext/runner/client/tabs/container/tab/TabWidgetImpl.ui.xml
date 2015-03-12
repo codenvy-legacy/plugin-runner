@@ -20,7 +20,6 @@
             cursor: pointer;
             margin-left: 7px;
             margin-top: 4px;
-            width: 70px;
             float: left;
         }
 

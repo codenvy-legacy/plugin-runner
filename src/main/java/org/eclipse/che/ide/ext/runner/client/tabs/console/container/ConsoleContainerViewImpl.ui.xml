@@ -15,6 +15,13 @@
 
     <ui:with field="resources" type="org.eclipse.che.ide.ext.runner.client.RunnerResources"/>
 
+    <ui:style>
+        .border {
+            border: 1px solid  #242424;
+            background-color: #373737;
+        }
+    </ui:style>
+
     <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize} {resources.runnerCss.consoleBackground}">
         <g:north size="5">
             <g:SimpleLayoutPanel/>
@@ -25,7 +32,7 @@
         </g:west>
 
         <g:center>
-            <g:SimplePanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize}"/>
+            <g:SimplePanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize} {style.border}"/>
         </g:center>
     </g:DockLayoutPanel>
 

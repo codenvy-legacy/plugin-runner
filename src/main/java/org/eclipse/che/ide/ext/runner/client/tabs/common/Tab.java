@@ -25,6 +25,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState
  * The class that contains general information about tab of 'Multi runner' panel.
  *
  * @author Andrey Plotnikov
+ * @author Valeriy Svydenko
  */
 public class Tab {
 

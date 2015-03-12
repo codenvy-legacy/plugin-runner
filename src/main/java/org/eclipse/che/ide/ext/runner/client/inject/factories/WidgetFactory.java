@@ -28,7 +28,6 @@ import org.eclipse.che.ide.ext.runner.client.tabs.templates.environment.Environm
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.scopebutton.ScopeButton;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.Terminal;
-
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
@@ -70,7 +69,7 @@ public interface WidgetFactory {
      * @param title
      *         title which need set to widget's special place
      * @param tabType
-     *         enum which contains string value of height
+     *         enum which contains values of height and width
      * @return an instance of {@link TabWidget}
      */
     @Nonnull

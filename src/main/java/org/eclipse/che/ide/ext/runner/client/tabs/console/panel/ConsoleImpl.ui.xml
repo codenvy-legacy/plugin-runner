@@ -16,17 +16,13 @@
     <ui:with field='res' type='org.eclipse.che.ide.ext.runner.client.RunnerResources'/>
 
     <ui:style>
-        .mainPanel {
-            border: 1px solid #000000;
-        }
-
         .fontStyle pre {
             font-family: "Droid Sans Mono", monospace;
             font-size: 11px;
         }
     </ui:style>
 
-    <g:FlowPanel ui:field="mainPanel" addStyleNames="{style.mainPanel} {res.runnerCss.consoleBackground} {res.runnerCss.fullSize}">
+    <g:FlowPanel ui:field="mainPanel" addStyleNames="{res.runnerCss.consoleBackground} {res.runnerCss.fullSize}">
         <g:ScrollPanel ui:field="panel" addStyleNames="{style.fontStyle} {res.runnerCss.console} {res.runnerCss.fullSize}">
             <g:FlowPanel ui:field="output"/>
         </g:ScrollPanel>

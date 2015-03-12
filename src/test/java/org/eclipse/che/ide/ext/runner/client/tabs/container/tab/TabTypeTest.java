@@ -14,20 +14,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT;
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT_PANEL;
-import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT_PANEL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TabTypeTest {
     @Test
-    public void shouldReturnTabHeight1() throws Exception {
-        assertThat(RIGHT_PANEL.getHeight(), is("20px"));
+    public void shouldReturnTabHeightOfRightPanel() throws Exception {
+        assertThat(RIGHT.getHeight(), is("20px"));
     }
 
     @Test
-    public void shouldReturnTabHeight2() throws Exception {
-        assertThat(LEFT_PANEL.getHeight(), is("21px"));
+    public void shouldReturnTabHeightOfLeftPanel() throws Exception {
+        assertThat(LEFT.getHeight(), is("21px"));
+    }
+
+    @Test
+    public void shouldReturnTabWidthOfRightPanel() throws Exception {
+        assertThat(RIGHT.getWidth(), is("70px"));
+    }
+
+    @Test
+    public void shouldReturnTabWidthOfLeftPanel() throws Exception {
+        assertThat(LEFT.getWidth(), is("94px"));
     }
 }
