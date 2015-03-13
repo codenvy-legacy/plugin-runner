@@ -17,22 +17,30 @@
 
     <ui:style>
         .border {
-            border: 1px solid  #242424;
+            border: 1px solid #242424;
             background-color: #373737;
+        }
+
+        .borderLine {
+            height: 6px;
+            width: 100%;
+            float: right;
+            box-shadow: 4px 2px 5px 0 rgba(50, 50, 50, 0.75);
+            border-bottom: 1px solid #242424;;
+            z-index: 1;
         }
     </ui:style>
 
     <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize} {resources.runnerCss.consoleBackground}">
-        <g:north size="5">
-            <g:SimpleLayoutPanel/>
-        </g:north>
-
         <g:west size="36">
             <g:FlowPanel ui:field="buttons" addStyleNames="{resources.runnerCss.fullSize}"/>
         </g:west>
 
         <g:center>
-            <g:SimplePanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize} {style.border}"/>
+            <g:FlowPanel addStyleNames="{resources.runnerCss.fullSize}">
+                <g:SimpleLayoutPanel addStyleNames="{style.borderLine} {resources.runnerCss.consoleBackground}"/>
+                <g:SimplePanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize} {style.border}"/>
+            </g:FlowPanel>
         </g:center>
     </g:DockLayoutPanel>
 
