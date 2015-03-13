@@ -36,18 +36,20 @@
 
         .settingField {
             float: right;
+            font-weight: inherit;
             width: 160px;
             border: 1px solid #191c1e;
             border-radius: 2px;
             margin-right: 50px;
-            padding-left: 6px;
+            padding-left: 5px;
             padding-top: 2px;
             background-color: #373737;
             box-shadow: 0 1px 0 0 rgba(223, 223, 223, 0.4);
         }
 
-        .listBoxWidth {
+        .listBoxStyle {
             width: 170px !important;
+            padding-left: 3px;
         }
 
         .label {
@@ -72,7 +74,7 @@
         }
     </ui:style>
 
-    <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize} {style.mainPanel}">
+    <g:DockLayoutPanel ui:field="propertiesPanel" unit="PX" addStyleNames="{resources.runnerCss.fullSize} {style.mainPanel}">
         <g:west size="300">
             <g:FlowPanel addStyleNames="{style.settingsPanel}">
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
@@ -88,28 +90,28 @@
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
                     <g:Label text="{locale.propertiesRam}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
                     <g:ListBox ui:field="ram" addStyleNames="{style.settingField}
-                                                             {style.listBoxWidth}
+                                                             {style.listBoxStyle}
                                                              {resources.runnerCss.propertiesFont}"/>
                 </g:FlowPanel>
 
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
                     <g:Label text="{locale.propertiesBoot}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
                     <g:ListBox ui:field="boot" addStyleNames="{style.settingField}
-                                                              {style.listBoxWidth}
+                                                              {style.listBoxStyle}
                                                               {resources.runnerCss.propertiesFont}"/>
                 </g:FlowPanel>
 
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
                     <g:Label text="{locale.propertiesShutdown}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
                     <g:ListBox ui:field="shutdown" addStyleNames="{style.settingField}
-                                                                  {style.listBoxWidth}
+                                                                  {style.listBoxStyle}
                                                                   {resources.runnerCss.propertiesFont}"/>
                 </g:FlowPanel>
 
                 <g:FlowPanel addStyleNames="{style.itemPanel}">
                     <g:Label text="{locale.propertiesScope}" addStyleNames="{style.label} {resources.runnerCss.propertiesFont}"/>
                     <g:ListBox ui:field="scope" addStyleNames="{style.settingField}
-                                                               {style.listBoxWidth}
+                                                               {style.listBoxStyle}
                                                                {resources.runnerCss.propertiesFont}"/>
                 </g:FlowPanel>
             </g:FlowPanel>
@@ -127,7 +129,6 @@
                 </g:north>
 
                 <g:center>
-                    <!--TODO editor panel goes beyond of parent panel-->
                     <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{resources.runnerCss.fullSize} {style.editor}"/>
                 </g:center>
             </g:DockLayoutPanel>

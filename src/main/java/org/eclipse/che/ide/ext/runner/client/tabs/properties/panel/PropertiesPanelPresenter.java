@@ -10,6 +10,13 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel;
 
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -52,12 +59,6 @@ import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.util.loging.Log;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -316,7 +317,7 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
                         break;
                     case PROP_DIRTY:
                         if (validateUndoOperation()) {
-                           enableSaveAndCancelButtons();
+                            enableSaveAndCancelButtons();
                         }
                         break;
                     default:
@@ -585,6 +586,12 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
     public void addListener(@Nonnull RemovePanelListener listener) {
         listeners.add(listener);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void hideButtonsPanel() {
+        view.hideButtonsPanel();
     }
 
     private void notifyListeners(@Nonnull Environment environment) {

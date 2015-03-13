@@ -10,13 +10,14 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel;
 
+import com.google.inject.ImplementedBy;
+
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.mvp.View;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Boot;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Shutdown;
-import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -182,6 +183,9 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
      *         editor that needs to be shown
      */
     void showEditor(@Nullable EditorPartPresenter editor);
+
+    /** Hides panel with property buttons. */
+    void hideButtonsPanel();
 
     interface ActionDelegate {
 

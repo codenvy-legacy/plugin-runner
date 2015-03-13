@@ -10,15 +10,15 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.container;
 
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +75,7 @@ public class PropertiesContainerPresenterTest {
 
         verify(currentPanel).update(runner);
         verify(view).showWidget(currentPanel);
+        verify(currentPanel).hideButtonsPanel();
     }
 
     @Test
@@ -209,6 +210,5 @@ public class PropertiesContainerPresenterTest {
 
         verify(widgetFactory, times(2)).createPropertiesPanel(environment);
     }
-
 
 }

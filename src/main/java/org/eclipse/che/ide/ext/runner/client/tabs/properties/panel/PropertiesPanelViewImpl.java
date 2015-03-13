@@ -10,16 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel;
 
-import org.eclipse.che.ide.api.editor.EditorPartPresenter;
-import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Boot;
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Shutdown;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -27,6 +17,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -34,6 +25,17 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import org.eclipse.che.ide.api.editor.EditorPartPresenter;
+import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Boot;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Shutdown;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,6 +76,8 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
     @UiField
     ListBox shutdown;
 
+    @UiField
+    DockLayoutPanel   propertiesPanel;
     @UiField
     SimpleLayoutPanel editorPanel;
 
@@ -328,6 +332,12 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
         } else {
             editor.go(editorPanel);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void hideButtonsPanel() {
+        propertiesPanel.setWidgetHidden(buttonsPanel, true);
     }
 
     @UiHandler("name")

@@ -11,8 +11,8 @@
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel;
 
 import org.eclipse.che.ide.api.mvp.Presenter;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
 
 import javax.annotation.Nonnull;
 
@@ -51,6 +51,8 @@ public interface PropertiesPanel extends Presenter {
      */
     void addListener(@Nonnull RemovePanelListener listener);
 
+    /** Hides panel with property buttons. */
+    void hideButtonsPanel();
 
     public interface RemovePanelListener {
 

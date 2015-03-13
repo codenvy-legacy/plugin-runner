@@ -10,6 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel;
 
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwtmockito.GwtMockitoTestRunner;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
@@ -37,20 +43,19 @@ import org.eclipse.che.ide.ext.runner.client.TestUtil;
 import org.eclipse.che.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import org.eclipse.che.ide.ext.runner.client.callbacks.FailureCallback;
 import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
+import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFile;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileEditorInput;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory;
 import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
 import org.eclipse.che.ide.imageviewer.ImageViewer;
 import org.eclipse.che.ide.imageviewer.ImageViewerResources;
-
-import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
@@ -58,12 +63,6 @@ import org.eclipse.che.ide.ui.dialogs.CancelCallback;
 import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.ui.dialogs.confirm.ConfirmDialog;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.web.bindery.event.shared.EventBus;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +75,7 @@ import java.util.Arrays;
 
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_DIRTY;
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_INPUT;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -87,7 +87,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Alexander Andrienko
@@ -1002,7 +1001,7 @@ public class PropertiesPanelPresenterTest {
     }
 
     @Test
-    public void changesShouldBeCancelWhenScopeIsSystemAndEnvironmentNotNullAndEditorInstanceOfUndoableEditorAndEditorIsDirtyAndIsUndoable() {
+    public void changesShouldBeCancelWhenScopeIsSystemAndEnvironmentNotNullAndEditorInstanceOfUndoableEditorAndEditorIsDirty() {
         EditorPartPresenter editor2 = mock(EditorMock.class);
         when(editorProvider.getEditor()).thenReturn(editor2);
         when(file.isReadOnly()).thenReturn(true);
@@ -1105,6 +1104,13 @@ public class PropertiesPanelPresenterTest {
         verify(runner1).getRAM();
         verify(view).selectMemory(MB_512);
         verify(view).selectScope(runner1.getScope());
+    }
+
+    @Test
+    public void buttonsPanelShouldBeHide() throws Exception {
+        presenter.hideButtonsPanel();
+
+        verify(view).hideButtonsPanel();
     }
 
     @Test
