@@ -160,13 +160,13 @@ public interface RunnerLocalizationConstant extends Messages {
     String tooltipRunnerPanel();
 
     @Key("template.scope")
-    String templateScope();
+    String configsScope();
 
     @Key("template.type")
-    String templateType();
+    String configsType();
 
     @Key("template.type.all")
-    String templateTypeAll();
+    String configsTypeAll();
 
     @Key("properties.name")
     String propertiesName();
@@ -211,12 +211,6 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("tooltip.docker.button")
     String tooltipDockerButton();
-
-    @Key("tooltip.scope.project")
-    String tooltipScopeProject();
-
-    @Key("tooltip.scope.system")
-    String tooltipScopeSystem();
 
     @Key("console.tooltip.scroll")
     String consoleTooltipScroll();

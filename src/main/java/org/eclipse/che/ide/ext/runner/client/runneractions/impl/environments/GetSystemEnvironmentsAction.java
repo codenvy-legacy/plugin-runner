@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
 import org.eclipse.che.api.runner.gwt.client.RunnerServiceClient;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -25,9 +29,6 @@ import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -52,6 +53,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     private final AppContext                                            appContext;
 
     private RunnerEnvironmentTree environmentTree;
+    private boolean               isFirstPerform;
 
     @Inject
     public GetSystemEnvironmentsAction(RunnerServiceClient runnerService,
@@ -70,6 +72,8 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
         this.locale = locale;
         this.environmentUtil = environmentUtil;
         this.appContext = appContext;
+
+        this.isFirstPerform = true;
     }
 
     /** {@inheritDoc} */
@@ -114,8 +118,13 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
 
         TemplatesContainer container = templatesPanelProvider.get();
 
-        container.addEnvironments(environments, SYSTEM);
-        container.addButton(environmentUtil.getRunnerCategoryByProjectType(tree, projectType));
+        container.addEnvironments(tree, SYSTEM);
+
+        if (isFirstPerform) {
+            RunnerEnvironmentTree environmentTree = environmentUtil.getRunnerCategoryByProjectType(tree, projectType);
+            container.setTypeItem(environmentTree.getDisplayName());
+            isFirstPerform = false;
+        }
 
         chooseRunnerAction.addSystemRunners(environments);
     }

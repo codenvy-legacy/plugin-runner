@@ -10,13 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.templates;
 
-import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
-import org.eclipse.che.ide.api.mvp.View;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.inject.ImplementedBy;
+
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-
-import com.google.inject.ImplementedBy;
+import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.Map;
  * @author Dmitry Shnurenko
  */
 @ImplementedBy(TemplatesViewImpl.class)
-public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
+public interface TemplatesView extends IsWidget {
 
     /**
      * Adds environment on templates panel and.
@@ -37,14 +36,6 @@ public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
      *         runner which was added
      */
     void addEnvironment(@Nonnull Map<Scope, List<Environment>> environments);
-
-    /**
-     * The method creates and adds buttons to special place on view for each group of runner environments.
-     *
-     * @param environmentTree
-     *         tree which contains all groups of environments
-     */
-    void addButton(@Nonnull RunnerEnvironmentTree environmentTree);
 
     /**
      * Sets visibility state to panel.
@@ -57,9 +48,6 @@ public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
     /** Clears panel with environments */
     void clearEnvironmentsPanel();
 
-    /** The methods clears type buttons panel when we change project scope. */
-    void clearTypeButtonsPanel();
-
     /**
      * Selects environment widget using current environment.
      *
@@ -69,24 +57,11 @@ public interface TemplatesView extends View<TemplatesView.ActionDelegate> {
     void selectEnvironment(@Nonnull Environment selectedEnvironment);
 
     /**
-     * Sets scope panel {@link org.eclipse.che.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel}to special place on templates panel.
+     * Sets filter widget {@link FilterWidget}to special place on templates panel.
      *
-     * @param scopePanel
+     * @param filterWidget
      *         panel which need set
      */
-    void setScopePanel(@Nonnull ScopePanel scopePanel);
+    void setFilterWidget(@Nonnull FilterWidget filterWidget);
 
-    interface ActionDelegate {
-
-        /** Performs some actions when user click on all type button. */
-        void onAllTypeButtonClicked();
-
-        /**
-         * Performs some actions when user clicks on language type button.
-         *
-         * @param tree
-         *         tree which need analyze to get all environments from the tree
-         */
-        void onLangTypeButtonClicked(@Nonnull RunnerEnvironmentTree tree);
-    }
 }

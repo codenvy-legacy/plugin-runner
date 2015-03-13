@@ -10,17 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.templates;
 
-import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
-import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
-import org.eclipse.che.ide.ext.runner.client.tabs.common.item.RunnerItems;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
-import org.eclipse.che.ide.ext.runner.client.models.Environment;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -30,6 +19,15 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
+import org.eclipse.che.ide.ext.runner.client.models.Environment;
+import org.eclipse.che.ide.ext.runner.client.tabs.common.item.RunnerItems;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import org.eclipse.che.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
+import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -55,16 +53,9 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
     private static final TemplatesViewImplUiBinder UI_BINDER = GWT.create(TemplatesViewImplUiBinder.class);
 
     @UiField
-    FlowPanel environmentsPanel;
-
-    //type buttons panels
+    FlowPanel   environmentsPanel;
     @UiField
-    FlowPanel buttonsPanel;
-    @UiField
-    FlowPanel allButtonPanel;
-
-    @UiField
-    SimplePanel scopePanel;
+    SimplePanel filterPanel;
 
     @UiField(provided = true)
     final RunnerResources            resources;
@@ -72,12 +63,8 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
     final RunnerLocalizationConstant locale;
 
     private final Map<Environment, EnvironmentWidget> environmentWidgets;
-    private final List<TypeButton>                    typeButtons;
     private final WidgetFactory                       widgetFactory;
     private final List<EnvironmentWidget>             cacheWidgets;
-
-    private ActionDelegate delegate;
-    private TypeButton     allButton;
 
     @Inject
     public TemplatesViewImpl(RunnerResources resources,
@@ -90,27 +77,7 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
         initWidget(UI_BINDER.createAndBindUi(this));
 
         this.environmentWidgets = new HashMap<>();
-        this.typeButtons = new ArrayList<>();
         this.cacheWidgets = new ArrayList<>();
-
-        initializeActions();
-    }
-
-    private void initializeActions() {
-        allButton = widgetFactory.createTypeButton();
-        allButton.setDelegate(new TypeButton.ActionDelegate() {
-            @Override
-            public void onButtonClicked() {
-                delegate.onAllTypeButtonClicked();
-
-                allButton.select();
-            }
-        });
-        allButton.setName(locale.templateTypeAll());
-        allButton.select();
-
-        typeButtons.add(allButton);
-        allButtonPanel.add(allButton);
     }
 
     /** {@inheritDoc} */
@@ -124,11 +91,6 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
         }
 
         List<Environment> systemEnvironments = environments.get(SYSTEM);
-
-        if (systemEnvironments == null || systemEnvironments.isEmpty()) {
-            selectTypeButton(allButton);
-            return;
-        }
 
         for (Environment environment : systemEnvironments) {
             addEnvironment(environment, SYSTEM, i++);
@@ -175,53 +137,13 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
 
     /** {@inheritDoc} */
     @Override
-    public void setScopePanel(@Nonnull ScopePanel scopePanel) {
-        this.scopePanel.setWidget(scopePanel);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void addButton(@Nonnull final RunnerEnvironmentTree environmentTree) {
-        final TypeButton typeButton = widgetFactory.createTypeButton();
-        typeButton.setDelegate(new TypeButton.ActionDelegate() {
-            @Override
-            public void onButtonClicked() {
-                delegate.onLangTypeButtonClicked(environmentTree);
-
-                selectTypeButton(typeButton);
-            }
-        });
-        typeButton.setName(environmentTree.getDisplayName());
-
-        typeButtons.add(typeButton);
-        buttonsPanel.add(typeButton);
-
-        selectTypeButton(allButton);
-    }
-
-    private void selectTypeButton(@Nonnull TypeButton selectedButton) {
-        for (TypeButton button : typeButtons) {
-            button.unSelect();
-        }
-
-        selectedButton.select();
+    public void setFilterWidget(@Nonnull FilterWidget filterWidget) {
+        filterPanel.setWidget(filterWidget);
     }
 
     /** {@inheritDoc} */
     @Override
     public void clearEnvironmentsPanel() {
         environmentsPanel.clear();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void clearTypeButtonsPanel() {
-        buttonsPanel.clear();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setDelegate(@Nonnull ActionDelegate actionDelegate) {
-        this.delegate = actionDelegate;
     }
 }

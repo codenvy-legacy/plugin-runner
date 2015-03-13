@@ -24,10 +24,6 @@
             margin-left: 5px;
         }
 
-        .typeScopeLabels {
-            float: left;
-        }
-
         .scroll {
             width: 100%;
             height: 100%;
@@ -41,21 +37,9 @@
         }
     </ui:style>
     <g:DockLayoutPanel unit="PX" addStyleNames="{style.container}">
-
-        <!--type panel-->
-        <g:north size="17">
-            <g:FlowPanel>
-                <g:Label text="{locale.templateType}" addStyleNames="{style.typeScopeLabels}"/>
-
-                <g:FlowPanel ui:field="allButtonPanel"/>
-                <g:FlowPanel ui:field="buttonsPanel"/>
-
-            </g:FlowPanel>
-        </g:north>
-
         <!--scope panel-->
-        <g:north size="27">
-            <g:SimplePanel ui:field="scopePanel"/>
+        <g:north size="50">
+            <g:SimplePanel ui:field="filterPanel"/>
         </g:north>
 
         <!--templates panel-->

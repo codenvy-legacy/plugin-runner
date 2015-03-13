@@ -10,20 +10,24 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.templates;
 
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
+import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.scopepanel.ScopePanel;
+import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -40,9 +44,10 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
  * @author Dmitry Shnurenko
  */
 @Singleton
-public class TemplatesPresenter implements TemplatesContainer, TemplatesView.ActionDelegate, ScopePanel.ActionDelegate {
+public class TemplatesPresenter implements TemplatesContainer, FilterWidget.ActionDelegate {
 
     private final TemplatesView                 view;
+    private final FilterWidget                  filter;
     private final GetProjectEnvironmentsAction  projectEnvironmentsAction;
     private final GetSystemEnvironmentsAction   systemEnvironmentsAction;
     private final GetEnvironmentsUtil           environmentUtil;
@@ -50,26 +55,34 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
     private final List<Environment>             projectEnvironments;
     private final Map<Scope, List<Environment>> environmentMap;
     private final PropertiesContainer           propertiesContainer;
+    private final AppContext                    appContext;
+    private final String                        typeAll;
 
-    private Scope   scope;
-    private boolean isFirstClick;
-    private boolean isProjectChecked;
+    private RunnerEnvironmentTree tree;
+    private String                currentType;
+    private Scope                 currentScope;
+    private boolean               isFirstClick;
 
     @Inject
     public TemplatesPresenter(TemplatesView view,
+                              FilterWidget filter,
+                              RunnerLocalizationConstant locale,
+                              AppContext appContext,
                               GetProjectEnvironmentsAction projectEnvironmentsAction,
                               GetSystemEnvironmentsAction systemEnvironmentsAction,
                               GetEnvironmentsUtil environmentUtil,
-                              ScopePanel scopePanel,
-                              RunnerResources resources,
                               PropertiesContainer propertiesContainer) {
+        this.filter = filter;
+        this.filter.setDelegate(this);
+
         this.view = view;
-        this.view.setDelegate(this);
+        this.view.setFilterWidget(filter);
 
         this.projectEnvironmentsAction = projectEnvironmentsAction;
         this.systemEnvironmentsAction = systemEnvironmentsAction;
         this.environmentUtil = environmentUtil;
         this.propertiesContainer = propertiesContainer;
+        this.appContext = appContext;
 
         this.projectEnvironments = new ArrayList<>();
         this.systemEnvironments = new ArrayList<>();
@@ -78,65 +91,9 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
         this.environmentMap.put(PROJECT, projectEnvironments);
         this.environmentMap.put(SYSTEM, systemEnvironments);
 
-        scopePanel.setDelegate(this);
-
-        scopePanel.addButton(SYSTEM, resources.scopeSystem(), false);
-        scopePanel.addButton(PROJECT, resources.scopeProject(), false);
-
-        this.view.setScopePanel(scopePanel);
-
-        this.scope = SYSTEM;
         this.isFirstClick = true;
-        this.isProjectChecked = true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onAllTypeButtonClicked() {
-        view.clearEnvironmentsPanel();
-        view.clearTypeButtonsPanel();
-
-        if (scope == null) {
-            return;
-        }
-
-        if (!systemEnvironments.isEmpty() && !projectEnvironments.isEmpty()) {
-            performSystemEnvironments();
-            performProjectEnvironments();
-            return;
-        }
-
-        switch (scope) {
-            case SYSTEM:
-                performSystemEnvironments();
-                break;
-            case PROJECT:
-                performProjectEnvironments();
-                break;
-            default:
-        }
-    }
-
-    private void performSystemEnvironments() {
-        systemEnvironments.clear();
-        systemEnvironmentsAction.perform();
-    }
-
-    private void performProjectEnvironments() {
-        projectEnvironments.clear();
-        projectEnvironmentsAction.perform();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onLangTypeButtonClicked(@Nonnull RunnerEnvironmentTree environmentTree) {
-        systemEnvironments.clear();
-        List<RunnerEnvironmentLeaf> environments = environmentUtil.getAllEnvironments(environmentTree);
-        systemEnvironments.addAll(environmentUtil.getEnvironmentsFromNodes(environments, SYSTEM));
-
-        environmentMap.put(SYSTEM, systemEnvironments);
-        view.addEnvironment(environmentMap);
-        selectFirstEnvironment();
+        this.currentScope = PROJECT;
+        this.typeAll = locale.configsTypeAll();
     }
 
     /** {@inheritDoc} */
@@ -148,30 +105,46 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
     /** {@inheritDoc} */
     @Override
-    public void addEnvironments(@Nonnull List<Environment> environmentList, @Nonnull Scope scope) {
+    public void addEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnull Scope scope) {
+        ProjectDescriptor descriptor = getProjectDescriptor();
+
         switch (scope) {
             case SYSTEM:
-                addEnvironments(systemEnvironments, environmentList, scope, true);
+                this.tree = tree;
+                List<Environment> system = environmentUtil.getEnvironmentsByProjectType(tree, descriptor.getType(), scope);
+                addEnvironments(systemEnvironments, system, scope);
                 break;
             case PROJECT:
-                addEnvironments(projectEnvironments, environmentList, scope, isProjectChecked);
+                if (!SYSTEM.equals(currentScope)) {
+                    List<Environment> project = environmentUtil.getEnvironmentsByProjectType(tree, descriptor.getType(), scope);
+                    addEnvironments(projectEnvironments, project, scope);
+                }
                 break;
             default:
         }
     }
 
+    @Nonnull
+    private ProjectDescriptor getProjectDescriptor() {
+        CurrentProject currentProject = appContext.getCurrentProject();
+
+        if (currentProject == null) {
+            throw new IllegalStateException("Current project is null");
+        }
+
+        return currentProject.getProjectDescription();
+    }
+
     private void addEnvironments(@Nonnull List<Environment> sourceList,
                                  @Nonnull List<Environment> targetList,
-                                 @Nonnull Scope scope,
-                                 boolean isChecked) {
+                                 @Nonnull Scope scope) {
         sourceList.clear();
         sourceList.addAll(targetList);
 
         environmentMap.put(scope, sourceList);
-        if (isChecked) {
-            view.addEnvironment(environmentMap);
-            selectFirstEnvironment();
-        }
+        view.addEnvironment(environmentMap);
+
+        selectFirstEnvironment();
     }
 
     private void selectFirstEnvironment() {
@@ -195,16 +168,24 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
     /** {@inheritDoc} */
     @Override
-    public void addButton(@Nonnull RunnerEnvironmentTree tree) {
-        view.clearTypeButtonsPanel();
-        view.addButton(tree);
+    public void setTypeItem(@Nonnull String item) {
+        currentType = item;
+
+        filter.addType(currentType);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void showSystemEnvironments() {
+    public void showEnvironments() {
         if (isFirstClick) {
-            onButtonChecked(SYSTEM);
+            view.clearEnvironmentsPanel();
+            systemEnvironments.clear();
+
+            projectEnvironmentsAction.perform();
+
+            filter.selectScope(PROJECT);
+            filter.selectType(currentType);
+
             isFirstClick = false;
         }
 
@@ -214,42 +195,59 @@ public class TemplatesPresenter implements TemplatesContainer, TemplatesView.Act
 
     /** {@inheritDoc} */
     @Override
-    public void onButtonChecked(@Nonnull Scope scope) {
-        this.scope = scope;
+    public void onValueChanged() {
+        view.clearEnvironmentsPanel();
 
-        switch (scope) {
+        currentType = filter.getType();
+        currentScope = filter.getScope();
+
+        switch (currentScope) {
             case SYSTEM:
-                systemEnvironmentsAction.perform();
+                selectSystemScope();
                 break;
+
             case PROJECT:
-                projectEnvironmentsAction.perform();
-                isProjectChecked = true;
+                performProjectEnvironments();
                 break;
+
             default:
+                selectAllScope();
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void onButtonUnchecked(@Nonnull Scope scope) {
-        this.scope = null;
-        view.clearEnvironmentsPanel();
+    private void selectSystemScope() {
+        projectEnvironments.clear();
 
-        switch (scope) {
-            case PROJECT:
-                this.scope = SYSTEM;
-                isProjectChecked = false;
-                break;
-            case SYSTEM:
-                view.clearTypeButtonsPanel();
-                break;
-            default:
+        if (currentType.equals(typeAll)) {
+            performSystemEnvironments();
+        } else {
+            systemEnvironmentsAction.perform();
         }
+    }
 
-        environmentMap.get(scope).clear();
-        view.addEnvironment(environmentMap);
+    private void performProjectEnvironments() {
+        projectEnvironments.clear();
+        systemEnvironments.clear();
 
-        selectFirstEnvironment();
+        projectEnvironmentsAction.perform();
+    }
+
+    private void selectAllScope() {
+        if (currentType.equals(typeAll)) {
+            performProjectEnvironments();
+            performSystemEnvironments();
+        } else {
+            projectEnvironmentsAction.perform();
+            systemEnvironmentsAction.perform();
+        }
+    }
+
+    private void performSystemEnvironments() {
+        systemEnvironments.clear();
+        List<RunnerEnvironmentLeaf> leaves = environmentUtil.getAllEnvironments(tree);
+        List<Environment> environments = environmentUtil.getEnvironmentsFromNodes(leaves, SYSTEM);
+
+        addEnvironments(systemEnvironments, environments, SYSTEM);
     }
 
     /** {@inheritDoc} */

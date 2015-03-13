@@ -93,7 +93,7 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
                         List<Environment> projectEnvironments = environmentUtil.getEnvironmentsByProjectType(result,
                                                                                                              descriptor.getType(),
                                                                                                              PROJECT);
-                        panel.addEnvironments(projectEnvironments, PROJECT);
+                        panel.addEnvironments(result, PROJECT);
                         chooseRunnerAction.addProjectRunners(projectEnvironments);
                     }
                 })

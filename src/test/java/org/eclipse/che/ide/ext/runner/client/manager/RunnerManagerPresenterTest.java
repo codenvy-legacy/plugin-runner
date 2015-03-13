@@ -335,7 +335,7 @@ public class RunnerManagerPresenterTest {
 
         verifyTabSelectHandler(tabBuilderTemplate);
         verify(panelState).setState(State.TEMPLATE);
-        verify(templates).showSystemEnvironments();
+        verify(templates).showEnvironments();
         verify(view).hideOtherButtons();
 
         presenter.addRunner(processDescriptor);

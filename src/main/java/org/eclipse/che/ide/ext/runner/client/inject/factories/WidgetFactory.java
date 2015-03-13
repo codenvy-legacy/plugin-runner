@@ -23,10 +23,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget;
 import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.scopebutton.ScopeButton;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.Terminal;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
@@ -146,28 +143,6 @@ public interface WidgetFactory {
      */
     @Nonnull
     FullLogMessageWidget createFullLogMessage(@Nonnull String logUrl);
-
-    /**
-     * Creates type button widget.
-     *
-     * @return an instance of {@link TypeButton}
-     */
-    @Nonnull
-    TypeButton createTypeButton();
-
-    /**
-     * Creates scope button widget with special image.
-     *
-     * @param buttonScope
-     *         scope of current button
-     * @param image
-     *         image which need set to button
-     * @param isChecked
-     *         flag which defines is checked button or un checked
-     * @return an instance of {@link ScopeButton}
-     */
-    @Nonnull
-    ScopeButton createScopeButton(@Nonnull Scope buttonScope, @Nonnull SVGResource image, boolean isChecked);
 
     /**
      * Creates property button widget.

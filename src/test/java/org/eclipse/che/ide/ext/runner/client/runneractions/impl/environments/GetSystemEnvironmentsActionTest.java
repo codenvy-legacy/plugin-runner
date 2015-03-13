@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments;
 
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
@@ -26,8 +28,6 @@ import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import com.google.inject.Provider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -117,10 +117,15 @@ public class GetSystemEnvironmentsActionTest {
                                                  appContext,
                                                  templatesContainerProvider);
         //preparing callbacks for server
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getProjectDescription()).thenReturn(projectDescriptor);
+        when(projectDescriptor.getType()).thenReturn(MESSAGE);
         when(templatesContainerProvider.get()).thenReturn(templatesContainer);
         when(environmentUtil.getAllEnvironments(tree)).thenReturn(leaves);
         when(environmentUtil.getEnvironmentsByProjectType(tree, MESSAGE, SYSTEM)).thenReturn(environments);
         when(environmentUtil.getEnvironmentsFromNodes(leaves, SYSTEM)).thenReturn(environments);
+        when(environmentUtil.getRunnerCategoryByProjectType(tree, MESSAGE)).thenReturn(tree);
+        when(tree.getDisplayName()).thenReturn(MESSAGE);
         when(callbackBuilderProvider.get()).thenReturn(asyncCallbackBuilder).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.unmarshaller(RunnerEnvironmentTree.class)).thenReturn(asyncCallbackBuilder)
                                                                             .thenReturn(asyncCallbackBuilder);
@@ -134,6 +139,8 @@ public class GetSystemEnvironmentsActionTest {
 
     @Test
     public void shouldSuccessPerformWhenEnvironmentTreeIsNull() {
+        //noinspection ConstantConditions
+        when(environmentUtil.getRunnerCategoryByProjectType(null, MESSAGE)).thenReturn(tree);
         action.perform();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -157,11 +164,6 @@ public class GetSystemEnvironmentsActionTest {
 
     @Test
     public void getSystemEnvironmentsActionShouldBePerformedWhenEnvironmentTreeIsNotNull() throws Exception {
-        ProjectDescriptor descriptor = mock(ProjectDescriptor.class);
-        when(appContext.getCurrentProject()).thenReturn(currentProject);
-        when(currentProject.getProjectDescription()).thenReturn(descriptor);
-        when(descriptor.getType()).thenReturn(MESSAGE);
-        //launch perform first time for set environmentTree not null
         action.perform();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -176,8 +178,19 @@ public class GetSystemEnvironmentsActionTest {
         verify(appContext, times(2)).getCurrentProject();
         verify(environmentUtil, times(2)).getEnvironmentsByProjectType(tree, MESSAGE, SYSTEM);
         verify(templatesContainerProvider, times(2)).get();
-        verify(environmentUtil, times(2)).getRunnerCategoryByProjectType(tree, MESSAGE);
+        verify(environmentUtil).getRunnerCategoryByProjectType(tree, MESSAGE);
+        verify(templatesContainer).setTypeItem(MESSAGE);
         verify(chooseRunnerAction, times(2)).addSystemRunners(environments);
+    }
+
+    @Test
+    public void itemShouldNotBeAddedWhenActionIsPerformedTheSecondTime() {
+        action.perform();
+        reset(templatesContainer);
+
+        action.perform();
+
+        verify(templatesContainer, never()).setTypeItem(anyString());
     }
 
     @Test

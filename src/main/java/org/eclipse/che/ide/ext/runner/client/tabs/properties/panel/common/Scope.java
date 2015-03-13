@@ -18,7 +18,9 @@ import javax.annotation.Nonnull;
  * @author Andrey Plotnikov
  */
 public enum Scope {
-    PROJECT("Project"), SYSTEM("System");
+    PROJECT("Project"),
+    SYSTEM("System"),
+    ALL("All");
 
     private final String name;
 

@@ -230,7 +230,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             public void onTabSelected() {
                 panelState.setState(State.TEMPLATE);
 
-                templatesContainer.showSystemEnvironments();
+                templatesContainer.showEnvironments();
 
                 view.hideOtherButtons();
             }

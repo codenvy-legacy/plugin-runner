@@ -10,45 +10,41 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.inject;
 
-import org.eclipse.che.ide.api.extension.ExtensionGinModule;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.HandlerFactory;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
-import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidgetImpl;
-import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfo;
-import org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.models.RunnerImpl;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.panel.Console;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.panel.ConsoleImpl;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainerPresenter;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidgetImpl;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelPresenter;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.scopebutton.ScopeButton;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.scopebutton.ScopeButtonPresenter;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.typebutton.TypeButton;
-import org.eclipse.che.ide.ext.runner.client.util.annotations.RightPanel;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
-import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidget;
-import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfoImpl;
-import org.eclipse.che.ide.ext.runner.client.models.Environment;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.button.ConsoleButton;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.button.ConsoleButtonImpl;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidgetImpl;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
-import org.eclipse.che.ide.ext.runner.client.tabs.templates.typebutton.TypeButtonImpl;
-import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.Terminal;
-import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.TerminalImpl;
-import org.eclipse.che.ide.ext.runner.client.util.annotations.LeftPanel;
-
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
+import org.eclipse.che.ide.api.extension.ExtensionGinModule;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.HandlerFactory;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
+import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidget;
+import org.eclipse.che.ide.ext.runner.client.manager.button.ButtonWidgetImpl;
+import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfo;
+import org.eclipse.che.ide.ext.runner.client.manager.info.MoreInfoImpl;
+import org.eclipse.che.ide.ext.runner.client.models.Environment;
+import org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.models.RunnerImpl;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.button.ConsoleButton;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.button.ConsoleButtonImpl;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.panel.Console;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.panel.ConsoleImpl;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainerPresenter;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidgetImpl;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidgetImpl;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelPresenter;
+import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.Terminal;
+import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.TerminalImpl;
+import org.eclipse.che.ide.ext.runner.client.util.annotations.LeftPanel;
+import org.eclipse.che.ide.ext.runner.client.util.annotations.RightPanel;
 
 /**
  * The module that contains configuration of the client side part of the plugin.
@@ -80,8 +76,6 @@ public class RunnerGinModule extends AbstractGinModule {
                                              .implement(TabWidget.class, TabWidgetImpl.class)
                                              .implement(PropertiesPanel.class, PropertiesPanelPresenter.class)
                                              .implement(MoreInfo.class, MoreInfoImpl.class)
-                                             .implement(TypeButton.class, TypeButtonImpl.class)
-                                             .implement(ScopeButton.class, ScopeButtonPresenter.class)
                                              .implement(PropertyButtonWidget.class, PropertyButtonWidgetImpl.class)
                                              .build(WidgetFactory.class));
     }

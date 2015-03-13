@@ -10,15 +10,14 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.templates;
 
+import com.google.inject.ImplementedBy;
+
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.TabPresenter;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 
-import com.google.inject.ImplementedBy;
-
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Provides methods which allow work with templates panel.
@@ -38,22 +37,22 @@ public interface TemplatesContainer extends TabPresenter {
     /**
      * Calls method on view which adds environment widget on templates panel.
      *
-     * @param environments
+     * @param tree
      *         list of environments which need add
      * @param scope
      *         scope of environments which are saved in list
      */
-    void addEnvironments(@Nonnull List<Environment> environments, @Nonnull Scope scope);
+    void addEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnull Scope scope);
 
     /**
-     * Adds language type buttons on templates panel.
+     * Adds language type item in special lis box on templates panel.
      *
-     * @param tree
-     *         tree which need analyze to defined quantity of language type buttons which need add on panel
+     * @param item
+     *         item which need set to special list box on templates panel
      */
-    void addButton(@Nonnull RunnerEnvironmentTree tree);
+    void setTypeItem(@Nonnull String item);
 
-    /** Shows system environments when user click on templates tab the first time. */
-    void showSystemEnvironments();
+    /** Shows environments when user click on templates tab the first time. */
+    void showEnvironments();
 
 }
