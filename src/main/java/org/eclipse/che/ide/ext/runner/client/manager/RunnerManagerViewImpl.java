@@ -252,19 +252,16 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 stop.setDisable();
                 logs.setDisable();
                 break;
-
             case FAILED:
                 stop.setDisable();
                 reRun.setEnable();
                 logs.setDisable();
                 break;
-
             case STOPPED:
                 stop.setDisable();
                 reRun.setEnable();
                 logs.setDisable();
                 break;
-
             default:
         }
     }
