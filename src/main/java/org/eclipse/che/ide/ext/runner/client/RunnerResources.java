@@ -12,7 +12,6 @@ package org.eclipse.che.ide.ext.runner.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.inject.Singleton;
 
@@ -27,19 +26,19 @@ import org.vectomatic.dom.svg.ui.SVGResource;
 public interface RunnerResources extends ClientBundle {
 
     @Source("images/runnerwidget/done.svg")
-    SVGResource runnerDoneImage();
+    SVGResource runnerDone();
 
     @Source("images/runnerwidget/failed.svg")
-    SVGResource runnerFailedImage();
+    SVGResource runnerFailed();
 
     @Source("images/runnerwidget/running.svg")
-    SVGResource runnerInProgressImage();
+    SVGResource runnerInProgress();
 
     @Source("images/runnerwidget/in-queue.svg")
-    SVGResource runnerInQueueImage();
+    SVGResource runnerInQueue();
 
     @Source("images/runnerwidget/timeout.svg")
-    SVGResource runnerTimeoutImage();
+    SVGResource runnerTimeout();
 
     @Source("images/templates/scopeProject.svg")
     SVGResource scopeProject();
@@ -48,16 +47,19 @@ public interface RunnerResources extends ClientBundle {
     SVGResource scopeSystem();
 
     @Source("images/mainwidget/run.svg")
-    SVGResource runAppImage();
+    SVGResource run();
 
     @Source("images/mainwidget/re-run.svg")
-    SVGResource reRunAppImage();
+    SVGResource reRun();
 
     @Source("images/mainwidget/stop.svg")
-    SVGResource stopButton();
+    SVGResource stop();
 
     @Source("images/mainwidget/more-detail.svg")
-    SVGResource moreIcon();
+    SVGResource moreInfo();
+
+    @Source("images/mainwidget/logs.svg")
+    SVGResource logs();
 
     @Source("images/console/arrow-bottom.svg")
     SVGResource arrowBottom();

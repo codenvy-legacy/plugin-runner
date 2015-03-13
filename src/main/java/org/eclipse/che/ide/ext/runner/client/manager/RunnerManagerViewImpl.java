@@ -100,6 +100,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
     private ButtonWidget run;
     private ButtonWidget reRun;
     private ButtonWidget stop;
+    private ButtonWidget logs;
 
     private String url;
 
@@ -128,7 +129,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);
         this.popupPanel.add(moreInfoWidget);
 
-        SVGImage icon = new SVGImage(resources.moreIcon());
+        SVGImage icon = new SVGImage(resources.moreInfo());
         icon.getElement().setAttribute("class", resources.runnerCss().mainButtonIcon());
         image.getElement().setInnerHTML(icon.toString());
 
@@ -180,7 +181,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onRunButtonClicked();
             }
         };
-        run = createButton(resources.runAppImage(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
+        run = createButton(resources.run(), locale.tooltipRunButton(), runDelegate, runButtonPanel);
         if (appContext.getCurrentProject() != null) {
             run.setEnable();
         }
@@ -191,7 +192,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onRerunButtonClicked();
             }
         };
-        reRun = createButton(resources.reRunAppImage(), locale.tooltipRerunButton(), reRunDelegate, otherButtonsPanel);
+        reRun = createButton(resources.reRun(), locale.tooltipRerunButton(), reRunDelegate, otherButtonsPanel);
 
         ButtonWidget.ActionDelegate stopDelegate = new ButtonWidget.ActionDelegate() {
             @Override
@@ -199,7 +200,15 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
                 delegate.onStopButtonClicked();
             }
         };
-        stop = createButton(resources.stopButton(), locale.tooltipStopButton(), stopDelegate, otherButtonsPanel);
+        stop = createButton(resources.stop(), locale.tooltipStopButton(), stopDelegate, otherButtonsPanel);
+
+        ButtonWidget.ActionDelegate logsDelegate = new ButtonWidget.ActionDelegate() {
+            @Override
+            public void onButtonClicked() {
+                delegate.onLogsButtonClicked();
+            }
+        };
+        logs = createButton(resources.logs(), locale.tooltipLogsButton(), logsDelegate, otherButtonsPanel);
     }
 
     @Nonnull
@@ -229,26 +238,31 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
             run.setDisable();
             stop.setDisable();
             reRun.setDisable();
+            logs.setDisable();
             return;
         }
 
         run.setEnable();
         reRun.setDisable();
         stop.setEnable();
+        logs.setEnable();
 
         switch (runner.getStatus()) {
             case IN_QUEUE:
                 stop.setDisable();
+                logs.setDisable();
                 break;
 
             case FAILED:
                 stop.setDisable();
                 reRun.setEnable();
+                logs.setDisable();
                 break;
 
             case STOPPED:
                 stop.setDisable();
                 reRun.setEnable();
+                logs.setDisable();
                 break;
 
             default:
@@ -345,6 +359,22 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         } else {
             stop.setDisable();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnableLogsButton(boolean isEnable) {
+        if (isEnable) {
+            logs.setEnable();
+        } else {
+            logs.setDisable();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showLog(@Nonnull String url) {
+        Window.open(url, "_blank", "");
     }
 
     @UiHandler("appReference")

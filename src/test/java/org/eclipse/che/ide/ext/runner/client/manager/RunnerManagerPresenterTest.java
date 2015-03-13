@@ -16,6 +16,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.inject.Provider;
 import com.google.web.bindery.event.shared.EventBus;
 
+import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
@@ -67,6 +68,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static org.eclipse.che.ide.ext.runner.client.selection.Selection.RUNNER;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
@@ -74,6 +76,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -823,7 +826,7 @@ public class RunnerManagerPresenterTest {
         when(selectionManager.getRunner()).thenReturn(null);
         reset(history, rightTabContainer, view);
 
-        presenter.onSelectionChanged(Selection.RUNNER);
+        presenter.onSelectionChanged(RUNNER);
 
         verify(selectionManager).getRunner();
         verifyNoMoreInteractions(history, rightTabContainer, view);
@@ -831,7 +834,7 @@ public class RunnerManagerPresenterTest {
 
     @Test
     public void selectionShouldBeChangedWhenSelectionIsRunner() {
-        presenter.onSelectionChanged(Selection.RUNNER);
+        presenter.onSelectionChanged(RUNNER);
 
         verify(selectionManager).getRunner();
 
@@ -861,10 +864,19 @@ public class RunnerManagerPresenterTest {
 
         verify(view).setEnableRunButton(true);
         verify(templates).setVisible(true);
+
+        verify(view).setEnableRunButton(true);
+        verify(view).setEnableReRunButton(false);
+        verify(view).setEnableStopButton(false);
+        verify(view).setEnableLogsButton(false);
+
         verify(actionFactory).createGetRunningProcess();
         verify(appContext).getCurrentProject();
+
         verify(getRunningProcessAction).perform();
+
         verify(timer).schedule(TimeInterval.ONE_SEC.getValue());
+
         verify(getSystemEnvironmentsAction).perform();
         verify(getProjectEnvironmentsAction).perform();
     }
@@ -876,9 +888,17 @@ public class RunnerManagerPresenterTest {
         presenter.onProjectOpened(projectActionEvent);
 
         verify(view).setEnableRunButton(true);
+
         verify(templates).setVisible(true);
+
+        verify(view).setEnableRunButton(true);
+        verify(view).setEnableReRunButton(false);
+        verify(view).setEnableStopButton(false);
+        verify(view).setEnableLogsButton(false);
+
         verify(actionFactory).createGetRunningProcess();
         verify(appContext).getCurrentProject();
+
         verifyNoMoreInteractions(getRunningProcessAction);
     }
 
@@ -889,6 +909,8 @@ public class RunnerManagerPresenterTest {
         presenter.setPartStack(partStack);
         presenter.onProjectOpened(projectActionEvent);
 
+        reset(view);
+
         presenter.onProjectClosed(projectActionEvent);
 
         verify(partStack).hidePart(presenter);
@@ -898,7 +920,9 @@ public class RunnerManagerPresenterTest {
         verify(templates).setVisible(false);
 
         verify(view).setEnableRunButton(false);
+        verify(view).setEnableReRunButton(false);
         verify(view).setEnableStopButton(false);
+        verify(view).setEnableLogsButton(false);
 
         verify(view).setApplicationURl(null);
         verify(view).setTimeout(RunnerManagerPresenter.TIMER_STUB);
@@ -908,7 +932,6 @@ public class RunnerManagerPresenterTest {
         verify(terminalContainer).reset();
         verify(consoleContainer).reset();
         verify(propertiesContainer).reset();
-
     }
 
     private void verifyLaunchRunnerWithNotNullCurrentProject() {
@@ -960,7 +983,7 @@ public class RunnerManagerPresenterTest {
     @Test
     public void timerShouldNotUpdateIfRunnerIsNull() {
         when(selectionManager.getRunner()).thenReturn(null);
-        presenter.onSelectionChanged(Selection.RUNNER);
+        presenter.onSelectionChanged(RUNNER);
         reset(view, timer);
 
         ArgumentCaptor<TimerFactory.TimerCallBack> argumentCaptor = ArgumentCaptor.forClass(TimerFactory.TimerCallBack.class);
@@ -970,4 +993,27 @@ public class RunnerManagerPresenterTest {
         verifyNoMoreInteractions(view);
         verify(timer).schedule(TimeInterval.ONE_SEC.getValue());
     }
+
+    @Test
+    public void logsShouldBeNotShownWhenLogLinkIsNull() throws Exception {
+        presenter.onSelectionChanged(RUNNER);
+        presenter.onLogsButtonClicked();
+
+        verify(view, never()).showLog(anyString());
+    }
+
+    @Test
+    public void logsShouldBeShown() throws Exception {
+        Link link = mock(Link.class);
+        when(link.getHref()).thenReturn(TEXT);
+
+        when(runner.getLogUrl()).thenReturn(link);
+
+        presenter.onSelectionChanged(RUNNER);
+
+        presenter.onLogsButtonClicked();
+
+        verify(view).showLog(TEXT);
+    }
+
 }

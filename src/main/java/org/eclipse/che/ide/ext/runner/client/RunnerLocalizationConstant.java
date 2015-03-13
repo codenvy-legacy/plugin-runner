@@ -235,4 +235,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("tooltip.rerun.button")
     String tooltipRerunButton();
+
+    @Key("tooltip.logs.button")
+    String tooltipLogsButton();
 }

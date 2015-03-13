@@ -71,7 +71,7 @@ public class RunActionTest {
     public void constructorShouldBeVerified() throws Exception {
         verify(locale).actionRun();
         verify(locale).actionRunDescription();
-        verify(resources).runAppImage();
+        verify(resources).run();
     }
 
     @Test

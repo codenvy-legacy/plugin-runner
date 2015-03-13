@@ -46,12 +46,12 @@ public class RunnerWidget implements RunnerItems<Runner> {
         this.itemWidget = itemWidget;
         this.resources = resources;
 
-        inProgress = new SVGImage(resources.runnerInProgressImage());
-        inQueue = new SVGImage(resources.runnerInQueueImage());
-        failed = new SVGImage(resources.runnerFailedImage());
-        timeout = new SVGImage(resources.runnerTimeoutImage());
-        done = new SVGImage(resources.runnerDoneImage());
-        stopped = new SVGImage(resources.runnerDoneImage());
+        inProgress = new SVGImage(resources.runnerInProgress());
+        inQueue = new SVGImage(resources.runnerInQueue());
+        failed = new SVGImage(resources.runnerFailed());
+        timeout = new SVGImage(resources.runnerTimeout());
+        done = new SVGImage(resources.runnerDone());
+        stopped = new SVGImage(resources.runnerDone());
 
         itemWidget.setDelegate(new ItemWidget.ActionDelegate() {
             @Override

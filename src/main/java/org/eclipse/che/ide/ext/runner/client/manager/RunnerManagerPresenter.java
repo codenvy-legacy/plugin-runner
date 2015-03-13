@@ -18,6 +18,7 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
+import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.dto.RunOptions;
@@ -341,7 +342,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     }
 
     private void changeURLDependingOnState(@Nonnull Runner runner) {
-
         switch (runner.getStatus()) {
             case IN_PROGRESS:
                 view.setApplicationURl(locale.uplAppWaitingForBoot());
@@ -396,6 +396,17 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         stopRunner(selectedRunner);
 
         view.updateMoreInfoPopup(selectedRunner);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onLogsButtonClicked() {
+        Link logUrl = selectedRunner.getLogUrl();
+        if (logUrl == null) {
+            return;
+        }
+
+        view.showLog(logUrl.getHref());
     }
 
     /** {@inheritDoc} */
@@ -521,6 +532,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
         view.setEnableRunButton(true);
         view.setEnableReRunButton(false);
+        view.setEnableStopButton(false);
+        view.setEnableLogsButton(false);
 
         templateContainer.setVisible(true);
 
@@ -549,7 +562,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         templateContainer.setVisible(false);
 
         view.setEnableRunButton(false);
+        view.setEnableReRunButton(false);
         view.setEnableStopButton(false);
+        view.setEnableLogsButton(false);
 
         view.setApplicationURl(null);
         view.setTimeout(TIMER_STUB);

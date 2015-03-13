@@ -92,6 +92,10 @@ public class RunnerManagerViewImplTest {
     @Mock
     private ButtonWidget                      stop;
     @Mock
+    private SVGResource                       imageLogs;
+    @Mock
+    private ButtonWidget                      logs;
+    @Mock
     private Runner                            runner;
     @Mock
     private TabContainer                      containerPresenter;
@@ -109,25 +113,30 @@ public class RunnerManagerViewImplTest {
         when(resources.runnerCss()).thenReturn(runnerCss);
         when(runnerCss.opacityButton()).thenReturn(TEXT);
 
-        when(resources.runAppImage()).thenReturn(imageRun);
+        when(resources.run()).thenReturn(imageRun);
         when(locale.tooltipRunButton()).thenReturn(TEXT);
         when(widgetFactory.createButton(TEXT, imageRun)).thenReturn(run);
 
-        when(resources.reRunAppImage()).thenReturn(imageReRun);
+        when(resources.reRun()).thenReturn(imageReRun);
         when(locale.tooltipRerunButton()).thenReturn(TEXT);
         when(widgetFactory.createButton(TEXT, imageReRun)).thenReturn(reRun);
 
-        when(resources.stopButton()).thenReturn(imageStop);
+        when(resources.stop()).thenReturn(imageStop);
         when(locale.tooltipStopButton()).thenReturn(TEXT);
         when(widgetFactory.createButton(TEXT, imageStop)).thenReturn(stop);
 
-        when(resources.moreIcon()).thenReturn(mock(SVGResource.class, RETURNS_DEEP_STUBS));
+        when(resources.logs()).thenReturn(imageLogs);
+        when(locale.tooltipLogsButton()).thenReturn(TEXT);
+        when(widgetFactory.createButton(TEXT, imageLogs)).thenReturn(logs);
+
+        when(resources.moreInfo()).thenReturn(mock(SVGResource.class, RETURNS_DEEP_STUBS));
 
         when(locale.tooltipDockerButton()).thenReturn(TEXT);
 
         when(widgetFactory.createMoreInfo()).thenReturn(moreInfoWidget);
         when(locale.runnersPanelTitle()).thenReturn(TEXT);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
+
         view = new RunnerManagerViewImpl(partStackUIResources, resources, locale, widgetFactory, appContext, popupPanel);
     }
 
@@ -176,6 +185,11 @@ public class RunnerManagerViewImplTest {
         verify(widgetFactory).createButton(TEXT, imageStop);
         verifyButton(imageStop, stop, view.otherButtonsPanel);
         verify(actionDelegate).onStopButtonClicked();
+
+        //stop button
+        verify(widgetFactory).createButton(TEXT, imageLogs);
+        verifyButton(imageLogs, logs, view.otherButtonsPanel);
+        verify(actionDelegate).onLogsButtonClicked();
     }
 
     private void verifyButton(SVGResource imageResource, ButtonWidget btnWidget, FlowPanel buttonPanel) {
@@ -198,11 +212,13 @@ public class RunnerManagerViewImplTest {
 
         verify(run, times(2)).setDisable();
         verify(stop, times(2)).setDisable();
+        verify(reRun, times(2)).setDisable();
+        verify(logs, times(2)).setDisable();
     }
 
     @Test
     public void shouldUpdateWhenRunnerInStatusInQueue() {
-        reset(run, stop, reRun);
+        reset(run, stop, reRun, logs);
         when(runner.getStatus()).thenReturn(Runner.Status.IN_QUEUE);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -210,11 +226,12 @@ public class RunnerManagerViewImplTest {
 
         verifyEnableAllButton();
         verify(stop).setDisable();
+        verify(logs).setDisable();
     }
 
     @Test
     public void shouldUpdateWhenRunnerInStatusFailed() {
-        reset(run, stop, reRun);
+        reset(run, stop, reRun, logs);
         when(runner.getStatus()).thenReturn(Runner.Status.FAILED);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -223,11 +240,12 @@ public class RunnerManagerViewImplTest {
         verifyEnableAllButton();
         verify(stop).setDisable();
         verify(reRun).setEnable();
+        verify(logs).setDisable();
     }
 
     @Test
     public void shouldUpdateWhenRunnerInStatusStopped() {
-        reset(run, stop, reRun);
+        reset(run, stop, reRun, logs);
         when(runner.getStatus()).thenReturn(Runner.Status.STOPPED);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -236,12 +254,14 @@ public class RunnerManagerViewImplTest {
         verifyEnableAllButton();
         verify(stop).setDisable();
         verify(reRun).setEnable();
+        verify(logs).setDisable();
     }
 
     private void verifyEnableAllButton() {
         verify(run).setEnable();
         verify(reRun).setDisable();
         verify(stop).setEnable();
+        verify(logs).setEnable();
     }
 
     @Test
@@ -377,4 +397,23 @@ public class RunnerManagerViewImplTest {
         verify(stop, never()).setEnable();
         verify(stop).setDisable();
     }
+
+    @Test
+    public void logsButtonShouldBeEnabled() throws Exception {
+        reset(logs);
+        view.setEnableLogsButton(true);
+
+        verify(logs).setEnable();
+        verify(logs, never()).setDisable();
+    }
+
+    @Test
+    public void logsButtonShouldBeDisabled() throws Exception {
+        reset(logs);
+        view.setEnableLogsButton(false);
+
+        verify(logs, never()).setEnable();
+        verify(logs).setDisable();
+    }
+
 }

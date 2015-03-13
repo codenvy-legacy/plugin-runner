@@ -43,7 +43,7 @@ public class RunAction extends AbstractRunnerActions {
                      ChooseRunnerAction chooseRunnerAction,
                      DtoFactory dtoFactory,
                      RunnerResources resources) {
-        super(appContext, locale.actionRun(), locale.actionRunDescription(), resources.runAppImage());
+        super(appContext, locale.actionRun(), locale.actionRunDescription(), resources.run());
 
         this.runnerManager = runnerManager;
         this.dtoFactory = dtoFactory;

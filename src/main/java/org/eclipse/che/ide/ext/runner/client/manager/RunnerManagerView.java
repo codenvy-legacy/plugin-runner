@@ -10,12 +10,13 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.manager;
 
+import com.google.inject.ImplementedBy;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.ide.api.mvp.View;
 import org.eclipse.che.ide.api.parts.base.BaseActionDelegate;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -117,6 +118,22 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
      */
     void setEnableStopButton(boolean isEnable);
 
+    /**
+     * Changes state of logs button.
+     *
+     * @param isEnable
+     *         <code>true</code> button is enable, <code>false</code> button is disable
+     */
+    void setEnableLogsButton(boolean isEnable);
+
+    /**
+     * Show logs for a runner in new tab.
+     *
+     * @param url
+     *         url where logs are located
+     */
+    void showLog(@Nonnull String url);
+
     interface ActionDelegate extends BaseActionDelegate {
 
         /** Performs some actions in response to user's clicking on the 'Run' button. */
@@ -127,6 +144,9 @@ public interface RunnerManagerView extends View<RunnerManagerView.ActionDelegate
 
         /** Performs some actions in response to user's clicking on the 'Stop' button. */
         void onStopButtonClicked();
+
+        /** Performs some actions in response to user's clicking on the 'Logs' button. */
+        void onLogsButtonClicked();
 
         /** Performs some actions in response to user's over mouse on timeout label. */
         void onMoreInfoBtnMouseOver();

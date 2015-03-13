@@ -57,12 +57,12 @@ public class RunnerWidgetTest {
     public void setUp() {
         SVGResource svgResource = mock(SVGResource.class, RETURNS_DEEP_STUBS);
 
-        when(resources.runnerInProgressImage()).thenReturn(svgResource);
-        when(resources.runnerInQueueImage()).thenReturn(svgResource);
-        when(resources.runnerFailedImage()).thenReturn(svgResource);
-        when(resources.runnerTimeoutImage()).thenReturn(svgResource);
-        when(resources.runnerDoneImage()).thenReturn(svgResource);
-        when(resources.runnerDoneImage()).thenReturn(svgResource);
+        when(resources.runnerInProgress()).thenReturn(svgResource);
+        when(resources.runnerInQueue()).thenReturn(svgResource);
+        when(resources.runnerFailed()).thenReturn(svgResource);
+        when(resources.runnerTimeout()).thenReturn(svgResource);
+        when(resources.runnerDone()).thenReturn(svgResource);
+        when(resources.runnerDone()).thenReturn(svgResource);
 
         runnerWidget = new RunnerWidget(itemWidget, resources, selectionManager);
 
@@ -77,11 +77,11 @@ public class RunnerWidgetTest {
         ArgumentCaptor<ItemWidget.ActionDelegate> actionDelegateCaptor =
                 ArgumentCaptor.forClass(ItemWidget.ActionDelegate.class);
 
-        verify(resources).runnerInProgressImage();
-        verify(resources).runnerInQueueImage();
-        verify(resources).runnerFailedImage();
-        verify(resources).runnerTimeoutImage();
-        verify(resources, times(2)).runnerDoneImage();
+        verify(resources).runnerInProgress();
+        verify(resources).runnerInQueue();
+        verify(resources).runnerFailed();
+        verify(resources).runnerTimeout();
+        verify(resources, times(2)).runnerDone();
 
         verify(itemWidget).setDelegate(actionDelegateCaptor.capture());
         ItemWidget.ActionDelegate actionDelegate = actionDelegateCaptor.getValue();
