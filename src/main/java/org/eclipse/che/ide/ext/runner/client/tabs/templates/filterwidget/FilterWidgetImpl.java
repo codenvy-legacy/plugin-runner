@@ -56,17 +56,10 @@ public class FilterWidgetImpl extends Composite implements FilterWidget {
 
         initWidget(UI_BINDER.createAndBindUi(this));
 
-        prepareTypes();
-        prepareScopes();
-    }
-
-    private void prepareScopes() {
         for (Scope scope : Scope.values()) {
             scopes.addItem(scope.toString());
         }
-    }
 
-    private void prepareTypes() {
         types.addItem(locale.configsTypeAll());
     }
 
@@ -114,7 +107,7 @@ public class FilterWidgetImpl extends Composite implements FilterWidget {
     }
 
     @UiHandler({"types", "scopes"})
-    public void onTypeChanged(@SuppressWarnings("UnusedParameters") ChangeEvent event) {
+    public void onValueChanged(@SuppressWarnings("UnusedParameters") ChangeEvent event) {
         delegate.onValueChanged();
     }
 }

@@ -131,10 +131,6 @@
     cursor: pointer;
 }
 
-.typeButton {
-    color: #1c9dee;
-}
-
 .unAvailableMessage {
     left: 0;
     cursor: default;
