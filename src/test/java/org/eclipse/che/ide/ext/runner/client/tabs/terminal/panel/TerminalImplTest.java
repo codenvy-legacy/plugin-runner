@@ -10,19 +10,21 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel;
 
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import com.google.gwt.user.client.Element;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.DONE;
+import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.IN_PROGRESS;
+import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +59,7 @@ public class TerminalImplTest {
 
     @Test
     public void terminalContentShouldBeUpdated() throws Exception {
+        when(runner.getStatus()).thenReturn(DONE);
         when(runner.isAlive()).thenReturn(true);
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
 
@@ -72,7 +75,8 @@ public class TerminalImplTest {
     }
 
     @Test
-    public void unavailableLabelShouldBeShoved() throws Exception {
+    public void unavailableLabelShouldBeShowed() throws Exception {
+        when(runner.getStatus()).thenReturn(DONE);
         when(runner.isAlive()).thenReturn(false);
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
 
@@ -89,14 +93,40 @@ public class TerminalImplTest {
     }
 
     @Test
-    public void terminalShouldNotBeUpdate() throws Exception {
+    public void terminalShouldNotBeUpdateWhenRunnerIsAlive() throws Exception {
+        when(runner.getStatus()).thenReturn(DONE);
         when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
         when(runner.isAlive()).thenReturn(true);
 
         terminal.update(runner);
+
+        verify(terminal.terminal).setUrl(anyString());
+        verify(element, never()).removeAttribute("src");
+    }
+
+    @Test
+    public void terminalShouldNotBeUpdateWhenLaunchingStatus() throws Exception {
+        when(runner.getStatus()).thenReturn(IN_PROGRESS);
+        when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
+        when(runner.isAlive()).thenReturn(true);
+
         terminal.update(runner);
 
-        verify(terminal.terminal, times(1)).setUrl(anyString());
+        verify(terminal.unavailableLabel, never()).setVisible(true);
+        verify(terminal.terminal, never()).setUrl(anyString());
+        verify(element, never()).removeAttribute("src");
+    }
+
+    @Test
+    public void terminalShouldNotBeUpdateWhenLaunchingStatus2() throws Exception {
+        when(runner.getStatus()).thenReturn(IN_QUEUE);
+        when(runner.getTerminalURL()).thenReturn(SOME_TEXT);
+        when(runner.isAlive()).thenReturn(true);
+
+        terminal.update(runner);
+
+        verify(terminal.unavailableLabel, never()).setVisible(true);
+        verify(terminal.terminal, never()).setUrl(anyString());
         verify(element, never()).removeAttribute("src");
     }
 
