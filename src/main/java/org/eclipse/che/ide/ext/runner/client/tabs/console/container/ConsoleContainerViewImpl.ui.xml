@@ -21,10 +21,10 @@
             background-color: #373737;
         }
 
-        .borderLine {
-            height: 6px;
+        .generalBorder {
+            position: relative;
             width: 100%;
-            float: right;
+            height: 6px;
             box-shadow: 4px 2px 5px 0 rgba(50, 50, 50, 0.75);
             border-bottom: 1px solid #242424;;
             z-index: 1;
@@ -38,8 +38,8 @@
 
         <g:center>
             <g:FlowPanel addStyleNames="{resources.runnerCss.fullSize}">
-                <g:SimpleLayoutPanel addStyleNames="{style.borderLine} {resources.runnerCss.consoleBackground}"/>
-                <g:SimplePanel ui:field="mainPanel" addStyleNames="{resources.runnerCss.fullSize} {style.border}"/>
+                <g:SimplePanel addStyleNames="{style.generalBorder} {resources.runnerCss.consoleBackground}"/>
+                <g:SimplePanel ui:field=" mainPanel" addStyleNames="{resources.runnerCss.fullSize} {style.border}"/>
             </g:FlowPanel>
         </g:center>
     </g:DockLayoutPanel>

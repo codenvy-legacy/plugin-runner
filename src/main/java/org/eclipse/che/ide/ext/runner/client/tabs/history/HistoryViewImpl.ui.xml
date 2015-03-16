@@ -22,6 +22,7 @@
 
         .runnerPanels {
             width: calc(100% + 1px);
+            padding-bottom: 6px;
             margin-left: 5px;
             background: #313131;
         }
@@ -44,10 +45,10 @@
     <g:FlowPanel addStyleNames="{resources.runnerCss.fullSize}">
         <g:SimplePanel addStyleNames="{style.generalSeparator} {style.topSeparator}"/>
 
-    <g:ScrollPanel ui:field="scrollPanel" addStyleNames="{style.scrollPanel} {resources.runnerCss.fullSize}">
-        <g:FlowPanel ui:field="runnersPanel" addStyleNames="{style.runnerPanels}"/>
-    </g:ScrollPanel>
+        <g:ScrollPanel ui:field="scrollPanel" addStyleNames="{style.scrollPanel} {resources.runnerCss.fullSize}">
+            <g:FlowPanel ui:field="runnersPanel" addStyleNames="{style.runnerPanels}"/>
+        </g:ScrollPanel>
 
-    <g:SimplePanel addStyleNames="{style.generalSeparator} {style.bottomSeparator}"/>
+        <g:SimplePanel addStyleNames="{style.generalSeparator} {style.bottomSeparator}"/>
     </g:FlowPanel>
 </ui:UiBinder>

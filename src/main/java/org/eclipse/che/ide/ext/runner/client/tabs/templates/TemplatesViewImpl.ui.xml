@@ -27,11 +27,11 @@
         .scroll {
             width: 100%;
             height: 100%;
-            right: 3px;
             direction: rtl;
         }
 
         .environmentPanel {
+            padding-bottom: 13px;
             margin-right: 2px;
             margin-left: 5px;
         }
@@ -40,7 +40,7 @@
             position: relative;
             width: 100%;
             z-index: 1;
-            box-shadow: -10px 0 6px 3px rgba(50, 50, 50, 0.75);
+            box-shadow: -6px 0 6px 3px rgba(50, 50, 50, 0.75);
         }
 
         .topSeparator {
