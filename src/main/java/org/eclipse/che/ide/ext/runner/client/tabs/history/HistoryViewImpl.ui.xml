@@ -28,7 +28,7 @@
         }
     </ui:style>
 
-    <g:ScrollPanel addStyleNames="{style.scrollPanel}">
+    <g:ScrollPanel ui:field="scrollPanel" addStyleNames="{style.scrollPanel}">
         <g:FlowPanel ui:field="runnersPanel" addStyleNames="{style.runnerPanels}"/>
     </g:ScrollPanel>
 </ui:UiBinder>

@@ -10,15 +10,18 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.history;
 
-import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
+import com.google.gwt.user.client.Element;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
@@ -32,9 +35,14 @@ public class HistoryViewImplTest {
 
     @Test
     public void runnerWidgetShouldBeAdded() {
+        Element element = mock(Element.class);
+        when(historyView.scrollPanel.getElement()).thenReturn(element);
+
         historyView.addRunner(runnerWidget);
 
         verify(historyView.runnersPanel).add(runnerWidget);
+        verify(element).getScrollHeight();
+        verify(element).setScrollTop(element.getScrollHeight());
     }
 
     @Test
