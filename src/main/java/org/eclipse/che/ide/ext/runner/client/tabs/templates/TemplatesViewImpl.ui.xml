@@ -21,7 +21,7 @@
             width: 100%;
             height: 100%;
             margin-top: 6px;
-            margin-left: 5px;
+            margin-left: 2px;
         }
 
         .scroll {
@@ -35,19 +35,38 @@
             margin-right: 2px;
             margin-left: 5px;
         }
+
+        .generalSeparator {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+            box-shadow: -10px 0 6px 3px rgba(50, 50, 50, 0.75);
+        }
+
+        .topSeparator {
+            height: 6px;
+        }
+
+        .bottomSeparator {
+            top: -13px;
+        }
     </ui:style>
     <g:DockLayoutPanel unit="PX" addStyleNames="{style.container}">
         <!--scope panel-->
-        <g:north size="50">
+        <g:north size="40">
             <g:SimplePanel ui:field="filterPanel"/>
         </g:north>
 
         <!--templates panel-->
         <g:center>
             <g:FlowPanel>
+                <g:SimplePanel addStyleNames="{style.generalSeparator} {style.topSeparator}"/>
+
                 <g:ScrollPanel addStyleNames="{style.scroll}">
                     <g:FlowPanel ui:field="environmentsPanel" addStyleNames="{style.environmentPanel}"/>
                 </g:ScrollPanel>
+
+                <g:SimplePanel addStyleNames="{style.generalSeparator} {style.bottomSeparator}"/>
             </g:FlowPanel>
         </g:center>
     </g:DockLayoutPanel>
