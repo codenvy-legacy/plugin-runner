@@ -60,7 +60,8 @@ public class TabWidgetImpl extends Composite implements TabWidget, ClickHandler 
         setHeight(tabType.getHeight());
         setWidth(tabType.getWidth());
 
-        this.tabTitle.setText(title);
+        ensureDebugId(title + "-tab");
+        tabTitle.setText(title);
 
         addDomHandler(this, ClickEvent.getType());
     }
