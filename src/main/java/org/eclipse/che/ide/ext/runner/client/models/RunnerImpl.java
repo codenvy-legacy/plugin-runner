@@ -55,7 +55,7 @@ import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.STOPPED
  */
 public class RunnerImpl implements Runner {
 
-    public static final  DateTimeFormat DATE_TIME_FORMAT = DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss");
+    public static final  DateTimeFormat DATE_TIME_FORMAT = DateTimeFormat.getFormat("MM-dd-yyyy HH:mm:ss");
     private static final String         RUNNER_NAME      = "Runner ";
     private static final NumberFormat   NUMBER_FORMAT    = NumberFormat.getDecimalFormat();
 
@@ -263,7 +263,7 @@ public class RunnerImpl implements Runner {
         }
         double stopTimeMls = NUMBER_FORMAT.parse(stopTime);
 
-        return DateTimeFormat.getFormat("dd-MM-yy HH:mm:ss").format(new Date((long)stopTimeMls));
+        return DATE_TIME_FORMAT.format(new Date((long)stopTimeMls));
     }
 
     /** {@inheritDoc} */
