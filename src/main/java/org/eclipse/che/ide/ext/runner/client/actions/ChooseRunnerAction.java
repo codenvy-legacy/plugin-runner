@@ -10,6 +10,13 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.actions;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.action.CustomComponentAction;
 import org.eclipse.che.ide.api.action.Presentation;
@@ -18,12 +25,6 @@ import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -133,11 +134,6 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
         return selectedEnvironment;
     }
 
-    @Nonnull
-    private String getRunnerName(@Nonnull String runnerId) {
-        return runnerId.substring(runnerId.lastIndexOf("/") + 1, runnerId.length());
-    }
-
     private void selectEnvironment() {
         String selectedEnvironmentName = environments.getValue(environments.getSelectedIndex());
 
@@ -157,15 +153,32 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
     }
 
     private void selectDefaultRunner() {
-        CurrentProject currentProject = appContext.getCurrentProject();
-        if (currentProject == null) {
+        String runnerName = getDefaultRunnerName();
+        if (runnerName == null) {
             return;
         }
+
         for (int index = 0; index < environments.getItemCount(); index++) {
-            if (getRunnerName(currentProject.getRunner()).equals(environments.getValue(index))) {
+            if (runnerName.equals(environments.getValue(index))) {
                 environments.setItemSelected(index, true);
                 return;
             }
         }
+    }
+
+    @Nullable
+    private String getDefaultRunnerName() {
+        CurrentProject currentProject = appContext.getCurrentProject();
+        if (currentProject == null) {
+            return null;
+        }
+
+        for (Environment e : systemRunners) {
+            if (e.getId().equals(currentProject.getRunner())) {
+                return e.getName();
+            }
+        }
+
+        return null;
     }
 }

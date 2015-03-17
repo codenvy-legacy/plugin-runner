@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.actions;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -155,5 +155,25 @@ public class ChooseRunnerActionTest {
         verify(systemEnv2, times(2)).getName();
         verify(projectEnv1).getName();
         verify(projectEnv2).getName();
+    }
+
+    @Test
+    public void defaultRunnerShouldBeSelected() throws Exception {
+        CurrentProject currentProject = mock(CurrentProject.class);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getRunner()).thenReturn(TEXT);
+        when(systemEnv1.getId()).thenReturn(TEXT + TEXT);
+        when(systemEnv2.getId()).thenReturn(TEXT);
+        when(systemEnv2.getName()).thenReturn(TEXT);
+
+        chooseRunnerAction.addSystemRunners(systemEnvList);
+
+        chooseRunnerAction.addProjectRunners(projectEnvList);
+
+        verify(appContext, times(2)).getCurrentProject();
+
+        verify(systemEnv1, times(2)).getId();
+        verify(systemEnv2, times(2)).getId();
+        verify(systemEnv2, times(4)).getName();
     }
 }

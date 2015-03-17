@@ -16,15 +16,18 @@
     <ui:with field="resources" type="org.eclipse.che.ide.ext.runner.client.RunnerResources"/>
 
     <ui:style>
-        .scrollPanel {
+        .container {
+            margin-left: 2px;
+        }
+
+        .scroll {
             direction: rtl;
         }
 
         .runnerPanels {
-            width: calc(100% + 1px);
             padding-bottom: 6px;
+            margin-right: 2px;
             margin-left: 5px;
-            background: #313131;
         }
 
         .generalSeparator {
@@ -42,10 +45,10 @@
             top: -6px;
         }
     </ui:style>
-    <g:FlowPanel addStyleNames="{resources.runnerCss.fullSize}">
+    <g:FlowPanel addStyleNames="{style.container} {resources.runnerCss.fullSize}">
         <g:SimplePanel addStyleNames="{style.generalSeparator} {style.topSeparator}"/>
 
-        <g:ScrollPanel ui:field="scrollPanel" addStyleNames="{style.scrollPanel} {resources.runnerCss.fullSize}">
+        <g:ScrollPanel ui:field="scrollPanel" addStyleNames="{style.scroll} {resources.runnerCss.fullSize}">
             <g:FlowPanel ui:field="runnersPanel" addStyleNames="{style.runnerPanels}"/>
         </g:ScrollPanel>
 
