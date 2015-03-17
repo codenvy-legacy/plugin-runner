@@ -18,6 +18,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public interface TemplatesView extends IsWidget {
      * @param selectedEnvironment
      *         environment which was selected
      */
-    void selectEnvironment(@Nonnull Environment selectedEnvironment);
+    void selectEnvironment(@Nullable Environment selectedEnvironment);
 
     /**
      * Sets filter widget {@link FilterWidget}to special place on templates panel.

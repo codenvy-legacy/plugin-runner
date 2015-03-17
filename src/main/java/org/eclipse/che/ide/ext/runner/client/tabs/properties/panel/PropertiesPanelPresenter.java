@@ -10,64 +10,31 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel;
 
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import com.google.web.bindery.event.shared.EventBus;
 
-import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
-import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.editor.EditorInitException;
-import org.eclipse.che.ide.api.editor.EditorInput;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.editor.EditorRegistry;
 import org.eclipse.che.ide.api.filetypes.FileType;
 import org.eclipse.che.ide.api.filetypes.FileTypeRegistry;
-import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.api.parts.PartPresenter;
 import org.eclipse.che.ide.api.parts.PropertyListener;
 import org.eclipse.che.ide.api.project.tree.generic.FileNode;
-import org.eclipse.che.ide.api.project.tree.generic.ProjectNode;
-import org.eclipse.che.ide.api.texteditor.HandlesUndoRedo;
 import org.eclipse.che.ide.api.texteditor.HasReadOnlyProperty;
-import org.eclipse.che.ide.api.texteditor.UndoableEditor;
-import org.eclipse.che.ide.collections.Array;
-import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
-import org.eclipse.che.ide.ext.runner.client.callbacks.FailureCallback;
-import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.EnvironmentScript;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFile;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileEditorInput;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory;
-import org.eclipse.che.ide.ext.runner.client.util.NameGenerator;
-import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
-import org.eclipse.che.ide.ext.runner.client.util.annotations.LeftPanel;
-import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
-import org.eclipse.che.ide.rest.Unmarshallable;
-import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
-import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.util.loging.Log;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_DIRTY;
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_INPUT;
-import static org.eclipse.che.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
-import static org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl.ROOT_FOLDER;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 
 /**
@@ -76,62 +43,24 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
  */
-public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDelegate, PropertiesPanel {
+public abstract class PropertiesPanelPresenter implements PropertiesPanelView.ActionDelegate, PropertiesPanel {
 
-    private static final String DOCKER_SCRIPT_NAME = "/Dockerfile";
+    protected static final String DOCKER_SCRIPT_NAME = "/Dockerfile";
 
-    private final List<RemovePanelListener>           listeners;
-    private final PropertiesPanelView                 view;
-    private final DockerFileFactory                   dockerFileFactory;
-    private final EditorRegistry                      editorRegistry;
-    private final FileTypeRegistry                    fileTypeRegistry;
-    private final ProjectServiceClient                projectService;
-    private final DialogFactory                       dialogFactory;
-    private final RunnerLocalizationConstant          locale;
-    private final GetProjectEnvironmentsAction        projectEnvironmentsAction;
-    private final NotificationManager                 notificationManager;
-    private final DtoUnmarshallerFactory              unmarshallerFactory;
-    private final CurrentProject                      currentProject;
-    private final EventBus                            eventBus;
-    private final AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder;
-    private final TabContainer                        tabContainer;
 
-    private Timer               timer;
-    private EditorPartPresenter editor;
-    private int                 undoOperations;
-    private Environment         environment;
-    private Runner              runner;
+    protected final CurrentProject      currentProject;
+    protected final PropertiesPanelView view;
+    private final   Scope               scope;
 
-    private PropertiesPanelPresenter(PropertiesPanelView view,
-                                     DockerFileFactory dockerFileFactory,
-                                     EditorRegistry editorRegistry,
-                                     FileTypeRegistry fileTypeRegistry,
-                                     ProjectServiceClient projectService,
-                                     DialogFactory dialogFactory,
-                                     RunnerLocalizationConstant locale,
-                                     GetProjectEnvironmentsAction projectEnvironmentsAction,
-                                     NotificationManager notificationManager,
-                                     DtoUnmarshallerFactory unmarshallerFactory,
-                                     EventBus eventBus,
-                                     AppContext appContext,
-                                     @LeftPanel TabContainer tabContainer,
-                                     AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder) {
+    protected EditorPartPresenter editor;
+    protected int                 undoOperations;
+
+    public PropertiesPanelPresenter(@Nonnull PropertiesPanelView view,
+                                    @Nonnull AppContext appContext,
+                                    @Nullable Scope scope) {
         this.view = view;
+        this.scope = scope;
         this.view.setDelegate(this);
-
-        this.dockerFileFactory = dockerFileFactory;
-        this.editorRegistry = editorRegistry;
-        this.fileTypeRegistry = fileTypeRegistry;
-        this.projectService = projectService;
-        this.dialogFactory = dialogFactory;
-        this.locale = locale;
-        this.projectEnvironmentsAction = projectEnvironmentsAction;
-        this.notificationManager = notificationManager;
-        this.unmarshallerFactory = unmarshallerFactory;
-        this.eventBus = eventBus;
-        this.listeners = new ArrayList<>();
-        this.asyncCallbackBuilder = asyncCallbackBuilder;
-        this.tabContainer = tabContainer;
 
         currentProject = appContext.getCurrentProject();
 
@@ -139,170 +68,18 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
             return;
         }
 
-        resetButtons();
+        setEnableSaveCancelDeleteBtn(false);
     }
 
-    private void resetButtons() {
-        view.setEnableCancelButton(false);
-        view.setEnableSaveButton(false);
-        view.setEnableDeleteButton(false);
+    protected void setEnableSaveCancelDeleteBtn(boolean enable) {
+        view.setEnableCancelButton(enable);
+        view.setEnableSaveButton(enable);
+        view.setEnableDeleteButton(enable);
     }
 
-    @AssistedInject
-    public PropertiesPanelPresenter(final PropertiesPanelView view,
-                                    final EditorRegistry editorRegistry,
-                                    final FileTypeRegistry fileTypeRegistry,
-                                    final DockerFileFactory dockerFileFactory,
-                                    ProjectServiceClient projectService,
-                                    DialogFactory dialogFactory,
-                                    RunnerLocalizationConstant locale,
-                                    GetProjectEnvironmentsAction projectEnvironmentsAction,
-                                    NotificationManager notificationManager,
-                                    DtoUnmarshallerFactory unmarshallerFactory,
-                                    EventBus eventBus,
-                                    AppContext appContext,
-                                    AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
-                                    @LeftPanel TabContainer tabContainer,
-                                    @Assisted @Nonnull final Runner runner,
-                                    TimerFactory timerFactory) {
-        this(view,
-             dockerFileFactory,
-             editorRegistry,
-             fileTypeRegistry,
-             projectService,
-             dialogFactory,
-             locale,
-             projectEnvironmentsAction,
-             notificationManager,
-             unmarshallerFactory,
-             eventBus,
-             appContext,
-             tabContainer,
-             asyncCallbackBuilder);
-
-        this.runner = runner;
-
-        // we're waiting for getting application descriptor from server. so we can't show editor without knowing about configuration file.
-        timer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
-            @Override
-            public void onRun() {
-                String dockerUrl = runner.getDockerUrl();
-                if (dockerUrl == null) {
-                    timer.schedule(ONE_SEC.getValue());
-                    return;
-                }
-
-                timer.cancel();
-
-                DockerFile file = dockerFileFactory.newInstance(dockerUrl);
-                initializeEditor(file, editorRegistry, fileTypeRegistry);
-
-                view.selectMemory(RAM.detect(runner.getRAM()));
-            }
-        });
-        timer.schedule(ONE_SEC.getValue());
-
-        view.setEnableNameProperty(false);
-        view.setEnableRamProperty(false);
-        view.setEnableBootProperty(false);
-        view.setEnableShutdownProperty(false);
-        view.setEnableScopeProperty(false);
-
-        view.setVisibleButtons(false);
-        view.selectMemory(RAM.detect(runner.getRAM()));
-    }
-
-    @AssistedInject
-    public PropertiesPanelPresenter(final PropertiesPanelView view,
-                                    final EditorRegistry editorRegistry,
-                                    final FileTypeRegistry fileTypeRegistry,
-                                    final DockerFileFactory dockerFileFactory,
-                                    final ProjectServiceClient projectService,
-                                    EventBus eventBus,
-                                    AppContext appContext,
-                                    DialogFactory dialogFactory,
-                                    RunnerLocalizationConstant locale,
-                                    GetProjectEnvironmentsAction projectEnvironmentsAction,
-                                    NotificationManager notificationManager,
-                                    DtoUnmarshallerFactory unmarshallerFactory,
-                                    AsyncCallbackBuilder<ItemReference> asyncCallbackBuilder,
-                                    @LeftPanel TabContainer tabContainer,
-                                    @Assisted @Nonnull final Environment environment) {
-        this(view,
-             dockerFileFactory,
-             editorRegistry,
-             fileTypeRegistry,
-             projectService,
-             dialogFactory,
-             locale,
-             projectEnvironmentsAction,
-             notificationManager,
-             unmarshallerFactory,
-             eventBus,
-             appContext,
-             tabContainer,
-             asyncCallbackBuilder);
-
-        this.environment = environment;
-
-        boolean isProjectScope = PROJECT.equals(environment.getScope());
-
-        view.setEnableNameProperty(isProjectScope);
-        view.setEnableRamProperty(isProjectScope);
-        view.setEnableBootProperty(false);
-        view.setEnableShutdownProperty(false);
-        view.setEnableScopeProperty(false);
-
-        view.setVisibleButtons(isProjectScope);
-
-        if (isProjectScope) {
-            getProjectEnvironmentDocker();
-        } else {
-            getSystemEnvironmentDocker();
-        }
-    }
-
-    private void getProjectEnvironmentDocker() {
-        Unmarshallable<Array<ItemReference>> unmarshaller = unmarshallerFactory.newArrayUnmarshaller(ItemReference.class);
-
-        projectService.getChildren(environment.getPath(), new AsyncRequestCallback<Array<ItemReference>>(unmarshaller) {
-            @Override
-            protected void onSuccess(Array<ItemReference> result) {
-                for (ItemReference item : result.asIterable()) {
-                    ProjectNode project = new ProjectNode(null,
-                                                          currentProject.getProjectDescription(),
-                                                          null,
-                                                          eventBus,
-                                                          projectService,
-                                                          unmarshallerFactory);
-
-                    FileNode file = new EnvironmentScript(project,
-                                                          item,
-                                                          currentProject.getCurrentTree(),
-                                                          eventBus,
-                                                          projectService,
-                                                          unmarshallerFactory,
-                                                          environment.getName());
-
-                    initializeEditor(file, editorRegistry, fileTypeRegistry);
-                }
-            }
-
-            @Override
-            protected void onFailure(Throwable exception) {
-                Log.error(getClass(), exception.getMessage());
-            }
-        });
-    }
-
-    private void getSystemEnvironmentDocker() {
-        DockerFile file = dockerFileFactory.newInstance(environment.getPath());
-        initializeEditor(file, editorRegistry, fileTypeRegistry);
-    }
-
-    private void initializeEditor(@Nonnull final FileNode file,
-                                  @Nonnull EditorRegistry editorRegistry,
-                                  @Nonnull FileTypeRegistry fileTypeRegistry) {
+    protected void initializeEditor(@Nonnull final FileNode file,
+                                    @Nonnull EditorRegistry editorRegistry,
+                                    @Nonnull FileTypeRegistry fileTypeRegistry) {
         FileType fileType = fileTypeRegistry.getFileTypeByFile(file);
         editor = editorRegistry.getEditor(fileType).getEditor();
 
@@ -356,184 +133,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
     /** {@inheritDoc} */
     @Override
     public void onConfigurationChanged() {
-        Scope scope = runner == null ? environment.getScope() : runner.getScope();
-
         view.setEnableSaveButton(PROJECT.equals(scope));
         view.setEnableCancelButton(true);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onCopyButtonClicked() {
-        final String fileName = NameGenerator.generate();
-        String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + fileName;
-
-        AsyncRequestCallback<ItemReference> callback = asyncCallbackBuilder.unmarshaller(ItemReference.class)
-                                                                           .success(new SuccessCallback<ItemReference>() {
-                                                                               @Override
-                                                                               public void onSuccess(ItemReference result) {
-                                                                                   getEditorContent(fileName);
-                                                                               }
-                                                                           })
-                                                                           .failure(new FailureCallback() {
-                                                                               @Override
-                                                                               public void onFailure(@Nonnull Throwable reason) {
-                                                                                   notificationManager.showError(reason.getMessage());
-                                                                               }
-                                                                           })
-                                                                           .build();
-
-        projectService.createFolder(path, callback);
-    }
-
-    private void getEditorContent(@Nonnull final String fileName) {
-        editor.getEditorInput().getFile().getContent(new AsyncCallback<String>() {
-            @Override
-            public void onSuccess(String content) {
-                createFile(content, fileName);
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                notificationManager.showError(throwable.getMessage());
-            }
-        });
-    }
-
-    private void createFile(@Nonnull String content, @Nonnull String fileName) {
-        String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER;
-
-        AsyncRequestCallback<ItemReference> callback =
-                asyncCallbackBuilder.unmarshaller(ItemReference.class)
-                                    .success(new SuccessCallback<ItemReference>() {
-                                        @Override
-                                        public void onSuccess(ItemReference result) {
-                                            resetButtons();
-                                            tabContainer.showTab(locale.runnerTabTemplates());
-
-                                            boolean isRunnerNull = runner == null;
-
-                                            view.setName(isRunnerNull ? environment.getName() : runner.getTitle());
-                                            view.setType(isRunnerNull ? environment.getType() : runner.getType());
-                                            view.selectScope(isRunnerNull ? environment.getScope() : runner.getScope());
-                                            view.selectMemory(isRunnerNull ? RAM.detect(environment.getRam()) :
-                                                              RAM.detect(runner.getRAM()));
-
-                                            projectEnvironmentsAction.perform();
-                                        }
-                                    })
-                                    .failure(new FailureCallback() {
-                                        @Override
-                                        public void onFailure(@Nonnull Throwable reason) {
-                                            Log.error(PropertiesPanelPresenter.class, reason.getMessage());
-                                        }
-                                    })
-                                    .build();
-
-        projectService.createFile(path, fileName + DOCKER_SCRIPT_NAME, content, null, callback);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onSaveButtonClicked() {
-        environment.setRam(view.getRam().getValue());
-
-        String path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + environment.getName();
-
-        projectService.rename(path, view.getName(), null, new AsyncRequestCallback<Void>() {
-            @Override
-            protected void onSuccess(Void aVoid) {
-                projectEnvironmentsAction.perform();
-            }
-
-            @Override
-            protected void onFailure(Throwable throwable) {
-                notificationManager.showError(throwable.getMessage());
-            }
-        });
-
-        if (editor.isDirty()) {
-            editor.doSave(new AsyncCallback<EditorInput>() {
-                @Override
-                public void onSuccess(EditorInput editorInput) {
-                    view.setEnableSaveButton(false);
-                    view.setEnableCancelButton(false);
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    Log.error(getClass(), throwable.getMessage());
-                }
-            });
-        }
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void onDeleteButtonClicked() {
-        if (PROJECT.equals(environment.getScope())) {
-            showDialog();
-        }
-    }
-
-    private void showDialog() {
-        dialogFactory.createConfirmDialog(locale.removeEnvironment(),
-                                          locale.removeEnvironmentMessage(environment.getName()),
-                                          new ConfirmCallback() {
-                                              @Override
-                                              public void accepted() {
-                                                  removeSelectedEnvironment();
-                                              }
-                                          }, null).show();
-    }
-
-    private void removeSelectedEnvironment() {
-        projectService.delete(environment.getPath(), new AsyncRequestCallback<Void>() {
-            @Override
-            protected void onSuccess(@Nonnull Void result) {
-                projectEnvironmentsAction.perform();
-
-                reset();
-
-                notifyListeners(environment);
-            }
-
-            @Override
-            protected void onFailure(@Nonnull Throwable exception) {
-                notificationManager.showError(exception.getMessage());
-            }
-        });
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onCancelButtonClicked() {
-        Scope scope = environment == null ? runner.getScope() : environment.getScope();
-
-        view.setEnableSaveButton(false);
-        view.setEnableCancelButton(false);
-        view.setEnableDeleteButton(PROJECT.equals(scope));
-
-        if (editor instanceof UndoableEditor) {
-            HandlesUndoRedo undoRedo = ((UndoableEditor)editor).getUndoRedo();
-            while (editor.isDirty() && undoRedo.undoable()) {
-                undoOperations++;
-                undoRedo.undo();
-            }
-        }
-
-        if (environment != null) {
-            view.setName(environment.getName());
-            view.selectMemory(RAM.detect(environment.getRam()));
-            view.selectScope(environment.getScope());
-        }
-
-        if (runner != null) {
-            view.setName(runner.getTitle());
-            view.selectMemory(RAM.detect(runner.getRAM()));
-            view.selectScope(runner.getScope());
-        }
     }
 
     /** {@inheritDoc} */
@@ -573,19 +174,8 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
 
     /** {@inheritDoc} */
     @Override
-    public void reset() {
-        view.showEditor(null);
-
-        view.setName("");
-        view.setType("");
-
-        view.setEnableDeleteButton(false);
-        view.setEnableSaveButton(false);
-        view.setEnableCancelButton(false);
-    }
-
     public void addListener(@Nonnull RemovePanelListener listener) {
-        listeners.add(listener);
+        throw new UnsupportedOperationException("This is operation is unsupported");
     }
 
     /** {@inheritDoc} */
@@ -594,10 +184,27 @@ public class PropertiesPanelPresenter implements PropertiesPanelView.ActionDeleg
         view.hideButtonsPanel();
     }
 
-    private void notifyListeners(@Nonnull Environment environment) {
-        for (RemovePanelListener listener : listeners) {
-            listener.onPanelRemoved(environment);
-        }
+    /** {@inheritDoc} */
+    @Override
+    public void onCopyButtonClicked() {
+        throw new UnsupportedOperationException("This is operation is unsupported");
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void onSaveButtonClicked() {
+        throw new UnsupportedOperationException("This is operation is unsupported");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onDeleteButtonClicked() {
+        throw new UnsupportedOperationException("This is operation is unsupported");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onCancelButtonClicked() {
+        throw new UnsupportedOperationException("This is operation is unsupported");
+    }
 }

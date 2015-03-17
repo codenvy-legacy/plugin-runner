@@ -297,12 +297,11 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         TabSelectHandler propertiesHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
+                propertiesContainer.show(selectedRunner);
+
                 if (selectedRunner != null) {
                     selectedRunner.setActiveTab(locale.runnerTabProperties());
-
-                    propertiesContainer.show(selectedRunner);
                 }
-
             }
         };
 

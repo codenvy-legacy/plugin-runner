@@ -428,7 +428,7 @@ public class RunnerImplTest {
         runner.setProcessDescriptor(descriptor);
 
         assertThat(runner.getDockerUrl(), is(URL));
-        verify(descriptor, times(1)).getLinks();
+        verify(descriptor).getLinks();
         verify(link1).getHref();
     }
 
@@ -663,7 +663,7 @@ public class RunnerImplTest {
         assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
-        verify(stat, times(1)).getName();
+        verify(stat).getName();
         verify(stat).getValue();
     }
 
@@ -703,7 +703,7 @@ public class RunnerImplTest {
         assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
-        verify(stat, times(1)).getName();
+        verify(stat).getName();
         verify(stat).getValue();
     }
 
@@ -815,7 +815,7 @@ public class RunnerImplTest {
         assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
-        verify(stat, times(1)).getName();
+        verify(stat).getName();
         verify(stat).getValue();
     }
 
@@ -851,7 +851,7 @@ public class RunnerImplTest {
         assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor).getRunStats();
-        verify(stat, times(1)).getName();
+        verify(stat).getName();
         verify(stat).getValue();
     }
 
@@ -895,7 +895,7 @@ public class RunnerImplTest {
         assertThat(runner.getTimeout(), is(ALWAYS_ON));
 
         verify(descriptor, times(2)).getRunStats();
-        verify(descriptor, times(1)).getStatus();
+        verify(descriptor).getStatus();
         verify(stat, times(2)).getName();
         verify(stat).getValue();
     }
@@ -913,7 +913,7 @@ public class RunnerImplTest {
         assertThat(runner.getTimeout(), is("30s"));
 
         verify(descriptor, times(2)).getRunStats();
-        verify(descriptor, times(1)).getStatus();
+        verify(descriptor).getStatus();
         verify(stat, times(2)).getName();
         verify(stat).getValue();
     }
@@ -931,7 +931,7 @@ public class RunnerImplTest {
         assertThat(runner.getTimeout(), is(RunnerManagerPresenter.TIMER_STUB));
 
         verify(descriptor, times(2)).getRunStats();
-        verify(descriptor, times(1)).getStatus();
+        verify(descriptor).getStatus();
         verify(stat, times(2)).getName();
         verify(stat).getValue();
     }

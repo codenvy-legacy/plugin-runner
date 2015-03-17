@@ -25,6 +25,8 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButt
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.environment.EnvironmentWidget;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.Terminal;
+import org.eclipse.che.ide.ext.runner.client.util.annotations.EnvironmentProperties;
+import org.eclipse.che.ide.ext.runner.client.util.annotations.RunnerProperties;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 import javax.annotation.Nonnull;
@@ -114,6 +116,7 @@ public interface WidgetFactory {
      * @return an instance of {@link PropertiesPanel}
      */
     @Nonnull
+    @RunnerProperties
     PropertiesPanel createPropertiesPanel(@Nonnull Runner runner);
 
     /**
@@ -124,7 +127,15 @@ public interface WidgetFactory {
      * @return an instance of {@link PropertiesPanel}
      */
     @Nonnull
+    @EnvironmentProperties
     PropertiesPanel createPropertiesPanel(@Nonnull Environment environment);
+
+    /** Creates stab of properties panel widget
+     *
+     * @return an instance of {@link PropertiesPanel}
+     */
+    @Nonnull
+    PropertiesPanel createPropertiesPanel();
 
     /**
      * Creates more info popup widget.

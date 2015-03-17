@@ -169,7 +169,7 @@ public class LogMessagesHandlerTest {
         verify(flushTimer, never()).cancel();
         verify(logMessage1, never()).getText();
         verify(consoleContainer, never()).print(runner, MESSAGE1);
-        verify(logMessage1, times(1)).getNumber();
+        verify(logMessage1).getNumber();
 
         verify(flushTimer).schedule(TimeInterval.FIVE_SEC.getValue());
     }
@@ -189,7 +189,7 @@ public class LogMessagesHandlerTest {
         logMessagesHandler.onMessage(message2);
         logMessagesHandler.onMessage(message3);
 
-        verify(flushTimer, times(1)).cancel();
+        verify(flushTimer).cancel();
 
         verify(logMessage1).getText();
         verify(consoleContainer).print(runner, MESSAGE1);
@@ -232,7 +232,7 @@ public class LogMessagesHandlerTest {
 
         verify(logMessage3, never()).getText();
         verify(consoleContainer, never()).print(runner, MESSAGE3);
-        verify(logMessage3, times(1)).getNumber();
+        verify(logMessage3).getNumber();
 
         verify(flushTimer, times(3)).schedule(TimeInterval.FIVE_SEC.getValue());
     }

@@ -43,6 +43,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -173,7 +174,7 @@ public class TemplatesPresenterTest {
         presenter.addEnvironments(tree, SYSTEM);
 
         verify(propertiesContainer).setVisible(true);
-        verify(propertiesContainer).setVisible(false);
+        verify(propertiesContainer).show(isNull(Environment.class));
     }
 
     @Test

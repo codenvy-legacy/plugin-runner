@@ -40,9 +40,6 @@ public interface PropertiesPanel extends Presenter {
      */
     void update(@Nonnull Environment environment);
 
-    /** Resets all parameters of the panel. */
-    void reset();
-
     /**
      * Adds a new listener for detecting removing panel.
      *

@@ -65,11 +65,11 @@ public class EnvironmentImpl implements Environment {
         int index = id.lastIndexOf('/') + 1;
         String lastIdPart = id.substring(index);
 
-        String name = runnerEnvironment.getDisplayName();
-        if (name == null || name.isEmpty()) {
+        String displayName = runnerEnvironment.getDisplayName();
+        if (displayName == null || displayName.isEmpty()) {
             this.name = lastIdPart;
         } else {
-            this.name = name;
+            this.name = displayName;
         }
 
         CurrentProject currentProject = appContext.getCurrentProject();
@@ -87,17 +87,17 @@ public class EnvironmentImpl implements Environment {
 
         options = Collections.unmodifiableMap(runnerEnvironment.getOptions());
 
-        String type = id.replaceFirst(SYSTEM.equals(scope) ? SYSTEM_SCOPE_PREFIX : PROJECT_SCOPE_PREFIX, "");
-        index = type.lastIndexOf('/');
-        type = type.substring(0, index);
+        String typeEnvironment = id.replaceFirst(SYSTEM.equals(scope) ? SYSTEM_SCOPE_PREFIX : PROJECT_SCOPE_PREFIX, "");
+        index = typeEnvironment.lastIndexOf('/');
+        typeEnvironment = typeEnvironment.substring(0, index);
 
-        if (type.isEmpty()) {
+        if (typeEnvironment.isEmpty()) {
             String projectType = currentProject.getProjectDescription().getType();
             ProjectTypeDefinition typeDefinition = projectTypeRegistry.getProjectType(projectType);
 
             this.type = typeDefinition.getRunnerCategories().get(0);
         } else {
-            this.type = type;
+            this.type = typeEnvironment;
         }
     }
 

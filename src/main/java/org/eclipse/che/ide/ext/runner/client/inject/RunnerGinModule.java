@@ -40,11 +40,15 @@ import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidgetImpl;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidget;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.button.PropertyButtonWidgetImpl;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelPresenter;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.impl.PropertiesEnvironmentPanel;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.impl.PropertiesRunnerPanel;
+import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.impl.PropertiesStubPanel;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.Terminal;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.panel.TerminalImpl;
+import org.eclipse.che.ide.ext.runner.client.util.annotations.EnvironmentProperties;
 import org.eclipse.che.ide.ext.runner.client.util.annotations.LeftPanel;
 import org.eclipse.che.ide.ext.runner.client.util.annotations.RightPanel;
+import org.eclipse.che.ide.ext.runner.client.util.annotations.RunnerProperties;
 
 /**
  * The module that contains configuration of the client side part of the plugin.
@@ -74,7 +78,11 @@ public class RunnerGinModule extends AbstractGinModule {
                                              .implement(ButtonWidget.class, ButtonWidgetImpl.class)
                                              .implement(ConsoleButton.class, ConsoleButtonImpl.class)
                                              .implement(TabWidget.class, TabWidgetImpl.class)
-                                             .implement(PropertiesPanel.class, PropertiesPanelPresenter.class)
+                                             .implement(PropertiesPanel.class,
+                                                        EnvironmentProperties.class,
+                                                        PropertiesEnvironmentPanel.class)
+                                             .implement(PropertiesPanel.class, RunnerProperties.class, PropertiesRunnerPanel.class)
+                                             .implement(PropertiesPanel.class, PropertiesStubPanel.class)
                                              .implement(MoreInfo.class, MoreInfoImpl.class)
                                              .implement(PropertyButtonWidget.class, PropertyButtonWidgetImpl.class)
                                              .build(WidgetFactory.class));

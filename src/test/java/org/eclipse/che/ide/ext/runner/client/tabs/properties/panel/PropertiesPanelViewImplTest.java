@@ -420,21 +420,52 @@ public class PropertiesPanelViewImplTest {
     }
 
     @Test
-    public void buttonsShouldBeVisible() {
-        view.setVisibleButtons(true);
+    public void buttonSaveShouldBeVisible() {
+        view.setVisibleSaveButton(true);
 
         verify(saveButtonWidget).setVisible(true);
-        verify(deleteButtonWidget).setVisible(true);
+    }
+
+    @Test
+    public void buttonSaveShouldNotBeVisible() {
+        view.setVisibleSaveButton(false);
+
+        verify(saveButtonWidget).setVisible(false);
+    }
+
+    @Test
+    public void buttonDeleteShouldBeVisible() {
+        view.setVisibleSaveButton(true);
+
+        verify(saveButtonWidget).setVisible(true);
+    }
+
+    @Test
+    public void buttonDeleteShouldNotBeVisible() {
+        view.setVisibleDeleteButton(false);
+
+        verify(deleteButtonWidget).setVisible(false);
+    }
+
+    @Test
+    public void buttonCancelShouldBeVisible() {
+        view.setVisibleCancelButton(true);
+
         verify(cancelButtonWidget).setVisible(true);
     }
 
     @Test
-    public void buttonsShouldNotBeVisible() {
-        view.setVisibleButtons(false);
+    public void buttonCancelShouldNotBeVisible() {
+        view.setVisibleCancelButton(false);
 
-        verify(saveButtonWidget).setVisible(false);
-        verify(deleteButtonWidget).setVisible(false);
         verify(cancelButtonWidget).setVisible(false);
+    }
+
+    @Test
+    public void buttonPanelShouldBeHided() {
+        view.hideButtonsPanel();
+
+        verify(view.propertiesPanel).setWidgetHidden(view.buttonsPanel, true);
     }
 
     @Test

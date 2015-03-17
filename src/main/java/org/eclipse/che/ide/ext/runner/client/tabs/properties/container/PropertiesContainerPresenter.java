@@ -24,6 +24,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPan
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelPresenter;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +47,7 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     private final Map<Environment, PropertiesPanel> environmentsPanels;
 
     private PropertiesPanel currentPanel;
+    private PropertiesPanel stubPanel;
 
     @Inject
     public PropertiesContainerPresenter(PropertiesContainerView view,
@@ -55,6 +57,7 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
         this.selectionManager = selectionManager;
         this.view.setDelegate(this);
         this.widgetFactory = widgetFactory;
+        stubPanel = widgetFactory.createPropertiesPanel();
 
         runnerPanels = new HashMap<>();
         environmentsPanels = new HashMap<>();
@@ -64,7 +67,12 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
 
     /** {@inheritDoc} */
     @Override
-    public void show(@Nonnull Runner runner) {
+    public void show(@Nullable Runner runner) {
+        if (runner == null) {
+            view.showWidget(stubPanel);
+            return;
+        }
+
         // we save current panel if our container isn't shown and then we will show this panel when container is shown
         currentPanel = runnerPanels.get(runner);
         if (currentPanel == null) {
@@ -79,7 +87,12 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
 
     /** {@inheritDoc} */
     @Override
-    public void show(@Nonnull Environment environment) {
+    public void show(@Nullable Environment environment) {
+        if (environment == null) {
+            view.showWidget(stubPanel);
+            return;
+        }
+
         currentPanel = environmentsPanels.get(environment);
 
         if (currentPanel == null) {

@@ -18,6 +18,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.common.TabPresenter;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Provides methods which allow work with templates panel.
@@ -32,7 +33,7 @@ public interface TemplatesContainer extends TabPresenter {
      * @param environment
      *         environment which was selected
      */
-    void select(@Nonnull Environment environment);
+    void select(@Nullable Environment environment);
 
     /**
      * Calls method on view which adds environment widget on templates panel.

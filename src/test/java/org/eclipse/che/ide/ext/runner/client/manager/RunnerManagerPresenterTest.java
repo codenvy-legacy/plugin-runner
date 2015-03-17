@@ -338,6 +338,13 @@ public class RunnerManagerPresenterTest {
         verify(templates).showEnvironments();
         verify(view).hideOtherButtons();
 
+        /* verify initialize RightPanel*/
+        //verify templatesHandler
+        verifyTabSelectHandler(tabBuilderProperties);
+        verify(propertiesContainer).show((Runner)null);
+        verify(locale).runnerTabProperties();
+        verify(runner, never()).setActiveTab(PROPERTIES);
+
         presenter.addRunner(processDescriptor);
 
         ArgumentCaptor<TimerFactory.TimerCallBack> argumentCaptor = ArgumentCaptor.forClass(TimerFactory.TimerCallBack.class);
@@ -349,21 +356,23 @@ public class RunnerManagerPresenterTest {
         verify(view, times(2)).setTimeout(TEXT);
         verify(timer, times(2)).schedule(TimeInterval.ONE_SEC.getValue());
 
-        /* verify initialize RightPanel*/
         //init console tab
         verifyInitTab(tabBuilderConsole, consoleContainer, Tab.VisibleState.REMOVABLE, RIGHT, EnumSet.of(State.RUNNERS), CONSOLE);
         verify(rightTabContainer).addTab(consoleTab);
 
         //verify consoleHandler
         verifyTabSelectHandler(tabBuilderConsole);
+        verify(locale, times(2)).runnerTabConsole();
         verify(runner).setActiveTab(CONSOLE);
 
         //init terminal tab
         verifyInitTab(tabBuilderTerminal, terminalContainer, Tab.VisibleState.VISIBLE, RIGHT, EnumSet.of(State.RUNNERS), TERMINAL);
+        verify(locale).runnerTabTerminal();
         verify(rightTabContainer).addTab(terminalTab);
 
         //verify terminalHandler
         verifyTabSelectHandler(tabBuilderTerminal);
+        verify(locale, times(2)).runnerTabTerminal();
         verify(runner).setActiveTab(TERMINAL);
 
         //init properties tab
@@ -372,6 +381,10 @@ public class RunnerManagerPresenterTest {
 
         //verify templatesHandler
         verifyTabSelectHandler(tabBuilderProperties);
+        verify(propertiesContainer).show(runner);
+        verify(locale, times(2)).runnerTabProperties();
+        verify(runner).setActiveTab(PROPERTIES);
+
         verify(panelState).setState(State.TEMPLATE);
         verify(view).hideOtherButtons();
 
@@ -661,7 +674,7 @@ public class RunnerManagerPresenterTest {
 
         presenter.onRerunButtonClicked();
 
-        verify(runner, times(1)).getStatus();
+        verify(runner).getStatus();
 
         verify(panelState).setState(State.RUNNERS);
         verify(view).showOtherButtons();

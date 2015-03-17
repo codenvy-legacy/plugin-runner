@@ -20,9 +20,9 @@ import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
 import org.hamcrest.core.Is;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.eclipse.che.ide.ext.runner.client.selection.Selection.ENVIRONMENT;
@@ -54,15 +54,35 @@ public class PropertiesContainerPresenterTest {
     @Mock
     private PropertiesPanel currentPanel;
     @Mock
+    private PropertiesPanel stabPanel;
+    @Mock
     private Environment     environment;
 
-    @InjectMocks
     private PropertiesContainerPresenter presenter;
+
+    @Before
+    public void setUp() {
+        when(widgetFactory.createPropertiesPanel()).thenReturn(stabPanel);
+
+        presenter = new PropertiesContainerPresenter(view, widgetFactory, selectionManager);
+    }
 
     @Test
     public void verifyConstructor() {
         verify(view).setDelegate(presenter);
+        verify(widgetFactory).createPropertiesPanel();
         verify(selectionManager).addListener(presenter);
+    }
+
+    @Test
+    public void panelShouldBeShownWhenRunnerIsNull() {
+        reset(widgetFactory, currentPanel, view);
+
+        presenter.show((Runner)null);
+
+        verify(view).showWidget(stabPanel);
+
+        verifyNoMoreInteractions(widgetFactory, currentPanel, view);
     }
 
     @Test
@@ -101,6 +121,17 @@ public class PropertiesContainerPresenterTest {
 
         verify(currentPanel).update(environment);
         verify(view).showWidget(currentPanel);
+    }
+
+    @Test
+    public void stubShouldBeShownWhen() {
+        reset(widgetFactory, currentPanel, view);
+
+        presenter.show((Environment)null);
+
+        verify(view).showWidget(stabPanel);
+
+        verifyNoMoreInteractions(widgetFactory, currentPanel, view);
     }
 
     @Test

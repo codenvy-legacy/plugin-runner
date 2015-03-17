@@ -31,6 +31,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterW
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -124,7 +125,7 @@ public class TemplatesViewImpl extends Composite implements TemplatesView {
 
     /** {@inheritDoc} */
     @Override
-    public void selectEnvironment(@Nonnull Environment selectedEnvironment) {
+    public void selectEnvironment(@Nullable Environment selectedEnvironment) {
         for (RunnerItems widget : environmentWidgets.values()) {
             widget.unSelect();
         }

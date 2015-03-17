@@ -167,14 +167,29 @@ public interface PropertiesPanelView extends View<PropertiesPanelView.ActionDele
      */
     void setEnableScopeProperty(boolean enable);
 
-
     /**
-     * Sets visibility of buttons.
+     * Sets visibility of the button save.
      *
      * @param visible
-     *         state buttons visibility
+     *         state button visibility
      */
-    void setVisibleButtons(boolean visible);
+    void setVisibleSaveButton(boolean visible);
+
+    /**
+     * Sets visibility of the button delete.
+     *
+     * @param visible
+     *         state button visibility
+     */
+    void setVisibleDeleteButton(boolean visible);
+
+    /**
+     * Sets visibility of the button cancel.
+     *
+     * @param visible
+     *         state button visibility
+     */
+    void setVisibleCancelButton(boolean visible);
 
     /**
      * Show a given editor in the special place on the container.

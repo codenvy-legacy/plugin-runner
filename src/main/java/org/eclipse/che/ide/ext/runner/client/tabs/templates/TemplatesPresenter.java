@@ -30,6 +30,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterW
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -98,7 +99,7 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
 
     /** {@inheritDoc} */
     @Override
-    public void select(@Nonnull Environment environment) {
+    public void select(@Nullable Environment environment) {
         propertiesContainer.show(environment);
         view.selectEnvironment(environment);
     }
@@ -159,11 +160,7 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
             }
         }
 
-        if (environment == null) {
-            propertiesContainer.setVisible(false);
-        } else {
-            select(environment);
-        }
+        select(environment);
     }
 
     /** {@inheritDoc} */

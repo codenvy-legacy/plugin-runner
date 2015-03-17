@@ -10,12 +10,13 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.container;
 
+import com.google.inject.ImplementedBy;
+
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.TabPresenter;
-import com.google.inject.ImplementedBy;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The container for properties panels.
@@ -31,7 +32,7 @@ public interface PropertiesContainer extends TabPresenter {
      * @param runner
      *         runner that is bound with properties panel
      */
-    void show(@Nonnull Runner runner);
+    void show(@Nullable Runner runner);
 
     /**
      * Show properties panel for environment.
@@ -39,7 +40,7 @@ public interface PropertiesContainer extends TabPresenter {
      * @param environment
      *         environment that is bound with properties panel
      */
-    void show(@Nonnull Environment environment);
+    void show(@Nullable Environment environment);
 
     /** Cleans the data of the history panel. */
     void reset();

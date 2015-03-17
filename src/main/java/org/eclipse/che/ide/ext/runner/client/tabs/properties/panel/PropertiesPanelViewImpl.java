@@ -323,9 +323,19 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
     /** {@inheritDoc} */
     @Override
-    public void setVisibleButtons(boolean visible) {
+    public void setVisibleSaveButton(boolean visible) {
         saveBtn.setVisible(visible);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setVisibleDeleteButton(boolean visible) {
         deleteBtn.setVisible(visible);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setVisibleCancelButton(boolean visible) {
         cancelBtn.setVisible(visible);
     }
 

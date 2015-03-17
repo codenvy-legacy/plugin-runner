@@ -124,8 +124,8 @@ public class TabContainerPresenterTest {
 
         tabContainerPresenter.onTabClicked("some not exist title");
 
-        verify(tab1, times(1)).getTitle();
-        verify(tab2, times(1)).getTitle();
+        verify(tab1).getTitle();
+        verify(tab2).getTitle();
 
         verifyNoMoreInteractions(view, tab1, tab2);
     }
@@ -149,8 +149,8 @@ public class TabContainerPresenterTest {
 
         tabContainerPresenter.showTab("some not exist title");
 
-        verify(tab1, times(1)).getTitle();
-        verify(tab2, times(1)).getTitle();
+        verify(tab1).getTitle();
+        verify(tab2).getTitle();
 
         verifyNoMoreInteractions(view, tab1, tab2);
     }
