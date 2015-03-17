@@ -118,7 +118,7 @@
         </g:west>
 
         <g:east size="180">
-            <g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}"/>
+            <g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}" debugId="docker-buttons-panel"/>
         </g:east>
 
         <g:center>
@@ -129,7 +129,8 @@
                 </g:north>
 
                 <g:center>
-                    <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{resources.runnerCss.fullSize} {style.editor}"/>
+                    <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{resources.runnerCss.fullSize} {style.editor}"
+                         debugId="dockerEditor"/>
                 </g:center>
             </g:DockLayoutPanel>
         </g:center>

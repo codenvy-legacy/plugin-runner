@@ -97,7 +97,7 @@
 
                 <!--buttons panel-->
                 <g:west size="30">
-                    <g:FlowPanel addStyleNames="{style.buttonsPanel}">
+                    <g:FlowPanel addStyleNames="{style.buttonsPanel}" debugId="runButtonPanel">
                         <g:FlowPanel ui:field="runButtonPanel"/>
                         <g:FlowPanel ui:field="otherButtonsPanel"/>
                     </g:FlowPanel>

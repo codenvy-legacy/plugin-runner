@@ -117,9 +117,6 @@ public class PropertiesPanelViewImpl extends Composite implements PropertiesPane
 
         editorPanel.setWidget(unAvailableMessage);
 
-        buttonsPanel.ensureDebugId("docker-buttons-panel");
-        editorPanel.ensureDebugId("docker-file-editor");
-
         PropertyButtonWidget.ActionDelegate createDelegate = new PropertyButtonWidget.ActionDelegate() {
             @Override
             public void onButtonClicked() {
