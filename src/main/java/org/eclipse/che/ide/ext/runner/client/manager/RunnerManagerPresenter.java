@@ -530,7 +530,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onProjectOpened(@Nonnull ProjectActionEvent projectActionEvent) {
-        view.setEnableRunButton(true);
         view.setEnableReRunButton(false);
         view.setEnableStopButton(false);
         view.setEnableLogsButton(false);
@@ -541,6 +540,14 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
+            view.setEnableRunButton(false);
+            return;
+        }
+
+        boolean isRunOperationAvailable = currentProject.getProjectDescription().getPermissions().contains("run");
+        view.setEnableRunButton(isRunOperationAvailable);
+
+        if (!isRunOperationAvailable) {
             return;
         }
 

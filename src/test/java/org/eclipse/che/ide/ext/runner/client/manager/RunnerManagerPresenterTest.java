@@ -860,6 +860,8 @@ public class RunnerManagerPresenterTest {
 
     @Test
     public void actionsShouldBePerformedWhenCurrentProjectIsNotNull() {
+        when(descriptor.getPermissions()).thenReturn(Arrays.asList("run"));
+
         presenter.onProjectOpened(projectActionEvent);
 
         verify(view).setEnableRunButton(true);
@@ -887,11 +889,9 @@ public class RunnerManagerPresenterTest {
 
         presenter.onProjectOpened(projectActionEvent);
 
-        verify(view).setEnableRunButton(true);
-
         verify(templates).setVisible(true);
 
-        verify(view).setEnableRunButton(true);
+        verify(view).setEnableRunButton(false);
         verify(view).setEnableReRunButton(false);
         verify(view).setEnableStopButton(false);
         verify(view).setEnableLogsButton(false);
@@ -899,7 +899,26 @@ public class RunnerManagerPresenterTest {
         verify(actionFactory).createGetRunningProcess();
         verify(appContext).getCurrentProject();
 
-        verifyNoMoreInteractions(getRunningProcessAction);
+        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction, getProjectEnvironmentsAction);
+    }
+
+    @Test
+    public void runningProcessActionShouldNotBePerformedWhenRunPermissionIsDenied() {
+        when(appContext.getCurrentProject()).thenReturn(null);
+
+        presenter.onProjectOpened(projectActionEvent);
+
+        verify(templates).setVisible(true);
+
+        verify(view).setEnableRunButton(false);
+        verify(view).setEnableReRunButton(false);
+        verify(view).setEnableStopButton(false);
+        verify(view).setEnableLogsButton(false);
+
+        verify(actionFactory).createGetRunningProcess();
+        verify(appContext).getCurrentProject();
+
+        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction, getProjectEnvironmentsAction);
     }
 
     @Test
