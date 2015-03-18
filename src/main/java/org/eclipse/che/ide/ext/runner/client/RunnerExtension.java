@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.ide.api.action.ActionManager;
 import org.eclipse.che.ide.api.action.DefaultActionGroup;
 import org.eclipse.che.ide.api.constraints.Anchor;
@@ -18,19 +21,19 @@ import org.eclipse.che.ide.api.extension.Extension;
 import org.eclipse.che.ide.api.parts.PartStackType;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
 import org.eclipse.che.ide.ext.runner.client.actions.ChooseRunnerAction;
+import org.eclipse.che.ide.ext.runner.client.actions.RunAction;
+import org.eclipse.che.ide.ext.runner.client.actions.RunWithAction;
 import org.eclipse.che.ide.ext.runner.client.constants.ActionId;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import org.eclipse.che.ide.ext.runner.client.actions.RunAction;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
+import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 import static org.eclipse.che.ide.api.constraints.Anchor.AFTER;
+import static org.eclipse.che.ide.api.constraints.Constraints.FIRST;
 
 /**
  * Codenvy IDE3 extension provides functionality of Runner. It has to provides major operation for Runner: launch new runner, get different
@@ -58,6 +61,7 @@ public class RunnerExtension {
     @Inject
     public void setUpRunActions(ActionManager actionManager,
                                 RunAction runAction,
+                                RunWithAction runWithAction,
                                 ChooseRunnerAction chooseRunner) {
 
         //add actions in main toolbar
@@ -67,6 +71,7 @@ public class RunnerExtension {
         actionManager.registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
         actionManager.registerAction(ActionId.CHOOSE_RUNNER_ID.getId(), chooseRunner);
         actionManager.registerAction(ActionId.RUN_APP_ID.getId(), runAction);
+        actionManager.registerAction(ActionId.RUN_WITH.getId(), runWithAction);
 
         // add actions in context menu
         DefaultActionGroup contextMenuGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_CONTEXT_MENU);
@@ -78,6 +83,10 @@ public class RunnerExtension {
         runToolbarGroup.add(chooseRunner);
         runToolbarGroup.add(runAction, new Constraints(AFTER, ActionId.CHOOSE_RUNNER_ID.getId()));
         mainToolbarGroup.add(runToolbarGroup, new Constraints(Anchor.AFTER, GROUP_BUILD_TOOLBAR));
+
+        DefaultActionGroup runMenuActionGroup = (DefaultActionGroup)actionManager.getAction(GROUP_RUN);
+        runMenuActionGroup.add(runAction, FIRST);
+        runMenuActionGroup.add(runWithAction, new Constraints(Anchor.AFTER, ActionId.RUN_APP_ID.getId()));
     }
 
 }

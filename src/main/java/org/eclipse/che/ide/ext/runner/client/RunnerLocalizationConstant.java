@@ -232,4 +232,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("tooltip.logs.button")
     String tooltipLogsButton();
+
+    @Key("action.run.with")
+    String actionRunWith();
 }

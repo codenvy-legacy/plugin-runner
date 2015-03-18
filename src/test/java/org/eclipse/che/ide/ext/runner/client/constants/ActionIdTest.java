@@ -16,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.eclipse.che.ide.ext.runner.client.constants.ActionId.CHOOSE_RUNNER_ID;
 import static org.eclipse.che.ide.ext.runner.client.constants.ActionId.RUN_APP_ID;
+import static org.eclipse.che.ide.ext.runner.client.constants.ActionId.RUN_WITH;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -32,5 +33,10 @@ public class ActionIdTest {
     @Test
     public void timeIntervalShouldBeReturned2() {
         assertThat(CHOOSE_RUNNER_ID.getId(), is("chooseRunner"));
+    }
+
+    @Test
+    public void timeIntervalShouldBeReturned3() {
+        assertThat(RUN_WITH.getId(), is("runWith"));
     }
 }

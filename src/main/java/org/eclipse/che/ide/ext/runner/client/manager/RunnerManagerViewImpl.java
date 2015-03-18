@@ -123,7 +123,7 @@ public class RunnerManagerViewImpl extends BaseView<RunnerManagerView.ActionDele
         titleLabel.setText(locale.runnersPanelTitle());
         setContentWidget(UI_BINDER.createAndBindUi(this));
 
-        this.mainPanel.setWidgetMinSize(leftTabsPanel, 180);
+        this.mainPanel.setWidgetMinSize(leftTabsPanel, 185);
 
         this.popupPanel = popupPanel;
         this.popupPanel.removeStyleName(GWT_POPUP_STANDARD_STYLE);

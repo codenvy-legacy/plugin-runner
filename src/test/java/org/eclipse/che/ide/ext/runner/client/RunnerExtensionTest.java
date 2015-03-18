@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.eclipse.che.ide.api.action.ActionManager;
 import org.eclipse.che.ide.api.action.DefaultActionGroup;
 import org.eclipse.che.ide.api.constraints.Anchor;
@@ -18,9 +20,8 @@ import org.eclipse.che.ide.api.parts.PartStackType;
 import org.eclipse.che.ide.api.parts.WorkspaceAgent;
 import org.eclipse.che.ide.ext.runner.client.actions.ChooseRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.actions.RunAction;
+import org.eclipse.che.ide.ext.runner.client.actions.RunWithAction;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ import org.mockito.Mock;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
+import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 import static org.eclipse.che.ide.ext.runner.client.RunnerExtension.BUILDER_PART_ID;
@@ -88,18 +90,21 @@ public class RunnerExtensionTest {
         ActionManager actionManager = mock(ActionManager.class);
 
         RunAction runAction = mock(RunAction.class);
+        RunWithAction runWithAction = mock(RunWithAction.class);
         ChooseRunnerAction chooseRunnerAction = mock(ChooseRunnerAction.class);
 
         DefaultActionGroup mainToolbarGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup runContextGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup contextMenuGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup mainMenuGroup = mock(DefaultActionGroup.class);
 
         when(actionManager.getAction(GROUP_MAIN_TOOLBAR)).thenReturn(mainToolbarGroup);
         when(actionManager.getAction(GROUP_RUN_CONTEXT_MENU)).thenReturn(runContextGroup);
         when(actionManager.getAction(GROUP_MAIN_CONTEXT_MENU)).thenReturn(contextMenuGroup);
+        when(actionManager.getAction(GROUP_RUN)).thenReturn(mainMenuGroup);
 
         // test step
-        extension.setUpRunActions(actionManager, runAction, chooseRunnerAction);
+        extension.setUpRunActions(actionManager, runAction, runWithAction, chooseRunnerAction);
 
         // check step
         verify(mainToolbarGroup).add(actionGroupCaptor.capture(), constraintsCaptor.capture());
