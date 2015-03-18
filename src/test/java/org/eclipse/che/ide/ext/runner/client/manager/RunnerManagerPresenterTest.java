@@ -661,6 +661,7 @@ public class RunnerManagerPresenterTest {
         presenter.launchRunner(runOptions);
         presenter.onRerunButtonClicked();
 
+        verify(runner).setStatus(Runner.Status.IN_QUEUE);
         verify(runner, times(2)).getStatus();
         verify(history).update(runner);
         verify(terminalContainer, times(2)).update(runner);
@@ -679,6 +680,7 @@ public class RunnerManagerPresenterTest {
 
         presenter.onRerunButtonClicked();
 
+        verify(runner).setStatus(Runner.Status.IN_QUEUE);
         verify(runner).getStatus();
 
         verify(panelState).setState(State.RUNNERS);

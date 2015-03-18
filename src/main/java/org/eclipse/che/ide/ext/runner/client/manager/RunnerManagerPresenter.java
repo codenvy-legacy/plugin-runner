@@ -378,6 +378,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRerunButtonClicked() {
+        selectedRunner.setStatus(Runner.Status.IN_QUEUE);
+
         RunnerAction runnerAction = runnerActions.get(selectedRunner);
         if (runnerAction == null || runnerAction instanceof LaunchAction) {
             //Create new CheckRamAndRunAction and update selected runner
