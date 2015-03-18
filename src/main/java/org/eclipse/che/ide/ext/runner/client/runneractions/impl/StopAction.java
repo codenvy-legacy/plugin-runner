@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.gwt.client.RunnerServiceClient;
@@ -51,6 +52,7 @@ public class StopAction extends AbstractRunnerAction {
     private final RunnerUtil                                                   runnerUtil;
     private final GetLogsAction                                                logsAction;
     private final ConsoleContainer                                             consoleContainer;
+    private final AnalyticsEventLogger                                         eventLogger;
 
     private CurrentProject         project;
     private Runner                 runner;
@@ -65,6 +67,7 @@ public class StopAction extends AbstractRunnerAction {
                       RunnerUtil runnerUtil,
                       RunnerActionFactory actionFactory,
                       ConsoleContainer consoleContainer,
+                      AnalyticsEventLogger eventLogger,
                       RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
         this.appContext = appContext;
@@ -72,6 +75,7 @@ public class StopAction extends AbstractRunnerAction {
         this.constant = constant;
         this.notificationManager = notificationManager;
         this.runnerUtil = runnerUtil;
+        this.eventLogger = eventLogger;
         this.logsAction = actionFactory.createGetLogs();
         this.consoleContainer = consoleContainer;
 
@@ -83,6 +87,8 @@ public class StopAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform(@Nonnull final Runner runner) {
+        eventLogger.log(this);
+
         this.runner = runner;
 
         project = appContext.getCurrentProject();

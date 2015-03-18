@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.runner.gwt.client.RunnerServiceClient;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -84,6 +85,8 @@ public class GetLogsActionTest {
     private RunnerManagerPresenter                 runnerManagerPresenter;
     @Mock
     private ConsoleContainer                       consoleContainer;
+    @Mock
+    private AnalyticsEventLogger                   eventLogger;
 
     private GetLogsAction action;
 
@@ -102,7 +105,8 @@ public class GetLogsActionTest {
                                    constant,
                                    runnerUtil,
                                    consoleContainer,
-                                   runnerManagerPresenter);
+                                   runnerManagerPresenter,
+                                   eventLogger);
     }
 
     @Test

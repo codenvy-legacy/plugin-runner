@@ -12,6 +12,7 @@ package org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments;
 
 import com.google.inject.Provider;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
@@ -72,6 +73,8 @@ public class GetSystemEnvironmentsActionTest {
     private GetEnvironmentsUtil                                   environmentUtil;
     @Mock
     private ChooseRunnerAction                                    chooseRunnerAction;
+    @Mock
+    private AnalyticsEventLogger                                   eventLogger;
 
     @Mock
     private Throwable reason;
@@ -115,7 +118,8 @@ public class GetSystemEnvironmentsActionTest {
                                                  environmentUtil,
                                                  chooseRunnerAction,
                                                  appContext,
-                                                 templatesContainerProvider);
+                                                 templatesContainerProvider,
+                                                 eventLogger);
         //preparing callbacks for server
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getProjectDescription()).thenReturn(projectDescriptor);

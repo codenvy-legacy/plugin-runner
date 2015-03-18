@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.gwt.client.RunnerServiceClient;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -48,6 +49,7 @@ public class RunAction extends AbstractRunnerAction {
     private final Provider<AsyncCallbackBuilder<ApplicationProcessDescriptor>> callbackBuilderProvider;
     private final RunnerUtil                                                   runnerUtil;
     private final LaunchAction                                                 launchAction;
+    private final AnalyticsEventLogger                                         eventLogger;
 
     @Inject
     public RunAction(RunnerServiceClient service,
@@ -56,13 +58,15 @@ public class RunAction extends AbstractRunnerAction {
                      RunnerManagerPresenter presenter,
                      Provider<AsyncCallbackBuilder<ApplicationProcessDescriptor>> callbackBuilderProvider,
                      RunnerUtil runnerUtil,
-                     RunnerActionFactory actionFactory) {
+                     RunnerActionFactory actionFactory,
+                     AnalyticsEventLogger eventLogger) {
         this.service = service;
         this.appContext = appContext;
         this.locale = locale;
         this.presenter = presenter;
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.runnerUtil = runnerUtil;
+        this.eventLogger = eventLogger;
         this.launchAction = actionFactory.createLaunch();
 
         addAction(launchAction);
@@ -71,6 +75,8 @@ public class RunAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform(@Nonnull final Runner runner) {
+        eventLogger.log(this);
+
         final CurrentProject project = appContext.getCurrentProject();
         if (project == null) {
             return;

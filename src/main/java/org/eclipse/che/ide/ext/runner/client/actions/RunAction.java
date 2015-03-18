@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.actions;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.runner.dto.RunOptions;
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -31,10 +32,11 @@ import javax.annotation.Nonnull;
  */
 public class RunAction extends AbstractRunnerActions {
 
-    private final RunnerManager      runnerManager;
-    private final DtoFactory         dtoFactory;
-    private final ChooseRunnerAction chooseRunnerAction;
-    private final AppContext         appContext;
+    private final RunnerManager        runnerManager;
+    private final DtoFactory           dtoFactory;
+    private final ChooseRunnerAction   chooseRunnerAction;
+    private final AppContext           appContext;
+    private final AnalyticsEventLogger eventLogger;
 
     @Inject
     public RunAction(RunnerManager runnerManager,
@@ -42,18 +44,22 @@ public class RunAction extends AbstractRunnerActions {
                      AppContext appContext,
                      ChooseRunnerAction chooseRunnerAction,
                      DtoFactory dtoFactory,
-                     RunnerResources resources) {
+                     RunnerResources resources,
+                     AnalyticsEventLogger eventLogger) {
         super(appContext, locale.actionRun(), locale.actionRunDescription(), resources.run());
 
         this.runnerManager = runnerManager;
         this.dtoFactory = dtoFactory;
         this.appContext = appContext;
         this.chooseRunnerAction = chooseRunnerAction;
+        this.eventLogger = eventLogger;
     }
 
     /** {@inheritDoc} */
     @Override
     public void actionPerformed(@Nonnull ActionEvent event) {
+        eventLogger.log(this);
+
         CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject == null) {
             return;

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.actions;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.runner.dto.RunOptions;
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -54,6 +55,8 @@ public class RunActionTest {
     private DtoFactory                 dtoFactory;
     @Mock
     private RunOptions                 runOptions;
+    @Mock
+    private AnalyticsEventLogger       eventLogger;
 
     @Mock
     private ChooseRunnerAction chooseRunnerAction;

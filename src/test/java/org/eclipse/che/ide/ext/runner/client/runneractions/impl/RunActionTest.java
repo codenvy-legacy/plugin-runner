@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.dto.RunOptions;
@@ -37,12 +38,12 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 
 /**
  * @author Alexander Andrienko
@@ -67,6 +68,8 @@ public class RunActionTest {
     private RunnerUtil                                                   runnerUtil;
     @Mock
     private RunnerActionFactory                                          actionFactory;
+    @Mock
+    private AnalyticsEventLogger                                          eventLogger;
 
     @Mock
     private Throwable                                                     reason;
@@ -102,7 +105,7 @@ public class RunActionTest {
     public void setUp() {
         when(actionFactory.createLaunch()).thenReturn(launchAction);
         runAction = new RunAction(service, appContext, locale, presenter,
-                                  callbackBuilderProvider, runnerUtil, actionFactory);
+                                  callbackBuilderProvider, runnerUtil, actionFactory, eventLogger);
 
         //preparing callbacks for server
         when(appContext.getCurrentProject()).thenReturn(project);

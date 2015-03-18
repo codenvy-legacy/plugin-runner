@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
@@ -79,6 +80,8 @@ public class StopActionTest {
     private RunnerManagerPresenter                                       presenter;
     @Mock
     private ConsoleContainer                                             consoleContainer;
+    @Mock
+    private AnalyticsEventLogger                                          eventLogger;
 
     //action variables
     @Mock
@@ -132,6 +135,7 @@ public class StopActionTest {
                                     runnerUtil,
                                     actionFactory,
                                     consoleContainer,
+                                    eventLogger,
                                     presenter);
 
         when(appContext.getCurrentProject()).thenReturn(project);

@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
+import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
 import org.eclipse.che.api.runner.gwt.client.RunnerServiceClient;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -51,6 +52,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     private final GetEnvironmentsUtil                                   environmentUtil;
     private final ChooseRunnerAction                                    chooseRunnerAction;
     private final AppContext                                            appContext;
+    private final AnalyticsEventLogger                                  eventLogger;
 
     private RunnerEnvironmentTree environmentTree;
     private boolean               isFirstPerform;
@@ -63,7 +65,8 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
                                        GetEnvironmentsUtil environmentUtil,
                                        ChooseRunnerAction chooseRunnerAction,
                                        AppContext appContext,
-                                       Provider<TemplatesContainer> templatesPanelProvider) {
+                                       Provider<TemplatesContainer> templatesPanelProvider,
+                                       AnalyticsEventLogger eventLogger) {
         this.templatesPanelProvider = templatesPanelProvider;
         this.runnerService = runnerService;
         this.notificationManager = notificationManager;
@@ -72,6 +75,7 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
         this.locale = locale;
         this.environmentUtil = environmentUtil;
         this.appContext = appContext;
+        this.eventLogger = eventLogger;
 
         this.isFirstPerform = true;
     }
@@ -79,6 +83,8 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform() {
+        eventLogger.log(this);
+
         AsyncRequestCallback<RunnerEnvironmentTree> callback = callbackBuilderProvider
                 .get()
                 .unmarshaller(RunnerEnvironmentTree.class)
