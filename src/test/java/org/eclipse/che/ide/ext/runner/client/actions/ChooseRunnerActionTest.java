@@ -81,7 +81,7 @@ public class ChooseRunnerActionTest {
     }
 
     @Test
-    public void shouldVerifyConstructor() throws Exception {
+    public void prepareActionShouldBePerformed() throws Exception {
         verify(locale, times(2)).actionChooseRunner();
         verify(resources, times(2)).runnerCss();
         verify(css).runnersAction();

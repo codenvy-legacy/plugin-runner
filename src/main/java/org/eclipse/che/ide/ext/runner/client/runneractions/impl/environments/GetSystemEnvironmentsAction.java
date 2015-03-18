@@ -121,8 +121,8 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
         container.addEnvironments(tree, SYSTEM);
 
         if (isFirstPerform) {
-            RunnerEnvironmentTree environmentTree = environmentUtil.getRunnerCategoryByProjectType(tree, projectType);
-            container.setTypeItem(environmentTree.getDisplayName());
+            RunnerEnvironmentTree envTree = environmentUtil.getRunnerCategoryByProjectType(tree, projectType);
+            container.setTypeItem(envTree.getDisplayName());
             isFirstPerform = false;
         }
 

@@ -100,7 +100,7 @@ public class LogMessagesHandlerTest {
     }
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         when(logMessage1.getNumber()).thenReturn(2);
         logMessagesHandler.onMessage(message1);
 

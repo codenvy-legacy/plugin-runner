@@ -89,7 +89,7 @@ public class EnvironmentImplTest {
     }
 
     @Test
-    public void shouldVerifyConstructorWhenScopeIsSystem() {
+    public void prepareActionShouldBePerformedWhenScopeIsSystem() {
         verify(runnerEnvironment).getId();
         verify(appContext).getCurrentProject();
 
@@ -110,7 +110,7 @@ public class EnvironmentImplTest {
     }
 
     @Test
-    public void shouldVerifyConstructorWhenScopeIsProject() {
+    public void prepareActionShouldBePerformedWhenScopeIsProject() {
         environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);
 
         verify(runnerEnvironment, times(2)).getId();
@@ -127,7 +127,7 @@ public class EnvironmentImplTest {
     }
 
     @Test
-    public void shouldVerifyConstructorWhenDisplayNameIsNull() {
+    public void prepareActionShouldBePerformedWhenDisplayNameIsNull() {
         when(runnerEnvironment.getDisplayName()).thenReturn(null);
 
         environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);
@@ -146,7 +146,7 @@ public class EnvironmentImplTest {
     }
 
     @Test
-    public void shouldVerifyConstructorWhenDisplayNameIsEmpty() {
+    public void prepareActionShouldBePerformedWhenDisplayNameIsEmpty() {
         when(runnerEnvironment.getDisplayName()).thenReturn("");
 
         environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);

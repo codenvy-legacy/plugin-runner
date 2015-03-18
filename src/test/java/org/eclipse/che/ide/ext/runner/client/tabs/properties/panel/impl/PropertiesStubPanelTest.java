@@ -35,7 +35,7 @@ public class PropertiesStubPanelTest {
     private PropertiesStubPanel propertiesStubPanel;
 
     @Test
-    public void verifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         verify(view).setName("");
         verify(view).setType("");
 

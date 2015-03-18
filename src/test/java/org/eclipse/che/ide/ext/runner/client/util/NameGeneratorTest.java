@@ -40,8 +40,9 @@ public class NameGeneratorTest {
         return name.substring(0, 19) + name.substring(20, name.length());
     }
 
+    @SuppressWarnings("unchecked")
     @Test(expected = UnsupportedOperationException.class)
-    public void verifyConstructor() throws Throwable {
+    public void prepareActionShouldBePerformed() throws Throwable {
         Constructor<NameGenerator> constructor= (Constructor<NameGenerator>) NameGenerator.class.getDeclaredConstructors()[0];
         constructor.setAccessible(true);
         try {

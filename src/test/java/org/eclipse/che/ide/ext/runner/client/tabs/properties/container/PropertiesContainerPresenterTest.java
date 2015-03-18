@@ -68,7 +68,7 @@ public class PropertiesContainerPresenterTest {
     }
 
     @Test
-    public void verifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         verify(view).setDelegate(presenter);
         verify(widgetFactory).createPropertiesPanel();
         verify(selectionManager).addListener(presenter);

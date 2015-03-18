@@ -389,7 +389,18 @@ public class RunnerImplTest {
     }
 
     @Test
-    public void applicationUrlShouldBeReturnedWhenDescriptorHasCorrectUrlAndCodeServerParameterIsNotEmpty() {
+    public void applicationUrlShouldBeReturnedWhenDescriptorHasCorrectUrlAndCodeServerParameterIsNotEmpty1() {
+        addLinkToList("code server", ":server");
+        when(descriptor.getLinks()).thenReturn(links);
+
+        runner.setProcessDescriptor(descriptor);
+
+        assertThat(runner.getApplicationURL(), is(URL + "?h="));
+        verify(link1).getHref();
+    }
+
+    @Test
+    public void applicationUrlShouldBeReturnedWhenDescriptorHasCorrectUrlAndCodeServerParameterIsNotEmpty2() {
         addLinkToList("code server", "http://server:1");
         when(descriptor.getLinks()).thenReturn(links);
 

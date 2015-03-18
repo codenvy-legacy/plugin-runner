@@ -120,7 +120,7 @@ public class PropertiesPanelViewImplTest {
     }
 
     @Test
-    public void verifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         ramItemsShouldBeAdded();
         scopeShouldBeAdded();
         bootStateShouldBeAdded();

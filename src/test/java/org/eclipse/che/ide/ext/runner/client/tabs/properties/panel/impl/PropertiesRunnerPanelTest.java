@@ -112,7 +112,7 @@ public class PropertiesRunnerPanelTest {
     }
 
     @Test
-    public void verifyConstructorWhenDockerUrlIsNotNull() throws EditorInitException {
+    public void prepareActionShouldBePerformedWhenDockerUrlIsNotNull() throws EditorInitException {
         when(runner.getDockerUrl()).thenReturn(TEXT);
         verify(timerFactory).newInstance(timerCaptor.capture());
 
@@ -148,7 +148,7 @@ public class PropertiesRunnerPanelTest {
     }
 
     @Test
-    public void verifyConstructorWhenDockerUrlIsNull() throws EditorInitException {
+    public void prepareActionShouldBePerformedWhenDockerUrlIsNull() throws EditorInitException {
         verify(timerFactory).newInstance(timerCaptor.capture());
 
         timerCaptor.getValue().onRun();

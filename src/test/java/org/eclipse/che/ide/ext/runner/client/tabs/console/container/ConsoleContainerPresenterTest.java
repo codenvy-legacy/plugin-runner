@@ -65,7 +65,7 @@ public class ConsoleContainerPresenterTest {
     }
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         verify(view).setDelegate(presenter);
         verify(selectionManager).addListener(presenter);
     }

@@ -11,7 +11,6 @@
 package org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.impl;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelPresenter;
@@ -24,7 +23,6 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPan
  * @author Dmitry Shnurenko
  * @author Alexander Andrienko
  */
-@Singleton
 public class PropertiesStubPanel extends PropertiesPanelPresenter {
     @Inject
     public PropertiesStubPanel(PropertiesPanelView view, AppContext appContext) {

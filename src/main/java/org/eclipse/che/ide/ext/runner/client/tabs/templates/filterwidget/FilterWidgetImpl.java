@@ -35,7 +35,7 @@ public class FilterWidgetImpl extends Composite implements FilterWidget {
     interface FilterWidgetImplUiBinder extends UiBinder<Widget, FilterWidgetImpl> {
     }
 
-    private final static FilterWidgetImplUiBinder UI_BINDER = GWT.create(FilterWidgetImplUiBinder.class);
+    private static final FilterWidgetImplUiBinder UI_BINDER = GWT.create(FilterWidgetImplUiBinder.class);
 
     @UiField
     ListBox types;

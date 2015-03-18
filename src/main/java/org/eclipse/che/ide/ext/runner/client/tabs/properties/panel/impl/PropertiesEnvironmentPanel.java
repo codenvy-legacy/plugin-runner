@@ -66,6 +66,8 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
  */
 public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
 
+    private static final String DOCKER_SCRIPT_NAME = "/Dockerfile";
+
     private final Environment                                environment;
     private final DtoFactory                                 dtoFactory;
     private final EditorRegistry                             editorRegistry;
@@ -256,25 +258,7 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
                                             isParameterChanged = false;
                                             setEnableSaveCancelDeleteBtn(false);
 
-                                            String environmentName = environment.getName();
-
-                                            boolean isConfigExist = runnerConfigs.containsKey(environmentName);
-
-                                            if (isConfigExist) {
-                                                int ram = getRam(environmentName);
-
-                                                String newEnvironmentName = getNewEnvironmentName(result.getPath());
-
-                                                RunnerConfiguration newConfig = dtoFactory.createDto(RunnerConfiguration.class)
-                                                                                          .withRam(ram);
-
-                                                runnerConfigs.put(newEnvironmentName, newConfig);
-
-                                                environment.setRam(ram);
-                                                view.selectMemory(RAM.detect(ram));
-                                            } else {
-                                                view.selectMemory(RAM.detect(environment.getRam()));
-                                            }
+                                            updateRunnerConfig(result);
 
                                             projectEnvironmentsAction.perform();
                                         }
@@ -288,6 +272,28 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
                                     .build();
 
         projectService.createFile(path, fileName + DOCKER_SCRIPT_NAME, content, null, callback);
+    }
+
+    private void updateRunnerConfig(@Nonnull ItemReference result) {
+        String environmentName = environment.getName();
+
+        boolean isConfigExist = runnerConfigs.containsKey(environmentName);
+
+        if (isConfigExist) {
+            int ram = getRam(environmentName);
+
+            String newEnvironmentName = getNewEnvironmentName(result.getPath());
+
+            RunnerConfiguration newConfig = dtoFactory.createDto(RunnerConfiguration.class)
+                                                      .withRam(ram);
+
+            runnerConfigs.put(newEnvironmentName, newConfig);
+
+            environment.setRam(ram);
+            view.selectMemory(RAM.detect(ram));
+        } else {
+            view.selectMemory(RAM.detect(environment.getRam()));
+        }
     }
 
     @Nonnull

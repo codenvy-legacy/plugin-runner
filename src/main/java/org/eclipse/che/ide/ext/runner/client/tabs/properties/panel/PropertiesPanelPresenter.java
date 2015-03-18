@@ -42,7 +42,7 @@ import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_INPUT;
  */
 public abstract class PropertiesPanelPresenter implements PropertiesPanelView.ActionDelegate, PropertiesPanel {
 
-    protected static final String DOCKER_SCRIPT_NAME = "/Dockerfile";
+    private   static final String UNSUPPORTED_METHOD = "This is operation is unsupported";
 
     protected final PropertiesPanelView view;
 
@@ -159,7 +159,7 @@ public abstract class PropertiesPanelPresenter implements PropertiesPanelView.Ac
     /** {@inheritDoc} */
     @Override
     public void addListener(@Nonnull RemovePanelListener listener) {
-        throw new UnsupportedOperationException("This is operation is unsupported");
+        throw new UnsupportedOperationException(UNSUPPORTED_METHOD);
     }
 
     /** {@inheritDoc} */
@@ -171,24 +171,24 @@ public abstract class PropertiesPanelPresenter implements PropertiesPanelView.Ac
     /** {@inheritDoc} */
     @Override
     public void onCopyButtonClicked() {
-        throw new UnsupportedOperationException("This is operation is unsupported");
+        throw new UnsupportedOperationException(UNSUPPORTED_METHOD);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onSaveButtonClicked() {
-        throw new UnsupportedOperationException("This is operation is unsupported");
+        throw new UnsupportedOperationException(UNSUPPORTED_METHOD);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onDeleteButtonClicked() {
-        throw new UnsupportedOperationException("This is operation is unsupported");
+        throw new UnsupportedOperationException(UNSUPPORTED_METHOD);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onCancelButtonClicked() {
-        throw new UnsupportedOperationException("This is operation is unsupported");
+        throw new UnsupportedOperationException(UNSUPPORTED_METHOD);
     }
 }

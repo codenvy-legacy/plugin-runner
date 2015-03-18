@@ -73,7 +73,7 @@ public class RunnerWidgetTest {
     }
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         ArgumentCaptor<ItemWidget.ActionDelegate> actionDelegateCaptor =
                 ArgumentCaptor.forClass(ItemWidget.ActionDelegate.class);
 

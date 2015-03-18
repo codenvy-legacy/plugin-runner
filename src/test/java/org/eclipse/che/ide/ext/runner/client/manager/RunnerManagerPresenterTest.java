@@ -316,7 +316,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         verify(view).setDelegate(presenter);
         verify(selectionManager).addListener(presenter);
         verify(eventBus).addHandler(ProjectActionEvent.TYPE, presenter);

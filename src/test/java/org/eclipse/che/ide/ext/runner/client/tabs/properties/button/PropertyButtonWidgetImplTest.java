@@ -56,7 +56,7 @@ public class PropertyButtonWidgetImplTest {
     }
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         verify(buttonWidget.button).setText(TEXT);
         verify(buttonWidget.button).removeStyleName(TEXT);
     }

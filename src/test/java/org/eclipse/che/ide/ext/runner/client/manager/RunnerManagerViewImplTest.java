@@ -141,7 +141,7 @@ public class RunnerManagerViewImplTest {
     }
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         verify(widgetFactory).createMoreInfo();
         verify(locale).runnersPanelTitle();
 

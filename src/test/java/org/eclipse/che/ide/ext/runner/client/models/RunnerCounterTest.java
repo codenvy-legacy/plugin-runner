@@ -27,7 +27,7 @@ public class RunnerCounterTest {
     private RunnerCounter runnerCounter;
 
     @Test
-    public void shouldVerifyConstructor() {
+    public void prepareActionShouldBePerformed() {
         assertThat(runnerCounter.getRunnerNumber(), is(1));
     }
 
