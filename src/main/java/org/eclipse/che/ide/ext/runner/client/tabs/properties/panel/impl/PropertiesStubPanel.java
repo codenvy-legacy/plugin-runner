@@ -28,7 +28,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPan
 public class PropertiesStubPanel extends PropertiesPanelPresenter {
     @Inject
     public PropertiesStubPanel(PropertiesPanelView view, AppContext appContext) {
-        super(view, appContext, null);
+        super(view, appContext);
 
         this.view.setName("");
         this.view.setType("");

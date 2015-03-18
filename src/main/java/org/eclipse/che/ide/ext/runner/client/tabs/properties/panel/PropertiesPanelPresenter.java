@@ -26,16 +26,13 @@ import org.eclipse.che.ide.api.texteditor.HasReadOnlyProperty;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileEditorInput;
 import org.eclipse.che.ide.util.loging.Log;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_DIRTY;
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_INPUT;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 
 /**
  * The class that manages Properties panel widget.
@@ -47,19 +44,14 @@ public abstract class PropertiesPanelPresenter implements PropertiesPanelView.Ac
 
     protected static final String DOCKER_SCRIPT_NAME = "/Dockerfile";
 
-
-    protected final CurrentProject      currentProject;
     protected final PropertiesPanelView view;
-    private final   Scope               scope;
 
+    protected CurrentProject      currentProject;
     protected EditorPartPresenter editor;
     protected int                 undoOperations;
 
-    public PropertiesPanelPresenter(@Nonnull PropertiesPanelView view,
-                                    @Nonnull AppContext appContext,
-                                    @Nullable Scope scope) {
+    public PropertiesPanelPresenter(@Nonnull PropertiesPanelView view, @Nonnull AppContext appContext) {
         this.view = view;
-        this.scope = scope;
         this.view.setDelegate(this);
 
         currentProject = appContext.getCurrentProject();
@@ -133,8 +125,7 @@ public abstract class PropertiesPanelPresenter implements PropertiesPanelView.Ac
     /** {@inheritDoc} */
     @Override
     public void onConfigurationChanged() {
-        view.setEnableSaveButton(PROJECT.equals(scope));
-        view.setEnableCancelButton(true);
+        throw new UnsupportedOperationException("This is operation is unsupported");
     }
 
     /** {@inheritDoc} */
@@ -162,14 +153,7 @@ public abstract class PropertiesPanelPresenter implements PropertiesPanelView.Ac
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Environment environment) {
-        view.setEnableCancelButton(false);
-        view.setEnableSaveButton(false);
-        view.setEnableDeleteButton(PROJECT.equals(environment.getScope()));
-
-        view.setName(environment.getName());
-        view.setType(environment.getType());
-        view.selectMemory(RAM.detect(environment.getRam()));
-        view.selectScope(environment.getScope());
+        throw new UnsupportedOperationException("This is operation is unsupported");
     }
 
     /** {@inheritDoc} */

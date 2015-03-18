@@ -30,7 +30,6 @@ import org.eclipse.che.ide.api.texteditor.HasReadOnlyProperty;
 import org.eclipse.che.ide.ext.runner.client.TestEditor;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFile;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.ui.dialogs.confirm.ConfirmDialog;
@@ -44,12 +43,10 @@ import org.mockito.Mock;
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_DIRTY;
 import static org.eclipse.che.ide.api.editor.EditorPartPresenter.PROP_INPUT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -121,7 +118,7 @@ public class PropertiesPanelPresenterTest {
         when(editor.getEditorInput()).thenReturn(editorInput);
         when(editorInput.getFile()).thenReturn(file);
 
-        presenter = new DummyPanelProperties(view, appContext, SYSTEM);
+        presenter = new DummyPanelProperties(view, appContext);
     }
 
     @Test
@@ -129,7 +126,7 @@ public class PropertiesPanelPresenterTest {
         reset(view, appContext);
         when(appContext.getCurrentProject()).thenReturn(null);
 
-        presenter = new DummyPanelProperties(view, appContext, SYSTEM);
+        presenter = new DummyPanelProperties(view, appContext);
 
         verify(appContext).getCurrentProject();
 
@@ -226,62 +223,12 @@ public class PropertiesPanelPresenterTest {
     }
 
     @Test
-    public void configurationShouldBeChangedIfRunnerIsNullAndScopeIsSystem() {
-        reset(view);
-        when(environment.getScope()).thenReturn(SYSTEM);
-
-        presenter.onConfigurationChanged();
-
-        verify(view).setEnableSaveButton(false);
-        verify(view).setEnableCancelButton(true);
-    }
-
-    @Test
     public void presenterShouldGoneContainer() {
         AcceptsOneWidget container = mock(AcceptsOneWidget.class);
 
         presenter.go(container);
 
         verify(container).setWidget(view);
-    }
-
-    @Test
-    public void environmentShouldBeUpdatedWhenScopeIsSystem() {
-        reset(view);
-        presenter.update(environment);
-
-        verify(view).setEnableCancelButton(false);
-        verify(view).setEnableSaveButton(false);
-        verify(view).setEnableDeleteButton(false);
-
-        verify(environment).getName();
-        verify(view).setName(TEXT);
-        verify(environment).getType();
-        verify(view).setType(TEXT);
-        verify(environment).getRam();
-        verify(view).selectMemory(MB_512);
-        verify(environment, times(2)).getScope();
-        verify(view).selectScope(SYSTEM);
-    }
-
-    @Test
-    public void environmentShouldBeUpdatedWhenScopeIsProject() {
-        reset(view);
-        when(environment.getScope()).thenReturn(PROJECT);
-        presenter.update(environment);
-
-        verify(view).setEnableCancelButton(false);
-        verify(view).setEnableSaveButton(false);
-        verify(view).setEnableDeleteButton(true);
-
-        verify(environment).getName();
-        verify(view).setName(TEXT);
-        verify(environment).getType();
-        verify(view).setType(TEXT);
-        verify(environment).getRam();
-        verify(view).selectMemory(MB_512);
-        verify(environment, times(2)).getScope();
-        verify(view).selectScope(PROJECT);
     }
 
     @Test
@@ -355,32 +302,21 @@ public class PropertiesPanelPresenterTest {
         presenter.onCancelButtonClicked();
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationExceptionShouldBeThrownWhenCallOnConfigChange() {
+        presenter.onConfigurationChanged();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationExceptionShouldBeThrownWhenCallUpdateEnvironment() {
+        presenter.update(environment);
+    }
+
     private class DummyPanelProperties extends PropertiesPanelPresenter {
 
         public DummyPanelProperties(PropertiesPanelView view,
-                                    AppContext appContext,
-                                    Scope scope) {
-            super(view, appContext, scope);
-        }
-
-        @Override
-        public void onCopyButtonClicked() {
-            throw new UnsupportedOperationException("Method id unsupported");
-        }
-
-        @Override
-        public void onSaveButtonClicked() {
-            throw new UnsupportedOperationException("Method id unsupported");
-        }
-
-        @Override
-        public void onDeleteButtonClicked() {
-            throw new UnsupportedOperationException("Method id unsupported");
-        }
-
-        @Override
-        public void onCancelButtonClicked() {
-            throw new UnsupportedOperationException("Method id unsupported");
+                                    AppContext appContext) {
+            super(view, appContext);
         }
     }
 

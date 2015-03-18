@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerConfiguration;
 import org.eclipse.che.api.project.shared.dto.RunnersDescriptor;
@@ -22,6 +25,7 @@ import org.eclipse.che.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import org.eclipse.che.ide.ext.runner.client.callbacks.FailureCallback;
 import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
+import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
@@ -30,9 +34,6 @@ import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.ui.dialogs.confirm.ConfirmDialog;
 import org.eclipse.che.ide.ui.dialogs.message.MessageDialog;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.inject.Provider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Alexander Andrienko
+ * @author Dmitry Shnurenko
  */
 //Todo CheckRamAndRunAction class is too difficult. This class should improve.
 @RunWith(GwtMockitoTestRunner.class)
@@ -85,6 +87,8 @@ public class CheckRamAndRunActionTest {
     private RunnerUtil                                          runnerUtil;
     @Mock
     private RunnerActionFactory                                 actionFactory;
+    @Mock
+    private RunnerManagerPresenter                              managerPresenter;
 
     //callBacks for server
     @Mock
@@ -132,7 +136,14 @@ public class CheckRamAndRunActionTest {
     public void setUp() {
         when(actionFactory.createRun()).thenReturn(runAction);
         checkRamAndRunAction =
-                new CheckRamAndRunAction(service, appContext, dialogFactory, callbackBuilderProvider, constant, runnerUtil, actionFactory);
+                new CheckRamAndRunAction(service,
+                                         appContext,
+                                         dialogFactory,
+                                         callbackBuilderProvider,
+                                         constant,
+                                         runnerUtil,
+                                         actionFactory,
+                                         managerPresenter);
 
         when(appContext.getCurrentProject()).thenReturn(project);
         when(constant.getResourcesFailed()).thenReturn(RESOURCE);
@@ -476,6 +487,7 @@ public class CheckRamAndRunActionTest {
         verify(runnerUtil).showWarning(TOTAL_MEMORY_LESS_OVERRIDE_MEMORY);
 
         verify(runner).setStatus(Runner.Status.FAILED);
+        verify(managerPresenter).update(runner);
     }
 
     @Test

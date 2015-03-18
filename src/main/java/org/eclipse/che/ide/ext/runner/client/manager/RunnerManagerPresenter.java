@@ -366,7 +366,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         if (State.TEMPLATE.equals(panelState.getState())) {
             RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
                                               .withOptions(selectedEnvironment.getOptions())
-                                              .withEnvironmentId(selectedEnvironment.getId());
+                                              .withEnvironmentId(selectedEnvironment.getId())
+                                              .withMemorySize(selectedEnvironment.getRam());
 
             launchRunner(runOptions, selectedEnvironment.getName());
         } else {

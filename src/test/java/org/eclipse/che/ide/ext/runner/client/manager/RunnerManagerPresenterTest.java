@@ -101,6 +101,7 @@ public class RunnerManagerPresenterTest {
     private static final String PROPERTIES     = "properties";
     private static final String STOPPED_RUNNER = "application shut down";
     private static final String APP_URL        = "http://runner1.codenvy.com/";
+    private static final int    RAM_SIZE       = 1024;
     private static final long   PROCESS_ID     = 1234567L;
 
     //mocks for constructor
@@ -620,11 +621,13 @@ public class RunnerManagerPresenterTest {
     public void newRunnerShouldBeRunIfPanelStateIsTemplate() {
         Map<String, String> options = new HashMap<>();
         when(selectionManager.getEnvironment()).thenReturn(runnerEnvironment);
+        when(runnerEnvironment.getRam()).thenReturn(RAM_SIZE);
         when(runnerEnvironment.getOptions()).thenReturn(options);
         when(runnerEnvironment.getName()).thenReturn(TEXT);
         when(runnerEnvironment.getId()).thenReturn(TEXT);
         when(runOptions.withOptions(options)).thenReturn(runOptions);
         when(runOptions.withEnvironmentId(TEXT)).thenReturn(runOptions);
+        when(runOptions.withMemorySize(RAM_SIZE)).thenReturn(runOptions);
         when(modelsFactory.createRunner(runOptions, TEXT)).thenReturn(runner);
         when(panelState.getState()).thenReturn(State.TEMPLATE);
 
@@ -637,6 +640,8 @@ public class RunnerManagerPresenterTest {
         verify(runnerEnvironment).getName();
         verify(dtoFactory).createDto(RunOptions.class);
         verify(runOptions).withOptions(options);
+        verify(runOptions).withEnvironmentId(TEXT);
+        verify(runOptions).withMemorySize(RAM_SIZE);
         verify(modelsFactory).createRunner(runOptions, TEXT);
 
         //verify launch runner
@@ -688,11 +693,13 @@ public class RunnerManagerPresenterTest {
     public void runnerShouldBeRunIfRunnerNotNullAndStatusIsTemplate() {
         Map<String, String> options = new HashMap<>();
         when(selectionManager.getEnvironment()).thenReturn(runnerEnvironment);
+        when(runnerEnvironment.getRam()).thenReturn(RAM_SIZE);
         when(runnerEnvironment.getOptions()).thenReturn(options);
         when(runnerEnvironment.getName()).thenReturn(TEXT);
         when(runnerEnvironment.getId()).thenReturn(TEXT);
         when(runOptions.withOptions(options)).thenReturn(runOptions);
         when(runOptions.withEnvironmentId(TEXT)).thenReturn(runOptions);
+        when(runOptions.withMemorySize(RAM_SIZE)).thenReturn(runOptions);
         when(modelsFactory.createRunner(runOptions, TEXT)).thenReturn(runner);
         when(panelState.getState()).thenReturn(State.TEMPLATE);
 
@@ -707,6 +714,8 @@ public class RunnerManagerPresenterTest {
         verify(runnerEnvironment).getName();
         verify(dtoFactory, times(2)).createDto(RunOptions.class);
         verify(runOptions).withOptions(options);
+        verify(runOptions).withEnvironmentId(TEXT);
+        verify(runOptions).withMemorySize(RAM_SIZE);
         verify(modelsFactory).createRunner(runOptions, TEXT);
 
         //verify launch runner

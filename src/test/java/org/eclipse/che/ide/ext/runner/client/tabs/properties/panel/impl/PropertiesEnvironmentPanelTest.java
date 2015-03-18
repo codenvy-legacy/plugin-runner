@@ -18,6 +18,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ItemReference;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.api.project.shared.dto.RunnerConfiguration;
+import org.eclipse.che.api.project.shared.dto.RunnersDescriptor;
 import org.eclipse.che.ide.CoreLocalizationConstant;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
@@ -35,15 +37,15 @@ import org.eclipse.che.ide.api.texteditor.HandlesUndoRedo;
 import org.eclipse.che.ide.api.texteditor.UndoableEditor;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.collections.java.JsonArrayListAdapter;
-import org.eclipse.che.ide.ext.runner.client.TestEditor;
+import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.TestEditor;
 import org.eclipse.che.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import org.eclipse.che.ide.ext.runner.client.callbacks.FailureCallback;
 import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
-import org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanel;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.PropertiesPanelView;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFile;
@@ -58,6 +60,7 @@ import org.eclipse.che.ide.ui.dialogs.CancelCallback;
 import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.ui.dialogs.confirm.ConfirmDialog;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,16 +70,23 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl.ROOT_FOLDER;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_512;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -89,12 +99,15 @@ import static org.mockito.Mockito.when;
 @RunWith(GwtMockitoTestRunner.class)
 public class PropertiesEnvironmentPanelTest {
 
-    private static final String TEXT = "some text";
+    private static final String TEXT  = "someText";
+    private static final String TEXT2 = "someText2";
     private Array<ItemReference> result;
 
     //mocks for constructors
     @Mock
     private PropertiesPanelView                        view;
+    @Mock
+    private DtoFactory                                 dtoFactory;
     @Mock
     private EditorRegistry                             editorRegistry;
     @Mock
@@ -124,7 +137,7 @@ public class PropertiesEnvironmentPanelTest {
     @Mock
     private AsyncCallbackBuilder<Void>                 voidAsyncCallbackBuilder;
     @Mock
-    private TabContainer                               tabContainer;
+    private AsyncCallbackBuilder<ProjectDescriptor>    asyncDescriptorCallbackBuilder;
     @Mock
     private Environment                                environment;
 
@@ -133,11 +146,15 @@ public class PropertiesEnvironmentPanelTest {
     @Mock
     private CurrentProject                             currentProject;
     @Mock
+    private RunnersDescriptor                          runnersDescriptor;
+    @Mock
+    private RunnerConfiguration                        runnerConfiguration;
+    @Mock
     private Timer                                      timer;
     @Mock
     private Unmarshallable<Array<ItemReference>>       unmarshaller;
     @Mock
-    private ProjectDescriptor                          descriptor;
+    private ProjectDescriptor                          projectDescriptor;
     @Mock
     private TreeStructure                              treeStructure;
     @Mock
@@ -152,6 +169,8 @@ public class PropertiesEnvironmentPanelTest {
     private AsyncRequestCallback<ItemReference>        asyncRequestCallback;
     @Mock
     private AsyncRequestCallback<Array<ItemReference>> arrayAsyncCallback;
+    @Mock
+    private AsyncRequestCallback<ProjectDescriptor>    descriptorCallback;
     @Mock
     private EditorInput                                editorInput;
     @Mock
@@ -200,13 +219,23 @@ public class PropertiesEnvironmentPanelTest {
     private ArgumentCaptor<FailureCallback>                            failureCaptor;
     @Captor
     private ArgumentCaptor<SuccessCallback<Void>>                      voidArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<SuccessCallback<ProjectDescriptor>>         updateSuccessCaptor;
 
     private PropertiesEnvironmentPanel presenter;
 
+    private Map<String, RunnerConfiguration> runnerConfigs;
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         result = new JsonArrayListAdapter<>(Arrays.asList(itemReference1, itemReference2));
+
+        runnerConfigs = new HashMap<>();
+
         when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getProjectDescription()).thenReturn(projectDescriptor);
+        when(projectDescriptor.getRunners()).thenReturn(runnersDescriptor);
+        when(runnersDescriptor.getConfigs()).thenReturn(runnerConfigs);
         when(runner.getRAM()).thenReturn(MB_512.getValue());
         when(unmarshallerFactory.newArrayUnmarshaller(ItemReference.class)).thenReturn(unmarshaller);
 
@@ -216,14 +245,20 @@ public class PropertiesEnvironmentPanelTest {
         when(environment.getType()).thenReturn(TEXT);
         when(environment.getRam()).thenReturn(MB_512.getValue());
 
+        when(dtoFactory.createDto(RunnerConfiguration.class)).thenReturn(runnerConfiguration);
+        when(runnerConfiguration.withRam(anyInt())).thenReturn(runnerConfiguration);
+        when(runnerConfiguration.getRam()).thenReturn(MB_512.getValue());
+
         when(currentProject.getCurrentTree()).thenReturn(treeStructure);
-        when(currentProject.getProjectDescription()).thenReturn(descriptor);
 
         when(dockerFileFactory.newInstance(TEXT)).thenReturn(file);
 
         when(asyncCallbackBuilder.unmarshaller(ItemReference.class)).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.success(Matchers.<SuccessCallback<ItemReference>>anyObject())).thenReturn(asyncCallbackBuilder);
         when(asyncCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncCallbackBuilder);
+        when(asyncDescriptorCallbackBuilder.success(Matchers.<SuccessCallback<ProjectDescriptor>>anyObject()))
+                .thenReturn(asyncDescriptorCallbackBuilder);
+        when(asyncDescriptorCallbackBuilder.failure(any(FailureCallback.class))).thenReturn(asyncDescriptorCallbackBuilder);
 
         when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback);
         when(editorRegistry.getEditor(fileType)).thenReturn(editorProvider);
@@ -247,6 +282,7 @@ public class PropertiesEnvironmentPanelTest {
         when(voidAsyncCallbackBuilder.build()).thenReturn(voidAsyncRequestCallback);
 
         presenter = new PropertiesEnvironmentPanel(view,
+                                                   dtoFactory,
                                                    editorRegistry,
                                                    fileTypeRegistry,
                                                    dockerFileFactory,
@@ -261,7 +297,7 @@ public class PropertiesEnvironmentPanelTest {
                                                    asyncCallbackBuilder,
                                                    asyncArrayCallbackBuilder,
                                                    voidAsyncCallbackBuilder,
-                                                   tabContainer,
+                                                   asyncDescriptorCallbackBuilder,
                                                    environment);
 
         when(locale.removeEnvironment()).thenReturn(TEXT);
@@ -272,46 +308,24 @@ public class PropertiesEnvironmentPanelTest {
     }
 
     @Test
-    public void copyButtonShouldBeClickedAndContentFromEditorShouldBeReturned() {
-        when(editorProvider.getEditor()).thenReturn(editor);
-        when(file.isReadOnly()).thenReturn(true);
+    public void copyButtonShouldBeClickedAndContentFromEditorShouldBeReturnedWhenRunnerConfigExist() {
+        String newName = "newName";
 
-        presenter.onCopyButtonClicked();
-
-        verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
-        verify(asyncCallbackBuilder).unmarshaller(ItemReference.class);
-        verify(asyncCallbackBuilder).success(successCallbackArgCaptor.capture());
-
-        successCallbackArgCaptor.getValue().onSuccess(itemReference1);
-
-        verify(editor).getEditorInput();
-        verify(editorInput).getFile();
-
-        verify(file).getContent(editorTextCaptor.capture());
-        editorTextCaptor.getValue().onSuccess(TEXT);
-
-        verify(currentProject, times(2)).getProjectDescription();
-        verify(descriptor, times(2)).getPath();
-        verify(asyncCallbackBuilder, times(2)).unmarshaller(ItemReference.class);
-        verify(asyncCallbackBuilder, times(2)).success(successCallbackArgCaptor.capture());
-
-        successCallbackArgCaptor.getValue().onSuccess(itemReference2);
+        runnerConfigs.put(TEXT, runnerConfiguration);
+        when(itemReference2.getPath()).thenReturn("text/" + newName + "/text");
+        callOnSuccessCreateFile();
 
         verify(view, times(2)).setEnableCancelButton(false);
         verify(view, times(2)).setEnableSaveButton(false);
         verify(view, times(2)).setEnableDeleteButton(false);
 
-        verify(tabContainer).showTab(TEXT);
-        verify(environment).getName();
-        verify(environment).getType();
-        verify(environment, times(3)).getScope();
-        verify(environment).getRam();
-
-        verify(view).setName(TEXT);
-        verify(view).setType(TEXT);
-        verify(view).selectScope(SYSTEM);
+        verify(environment, times(2)).getName();
+        verify(environment).getScope();
+        verify(environment).setRam(MB_512.getValue());
         verify(view).selectMemory(MB_512);
+
+        verify(dtoFactory).createDto(RunnerConfiguration.class);
+        verify(runnerConfiguration).withRam(MB_512.getValue());
 
         verify(asyncCallbackBuilder, times(2)).failure(any(FailureCallback.class));
         verify(asyncCallbackBuilder, times(2)).build();
@@ -324,17 +338,19 @@ public class PropertiesEnvironmentPanelTest {
                                           eq(asyncRequestCallback));
 
         verify(projectService).createFolder(anyString(), eq(asyncRequestCallback));
+
+        assertThat(runnerConfigs.containsKey(newName), is(true));
+        assertThat(runnerConfigs.get(newName), equalTo(runnerConfiguration));
     }
 
-    @Test
-    public void copyButtonShouldBeClickedAndButFileWasCreatedFailed() {
+    private void callOnSuccessCreateFile() {
         when(editorProvider.getEditor()).thenReturn(editor);
         when(file.isReadOnly()).thenReturn(true);
 
         presenter.onCopyButtonClicked();
 
         verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
+        verify(projectDescriptor).getPath();
         verify(asyncCallbackBuilder).unmarshaller(ItemReference.class);
         verify(asyncCallbackBuilder).success(successCallbackArgCaptor.capture());
 
@@ -347,7 +363,48 @@ public class PropertiesEnvironmentPanelTest {
         editorTextCaptor.getValue().onSuccess(TEXT);
 
         verify(currentProject, times(2)).getProjectDescription();
-        verify(descriptor, times(2)).getPath();
+        verify(projectDescriptor, times(2)).getPath();
+        verify(asyncCallbackBuilder, times(2)).unmarshaller(ItemReference.class);
+        verify(asyncCallbackBuilder, times(2)).success(successCallbackArgCaptor.capture());
+
+        successCallbackArgCaptor.getValue().onSuccess(itemReference2);
+    }
+
+    @Test
+    public void copyButtonShouldBeClickedAndContentFromEditorShouldBeReturnedWhenRunnerConfigNotExist() {
+        callOnSuccessCreateFile();
+
+        verify(view, times(2)).setEnableCancelButton(false);
+        verify(view, times(2)).setEnableSaveButton(false);
+        verify(view, times(2)).setEnableDeleteButton(false);
+
+        verify(view).selectMemory(MB_512);
+        verify(projectEnvironmentsAction).perform();
+        verify(dtoFactory, never()).createDto(RunnerConfiguration.class);
+    }
+
+    @Test
+    public void copyButtonShouldBeClickedAndButFileWasCreatedFailed() {
+        when(editorProvider.getEditor()).thenReturn(editor);
+        when(file.isReadOnly()).thenReturn(true);
+
+        presenter.onCopyButtonClicked();
+
+        verify(currentProject).getProjectDescription();
+        verify(projectDescriptor).getPath();
+        verify(asyncCallbackBuilder).unmarshaller(ItemReference.class);
+        verify(asyncCallbackBuilder).success(successCallbackArgCaptor.capture());
+
+        successCallbackArgCaptor.getValue().onSuccess(itemReference1);
+
+        verify(editor).getEditorInput();
+        verify(editorInput).getFile();
+
+        verify(file).getContent(editorTextCaptor.capture());
+        editorTextCaptor.getValue().onSuccess(TEXT);
+
+        verify(currentProject, times(2)).getProjectDescription();
+        verify(projectDescriptor, times(2)).getPath();
         verify(asyncCallbackBuilder, times(2)).unmarshaller(ItemReference.class);
         verify(asyncCallbackBuilder, times(2)).failure(failureCallbackArgCaptor.capture());
 
@@ -366,7 +423,7 @@ public class PropertiesEnvironmentPanelTest {
         presenter.onCopyButtonClicked();
 
         verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
+        verify(projectDescriptor).getPath();
         verify(asyncCallbackBuilder).unmarshaller(ItemReference.class);
         verify(asyncCallbackBuilder).success(successCallbackArgCaptor.capture());
 
@@ -391,7 +448,7 @@ public class PropertiesEnvironmentPanelTest {
         presenter.onCopyButtonClicked();
 
         verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
+        verify(projectDescriptor).getPath();
         verify(asyncCallbackBuilder).unmarshaller(ItemReference.class);
         verify(asyncCallbackBuilder).failure(failureCallbackArgCaptor.capture());
 
@@ -407,14 +464,17 @@ public class PropertiesEnvironmentPanelTest {
         when(editorProvider.getEditor()).thenReturn(editor);
         when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
+        when(environment.getName()).thenReturn(TEXT2);
+        when(projectDescriptor.getPath()).thenReturn(TEXT);
 
         presenter.onSaveButtonClicked();
 
+        verify(projectDescriptor).getPath();
         verify(view).getRam();
         verify(environment).setRam(512);
         verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
-        verify(environment).getName();
+        verify(projectDescriptor).getPath();
+        verify(environment, times(2)).getName();
 
         verify(view).getName();
 
@@ -426,6 +486,15 @@ public class PropertiesEnvironmentPanelTest {
         verify(projectEnvironmentsAction).perform();
 
         verify(editor).isDirty();
+
+        verify(dtoFactory).createDto(RunnerConfiguration.class);
+        verify(runnerConfiguration).withRam(MB_512.getValue());
+
+        verify(projectService).updateProject(anyString(),
+                                             eq(projectDescriptor),
+                                             Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
+
+        assertThat(runnerConfigs.containsKey(TEXT2), CoreMatchers.is(true));
     }
 
     @Test
@@ -433,6 +502,7 @@ public class PropertiesEnvironmentPanelTest {
         when(editorProvider.getEditor()).thenReturn(editor);
         when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
+        when(environment.getName()).thenReturn(TEXT2);
         when(exception.getMessage()).thenReturn(TEXT);
 
         presenter.onSaveButtonClicked();
@@ -440,8 +510,8 @@ public class PropertiesEnvironmentPanelTest {
         verify(view).getRam();
         verify(environment).setRam(512);
         verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
-        verify(environment).getName();
+        verify(projectDescriptor).getPath();
+        verify(environment, times(2)).getName();
 
         verify(view).getName();
 
@@ -459,6 +529,7 @@ public class PropertiesEnvironmentPanelTest {
         when(editorProvider.getEditor()).thenReturn(editor);
         when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
+        when(environment.getName()).thenReturn(TEXT2);
         when(editor.isDirty()).thenReturn(true);
 
         presenter.onSaveButtonClicked();
@@ -466,8 +537,8 @@ public class PropertiesEnvironmentPanelTest {
         verify(view).getRam();
         verify(environment).setRam(512);
         verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
-        verify(environment).getName();
+        verify(projectDescriptor).getPath();
+        verify(environment, times(2)).getName();
 
         verify(view).getName();
 
@@ -488,6 +559,33 @@ public class PropertiesEnvironmentPanelTest {
         editorInputCaptor.getValue().onSuccess(editorInput);
         verify(view).setEnableSaveButton(false);
         verify(view).setEnableCancelButton(false);
+
+        verify(dtoFactory).createDto(RunnerConfiguration.class);
+        verify(runnerConfiguration).withRam(MB_512.getValue());
+
+        verify(projectService).updateProject(anyString(),
+                                             eq(projectDescriptor),
+                                             Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
+
+    }
+
+    @Test
+    public void updateProjectShouldBeSuccessfulWhenClickOnSaveButton() throws Exception {
+        reset(view);
+        when(view.getRam()).thenReturn(MB_512);
+
+        presenter.onSaveButtonClicked();
+
+        verify(asyncDescriptorCallbackBuilder).success(updateSuccessCaptor.capture());
+
+        updateSuccessCaptor.getValue().onSuccess(projectDescriptor);
+
+        verify(view).setEnableSaveButton(false);
+        verify(view).setEnableCancelButton(false);
+
+        verify(projectService).updateProject(anyString(),
+                                             eq(projectDescriptor),
+                                             Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
     }
 
     @Test
@@ -495,6 +593,7 @@ public class PropertiesEnvironmentPanelTest {
         when(editorProvider.getEditor()).thenReturn(editor);
         when(view.getRam()).thenReturn(MB_512);
         when(view.getName()).thenReturn(TEXT);
+        when(environment.getName()).thenReturn(TEXT2);
         when(editor.isDirty()).thenReturn(true);
 
         presenter.onSaveButtonClicked();
@@ -502,8 +601,8 @@ public class PropertiesEnvironmentPanelTest {
         verify(view).getRam();
         verify(environment).setRam(512);
         verify(currentProject).getProjectDescription();
-        verify(descriptor).getPath();
-        verify(environment).getName();
+        verify(projectDescriptor).getPath();
+        verify(environment, times(2)).getName();
 
         verify(view).getName();
 
@@ -582,8 +681,9 @@ public class PropertiesEnvironmentPanelTest {
             throws Exception {
         ArgumentCaptor<ConfirmCallback> argumentCaptor = ArgumentCaptor.forClass(ConfirmCallback.class);
         when(environment.getScope()).thenReturn(PROJECT);
-        presenter.onDeleteButtonClicked();
         when(exception.getMessage()).thenReturn(TEXT);
+
+        presenter.onDeleteButtonClicked();
 
         verify(dialogFactory).createConfirmDialog(eq(TEXT), eq(TEXT), argumentCaptor.capture(), isNull(CancelCallback.class));
         verify(confirmDialog).show();
@@ -604,7 +704,7 @@ public class PropertiesEnvironmentPanelTest {
     }
 
     @Test
-    public void changesShouldBeCancelWhenScopeIsSystemAndEnvironmentNotNull() {
+    public void changesShouldBeCancelWhenScopeIsSystem() {
         reset(view);
         presenter.onCancelButtonClicked();
 
@@ -612,16 +712,16 @@ public class PropertiesEnvironmentPanelTest {
         verify(view).setEnableCancelButton(false);
         verify(view).setEnableDeleteButton(false);
 
-        verify(environment).getName();
+        verify(environment, times(2)).getName();
+        verify(environment).setRam(MB_512.getValue());
         verify(view).setName(TEXT);
-        verify(environment).getRam();
         verify(view).selectMemory(MB_512);
         verify(environment, times(3)).getScope();
         verify(view).selectScope(SYSTEM);
     }
 
     @Test
-    public void changesShouldBeCancelWhenScopeIsProjectAndEnvironmentNotNull() {
+    public void changesShouldBeCancelWhenScopeIsProject() {
         when(environment.getScope()).thenReturn(PROJECT);
 
         reset(view);
@@ -631,9 +731,9 @@ public class PropertiesEnvironmentPanelTest {
         verify(view).setEnableCancelButton(false);
         verify(view).setEnableDeleteButton(true);
 
-        verify(environment).getName();
+        verify(environment, times(2)).getName();
+        verify(environment).setRam(MB_512.getValue());
         verify(view).setName(TEXT);
-        verify(environment).getRam();
         verify(view).selectMemory(MB_512);
         verify(environment, times(3)).getScope();
         verify(view).selectScope(PROJECT);
@@ -641,8 +741,7 @@ public class PropertiesEnvironmentPanelTest {
 
     @Test
     public void verifySecondConstructorWhenScopeIsProject() throws Exception {
-        //reset(appContext, view, projectService);
-        reset(view, environment, appContext);
+        reset(appContext, view);
         when(environment.getScope()).thenReturn(SYSTEM);
         when(environment.getName()).thenReturn(TEXT);
         when(environment.getRam()).thenReturn(MB_512.getValue());
@@ -651,6 +750,7 @@ public class PropertiesEnvironmentPanelTest {
         when(environment.getScope()).thenReturn(PROJECT);
 
         presenter = new PropertiesEnvironmentPanel(view,
+                                                   dtoFactory,
                                                    editorRegistry,
                                                    fileTypeRegistry,
                                                    dockerFileFactory,
@@ -665,7 +765,7 @@ public class PropertiesEnvironmentPanelTest {
                                                    asyncCallbackBuilder,
                                                    asyncArrayCallbackBuilder,
                                                    voidAsyncCallbackBuilder,
-                                                   tabContainer,
+                                                   asyncDescriptorCallbackBuilder,
                                                    environment);
 
         verify(appContext).getCurrentProject();
@@ -693,9 +793,11 @@ public class PropertiesEnvironmentPanelTest {
 
         verify(currentProject, times(2)).getProjectDescription();
         verify(currentProject, times(2)).getCurrentTree();
-        verify(environment, times(2)).getName();
+        verify(projectDescriptor, times(2)).getRunners();
+        verify(runnersDescriptor, times(2)).getConfigs();
+        verify(environment, times(4)).getName();
 
-        verify(environment).getPath();
+        verify(environment, times(2)).getPath();
         //we can't use mock for fileType that why we have null FileType
         verify(editorRegistry, times(3)).getEditor(any(FileType.class));
         verify(editorProvider, times(3)).getEditor();
@@ -714,13 +816,17 @@ public class PropertiesEnvironmentPanelTest {
 
         buttonSaveCancelDeleteShouldBeDisable();
 
-        verify(environment, times(2)).getScope();
+        verify(environment).getScope();
 
         verify(view).setEnableNameProperty(false);
         verify(view).setEnableRamProperty(false);
         verify(view).setEnableBootProperty(false);
         verify(view).setEnableShutdownProperty(false);
         verify(view).setEnableScopeProperty(false);
+
+        verify(projectDescriptor).getRunners();
+        verify(runnersDescriptor).getConfigs();
+        verify(environment).getName();
 
         verify(environment).getPath();
         verify(dockerFileFactory).newInstance(TEXT);
@@ -753,6 +859,7 @@ public class PropertiesEnvironmentPanelTest {
         when(editor2.isDirty()).thenReturn(true);
 
         presenter = new PropertiesEnvironmentPanel(view,
+                                                   dtoFactory,
                                                    editorRegistry,
                                                    fileTypeRegistry,
                                                    dockerFileFactory,
@@ -767,7 +874,7 @@ public class PropertiesEnvironmentPanelTest {
                                                    asyncCallbackBuilder,
                                                    asyncArrayCallbackBuilder,
                                                    voidAsyncCallbackBuilder,
-                                                   tabContainer,
+                                                   asyncDescriptorCallbackBuilder,
                                                    environment);
 
         presenter.onCancelButtonClicked();
@@ -780,12 +887,69 @@ public class PropertiesEnvironmentPanelTest {
         verify(editor2, times(3)).isDirty();
         verify(handlesUndoRedo, times(3)).undoable();
 
-        verify(environment).getName();
+        verify(environment, times(2)).getName();
+        verify(environment).setRam(MB_512.getValue());
         verify(view).setName(TEXT);
-        verify(environment).getRam();
         verify(view).selectMemory(MB_512);
         verify(environment, times(3)).getScope();
         verify(view).selectScope(SYSTEM);
+    }
+
+    @Test
+    public void environmentShouldBeUpdatedWhenRunnerConfigExist() throws Exception {
+        reset(view);
+        when(environment.getScope()).thenReturn(SYSTEM);
+        runnerConfigs.put(TEXT, runnerConfiguration);
+
+        presenter.update(environment);
+
+        verifyUpdateEnvironment();
+        verify(runnerConfiguration).getRam();
+
+    }
+
+    private void verifyUpdateEnvironment() {
+        verify(view).setEnableCancelButton(false);
+        verify(view).setEnableSaveButton(false);
+        verify(view).setEnableDeleteButton(false);
+
+        verify(environment, times(2)).getName();
+        verify(environment).setRam(MB_512.getValue());
+
+        verify(view).selectMemory(MB_512);
+        verify(view).setName(TEXT);
+        verify(view).setType(TEXT);
+        verify(view).selectScope(SYSTEM);
+    }
+
+    @Test
+    public void environmentShouldBeUpdatedWhenRunnerConfigIsNotExist() throws Exception {
+        reset(view);
+        when(environment.getScope()).thenReturn(SYSTEM);
+
+        presenter.update(environment);
+
+        verify(view).setEnableCancelButton(false);
+        verify(view).setEnableSaveButton(false);
+        verify(view).setEnableDeleteButton(false);
+
+        verifyUpdateEnvironment();
+        verify(runnerConfiguration, never()).getRam();
+        verify(environment).getRam();
+    }
+
+    @Test
+    public void configurationShouldBeChanged() throws Exception {
+        when(view.getRam()).thenReturn(MB_512);
+        when(environment.getScope()).thenReturn(PROJECT);
+
+        presenter.onConfigurationChanged();
+
+        verify(environment).setRam(512);
+        verify(environment, times(2)).getScope();
+        verify(view).getRam();
+        verify(view).setEnableSaveButton(true);
+        verify(view).setEnableCancelButton(true);
     }
 
 }

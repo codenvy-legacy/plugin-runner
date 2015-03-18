@@ -87,8 +87,6 @@ public class PropertiesRunnerPanelTest {
     @Captor
     private ArgumentCaptor<TimerFactory.TimerCallBack> timerCaptor;
 
-    private PropertiesRunnerPanel presenter;
-
     @Before
     public void setUp() {
         when(timerFactory.newInstance(any(TimerFactory.TimerCallBack.class))).thenReturn(timer);
@@ -98,13 +96,13 @@ public class PropertiesRunnerPanelTest {
         when(editorProvider.getEditor()).thenReturn(editor);
         when(dockerFileFactory.newInstance(TEXT)).thenReturn(file);
 
-        presenter = new PropertiesRunnerPanel(view,
-                                              editorRegistry,
-                                              fileTypeRegistry,
-                                              dockerFileFactory,
-                                              appContext,
-                                              timerFactory,
-                                              runner);
+        new PropertiesRunnerPanel(view,
+                                  editorRegistry,
+                                  fileTypeRegistry,
+                                  dockerFileFactory,
+                                  appContext,
+                                  timerFactory,
+                                  runner);
 
         when(runner.getTitle()).thenReturn(TEXT);
         when(runner.getRAM()).thenReturn(MB_512.getValue());

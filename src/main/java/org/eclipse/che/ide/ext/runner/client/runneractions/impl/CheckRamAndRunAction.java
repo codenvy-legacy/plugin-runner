@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerConfiguration;
 import org.eclipse.che.api.project.shared.dto.RunnersDescriptor;
@@ -22,6 +25,7 @@ import org.eclipse.che.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import org.eclipse.che.ide.ext.runner.client.callbacks.FailureCallback;
 import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
+import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
@@ -30,8 +34,6 @@ import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import org.eclipse.che.ide.ui.dialogs.confirm.ConfirmDialog;
 import org.eclipse.che.ide.ui.dialogs.message.MessageDialog;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -55,6 +57,7 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
     private final RunnerLocalizationConstant                          constant;
     private final RunnerUtil                                          runnerUtil;
     private final RunAction                                           runAction;
+    private final RunnerManagerPresenter                              managerPresenter;
 
     private RunnerConfiguration runnerConfiguration;
     private CurrentProject      project;
@@ -67,7 +70,8 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
                                 Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
                                 RunnerLocalizationConstant constant,
                                 RunnerUtil runnerUtil,
-                                RunnerActionFactory actionFactory) {
+                                RunnerActionFactory actionFactory,
+                                RunnerManagerPresenter managerPresenter) {
         this.service = service;
         this.appContext = appContext;
         this.callbackBuilderProvider = callbackBuilderProvider;
@@ -75,6 +79,7 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
         this.runnerUtil = runnerUtil;
         this.runAction = actionFactory.createRun();
         this.dialogFactory = dialogFactory;
+        this.managerPresenter = managerPresenter;
 
         addAction(runAction);
     }
@@ -124,6 +129,8 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
         if (overrideMemory > 0) {
             if (!isOverrideMemoryCorrect(totalMemory, usedMemory, overrideMemory)) {
                 runner.setStatus(Runner.Status.FAILED);
+
+                managerPresenter.update(runner);
                 return;
             }
 

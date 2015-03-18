@@ -46,7 +46,7 @@ public class PropertiesRunnerPanel extends PropertiesPanelPresenter {
                                  AppContext appContext,
                                  TimerFactory timerFactory,
                                  @Assisted @Nonnull final Runner runner) {
-        super(view, appContext, runner.getScope());
+        super(view, appContext);
 
         // We're waiting for getting application descriptor from server. So we can't show editor without knowing about configuration file.
         timer = timerFactory.newInstance(new TimerFactory.TimerCallBack() {
