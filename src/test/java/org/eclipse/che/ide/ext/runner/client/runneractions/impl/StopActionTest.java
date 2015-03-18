@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
@@ -24,17 +27,14 @@ import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import org.eclipse.che.ide.ext.runner.client.callbacks.FailureCallback;
 import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.inject.Provider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -160,6 +160,7 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
+        verify(eventLogger).log(stopAction);
         verify(appContext).getCurrentProject();
         verifyNoMoreInteractions(service,
                                  appContext,
@@ -180,6 +181,7 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
+        verify(eventLogger).log(stopAction);
         verify(runner).getStopUrl();
         verify(runnerUtil).showError(runner, MESSAGE, null);
         verify(runner).setStatus(Runner.Status.STOPPED);
@@ -196,6 +198,7 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
+        verify(eventLogger).log(stopAction);
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).failure(failedCallBackCaptor.capture());
@@ -219,6 +222,7 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
+        verify(eventLogger).log(stopAction);
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -251,6 +255,7 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
+        verify(eventLogger).log(stopAction);
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -283,6 +288,7 @@ public class StopActionTest {
 
         stopAction.perform(runner);
 
+        verify(eventLogger).log(stopAction);
         verify(runner).getStopUrl();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());

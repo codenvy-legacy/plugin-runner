@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.runner.gwt.client.RunnerServiceClient;
@@ -19,15 +21,13 @@ import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.callbacks.AsyncCallbackBuilder;
 import org.eclipse.che.ide.ext.runner.client.callbacks.FailureCallback;
 import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.Unmarshallable;
-import com.google.inject.Provider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -113,6 +112,7 @@ public class GetLogsActionTest {
     public void nothingShouldHappenWhenACurrentProjectIsEmpty() throws Exception {
         action.perform(runner);
 
+        verify(eventLogger).log(action);
         verify(runnerUtil, never()).showError(any(Runner.class), anyString(), any(Throwable.class));
         verify(runnerManagerPresenter, never()).setActive();
         verify(service, never()).getLogs(any(Link.class), Matchers.<AsyncRequestCallback<String>>anyObject());
@@ -125,6 +125,7 @@ public class GetLogsActionTest {
 
         action.perform(runner);
 
+        verify(eventLogger).log(action);
         verify(runnerManagerPresenter, never()).setActive();
         verify(service, never()).getLogs(any(Link.class), Matchers.<AsyncRequestCallback<String>>anyObject());
     }
@@ -138,6 +139,7 @@ public class GetLogsActionTest {
 
         action.perform(runner);
 
+        verify(eventLogger).log(action);
         verify(runnerUtil, never()).showError(any(Runner.class), anyString(), any(Throwable.class));
 
         verify(runnerManagerPresenter).setActive();
@@ -153,6 +155,7 @@ public class GetLogsActionTest {
 
         action.perform(runner);
 
+        verify(eventLogger).log(action);
         verify(callbackBuilder).success(successCallbackCaptor.capture());
 
         SuccessCallback<String> successCallback = successCallbackCaptor.getValue();
@@ -174,6 +177,7 @@ public class GetLogsActionTest {
 
         action.perform(runner);
 
+        verify(eventLogger).log(action);
         verify(callbackBuilder).failure(failureCallbackCaptor.capture());
 
         FailureCallback failureCallback = failureCallbackCaptor.getValue();

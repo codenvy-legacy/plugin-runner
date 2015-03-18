@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
@@ -27,9 +30,6 @@ import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.inject.Provider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -127,6 +127,7 @@ public class RunActionTest {
 
         runAction.perform(runner);
 
+        verify(eventLogger).log(runAction);
         verify(appContext).getCurrentProject();
         verifyNoMoreInteractions(runner, service, locale, launchAction, presenter, callbackBuilderProvider);
     }
@@ -141,6 +142,7 @@ public class RunActionTest {
 
         runAction.perform(runner);
 
+        verify(eventLogger).log(runAction);
         verify(presenter).setActive();
 
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
@@ -167,6 +169,7 @@ public class RunActionTest {
 
         runAction.perform(runner);
 
+        verify(eventLogger).log(runAction);
         verify(presenter).setActive();
 
         verify(asyncCallbackBuilder).failure(failedCallBackCaptor.capture());

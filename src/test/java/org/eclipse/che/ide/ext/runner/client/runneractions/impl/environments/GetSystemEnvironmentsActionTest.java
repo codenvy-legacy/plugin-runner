@@ -147,6 +147,7 @@ public class GetSystemEnvironmentsActionTest {
         when(environmentUtil.getRunnerCategoryByProjectType(null, MESSAGE)).thenReturn(tree);
         action.perform();
 
+        verify(eventLogger).log(action);
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(null);
@@ -158,6 +159,7 @@ public class GetSystemEnvironmentsActionTest {
     public void shouldFailurePerformWhenEnvironmentTreeIsNull() {
         action.perform();
 
+        verify(eventLogger).log(action);
         verify(asyncCallbackBuilder).failure(failedCallBackCaptor.capture());
         FailureCallback failureCallback = failedCallBackCaptor.getValue();
         failureCallback.onFailure(reason);
@@ -170,6 +172,7 @@ public class GetSystemEnvironmentsActionTest {
     public void getSystemEnvironmentsActionShouldBePerformedWhenEnvironmentTreeIsNotNull() throws Exception {
         action.perform();
 
+        verify(eventLogger).log(action);
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(tree);
@@ -194,6 +197,7 @@ public class GetSystemEnvironmentsActionTest {
 
         action.perform();
 
+        verify(eventLogger, times(2)).log(action);
         verify(templatesContainer, never()).setTypeItem(anyString());
     }
 
@@ -202,6 +206,7 @@ public class GetSystemEnvironmentsActionTest {
         //launch perform first time for set environmentTree not null
         action.perform();
 
+        verify(eventLogger).log(action);
         verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
         SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
         successCallback.onSuccess(tree);

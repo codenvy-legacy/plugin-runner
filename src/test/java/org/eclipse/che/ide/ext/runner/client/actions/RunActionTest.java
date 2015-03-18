@@ -83,6 +83,7 @@ public class RunActionTest {
 
         action.actionPerformed(actionEvent);
 
+        verify(eventLogger).log(action);
         verify(runnerManager, never()).launchRunner();
         verify(runnerManager, never()).launchRunner(Matchers.<RunOptions>any(), anyString());
     }
@@ -96,6 +97,7 @@ public class RunActionTest {
 
         action.actionPerformed(actionEvent);
 
+        verify(eventLogger).log(action);
         verify(runnerManager).launchRunner();
     }
 
@@ -106,6 +108,7 @@ public class RunActionTest {
 
         action.actionPerformed(actionEvent);
 
+        verify(eventLogger).log(action);
         verify(runnerManager).launchRunner();
     }
 
@@ -121,6 +124,7 @@ public class RunActionTest {
 
         action.actionPerformed(actionEvent);
 
+        verify(eventLogger).log(action);
         verify(environment).getOptions();
         verify(environment, times(2)).getName();
         verify(runOptions).withOptions(Matchers.<Map<String, String>>any());
