@@ -21,6 +21,7 @@ import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
+import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
@@ -75,6 +76,8 @@ public class TemplatesPresenterTest {
     private PropertiesContainer          propertiesContainer;
     @Mock
     private AppContext                   appContext;
+    @Mock
+    private SelectionManager             selectionManager;
 
     //additional mocks
     @Mock
@@ -111,7 +114,8 @@ public class TemplatesPresenterTest {
                                            projectEnvironmentsAction,
                                            systemEnvironmentsAction,
                                            environmentUtil,
-                                           propertiesContainer);
+                                           propertiesContainer,
+                                           selectionManager);
 
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getProjectDescription()).thenReturn(descriptor);
@@ -160,6 +164,7 @@ public class TemplatesPresenterTest {
         verify(propertiesContainer).setVisible(true);
         verify(propertiesContainer).show(systemEnvironment1);
         verify(view).selectEnvironment(systemEnvironment1);
+        verify(selectionManager).setEnvironment(systemEnvironment1);
     }
 
     private void getProjectDescriptorShouldBeVerified() {
@@ -175,6 +180,7 @@ public class TemplatesPresenterTest {
 
         verify(propertiesContainer).setVisible(true);
         verify(propertiesContainer).show(isNull(Environment.class));
+        verify(selectionManager).setEnvironment(isNull(Environment.class));
     }
 
     @Test
@@ -189,6 +195,7 @@ public class TemplatesPresenterTest {
         verify(propertiesContainer).setVisible(true);
         verify(propertiesContainer).show(projectEnvironment1);
         verify(view).selectEnvironment(projectEnvironment1);
+        verify(selectionManager).setEnvironment(projectEnvironment1);
     }
 
     @Test
@@ -212,19 +219,23 @@ public class TemplatesPresenterTest {
 
         verify(propertiesContainer).show(projectEnvironment1);
         verify(view).selectEnvironment(projectEnvironment1);
+        verify(selectionManager).setEnvironment(projectEnvironment1);
     }
 
     @Test
     public void environmentShouldNotBeShownWhenClickTheSecondTime() throws Exception {
         presenter.showEnvironments();
-        reset(projectEnvironmentsAction);
-        reset(filter);
+        reset(projectEnvironmentsAction, filter, selectionManager, propertiesContainer, view);
 
         presenter.showEnvironments();
 
         verify(projectEnvironmentsAction, never()).perform();
         verify(filter, never()).selectScope(PROJECT);
         verify(filter, never()).selectType(anyString());
+
+        verify(propertiesContainer).show(isNull(Environment.class));
+        verify(view).selectEnvironment(isNull(Environment.class));
+        verify(selectionManager).setEnvironment(isNull(Environment.class));
     }
 
     @Test

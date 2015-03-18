@@ -24,6 +24,7 @@ import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
+import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
@@ -47,8 +48,9 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
 @Singleton
 public class TemplatesPresenter implements TemplatesContainer, FilterWidget.ActionDelegate {
 
-    private final TemplatesView                 view;
-    private final FilterWidget                  filter;
+    private final TemplatesView view;
+    private final FilterWidget  filter;
+    private final SelectionManager selectionManager;
     private final GetProjectEnvironmentsAction  projectEnvironmentsAction;
     private final GetSystemEnvironmentsAction   systemEnvironmentsAction;
     private final GetEnvironmentsUtil           environmentUtil;
@@ -72,8 +74,10 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
                               GetProjectEnvironmentsAction projectEnvironmentsAction,
                               GetSystemEnvironmentsAction systemEnvironmentsAction,
                               GetEnvironmentsUtil environmentUtil,
-                              PropertiesContainer propertiesContainer) {
+                              PropertiesContainer propertiesContainer,
+                              SelectionManager selectionManager) {
         this.filter = filter;
+        this.selectionManager = selectionManager;
         this.filter.setDelegate(this);
 
         this.view = view;
@@ -161,6 +165,7 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
         }
 
         select(environment);
+        selectionManager.setEnvironment(environment);
     }
 
     /** {@inheritDoc} */

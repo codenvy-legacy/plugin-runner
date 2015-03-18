@@ -72,6 +72,7 @@ import java.util.Set;
 import static org.eclipse.che.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
 import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
 import static org.eclipse.che.ide.ext.runner.client.selection.Selection.RUNNER;
+import static org.eclipse.che.ide.ext.runner.client.state.State.RUNNERS;
 import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState.REMOVABLE;
 import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState.VISIBLE;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.TabContainer.TabSelectHandler;
@@ -213,7 +214,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         TabSelectHandler historyHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
-                panelState.setState(State.RUNNERS);
+                panelState.setState(RUNNERS);
 
                 view.showOtherButtons();
             }
@@ -273,7 +274,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                            .title(locale.runnerTabConsole())
                                            .visible(REMOVABLE)
                                            .selectHandler(consoleHandler)
-                                           .scope(EnumSet.of(State.RUNNERS))
+                                           .scope(EnumSet.of(RUNNERS))
                                            .tabType(RIGHT)
                                            .build();
 
@@ -293,7 +294,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                             .title(locale.runnerTabTerminal())
                                             .visible(VISIBLE)
                                             .selectHandler(terminalHandler)
-                                            .scope(EnumSet.of(State.RUNNERS))
+                                            .scope(EnumSet.of(RUNNERS))
                                             .tabType(RIGHT)
                                             .build();
 
@@ -302,10 +303,14 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         TabSelectHandler propertiesHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
-                propertiesContainer.show(selectedRunner);
+                if (RUNNERS.equals(panelState.getState())) {
+                    propertiesContainer.show(selectedRunner);
 
-                if (selectedRunner != null) {
-                    selectedRunner.setActiveTab(locale.runnerTabProperties());
+                    if (selectedRunner != null) {
+                        selectedRunner.setActiveTab(locale.runnerTabProperties());
+                    }
+                } else {
+                    propertiesContainer.show(selectedEnvironment);
                 }
             }
         };
@@ -483,7 +488,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         selectedEnvironment = null;
 
-        panelState.setState(State.RUNNERS);
+        panelState.setState(RUNNERS);
         view.showOtherButtons();
 
         history.addRunner(runner);
