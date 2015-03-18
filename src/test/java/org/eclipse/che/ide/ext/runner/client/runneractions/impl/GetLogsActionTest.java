@@ -125,9 +125,6 @@ public class GetLogsActionTest {
 
         action.perform(runner);
 
-        verify(constant).applicationLogsFailed();
-        verify(runnerUtil).showError(eq(runner), eq(SOME_TEXT), isNull(Throwable.class));
-
         verify(runnerManagerPresenter, never()).setActive();
         verify(service, never()).getLogs(any(Link.class), Matchers.<AsyncRequestCallback<String>>anyObject());
     }
