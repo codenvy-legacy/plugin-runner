@@ -69,6 +69,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.eclipse.che.ide.ext.runner.client.constants.TimeInterval.ONE_SEC;
+import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.IN_QUEUE;
 import static org.eclipse.che.ide.ext.runner.client.selection.Selection.RUNNER;
 import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState.REMOVABLE;
 import static org.eclipse.che.ide.ext.runner.client.tabs.common.Tab.VisibleState.VISIBLE;
@@ -378,7 +379,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     /** {@inheritDoc} */
     @Override
     public void onRerunButtonClicked() {
-        selectedRunner.setStatus(Runner.Status.IN_QUEUE);
+        selectedRunner.setStatus(IN_QUEUE);
 
         RunnerAction runnerAction = runnerActions.get(selectedRunner);
         if (runnerAction == null || runnerAction instanceof LaunchAction) {

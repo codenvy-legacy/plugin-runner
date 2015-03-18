@@ -68,6 +68,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.STOPPED;
 import static org.eclipse.che.ide.ext.runner.client.selection.Selection.RUNNER;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.LEFT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT;
@@ -503,7 +504,7 @@ public class RunnerManagerPresenterTest {
     public void runnerWhichIsAlreadyExistWithStatusStoppedShouldBeUpdated() {
         presenter.addRunner(processDescriptor);
         reset(history, terminalContainer, view);
-        when(runner.getStatus()).thenReturn(Runner.Status.STOPPED);
+        when(runner.getStatus()).thenReturn(STOPPED);
 
         presenter.update(runner);
 
@@ -674,7 +675,7 @@ public class RunnerManagerPresenterTest {
 
     @Test
     public void runnerShouldBeRerunIfRunnerNotNullAndStatusIsStopped() {
-        when(runner.getStatus()).thenReturn(Runner.Status.STOPPED);
+        when(runner.getStatus()).thenReturn(STOPPED);
         presenter.addRunner(processDescriptor);
         reset(view, history);
 
