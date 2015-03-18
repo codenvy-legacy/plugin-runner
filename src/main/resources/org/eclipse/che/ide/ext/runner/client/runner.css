@@ -103,19 +103,15 @@
     stroke: #dbdbdb !important;
 }
 
+.fontSizeTwelve {
+    font-family: "Helvetica Neue", Regular, sans-serif;
+    margin-top: 3px;
+    font-size: 12px;
+}
+
 .fontSizeTen {
     font-family: "Helvetica Neue", Regular, sans-serif;
-    font-size: 10pt;
-}
-
-.fontSizeEleven {
-    font-family: "Helvetica Neue", Regular, sans-serif;
-    font-size: 11pt;
-}
-
-.fontSizeEight {
-    font-family: "Helvetica Neue", Regular, sans-serif;
-    font-size: 8pt;
+    font-size: 10px;
 }
 
 .opacityButton {

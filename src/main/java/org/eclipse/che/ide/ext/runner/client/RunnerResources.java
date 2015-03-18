@@ -103,11 +103,9 @@ public interface RunnerResources extends ClientBundle {
 
         String whiteColor();
 
-        String fontSizeEight();
+        String fontSizeTwelve();
 
         String fontSizeTen();
-
-        String fontSizeEleven();
 
         String blueColor();
 

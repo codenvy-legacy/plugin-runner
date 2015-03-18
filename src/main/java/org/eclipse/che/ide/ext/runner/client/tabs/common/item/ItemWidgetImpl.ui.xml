@@ -57,14 +57,14 @@
 
         <g:north size="20">
             <g:FlowPanel>
-                <g:Label ui:field="runnerName" addStyleNames="{style.runnerName} {resources.runnerCss.fontSizeEleven}"/>
+                <g:Label ui:field="runnerName" addStyleNames="{style.runnerName} {resources.runnerCss.fontSizeTwelve}"/>
             </g:FlowPanel>
         </g:north>
 
         <g:center>
             <g:FlowPanel>
-                <g:Label ui:field="ram" addStyleNames="{style.ramLabel} {resources.runnerCss.fontSizeEight}"/>
-                <g:Label ui:field="startTime" addStyleNames="{style.timeLabel} {resources.runnerCss.fontSizeEight}"/>
+                <g:Label ui:field="ram" addStyleNames="{style.ramLabel} {resources.runnerCss.fontSizeTen}"/>
+                <g:Label ui:field="startTime" addStyleNames="{style.timeLabel} {resources.runnerCss.fontSizeTen}"/>
             </g:FlowPanel>
         </g:center>
     </g:DockLayoutPanel>

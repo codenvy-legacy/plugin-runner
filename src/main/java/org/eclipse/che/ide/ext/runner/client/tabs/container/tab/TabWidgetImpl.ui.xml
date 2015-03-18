@@ -30,6 +30,6 @@
     </ui:style>
 
     <g:FlowPanel ui:field="tabPanel" addStyleNames="{style.tab}">
-        <g:Label ui:field="tabTitle" addStyleNames="{style.title} {resources.runnerCss.fontSizeTen}"/>
+        <g:Label ui:field="tabTitle" addStyleNames="{style.title} {resources.runnerCss.fontSizeTwelve}"/>
     </g:FlowPanel>
 </ui:UiBinder>

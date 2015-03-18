@@ -108,20 +108,20 @@
                     <g:FlowPanel addStyleNames="{style.appInfoPanel}">
                         <g:FlowPanel>
                             <g:Label text="{locale.runnerLabelApplicationInfo}" addStyleNames="{style.applicationLabel}
-                                                                                               {resources.runnerCss.fontSizeTen}"/>
+                                                                                               {resources.runnerCss.fontSizeTwelve}"/>
                             <g:Label ui:field="appReference" addStyleNames="{style.appRefLabel}
-                                                                            {resources.runnerCss.fontSizeTen}"/>
+                                                                            {resources.runnerCss.fontSizeTwelve}"/>
                         </g:FlowPanel>
 
                         <g:FlowPanel>
                             <g:FlowPanel ui:field="moreInfoPanel" addStyleNames="{style.moreInfoPanel}">
                                 <g:SimpleLayoutPanel ui:field="image" addStyleNames="{style.moreIcon}"/>
 
-                                <g:Label ui:field="timeout" addStyleNames="{resources.runnerCss.fontSizeTen} {style.timeLabel}"/>
+                                <g:Label ui:field="timeout" addStyleNames="{resources.runnerCss.fontSizeTwelve} {style.timeLabel}"/>
                             </g:FlowPanel>
 
                             <g:Label text="{locale.runnerLabelTimeoutInfo}" addStyleNames="{style.timeoutLabel}
-                                                                                           {resources.runnerCss.fontSizeTen}"/>
+                                                                                           {resources.runnerCss.fontSizeTwelve}"/>
                         </g:FlowPanel>
                     </g:FlowPanel>
                 </g:south>
