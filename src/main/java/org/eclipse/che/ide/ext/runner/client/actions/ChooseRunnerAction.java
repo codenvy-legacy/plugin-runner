@@ -134,6 +134,11 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
         return selectedEnvironment;
     }
 
+    /** Resets state of selected environment. */
+    public void reset() {
+        selectedEnvironment = null;
+    }
+
     private void selectEnvironment() {
         String selectedEnvironmentName = environments.getValue(environments.getSelectedIndex());
 

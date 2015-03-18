@@ -10,17 +10,19 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.actions;
 
+import com.google.inject.Inject;
+
 import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.runner.dto.RunOptions;
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
+import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManager;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
-import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 
@@ -32,11 +34,13 @@ import javax.annotation.Nonnull;
  */
 public class RunAction extends AbstractRunnerActions {
 
-    private final RunnerManager        runnerManager;
-    private final DtoFactory           dtoFactory;
-    private final ChooseRunnerAction   chooseRunnerAction;
-    private final AppContext           appContext;
-    private final AnalyticsEventLogger eventLogger;
+    private final RunnerManager              runnerManager;
+    private final DtoFactory                 dtoFactory;
+    private final ChooseRunnerAction         chooseRunnerAction;
+    private final AppContext                 appContext;
+    private final AnalyticsEventLogger       eventLogger;
+    private final NotificationManager        notificationManager;
+    private final RunnerLocalizationConstant locale;
 
     @Inject
     public RunAction(RunnerManager runnerManager,
@@ -45,14 +49,17 @@ public class RunAction extends AbstractRunnerActions {
                      ChooseRunnerAction chooseRunnerAction,
                      DtoFactory dtoFactory,
                      RunnerResources resources,
-                     AnalyticsEventLogger eventLogger) {
+                     AnalyticsEventLogger eventLogger,
+                     NotificationManager notificationManager) {
         super(appContext, locale.actionRun(), locale.actionRunDescription(), resources.run());
 
+        this.locale = locale;
         this.runnerManager = runnerManager;
         this.dtoFactory = dtoFactory;
         this.appContext = appContext;
         this.chooseRunnerAction = chooseRunnerAction;
         this.eventLogger = eventLogger;
+        this.notificationManager = notificationManager;
     }
 
     /** {@inheritDoc} */
@@ -67,7 +74,14 @@ public class RunAction extends AbstractRunnerActions {
 
         Environment environment = chooseRunnerAction.getSelectedEnvironment();
 
-        if (environment == null || currentProject.getRunner().endsWith('/' + environment.getName())) {
+        String defaultRunnerName = currentProject.getRunner();
+
+        if (defaultRunnerName == null) {
+            notificationManager.showError(locale.actionRunnerNotSpecified());
+            return;
+        }
+
+        if (environment == null || defaultRunnerName.endsWith('/' + environment.getName())) {
             runnerManager.launchRunner();
         } else {
             RunOptions runOptions = dtoFactory.createDto(RunOptions.class)

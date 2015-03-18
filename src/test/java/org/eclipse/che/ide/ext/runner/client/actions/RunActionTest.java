@@ -15,12 +15,12 @@ import org.eclipse.che.api.runner.dto.RunOptions;
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
+import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.RunnerResources;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManager;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -57,6 +57,8 @@ public class RunActionTest {
     private RunOptions                 runOptions;
     @Mock
     private AnalyticsEventLogger       eventLogger;
+    @Mock
+    private NotificationManager        notificationManager;
 
     @Mock
     private ChooseRunnerAction chooseRunnerAction;
@@ -103,6 +105,7 @@ public class RunActionTest {
 
     @Test
     public void actionShouldBeLaunchDefaultRunnerIfEnvironmentIsNull() throws Exception {
+        when(currentProject.getRunner()).thenReturn(SOME_STRING);
         when(chooseRunnerAction.getSelectedEnvironment()).thenReturn(null);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
@@ -129,6 +132,18 @@ public class RunActionTest {
         verify(environment, times(2)).getName();
         verify(runOptions).withOptions(Matchers.<Map<String, String>>any());
         verify(runnerManager).launchRunner(runOptions, SOME_STRING);
+    }
+
+    @Test
+    public void notificationShouldBeShownWhenRunnerIsNotSpecified() throws Exception {
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(locale.actionRunnerNotSpecified()).thenReturn(SOME_STRING);
+        when(currentProject.getRunner()).thenReturn(null);
+
+        action.actionPerformed(actionEvent);
+
+        verify(locale).actionRunnerNotSpecified();
+        verify(notificationManager).showError(SOME_STRING);
     }
 
 }

@@ -235,4 +235,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("action.run.with")
     String actionRunWith();
+
+    @Key("action.runner.not.specified")
+    String actionRunnerNotSpecified();
 }

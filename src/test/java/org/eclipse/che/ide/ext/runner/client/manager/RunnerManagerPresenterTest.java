@@ -29,6 +29,7 @@ import org.eclipse.che.ide.api.parts.PartStack;
 import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.actions.ChooseRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
@@ -150,6 +151,8 @@ public class RunnerManagerPresenterTest {
     private GetSystemEnvironmentsAction  getSystemEnvironmentsAction;
     @Mock
     private GetProjectEnvironmentsAction getProjectEnvironmentsAction;
+    @Mock
+    private ChooseRunnerAction           chooseRunnerAction;
 
     //tab builder mocks
     @Mock
@@ -266,7 +269,8 @@ public class RunnerManagerPresenterTest {
                                                timerFactory,
                                                getSystemEnvironmentsAction,
                                                getProjectEnvironmentsAction,
-                                               typeRegistry);
+                                               typeRegistry,
+                                               chooseRunnerAction);
 
         //adding runner
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);

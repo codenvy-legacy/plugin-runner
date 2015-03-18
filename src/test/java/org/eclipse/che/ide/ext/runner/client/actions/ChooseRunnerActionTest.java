@@ -25,6 +25,9 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,6 +35,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Alexander Andrienko
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class ChooseRunnerActionTest {
@@ -60,7 +64,7 @@ public class ChooseRunnerActionTest {
     @Mock
     private Environment               systemEnv2;
 
-    private ChooseRunnerAction chooseRunnerAction;
+    private ChooseRunnerAction action;
 
     @Before
     public void setUp() {
@@ -69,7 +73,7 @@ public class ChooseRunnerActionTest {
         when(css.fontStyle()).thenReturn(TEXT);
         when(css.runnersAction()).thenReturn(TEXT);
 
-        chooseRunnerAction = new ChooseRunnerAction(resources, locale, appContext);
+        action = new ChooseRunnerAction(resources, locale, appContext);
 
         projectEnvList = Arrays.asList(projectEnv1, projectEnv2);
         systemEnvList = Arrays.asList(systemEnv1, systemEnv2);
@@ -95,7 +99,7 @@ public class ChooseRunnerActionTest {
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getRunner()).thenReturn(TEXT);
 
-        chooseRunnerAction.addProjectRunners(projectEnvList);
+        action.addProjectRunners(projectEnvList);
 
         verify(appContext).getCurrentProject();
 
@@ -107,7 +111,7 @@ public class ChooseRunnerActionTest {
     public void systemEnvironmentsShouldBeAdded() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
-        chooseRunnerAction.addSystemRunners(systemEnvList);
+        action.addSystemRunners(systemEnvList);
 
         verify(appContext).getCurrentProject();
 
@@ -118,9 +122,9 @@ public class ChooseRunnerActionTest {
     @Test
     public void systemEnvironmentsShouldBeAddedWhenProjectRunnerAreAlreadyAdded() {
         when(appContext.getCurrentProject()).thenReturn(null);
-        chooseRunnerAction.addProjectRunners(projectEnvList);
+        action.addProjectRunners(projectEnvList);
 
-        chooseRunnerAction.addSystemRunners(systemEnvList);
+        action.addSystemRunners(systemEnvList);
 
         verify(appContext, times(2)).getCurrentProject();
 
@@ -134,7 +138,7 @@ public class ChooseRunnerActionTest {
     public void onlyProjectEnvironmentsShouldBeAdded() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
-        chooseRunnerAction.addProjectRunners(projectEnvList);
+        action.addProjectRunners(projectEnvList);
 
         verify(appContext).getCurrentProject();
 
@@ -145,9 +149,9 @@ public class ChooseRunnerActionTest {
     @Test
     public void projectEnvironmentsShouldBeAddedWhenSystemRunnerAreAlreadyAdded() {
         when(appContext.getCurrentProject()).thenReturn(null);
-        chooseRunnerAction.addSystemRunners(systemEnvList);
+        action.addSystemRunners(systemEnvList);
 
-        chooseRunnerAction.addProjectRunners(projectEnvList);
+        action.addProjectRunners(projectEnvList);
 
         verify(appContext, times(2)).getCurrentProject();
 
@@ -166,14 +170,21 @@ public class ChooseRunnerActionTest {
         when(systemEnv2.getId()).thenReturn(TEXT);
         when(systemEnv2.getName()).thenReturn(TEXT);
 
-        chooseRunnerAction.addSystemRunners(systemEnvList);
+        action.addSystemRunners(systemEnvList);
 
-        chooseRunnerAction.addProjectRunners(projectEnvList);
+        action.addProjectRunners(projectEnvList);
 
         verify(appContext, times(2)).getCurrentProject();
 
         verify(systemEnv1, times(2)).getId();
         verify(systemEnv2, times(2)).getId();
         verify(systemEnv2, times(4)).getName();
+    }
+
+    @Test
+    public void runnerShouldBeReset() throws Exception {
+        action.reset();
+
+        assertThat(action.getSelectedEnvironment(), is(nullValue()));
     }
 }

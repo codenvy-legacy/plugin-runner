@@ -31,6 +31,7 @@ import org.eclipse.che.ide.api.parts.base.BasePresenter;
 import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.actions.ChooseRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
@@ -116,6 +117,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final RunnerCounter                runnerCounter;
     private final Set<Long>                    runnersId;
     private final ProjectTypeRegistry          typeRegistry;
+    private final ChooseRunnerAction           chooseRunnerAction;
 
     private GetRunningProcessesAction getRunningProcessAction;
 
@@ -144,7 +146,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   TimerFactory timerFactory,
                                   GetSystemEnvironmentsAction getSystemEnvironmentsAction,
                                   GetProjectEnvironmentsAction getProjectEnvironmentsAction,
-                                  ProjectTypeRegistry typeRegistry) {
+                                  ProjectTypeRegistry typeRegistry,
+                                  ChooseRunnerAction chooseRunnerAction) {
         this.view = view;
         this.view.setDelegate(this);
         this.locale = locale;
@@ -156,6 +159,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.getSystemEnvironmentsAction = getSystemEnvironmentsAction;
         this.getProjectEnvironmentsAction = getProjectEnvironmentsAction;
         this.typeRegistry = typeRegistry;
+        this.chooseRunnerAction = chooseRunnerAction;
 
         this.selectionManager = selectionManager;
         this.selectionManager.addListener(this);
@@ -553,6 +557,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         if (!isRunOperationAvailable) {
             return;
         }
+
+        chooseRunnerAction.reset();
 
         getRunningProcessAction.perform();
         getSystemEnvironmentsAction.perform();
