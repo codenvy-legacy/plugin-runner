@@ -55,6 +55,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.history.HistoryPanel;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
 import org.eclipse.che.ide.ext.runner.client.util.annotations.LeftPanel;
 import org.eclipse.che.ide.ext.runner.client.util.annotations.RightPanel;
@@ -117,6 +118,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final Set<Long>                   runnersId;
     private final ProjectTypeRegistry         typeRegistry;
     private final ChooseRunnerAction          chooseRunnerAction;
+    private final RunnerUtil                   runnerUtil;
 
     private GetRunningProcessesAction getRunningProcessAction;
 
@@ -145,7 +147,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   TimerFactory timerFactory,
                                   GetSystemEnvironmentsAction getSystemEnvironmentsAction,
                                   ProjectTypeRegistry typeRegistry,
-                                  ChooseRunnerAction chooseRunnerAction) {
+                                  ChooseRunnerAction chooseRunnerAction,
+                                  RunnerUtil runnerUtil) {
         this.view = view;
         this.view.setDelegate(this);
         this.locale = locale;
@@ -157,6 +160,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.getSystemEnvironmentsAction = getSystemEnvironmentsAction;
         this.typeRegistry = typeRegistry;
         this.chooseRunnerAction = chooseRunnerAction;
+        this.runnerUtil = runnerUtil;
 
         this.selectionManager = selectionManager;
         this.selectionManager.addListener(this);
@@ -212,6 +216,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             public void onTabSelected() {
                 panelState.setState(RUNNERS);
 
+                view.setEnableRunButton(runnerUtil.hasRunPermission());
+
                 view.showOtherButtons();
             }
         };
@@ -233,6 +239,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                 panelState.setState(State.TEMPLATE);
 
                 templatesContainer.selectEnvironment();
+                templatesContainer.changeEnableStateRunButton();
 
                 view.hideOtherButtons();
             }
@@ -546,13 +553,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         getRunningProcessAction = actionFactory.createGetRunningProcess();
 
-        CurrentProject currentProject = appContext.getCurrentProject();
-        if (currentProject == null) {
-            view.setEnableRunButton(false);
-            return;
-        }
-
-        boolean isRunOperationAvailable = currentProject.getProjectDescription().getPermissions().contains("run");
+        boolean isRunOperationAvailable = runnerUtil.hasRunPermission();
         view.setEnableRunButton(isRunOperationAvailable);
 
         if (!isRunOperationAvailable) {

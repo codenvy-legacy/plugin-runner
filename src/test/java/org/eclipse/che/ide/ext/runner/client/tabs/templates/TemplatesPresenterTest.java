@@ -18,14 +18,17 @@ import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
+import org.eclipse.che.ide.ext.runner.client.state.PanelState;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.eclipse.che.ide.ext.runner.client.state.State.RUNNERS;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.ALL;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
@@ -47,7 +51,9 @@ import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.eclipse.che.ide.ext.runner.client.state.State.TEMPLATE;
 
 /**
  * @author Dmitry Shnurenko
@@ -78,6 +84,12 @@ public class TemplatesPresenterTest {
     private AppContext                   appContext;
     @Mock
     private SelectionManager             selectionManager;
+    @Mock
+    private RunnerManagerView            runnerManagerView;
+    @Mock
+    private  RunnerUtil runnerUtil;
+    @Mock
+    private PanelState panelState;
 
     //additional mocks
     @Mock
@@ -115,7 +127,10 @@ public class TemplatesPresenterTest {
                                            systemEnvironmentsAction,
                                            environmentUtil,
                                            propertiesContainer,
-                                           selectionManager);
+                                           selectionManager,
+                                           runnerManagerView,
+                                           runnerUtil,
+                                           panelState);
 
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getProjectDescription()).thenReturn(descriptor);
@@ -127,6 +142,9 @@ public class TemplatesPresenterTest {
                                                                                                               projectEnvironment2));
         when(environmentUtil.getAllEnvironments(tree)).thenReturn(leaves);
         when(environmentUtil.getEnvironmentsFromNodes(leaves, SYSTEM)).thenReturn(Arrays.asList(systemEnvironment1, systemEnvironment2));
+
+        when(panelState.getState()).thenReturn(TEMPLATE);
+        when(runnerUtil.hasRunPermission()).thenReturn(true);
     }
 
     @Test
@@ -205,6 +223,10 @@ public class TemplatesPresenterTest {
         verify(propertiesContainer).show(projectEnvironment1);
         verify(view).selectEnvironment(projectEnvironment1);
         verify(selectionManager).setEnvironment(projectEnvironment1);
+
+        verify(panelState).getState();
+        verify(runnerUtil).hasRunPermission();
+        verify(runnerManagerView).setEnableRunButton(true);
     }
 
     @Test
@@ -395,5 +417,68 @@ public class TemplatesPresenterTest {
         presenter.setVisible(true);
 
         verify(view).setVisible(true);
+    }
+
+    @Test
+    public void runButtonShouldBeEnable() {
+        presenter.addEnvironments(tree, SYSTEM);
+        reset(runnerUtil, runnerManagerView);
+
+        presenter.changeEnableStateRunButton();
+
+        verify(runnerUtil).hasRunPermission();
+        runnerManagerView.setEnableRunButton(true);
+    }
+
+    @Test
+    public void runButtonShouldBeDisableBecauseEnvironmentListIsEmpty() {
+        presenter.changeEnableStateRunButton();
+
+        verify(runnerUtil).hasRunPermission();
+
+        verify(runnerManagerView).setEnableRunButton(false);
+    }
+
+    @Test
+    public void runButtonShouldBeDisableBecauseUserHasNotPermission() {
+        when(runnerUtil.hasRunPermission()).thenReturn(false);
+
+        presenter.changeEnableStateRunButton();
+
+        verify(runnerUtil).hasRunPermission();
+
+        verifyNoMoreInteractions(runnerManagerView);
+    }
+
+    @Test
+    public void runnerStateShouldNotBeChangedIfOpenRunnerPropertiesPanel1() {
+        when(panelState.getState()).thenReturn(RUNNERS);
+
+        presenter.addEnvironments(tree, PROJECT);
+
+        getProjectDescriptorShouldBeVerified();
+
+        verify(environmentUtil).getEnvironmentsByProjectType(tree, SOME_TEXT, PROJECT);
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
+
+        verify(propertiesContainer).setVisible(true);
+        verify(propertiesContainer).show(projectEnvironment1);
+        verify(view).selectEnvironment(projectEnvironment1);
+        verify(selectionManager).setEnvironment(projectEnvironment1);
+
+        verify(panelState).getState();
+
+        verifyNoMoreInteractions(panelState, runnerUtil, runnerManagerView);
+    }
+
+    @Test
+    public void runnerStateShouldNotBeChangedIfOpenRunnerPropertiesPanel2() throws Exception {
+        when(panelState.getState()).thenReturn(RUNNERS);
+
+        presenter.addEnvironments(tree, SYSTEM);
+
+        getProjectDescriptorShouldBeVerified();
+
+        verifyNoMoreInteractions(environmentUtil, panelState, runnerUtil, runnerManagerView);
     }
 }

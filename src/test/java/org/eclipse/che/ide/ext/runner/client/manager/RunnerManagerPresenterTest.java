@@ -55,6 +55,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.history.HistoryPanel;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.terminal.container.TerminalContainer;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.ext.runner.client.util.TimerFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -155,6 +156,8 @@ public class RunnerManagerPresenterTest {
     private GetSystemEnvironmentsAction  getSystemEnvironmentsAction;
     @Mock
     private ChooseRunnerAction           chooseRunnerAction;
+    @Mock
+    private RunnerUtil                   runnerUtil;
 
     //tab builder mocks
     @Mock
@@ -269,7 +272,8 @@ public class RunnerManagerPresenterTest {
                                                timerFactory,
                                                getSystemEnvironmentsAction,
                                                typeRegistry,
-                                               chooseRunnerAction);
+                                               chooseRunnerAction,
+                                               runnerUtil);
 
         //adding runner
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);
@@ -304,6 +308,8 @@ public class RunnerManagerPresenterTest {
         when(actionFactory.createGetRunningProcess()).thenReturn(getRunningProcessAction);
         when(runner.getTimeout()).thenReturn(TEXT);
         when(panelState.getState()).thenReturn(RUNNERS);
+
+        when(runnerUtil.hasRunPermission()).thenReturn(true);
     }
 
     private void initTab(TabBuilder tabBuilder,
@@ -324,16 +330,12 @@ public class RunnerManagerPresenterTest {
     public void constructorOperationsShouldBePerformed() throws Exception {
         verify(view).setDelegate(presenter);
         verify(selectionManager).addListener(presenter);
+        verify(timerFactory).newInstance(any(TimerFactory.TimerCallBack.class));
         verify(eventBus).addHandler(ProjectActionEvent.TYPE, presenter);
 
-        /* verify initialize LeftPanel */
         //init new historyTab
         verifyInitTab(tabBuilderHistory, history, REMOVABLE, LEFT, EnumSet.allOf(State.class), HISTORY_TAB);
         verify(leftTabContainer).addTab(historyTab);
-
-        verifyTabSelectHandler(tabBuilderHistory);
-        verify(panelState).setState(RUNNERS);
-        verify(view).showOtherButtons();
 
         //init template tab
         verifyInitTab(tabBuilderTemplate, templates, REMOVABLE, LEFT, EnumSet.allOf(State.class), TEMPLATES);
@@ -352,8 +354,32 @@ public class RunnerManagerPresenterTest {
 
         verify(view).setLeftPanel(leftTabContainer);
         verify(view).setRightPanel(rightTabContainer);
+    }
 
+    @Test
+    public void historyHandlerShouldPerformActionWhenUserHasPermission() {
+        verifyTabSelectHandler(tabBuilderHistory);
+        verify(panelState).setState(RUNNERS);
+        verify(view).setEnableRunButton(true);
+        verify(view).showOtherButtons();
+    }
+
+    @Test
+    public void historyHandlerShouldPerformActionWhenUserHasNotPermission() {
+        when(runnerUtil.hasRunPermission()).thenReturn(false);
+
+        verifyTabSelectHandler(tabBuilderHistory);
+        verify(panelState).setState(RUNNERS);
+        verify(view).setEnableRunButton(false);
+        verify(view).showOtherButtons();
+    }
+
+    @Test
+    public void templatesHandlerShouldPerformAction() {
+        verifyTabSelectHandler(tabBuilderTemplate);
         verify(panelState).setState(TEMPLATE);
+        verify(templates).changeEnableStateRunButton();
+
         verify(view).hideOtherButtons();
     }
 
@@ -899,7 +925,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void actionsShouldBePerformedWhenCurrentProjectIsNotNull() {
+    public void openProjectActionsShouldBePerformedWhenCurrentProjectIsNotNull() {
         when(descriptor.getPermissions()).thenReturn(Arrays.asList("run"));
 
         presenter.onProjectOpened(projectActionEvent);
@@ -913,38 +939,20 @@ public class RunnerManagerPresenterTest {
         verify(view).setEnableLogsButton(false);
 
         verify(actionFactory).createGetRunningProcess();
-        verify(appContext).getCurrentProject();
+        verify(runnerUtil).hasRunPermission();
+        verify(view).setEnableRunButton(true);
 
+        verify(chooseRunnerAction).reset();
         verify(getRunningProcessAction).perform();
-
-        verify(timer).schedule(TimeInterval.ONE_SEC.getValue());
-
         verify(getSystemEnvironmentsAction).perform();
         verify(templates).showEnvironments();
-    }
 
-    @Test
-    public void runningProcessActionShouldNotBePerformedWhenCurrentProjectIsNull() {
-        when(appContext.getCurrentProject()).thenReturn(null);
-
-        presenter.onProjectOpened(projectActionEvent);
-
-        verify(templates).setVisible(true);
-
-        verify(view).setEnableRunButton(false);
-        verify(view).setEnableReRunButton(false);
-        verify(view).setEnableStopButton(false);
-        verify(view).setEnableLogsButton(false);
-
-        verify(actionFactory).createGetRunningProcess();
-        verify(appContext).getCurrentProject();
-
-        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction);
+        verify(timer).schedule(TimeInterval.ONE_SEC.getValue());
     }
 
     @Test
     public void runningProcessActionShouldNotBePerformedWhenRunPermissionIsDenied() {
-        when(appContext.getCurrentProject()).thenReturn(null);
+        when(runnerUtil.hasRunPermission()).thenReturn(false);
 
         presenter.onProjectOpened(projectActionEvent);
 
@@ -956,9 +964,8 @@ public class RunnerManagerPresenterTest {
         verify(view).setEnableLogsButton(false);
 
         verify(actionFactory).createGetRunningProcess();
-        verify(appContext).getCurrentProject();
 
-        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction);
+        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction, chooseRunnerAction);
     }
 
     @Test

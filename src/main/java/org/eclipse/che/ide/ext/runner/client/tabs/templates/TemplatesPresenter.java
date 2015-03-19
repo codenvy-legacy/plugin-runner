@@ -21,14 +21,17 @@ import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
+import org.eclipse.che.ide.ext.runner.client.state.PanelState;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.container.PropertiesContainer;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.filterwidget.FilterWidget;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,6 +43,7 @@ import java.util.Map;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.ALL;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
+import static org.eclipse.che.ide.ext.runner.client.state.State.RUNNERS;
 
 /**
  * The class contains business logic to change displaying of environments depending on scope or type.
@@ -62,6 +66,9 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
     private final PropertiesContainer           propertiesContainer;
     private final AppContext                    appContext;
     private final String                        typeAll;
+    private final RunnerManagerView             runnerManagerView;
+    private final RunnerUtil                    runnerUtil;
+    private final PanelState panelState;
 
     private RunnerEnvironmentTree tree;
     private String                currentType;
@@ -76,7 +83,10 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
                               GetSystemEnvironmentsAction systemEnvironmentsAction,
                               GetEnvironmentsUtil environmentUtil,
                               PropertiesContainer propertiesContainer,
-                              SelectionManager selectionManager) {
+                              SelectionManager selectionManager,
+                              RunnerManagerView runnerManagerView,
+                              RunnerUtil runnerUtil,
+                              PanelState panelState) {
         this.filter = filter;
         this.selectionManager = selectionManager;
         this.filter.setDelegate(this);
@@ -89,6 +99,9 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
         this.environmentUtil = environmentUtil;
         this.propertiesContainer = propertiesContainer;
         this.appContext = appContext;
+        this.runnerManagerView = runnerManagerView;
+        this.runnerUtil = runnerUtil;
+        this.panelState = panelState;
 
         this.projectEnvironments = new ArrayList<>();
         this.systemEnvironments = new ArrayList<>();
@@ -149,6 +162,10 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
         view.addEnvironment(environmentMap);
 
         selectFirstEnvironment();
+
+        if (!(RUNNERS).equals(panelState.getState())) {
+            changeEnableStateRunButton();
+        }
     }
 
     private void selectFirstEnvironment() {
@@ -222,6 +239,17 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
             default:
                 selectAllScope();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeEnableStateRunButton() {
+        List<Environment> environmentList = environmentMap.get(currentScope);
+        if (!runnerUtil.hasRunPermission() || environmentList == null) {
+            return;
+        }
+
+        runnerManagerView.setEnableRunButton(!environmentList.isEmpty());
     }
 
     private void selectSystemScope() {

@@ -59,4 +59,7 @@ public interface TemplatesContainer extends TabPresenter {
     /** Selects environment when we click on configs tab. */
     void selectEnvironment();
 
+    /** Changes enable state run button */
+    void changeEnableStateRunButton();
+
 }
