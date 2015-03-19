@@ -29,6 +29,7 @@ import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 
 import javax.annotation.Nonnull;
@@ -44,6 +45,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
 @Singleton
 public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
 
+    private final RunnerUtil                                            runnerUtil;
     private final Provider<TemplatesContainer>                          templatesPanelProvider;
     private final RunnerServiceClient                                   runnerService;
     private final NotificationManager                                   notificationManager;
@@ -62,10 +64,12 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
                                        Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider,
                                        RunnerLocalizationConstant locale,
                                        GetEnvironmentsUtil environmentUtil,
+                                       RunnerUtil runnerUtil,
                                        ChooseRunnerAction chooseRunnerAction,
                                        AppContext appContext,
                                        Provider<TemplatesContainer> templatesPanelProvider,
                                        AnalyticsEventLogger eventLogger) {
+        this.runnerUtil = runnerUtil;
         this.templatesPanelProvider = templatesPanelProvider;
         this.runnerService = runnerService;
         this.notificationManager = notificationManager;
@@ -80,6 +84,10 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform() {
+        if (!runnerUtil.hasRunPermission()) {
+            return;
+        }
+
         eventLogger.log(this);
 
         AsyncRequestCallback<RunnerEnvironmentTree> callback = callbackBuilderProvider

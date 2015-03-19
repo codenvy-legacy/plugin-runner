@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
@@ -25,10 +29,8 @@ import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -44,6 +46,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
 @Singleton
 public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
 
+    private final RunnerUtil                                            runnerUtil;
     private final Provider<TemplatesContainer>                          templatesPanelProvider;
     private final AppContext                                            appContext;
     private final ProjectServiceClient                                  projectService;
@@ -60,8 +63,10 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
                                         Provider<AsyncCallbackBuilder<RunnerEnvironmentTree>> callbackBuilderProvider,
                                         RunnerLocalizationConstant locale,
                                         GetEnvironmentsUtil environmentUtil,
+                                        RunnerUtil runnerUtil,
                                         ChooseRunnerAction chooseRunnerAction,
                                         Provider<TemplatesContainer> templatesPanelProvider) {
+        this.runnerUtil = runnerUtil;
         this.templatesPanelProvider = templatesPanelProvider;
         this.chooseRunnerAction = chooseRunnerAction;
         this.appContext = appContext;
@@ -76,7 +81,7 @@ public class GetProjectEnvironmentsAction extends AbstractRunnerAction {
     @Override
     public void perform() {
         final CurrentProject currentProject = appContext.getCurrentProject();
-        if (currentProject == null) {
+        if (currentProject == null || !runnerUtil.hasRunPermission()) {
             return;
         }
 

@@ -28,6 +28,7 @@ import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -71,6 +73,8 @@ public class GetSystemEnvironmentsActionTest {
     private RunnerLocalizationConstant                            locale;
     @Mock
     private GetEnvironmentsUtil                                   environmentUtil;
+    @Mock
+    private RunnerUtil                                            runnerUtil;
     @Mock
     private ChooseRunnerAction                                    chooseRunnerAction;
     @Mock
@@ -116,6 +120,7 @@ public class GetSystemEnvironmentsActionTest {
                                                  callbackBuilderProvider,
                                                  locale,
                                                  environmentUtil,
+                                                 runnerUtil,
                                                  chooseRunnerAction,
                                                  appContext,
                                                  templatesContainerProvider,
@@ -139,6 +144,27 @@ public class GetSystemEnvironmentsActionTest {
         when(asyncCallbackBuilder.build()).thenReturn(asyncRequestCallback).thenReturn(asyncRequestCallback);
 
         when(locale.customRunnerGetEnvironmentFailed()).thenReturn(MESSAGE);
+
+        when(runnerUtil.hasRunPermission()).thenReturn(true);
+    }
+
+    @Test
+    public void shouldNotPerformWhenProjectDoesNotHavePermission() {
+        when(runnerUtil.hasRunPermission()).thenReturn(false);
+
+        action.perform();
+
+        verify(runnerUtil).hasRunPermission();
+        verifyNoMoreInteractions(runnerService,
+                                 notificationManager,
+                                 callbackBuilderProvider,
+                                 locale,
+                                 environmentUtil,
+                                 runnerUtil,
+                                 chooseRunnerAction,
+                                 appContext,
+                                 templatesContainerProvider,
+                                 eventLogger);
     }
 
     @Test

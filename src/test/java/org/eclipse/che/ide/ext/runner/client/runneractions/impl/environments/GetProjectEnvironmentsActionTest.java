@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments;
 
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
@@ -25,9 +27,8 @@ import org.eclipse.che.ide.ext.runner.client.callbacks.SuccessCallback;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
+import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import com.google.inject.Provider;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +44,6 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -69,6 +69,8 @@ public class GetProjectEnvironmentsActionTest {
     private RunnerLocalizationConstant                            locale;
     @Mock
     private GetEnvironmentsUtil                                   environmentUtil;
+    @Mock
+    private RunnerUtil                                            runnerUtil;
     @Mock
     private ChooseRunnerAction                                    chooseRunnerAction;
 
@@ -115,6 +117,7 @@ public class GetProjectEnvironmentsActionTest {
                                                   callbackBuilderProvider,
                                                   locale,
                                                   environmentUtil,
+                                                  runnerUtil,
                                                   chooseRunnerAction,
                                                   templatesContainerProvider);
 
@@ -130,23 +133,47 @@ public class GetProjectEnvironmentsActionTest {
         //preparing project data
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
         when(projectDescriptor.getPath()).thenReturn(SOME_STRING);
+
+        when(runnerUtil.hasRunPermission()).thenReturn(true);
     }
 
     @Test
-    public void shouldPerformWhenCurrentProjectIsNull() {
+    public void shouldNotPerformWhenCurrentProjectIsNull() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
         action.perform();
 
         verify(appContext).getCurrentProject();
-        verifyZeroInteractions(project);
-        verifyNoMoreInteractions(templatesContainerProvider,
-                                 appContext,
+        verifyNoMoreInteractions(appContext,
                                  projectService,
                                  notificationManager,
                                  callbackBuilderProvider,
                                  locale,
-                                 environmentUtil);
+                                 environmentUtil,
+                                 runnerUtil,
+                                 chooseRunnerAction,
+                                 templatesContainerProvider,
+                                 project);
+    }
+
+    @Test
+    public void shouldNotPerformWhenCurrentProjectIsNotNullAndProjectDoesNotHavePermission() {
+        when(runnerUtil.hasRunPermission()).thenReturn(false);
+
+        action.perform();
+
+        verify(appContext).getCurrentProject();
+        verify(runnerUtil).hasRunPermission();
+        verifyNoMoreInteractions(appContext,
+                                 projectService,
+                                 notificationManager,
+                                 callbackBuilderProvider,
+                                 locale,
+                                 environmentUtil,
+                                 runnerUtil,
+                                 chooseRunnerAction,
+                                 templatesContainerProvider,
+                                 project);
     }
 
     @Test
