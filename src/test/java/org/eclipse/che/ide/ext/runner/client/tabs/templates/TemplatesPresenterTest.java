@@ -52,6 +52,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TemplatesPresenterTest {
@@ -220,6 +221,42 @@ public class TemplatesPresenterTest {
         verify(propertiesContainer).show(projectEnvironment1);
         verify(view).selectEnvironment(projectEnvironment1);
         verify(selectionManager).setEnvironment(projectEnvironment1);
+    }
+
+    @Test
+    public void firstEnvironmentShouldBeSelectedIfSelectedEnvIsNull() throws Exception {
+        when(selectionManager.getEnvironment()).thenReturn(null);
+
+        presenter.setTypeItem(SOME_TEXT);
+
+        presenter.showEnvironments();
+        presenter.addEnvironments(tree, PROJECT);
+
+        verify(view).clearEnvironmentsPanel();
+        verify(projectEnvironmentsAction).perform();
+        verify(filter).selectScope(PROJECT);
+        verify(filter).selectType(SOME_TEXT);
+
+        verify(propertiesContainer).show(projectEnvironment1);
+        verify(view).selectEnvironment(projectEnvironment1);
+        verify(selectionManager).setEnvironment(projectEnvironment1);
+    }
+
+    @Test
+    public void previousEnvironmentShouldBeSelected() throws Exception {
+        when(selectionManager.getEnvironment()).thenReturn(environment);
+
+        presenter.setTypeItem(SOME_TEXT);
+
+        presenter.showEnvironments();
+        presenter.addEnvironments(tree, PROJECT);
+
+        verify(view).clearEnvironmentsPanel();
+        verify(projectEnvironmentsAction).perform();
+        verify(filter).selectScope(PROJECT);
+        verify(filter).selectType(SOME_TEXT);
+
+        verify(selectionManager).setEnvironment(environment);
     }
 
     @Test

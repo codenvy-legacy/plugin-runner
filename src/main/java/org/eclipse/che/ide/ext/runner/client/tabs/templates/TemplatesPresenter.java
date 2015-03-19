@@ -44,13 +44,14 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
  * The class contains business logic to change displaying of environments depending on scope or type.
  *
  * @author Dmitry Shnurenko
+ * @author Valeriy Svydenko
  */
 @Singleton
 public class TemplatesPresenter implements TemplatesContainer, FilterWidget.ActionDelegate {
 
-    private final TemplatesView view;
-    private final FilterWidget  filter;
-    private final SelectionManager selectionManager;
+    private final TemplatesView                 view;
+    private final FilterWidget                  filter;
+    private final SelectionManager              selectionManager;
     private final GetProjectEnvironmentsAction  projectEnvironmentsAction;
     private final GetSystemEnvironmentsAction   systemEnvironmentsAction;
     private final GetEnvironmentsUtil           environmentUtil;
@@ -191,8 +192,12 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
             isFirstClick = false;
         }
 
-        //TODO need select element which was selected before
-        selectFirstEnvironment();
+        Environment selectedEnvironment = selectionManager.getEnvironment();
+        if (selectedEnvironment == null) {
+            selectFirstEnvironment();
+        } else {
+            selectionManager.setEnvironment(selectedEnvironment);
+        }
     }
 
     /** {@inheritDoc} */
