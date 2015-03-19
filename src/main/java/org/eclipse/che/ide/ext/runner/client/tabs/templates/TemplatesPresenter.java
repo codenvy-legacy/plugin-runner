@@ -37,6 +37,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.ALL;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
@@ -65,7 +66,6 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
     private RunnerEnvironmentTree tree;
     private String                currentType;
     private Scope                 currentScope;
-    private boolean               isFirstClick;
 
     @Inject
     public TemplatesPresenter(TemplatesView view,
@@ -97,7 +97,6 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
         this.environmentMap.put(PROJECT, projectEnvironments);
         this.environmentMap.put(SYSTEM, systemEnvironments);
 
-        this.isFirstClick = true;
         this.currentScope = PROJECT;
         this.typeAll = locale.configsTypeAll();
     }
@@ -114,19 +113,18 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
     public void addEnvironments(@Nonnull RunnerEnvironmentTree tree, @Nonnull Scope scope) {
         ProjectDescriptor descriptor = getProjectDescriptor();
 
-        switch (scope) {
-            case SYSTEM:
-                this.tree = tree;
-                List<Environment> system = environmentUtil.getEnvironmentsByProjectType(tree, descriptor.getType(), scope);
-                addEnvironments(systemEnvironments, system, scope);
-                break;
-            case PROJECT:
-                if (!SYSTEM.equals(currentScope)) {
-                    List<Environment> project = environmentUtil.getEnvironmentsByProjectType(tree, descriptor.getType(), scope);
-                    addEnvironments(projectEnvironments, project, scope);
-                }
-                break;
-            default:
+        List<Environment> list;
+
+        if (SYSTEM.equals(scope)) {
+            list = systemEnvironments;
+            this.tree = tree;
+        } else {
+            list = projectEnvironments;
+        }
+
+        if (scope.equals(currentScope) || ALL.equals(currentScope)) {
+            List<Environment> environments = environmentUtil.getEnvironmentsByProjectType(tree, descriptor.getType(), scope);
+            addEnvironments(list, environments, scope);
         }
     }
 
@@ -180,18 +178,22 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
     /** {@inheritDoc} */
     @Override
     public void showEnvironments() {
-        if (isFirstClick) {
-            view.clearEnvironmentsPanel();
-            systemEnvironments.clear();
+        view.clearEnvironmentsPanel();
+        systemEnvironments.clear();
 
-            projectEnvironmentsAction.perform();
+        projectEnvironmentsAction.perform();
 
-            filter.selectScope(PROJECT);
-            filter.selectType(currentType);
+        currentScope = PROJECT;
 
-            isFirstClick = false;
-        }
+        filter.selectScope(currentScope);
+        filter.selectType(currentType);
 
+        selectEnvironment();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectEnvironment() {
         Environment selectedEnvironment = selectionManager.getEnvironment();
         if (selectedEnvironment == null) {
             selectFirstEnvironment();

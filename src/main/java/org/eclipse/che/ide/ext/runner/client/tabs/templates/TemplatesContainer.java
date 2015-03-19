@@ -56,4 +56,7 @@ public interface TemplatesContainer extends TabPresenter {
     /** Shows environments when user click on templates tab the first time. */
     void showEnvironments();
 
+    /** Selects environment when we click on configs tab. */
+    void selectEnvironment();
+
 }

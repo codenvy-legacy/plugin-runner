@@ -39,7 +39,6 @@ import org.eclipse.che.ide.ext.runner.client.models.RunnerCounter;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.StopAction;
-import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import org.eclipse.che.ide.ext.runner.client.selection.Selection;
@@ -155,8 +154,6 @@ public class RunnerManagerPresenterTest {
     @Mock
     private GetSystemEnvironmentsAction  getSystemEnvironmentsAction;
     @Mock
-    private GetProjectEnvironmentsAction getProjectEnvironmentsAction;
-    @Mock
     private ChooseRunnerAction           chooseRunnerAction;
 
     //tab builder mocks
@@ -184,37 +181,35 @@ public class RunnerManagerPresenterTest {
     private Tab propertiesTab;
 
     @Mock
-    private Runner                      runner;
+    private Runner                    runner;
     @Mock
-    private RunOptions                  runOptions;
+    private RunOptions                runOptions;
     @Mock
-    private LaunchAction                launchAction;
+    private LaunchAction              launchAction;
     @Mock
-    private CheckRamAndRunAction        checkRamAndRunAction;
+    private CheckRamAndRunAction      checkRamAndRunAction;
     @Mock
-    private CurrentProject              currentProject;
+    private CurrentProject            currentProject;
     @Mock
-    private ProjectDescriptor           descriptor;
+    private ProjectDescriptor         descriptor;
     @Mock
-    private Environment                 runnerEnvironment;
+    private Environment               runnerEnvironment;
     @Mock
-    private ProjectActionEvent          projectActionEvent;
+    private ProjectActionEvent        projectActionEvent;
     @Mock
-    private GetRunningProcessesAction   getRunningProcessAction;
+    private GetRunningProcessesAction getRunningProcessAction;
     @Mock
-    private PartStack                   partStack;
+    private PartStack                 partStack;
     @Mock
-    private StopAction                  stopAction;
+    private StopAction                stopAction;
     @Mock
-    private PartPresenter               activePart;
+    private PartPresenter             activePart;
     @Mock
-    private Timer                       timer;
+    private Timer                     timer;
     @Mock
-    private GetSystemEnvironmentsAction systemEnvironmentsAction;
+    private ProjectTypeRegistry       typeRegistry;
     @Mock
-    private ProjectTypeRegistry         typeRegistry;
-    @Mock
-    private ProjectTypeDefinition       definition;
+    private ProjectTypeDefinition     definition;
 
     private RunnerManagerPresenter presenter;
 
@@ -273,7 +268,6 @@ public class RunnerManagerPresenterTest {
                                                selectionManager,
                                                timerFactory,
                                                getSystemEnvironmentsAction,
-                                               getProjectEnvironmentsAction,
                                                typeRegistry,
                                                chooseRunnerAction);
 
@@ -347,7 +341,6 @@ public class RunnerManagerPresenterTest {
 
         verifyTabSelectHandler(tabBuilderTemplate);
         verify(panelState).setState(TEMPLATE);
-        verify(templates).showEnvironments();
         verify(view).hideOtherButtons();
 
         /* verify initialize RightPanel*/
@@ -927,7 +920,7 @@ public class RunnerManagerPresenterTest {
         verify(timer).schedule(TimeInterval.ONE_SEC.getValue());
 
         verify(getSystemEnvironmentsAction).perform();
-        verify(getProjectEnvironmentsAction).perform();
+        verify(templates).showEnvironments();
     }
 
     @Test
@@ -946,7 +939,7 @@ public class RunnerManagerPresenterTest {
         verify(actionFactory).createGetRunningProcess();
         verify(appContext).getCurrentProject();
 
-        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction, getProjectEnvironmentsAction);
+        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction);
     }
 
     @Test
@@ -965,7 +958,7 @@ public class RunnerManagerPresenterTest {
         verify(actionFactory).createGetRunningProcess();
         verify(appContext).getCurrentProject();
 
-        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction, getProjectEnvironmentsAction);
+        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction);
     }
 
     @Test

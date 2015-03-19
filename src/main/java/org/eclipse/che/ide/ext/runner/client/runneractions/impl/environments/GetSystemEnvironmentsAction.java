@@ -55,7 +55,6 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
     private final AnalyticsEventLogger                                  eventLogger;
 
     private RunnerEnvironmentTree environmentTree;
-    private boolean               isFirstPerform;
 
     @Inject
     public GetSystemEnvironmentsAction(RunnerServiceClient runnerService,
@@ -76,8 +75,6 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
         this.environmentUtil = environmentUtil;
         this.appContext = appContext;
         this.eventLogger = eventLogger;
-
-        this.isFirstPerform = true;
     }
 
     /** {@inheritDoc} */
@@ -126,11 +123,8 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
 
         container.addEnvironments(tree, SYSTEM);
 
-        if (isFirstPerform) {
-            RunnerEnvironmentTree envTree = environmentUtil.getRunnerCategoryByProjectType(tree, projectType);
-            container.setTypeItem(envTree.getDisplayName());
-            isFirstPerform = false;
-        }
+        RunnerEnvironmentTree envTree = environmentUtil.getRunnerCategoryByProjectType(tree, projectType);
+        container.setTypeItem(envTree.getDisplayName());
 
         chooseRunnerAction.addSystemRunners(environments);
     }

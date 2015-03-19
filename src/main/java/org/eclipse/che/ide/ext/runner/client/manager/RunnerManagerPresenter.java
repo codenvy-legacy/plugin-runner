@@ -41,7 +41,6 @@ import org.eclipse.che.ide.ext.runner.client.runneractions.RunnerAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.CheckRamAndRunAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.GetRunningProcessesAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.StopAction;
-import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetProjectEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.environments.GetSystemEnvironmentsAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
 import org.eclipse.che.ide.ext.runner.client.selection.Selection;
@@ -97,28 +96,27 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                                                      SelectionManager.SelectionChangeListener {
     public static final String TIMER_STUB = "--:--:--";
 
-    private final RunnerManagerView            view;
-    private final DtoFactory                   dtoFactory;
-    private final AppContext                   appContext;
-    private final ModelsFactory                modelsFactory;
-    private final RunnerActionFactory          actionFactory;
-    private final GetSystemEnvironmentsAction  getSystemEnvironmentsAction;
-    private final GetProjectEnvironmentsAction getProjectEnvironmentsAction;
-    private final Map<Runner, RunnerAction>    runnerActions;
-    private final Timer                        runnerTimer;
-    private final RunnerLocalizationConstant   locale;
-    private final HistoryPanel                 history;
-    private final SelectionManager             selectionManager;
-    private final TerminalContainer            terminalContainer;
-    private final TabContainer                 rightTabContainer;
-    private final ConsoleContainer             consoleContainer;
-    private final PropertiesContainer          propertiesContainer;
-    private final TemplatesContainer           templateContainer;
-    private final PanelState                   panelState;
-    private final RunnerCounter                runnerCounter;
-    private final Set<Long>                    runnersId;
-    private final ProjectTypeRegistry          typeRegistry;
-    private final ChooseRunnerAction           chooseRunnerAction;
+    private final RunnerManagerView           view;
+    private final DtoFactory                  dtoFactory;
+    private final AppContext                  appContext;
+    private final ModelsFactory               modelsFactory;
+    private final RunnerActionFactory         actionFactory;
+    private final GetSystemEnvironmentsAction getSystemEnvironmentsAction;
+    private final Map<Runner, RunnerAction>   runnerActions;
+    private final Timer                       runnerTimer;
+    private final RunnerLocalizationConstant  locale;
+    private final HistoryPanel                history;
+    private final SelectionManager            selectionManager;
+    private final TerminalContainer           terminalContainer;
+    private final TabContainer                rightTabContainer;
+    private final ConsoleContainer            consoleContainer;
+    private final PropertiesContainer         propertiesContainer;
+    private final TemplatesContainer          templateContainer;
+    private final PanelState                  panelState;
+    private final RunnerCounter               runnerCounter;
+    private final Set<Long>                   runnersId;
+    private final ProjectTypeRegistry         typeRegistry;
+    private final ChooseRunnerAction          chooseRunnerAction;
 
     private GetRunningProcessesAction getRunningProcessAction;
 
@@ -146,7 +144,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   SelectionManager selectionManager,
                                   TimerFactory timerFactory,
                                   GetSystemEnvironmentsAction getSystemEnvironmentsAction,
-                                  GetProjectEnvironmentsAction getProjectEnvironmentsAction,
                                   ProjectTypeRegistry typeRegistry,
                                   ChooseRunnerAction chooseRunnerAction) {
         this.view = view;
@@ -158,7 +155,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.appContext = appContext;
         this.runnerCounter = runnerCounter;
         this.getSystemEnvironmentsAction = getSystemEnvironmentsAction;
-        this.getProjectEnvironmentsAction = getProjectEnvironmentsAction;
         this.typeRegistry = typeRegistry;
         this.chooseRunnerAction = chooseRunnerAction;
 
@@ -236,7 +232,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
             public void onTabSelected() {
                 panelState.setState(State.TEMPLATE);
 
-                templatesContainer.showEnvironments();
+                templatesContainer.selectEnvironment();
 
                 view.hideOtherButtons();
             }
@@ -567,7 +563,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         getRunningProcessAction.perform();
         getSystemEnvironmentsAction.perform();
-        getProjectEnvironmentsAction.perform();
+
+        templateContainer.showEnvironments();
 
         runnerTimer.schedule(ONE_SEC.getValue());
     }

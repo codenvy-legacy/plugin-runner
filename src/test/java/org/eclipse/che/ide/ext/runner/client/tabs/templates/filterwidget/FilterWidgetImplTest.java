@@ -72,10 +72,6 @@ public class FilterWidgetImplTest {
         verify(filter.scopes).addItem(PROJECT.toString());
         verify(filter.scopes).addItem(SYSTEM.toString());
         verify(filter.scopes).addItem(ALL.toString());
-
-        verify(locale).configsTypeAll();
-
-        verify(filter.types).addItem(TYPE_ALL);
     }
 
     @Test
@@ -85,7 +81,6 @@ public class FilterWidgetImplTest {
         when(filter.types.getValue(1)).thenReturn(TYPE_ALL);
 
         filter.addType(SOME_TEXT);
-        filter.addType(TYPE_ALL);
 
         filter.selectType(TYPE_ALL);
 
@@ -127,9 +122,11 @@ public class FilterWidgetImplTest {
     public void typeShouldBeAdded() throws Exception {
         reset(filter.types);
 
-        filter.addType(TYPE_ALL);
+        filter.addType(SOME_TEXT);
 
+        verify(filter.types).clear();
         verify(filter.types).addItem(TYPE_ALL);
+        verify(filter.types).addItem(SOME_TEXT);
     }
 
     @Test

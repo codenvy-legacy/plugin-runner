@@ -43,7 +43,6 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -155,6 +154,11 @@ public class TemplatesPresenterTest {
 
     @Test
     public void environmentWithScopeSystemShouldBeAdded() throws Exception {
+        when(filter.getScope()).thenReturn(SYSTEM);
+        when(filter.getType()).thenReturn(TYPE_ALL);
+        presenter.onValueChanged();
+        reset(view, propertiesContainer);
+
         presenter.addEnvironments(tree, SYSTEM);
 
         getProjectDescriptorShouldBeVerified();
@@ -176,6 +180,10 @@ public class TemplatesPresenterTest {
     @Test
     public void environmentShouldNotBeSelectedWhenEnvironmentListIsEmpty() throws Exception {
         when(environmentUtil.getEnvironmentsByProjectType(tree, SOME_TEXT, SYSTEM)).thenReturn(Collections.<Environment>emptyList());
+        when(filter.getScope()).thenReturn(SYSTEM);
+        when(filter.getType()).thenReturn(TYPE_ALL);
+        presenter.onValueChanged();
+        reset(view, propertiesContainer, selectionManager);
 
         presenter.addEnvironments(tree, SYSTEM);
 
@@ -207,7 +215,7 @@ public class TemplatesPresenterTest {
     }
 
     @Test
-    public void environmentsShouldBeShownWhenClickTheFirstTime() throws Exception {
+    public void environmentsShouldBeShown() throws Exception {
         presenter.setTypeItem(SOME_TEXT);
 
         presenter.showEnvironments();
@@ -260,25 +268,10 @@ public class TemplatesPresenterTest {
     }
 
     @Test
-    public void environmentShouldNotBeShownWhenClickTheSecondTime() throws Exception {
-        presenter.showEnvironments();
-        reset(projectEnvironmentsAction, filter, selectionManager, propertiesContainer, view);
-
-        presenter.showEnvironments();
-
-        verify(projectEnvironmentsAction, never()).perform();
-        verify(filter, never()).selectScope(PROJECT);
-        verify(filter, never()).selectType(anyString());
-
-        verify(propertiesContainer).show(isNull(Environment.class));
-        verify(view).selectEnvironment(isNull(Environment.class));
-        verify(selectionManager).setEnvironment(isNull(Environment.class));
-    }
-
-    @Test
     public void systemEnvironmentsShouldBePerformedWhenTypeAll() throws Exception {
         when(filter.getScope()).thenReturn(SYSTEM);
         when(filter.getType()).thenReturn(TYPE_ALL);
+        presenter.onValueChanged();
 
         presenter.addEnvironments(tree, SYSTEM);
         reset(view);
@@ -329,6 +322,8 @@ public class TemplatesPresenterTest {
     public void allEnvironmentShouldBeSelectedWhenScopeIsAllAndTypeIsAll() throws Exception {
         when(filter.getScope()).thenReturn(ALL);
         when(filter.getType()).thenReturn(TYPE_ALL);
+        presenter.onValueChanged();
+        reset(projectEnvironmentsAction);
 
         presenter.addEnvironments(tree, SYSTEM);
         reset(view);
@@ -337,6 +332,48 @@ public class TemplatesPresenterTest {
 
         systemEnvironmentsPerformShouldBeVerified();
         verify(projectEnvironmentsAction).perform();
+    }
+
+    @Test
+    public void firstEnvironmentShouldBeSelectedWhenSelectedEnvironmentIsNull() {
+        prepareMocks();
+        when(selectionManager.getEnvironment()).thenReturn(null);
+
+        presenter.selectEnvironment();
+
+        verify(propertiesContainer).setVisible(true);
+        verify(selectionManager).setEnvironment(systemEnvironment1);
+    }
+
+    private void prepareMocks() {
+        when(filter.getScope()).thenReturn(SYSTEM);
+        when(filter.getType()).thenReturn(TYPE_ALL);
+
+        presenter.onValueChanged();
+        presenter.addEnvironments(tree, SYSTEM);
+
+        reset(propertiesContainer, selectionManager);
+    }
+
+    @Test
+    public void environmentShouldBeSelectedWhenSelectedEnvironmentIsNotNull() throws Exception {
+        prepareMocks();
+        when(selectionManager.getEnvironment()).thenReturn(environment);
+
+        presenter.selectEnvironment();
+
+        verify(selectionManager).setEnvironment(environment);
+        verify(selectionManager, never()).setEnvironment(systemEnvironment1);
+    }
+
+    @Test
+    public void systemEnvironmentsShouldNotBeAddedWhenSelectedScopeIsProject() throws Exception {
+        when(filter.getScope()).thenReturn(PROJECT);
+        presenter.onValueChanged();
+
+        presenter.addEnvironments(tree, SYSTEM);
+
+        verify(view, never()).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
     }
 
     @Test

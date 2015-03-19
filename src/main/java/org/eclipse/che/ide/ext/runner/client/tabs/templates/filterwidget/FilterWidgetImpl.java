@@ -59,8 +59,6 @@ public class FilterWidgetImpl extends Composite implements FilterWidget {
         for (Scope scope : Scope.values()) {
             scopes.addItem(scope.toString());
         }
-
-        types.addItem(locale.configsTypeAll());
     }
 
     /** {@inheritDoc} */
@@ -83,7 +81,12 @@ public class FilterWidgetImpl extends Composite implements FilterWidget {
     /** {@inheritDoc} */
     @Override
     public void addType(@Nonnull String type) {
+        types.clear();
+
+        types.addItem(locale.configsTypeAll());
         types.addItem(type);
+
+        selectType(type);
     }
 
     /** {@inheritDoc} */

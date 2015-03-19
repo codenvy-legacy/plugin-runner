@@ -74,7 +74,7 @@ public class GetSystemEnvironmentsActionTest {
     @Mock
     private ChooseRunnerAction                                    chooseRunnerAction;
     @Mock
-    private AnalyticsEventLogger                                   eventLogger;
+    private AnalyticsEventLogger                                  eventLogger;
 
     @Mock
     private Throwable reason;
@@ -185,9 +185,33 @@ public class GetSystemEnvironmentsActionTest {
         verify(appContext, times(2)).getCurrentProject();
         verify(environmentUtil, times(2)).getEnvironmentsByProjectType(tree, MESSAGE, SYSTEM);
         verify(templatesContainerProvider, times(2)).get();
-        verify(environmentUtil).getRunnerCategoryByProjectType(tree, MESSAGE);
-        verify(templatesContainer).setTypeItem(MESSAGE);
+        verify(environmentUtil, times(2)).getRunnerCategoryByProjectType(tree, MESSAGE);
+        verify(templatesContainer, times(2)).setTypeItem(MESSAGE);
         verify(chooseRunnerAction, times(2)).addSystemRunners(environments);
+    }
+
+    @Test
+    public void systemEnvironmentsShouldNotBeGotWhenCurrentProjectIsNull() throws Exception {
+        when(appContext.getCurrentProject()).thenReturn(null);
+
+        action.perform();
+
+        verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
+        SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
+        successCallback.onSuccess(tree);
+
+        verify(currentProject, never()).getProjectDescription();
+    }
+
+    @Test
+    public void failureMethodShouldBeCalledWhenPerformAction() throws Exception {
+        when(locale.customRunnerGetEnvironmentFailed()).thenReturn(MESSAGE);
+        action.perform();
+
+        verify(asyncCallbackBuilder).failure(failedCallBackCaptor.capture());
+        failedCallBackCaptor.getValue().onFailure(reason);
+
+        verify(notificationManager).showError(MESSAGE);
     }
 
     @Test
