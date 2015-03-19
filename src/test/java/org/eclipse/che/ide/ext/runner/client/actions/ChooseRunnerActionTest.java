@@ -25,9 +25,6 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -179,12 +176,5 @@ public class ChooseRunnerActionTest {
         verify(systemEnv1, times(2)).getId();
         verify(systemEnv2, times(2)).getId();
         verify(systemEnv2, times(4)).getName();
-    }
-
-    @Test
-    public void runnerShouldBeReset() throws Exception {
-        action.reset();
-
-        assertThat(action.getSelectedEnvironment(), is(nullValue()));
     }
 }

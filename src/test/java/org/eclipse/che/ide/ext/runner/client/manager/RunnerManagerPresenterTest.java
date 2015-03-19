@@ -29,7 +29,6 @@ import org.eclipse.che.ide.api.parts.PartStack;
 import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.actions.ChooseRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
@@ -155,8 +154,6 @@ public class RunnerManagerPresenterTest {
     @Mock
     private GetSystemEnvironmentsAction  getSystemEnvironmentsAction;
     @Mock
-    private ChooseRunnerAction           chooseRunnerAction;
-    @Mock
     private RunnerUtil                   runnerUtil;
 
     //tab builder mocks
@@ -272,7 +269,6 @@ public class RunnerManagerPresenterTest {
                                                timerFactory,
                                                getSystemEnvironmentsAction,
                                                typeRegistry,
-                                               chooseRunnerAction,
                                                runnerUtil);
 
         //adding runner
@@ -942,7 +938,6 @@ public class RunnerManagerPresenterTest {
         verify(runnerUtil).hasRunPermission();
         verify(view).setEnableRunButton(true);
 
-        verify(chooseRunnerAction).reset();
         verify(getRunningProcessAction).perform();
         verify(getSystemEnvironmentsAction).perform();
         verify(templates).showEnvironments();
@@ -965,7 +960,7 @@ public class RunnerManagerPresenterTest {
 
         verify(actionFactory).createGetRunningProcess();
 
-        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction, chooseRunnerAction);
+        verifyNoMoreInteractions(getRunningProcessAction, getSystemEnvironmentsAction);
     }
 
     @Test

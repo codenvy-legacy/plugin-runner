@@ -37,29 +37,29 @@ public class RunAction extends AbstractRunnerActions {
     private final RunnerManager              runnerManager;
     private final DtoFactory                 dtoFactory;
     private final ChooseRunnerAction         chooseRunnerAction;
-    private final AppContext                 appContext;
-    private final AnalyticsEventLogger       eventLogger;
     private final NotificationManager        notificationManager;
     private final RunnerLocalizationConstant locale;
+    private final AppContext                 appContext;
+    private final AnalyticsEventLogger       eventLogger;
 
     @Inject
     public RunAction(RunnerManager runnerManager,
                      RunnerLocalizationConstant locale,
                      AppContext appContext,
+                     NotificationManager notificationManager,
                      ChooseRunnerAction chooseRunnerAction,
                      DtoFactory dtoFactory,
                      RunnerResources resources,
-                     AnalyticsEventLogger eventLogger,
-                     NotificationManager notificationManager) {
+                     AnalyticsEventLogger eventLogger) {
         super(appContext, locale.actionRun(), locale.actionRunDescription(), resources.run());
 
-        this.locale = locale;
         this.runnerManager = runnerManager;
         this.dtoFactory = dtoFactory;
         this.appContext = appContext;
         this.chooseRunnerAction = chooseRunnerAction;
-        this.eventLogger = eventLogger;
         this.notificationManager = notificationManager;
+        this.locale = locale;
+        this.eventLogger = eventLogger;
     }
 
     /** {@inheritDoc} */
@@ -72,16 +72,14 @@ public class RunAction extends AbstractRunnerActions {
             return;
         }
 
-        Environment environment = chooseRunnerAction.getSelectedEnvironment();
+        String defaultRunner = currentProject.getRunner();
+        Environment environment = chooseRunnerAction.selectEnvironment();
 
-        String defaultRunnerName = currentProject.getRunner();
-
-        if (defaultRunnerName == null) {
+        if (environment == null && defaultRunner == null) {
             notificationManager.showError(locale.actionRunnerNotSpecified());
-            return;
         }
 
-        if (environment == null || defaultRunnerName.endsWith('/' + environment.getName())) {
+        if (environment == null || (defaultRunner != null && defaultRunner.equals(environment.getId()))) {
             runnerManager.launchRunner();
         } else {
             RunOptions runOptions = dtoFactory.createDto(RunOptions.class)

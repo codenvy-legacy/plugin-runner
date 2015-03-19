@@ -42,7 +42,6 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
     private final ListBox    environments;
     private final AppContext appContext;
 
-    private Environment       selectedEnvironment;
     private List<Environment> systemRunners;
     private List<Environment> projectRunners;
 
@@ -130,31 +129,22 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
 
     /** @return selected environment. */
     @Nullable
-    public Environment getSelectedEnvironment() {
-        return selectedEnvironment;
-    }
-
-    /** Resets state of selected environment. */
-    public void reset() {
-        selectedEnvironment = null;
-    }
-
-    private void selectEnvironment() {
+    public Environment selectEnvironment() {
         String selectedEnvironmentName = environments.getValue(environments.getSelectedIndex());
 
         for (Environment environment : projectRunners) {
             if (environment.getName().equals(selectedEnvironmentName)) {
-                selectedEnvironment = environment;
-                return;
+                return environment;
             }
         }
 
         for (Environment environment : systemRunners) {
             if (environment.getName().equals(selectedEnvironmentName)) {
-                selectedEnvironment = environment;
-                return;
+                return environment;
             }
         }
+
+        return null;
     }
 
     private void selectDefaultRunner() {

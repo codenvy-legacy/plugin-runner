@@ -32,7 +32,6 @@ import java.util.Map;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -91,8 +90,8 @@ public class RunActionTest {
     }
 
     @Test
-    public void actionShouldBeLaunchDefaultRunner() throws Exception {
-        when(chooseRunnerAction.getSelectedEnvironment()).thenReturn(environment);
+    public void actionShouldBeLaunchDefaultRunner1() throws Exception {
+        when(chooseRunnerAction.selectEnvironment()).thenReturn(null);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getRunner()).thenReturn('/' + SOME_STRING);
         when(environment.getName()).thenReturn(SOME_STRING);
@@ -104,9 +103,23 @@ public class RunActionTest {
     }
 
     @Test
+    public void actionShouldBeLaunchDefaultRunner2() throws Exception {
+        when(chooseRunnerAction.selectEnvironment()).thenReturn(environment);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getRunner()).thenReturn(SOME_STRING);
+        when(environment.getId()).thenReturn(SOME_STRING);
+        when(environment.getName()).thenReturn(SOME_STRING);
+
+        action.actionPerformed(actionEvent);
+
+        verify(eventLogger).log(action);
+        verify(runnerManager).launchRunner();
+    }
+
+    @Test
     public void actionShouldBeLaunchDefaultRunnerIfEnvironmentIsNull() throws Exception {
         when(currentProject.getRunner()).thenReturn(SOME_STRING);
-        when(chooseRunnerAction.getSelectedEnvironment()).thenReturn(null);
+        when(chooseRunnerAction.selectEnvironment()).thenReturn(null);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
 
         action.actionPerformed(actionEvent);
@@ -117,7 +130,7 @@ public class RunActionTest {
 
     @Test
     public void actionShouldBeLaunchCustomEnvironment() throws Exception {
-        when(chooseRunnerAction.getSelectedEnvironment()).thenReturn(environment);
+        when(chooseRunnerAction.selectEnvironment()).thenReturn(environment);
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getRunner()).thenReturn(SOME_STRING + SOME_STRING);
         when(environment.getName()).thenReturn(SOME_STRING);
@@ -129,7 +142,7 @@ public class RunActionTest {
 
         verify(eventLogger).log(action);
         verify(environment).getOptions();
-        verify(environment, times(2)).getName();
+        verify(environment).getName();
         verify(runOptions).withOptions(Matchers.<Map<String, String>>any());
         verify(runnerManager).launchRunner(runOptions, SOME_STRING);
     }

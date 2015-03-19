@@ -31,7 +31,6 @@ import org.eclipse.che.ide.api.parts.base.BasePresenter;
 import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.actions.ChooseRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
@@ -117,8 +116,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final RunnerCounter               runnerCounter;
     private final Set<Long>                   runnersId;
     private final ProjectTypeRegistry         typeRegistry;
-    private final ChooseRunnerAction          chooseRunnerAction;
-    private final RunnerUtil                   runnerUtil;
+    private final RunnerUtil                  runnerUtil;
 
     private GetRunningProcessesAction getRunningProcessAction;
 
@@ -147,7 +145,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   TimerFactory timerFactory,
                                   GetSystemEnvironmentsAction getSystemEnvironmentsAction,
                                   ProjectTypeRegistry typeRegistry,
-                                  ChooseRunnerAction chooseRunnerAction,
                                   RunnerUtil runnerUtil) {
         this.view = view;
         this.view.setDelegate(this);
@@ -159,7 +156,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.runnerCounter = runnerCounter;
         this.getSystemEnvironmentsAction = getSystemEnvironmentsAction;
         this.typeRegistry = typeRegistry;
-        this.chooseRunnerAction = chooseRunnerAction;
         this.runnerUtil = runnerUtil;
 
         this.selectionManager = selectionManager;
@@ -559,8 +555,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         if (!isRunOperationAvailable) {
             return;
         }
-
-        chooseRunnerAction.reset();
 
         getRunningProcessAction.perform();
         getSystemEnvironmentsAction.perform();
