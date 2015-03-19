@@ -11,8 +11,11 @@
 package org.eclipse.che.ide.ext.runner.client.util;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
@@ -39,21 +42,24 @@ public class RunnerUtilImpl implements RunnerUtil {
 
     private final DialogFactory              dialogFactory;
     private final RunnerLocalizationConstant locale;
-    private final RunnerManagerPresenter     presenter;
+    private final Provider<RunnerManagerPresenter>     presenter;
     private final NotificationManager        notificationManager;
     private final ConsoleContainer           consoleContainer;
+    private final AppContext appContext;
 
     @Inject
     public RunnerUtilImpl(DialogFactory dialogFactory,
                           RunnerLocalizationConstant locale,
-                          RunnerManagerPresenter presenter,
+                          Provider<RunnerManagerPresenter> presenter,
                           ConsoleContainer consoleContainer,
-                          NotificationManager notificationManager) {
+                          NotificationManager notificationManager,
+                          AppContext appContext) {
         this.dialogFactory = dialogFactory;
         this.locale = locale;
         this.presenter = presenter;
         this.notificationManager = notificationManager;
         this.consoleContainer = consoleContainer;
+        this.appContext = appContext;
     }
 
     /** {@inheritDoc} */
@@ -106,7 +112,7 @@ public class RunnerUtilImpl implements RunnerUtil {
                           @Nonnull Notification notification) {
         runner.setStatus(Runner.Status.FAILED);
 
-        presenter.update(runner);
+        presenter.get().update(runner);
 
         notification.update(message, ERROR, FINISHED, null, true);
 
@@ -117,4 +123,10 @@ public class RunnerUtilImpl implements RunnerUtil {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasRunPermission() {
+        CurrentProject currentProject = appContext.getCurrentProject();
+        return currentProject != null && currentProject.getProjectDescription().getPermissions().contains("run");
+    }
 }

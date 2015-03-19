@@ -10,20 +10,24 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.util;
 
-import org.eclipse.che.ide.api.notification.Notification;
-import org.eclipse.che.ide.api.notification.NotificationManager;
-import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
-import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
-import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
-import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
-import org.eclipse.che.ide.ui.dialogs.DialogFactory;
-import org.eclipse.che.ide.ui.dialogs.message.MessageDialog;
+import com.google.inject.Provider;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
+import org.eclipse.che.ide.api.notification.Notification;
+import org.eclipse.che.ide.api.notification.NotificationManager;
+import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
+import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
+import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
+import org.eclipse.che.ide.ui.dialogs.DialogFactory;
+import org.eclipse.che.ide.ui.dialogs.message.MessageDialog;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +38,11 @@ import org.mockito.MockitoAnnotations;
 
 import javax.annotation.Nonnegative;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_128;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -42,7 +51,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_128;
 
 /**
  * @author Dmitry Shnurenko
@@ -56,32 +64,43 @@ public class RunnerUtilImplTest {
     private ArgumentCaptor<Notification> notificationCaptor;
 
     @Mock
-    private DialogFactory              dialogFactory;
+    private DialogFactory                    dialogFactory;
     @Mock
-    private RunnerLocalizationConstant locale;
+    private RunnerLocalizationConstant       locale;
     @Mock
-    private RunnerManagerPresenter     presenter;
+    private Provider<RunnerManagerPresenter> runnerManagerProvider;
     @Mock
-    private NotificationManager        notificationManager;
+    private RunnerManagerPresenter           presenter;
     @Mock
-    private RunnerManagerView          view;
+    private NotificationManager              notificationManager;
     @Mock
-    private MessageDialog              messageDialog;
+    private RunnerManagerView                view;
     @Mock
-    private Runner                     runner;
+    private MessageDialog                    messageDialog;
     @Mock
-    private Throwable                  exception;
+    private Runner                           runner;
     @Mock
-    private ConsoleContainer           consoleContainer;
+    private Throwable                        exception;
+    @Mock
+    private ConsoleContainer                 consoleContainer;
+    @Mock
+    private AppContext                       applicationContext;
+    @Mock
+    private CurrentProject                   currentProject;
+    @Mock
+    private ProjectDescriptor                projectDescriptor;
 
     private RunnerUtil util;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        when(runnerManagerProvider.get()).thenReturn(presenter);
         when(presenter.getView()).thenReturn(view);
+        when(applicationContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getProjectDescription()).thenReturn(projectDescriptor);
 
-        util = new RunnerUtilImpl(dialogFactory, locale, presenter, consoleContainer, notificationManager);
+        util = new RunnerUtilImpl(dialogFactory, locale, runnerManagerProvider, consoleContainer, notificationManager, applicationContext);
 
         when(locale.titlesWarning()).thenReturn(SOME_TEXT);
         when(dialogFactory.createMessageDialog(anyString(), anyString(), any(ConfirmCallback.class))).thenReturn(messageDialog);
@@ -192,4 +211,26 @@ public class RunnerUtilImplTest {
         verify(consoleContainer).printError(runner, SOME_TEXT + ": " + SOME_TEXT);
     }
 
+    @Test
+    public void userShouldBeHasPermissionForRunProject() {
+        List<String> permissions = Arrays.asList("run");
+        when(projectDescriptor.getPermissions()).thenReturn(permissions);
+
+        assertThat(util.hasRunPermission(), is(true));
+    }
+
+    @Test
+    public void userShouldNotHasPermissionForRunProjectBecauseProjectIsNull() {
+        when(applicationContext.getCurrentProject()).thenReturn(null);
+
+        assertThat(util.hasRunPermission(), is(false));
+    }
+
+    @Test
+    public void userShouldNotHasPermissionForRunProject() {
+        List<String> permissions = Arrays.asList();
+        when(projectDescriptor.getPermissions()).thenReturn(permissions);
+
+        assertThat(util.hasRunPermission(), is(false));
+    }
 }
