@@ -41,6 +41,17 @@ public interface RunnerUtil {
     boolean isRunnerMemoryCorrect(@Nonnegative int totalMemory, @Nonnegative int usedMemory, @Nonnegative int availableMemory);
 
     /**
+     * Show info to user. Updates Multi-runner panel and print a message on the console for a
+     * given runner.
+     *
+     * @param runner
+     *         a runner that is bound with console where a message have to be shown
+     * @param message
+     *         message that needs to be shown
+     */
+    void showInfo(@Nonnull Runner runner, @Nonnull String message);
+
+    /**
      * Shows warning message using dialog factory.
      *
      * @param message

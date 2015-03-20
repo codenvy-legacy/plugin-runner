@@ -50,6 +50,7 @@ import javax.annotation.Nonnull;
  */
 //Todo CheckRamAndRunAction is too difficult. This class should improve.
 public class CheckRamAndRunAction extends AbstractRunnerAction {
+    private final int LARGE_AMOUNT_OF_RAM = 4096;
     private final RunnerServiceClient                                 service;
     private final AppContext                                          appContext;
     private final DialogFactory                                       dialogFactory;
@@ -230,14 +231,14 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
                                             @Nonnegative int usedMemory,
                                             @Nonnegative final int overrideMemory) {
         int availableMemory = totalMemory - usedMemory;
-        if (totalMemory < overrideMemory) {
-            runnerUtil.showWarning(constant.messagesTotalLessOverrideMemory(overrideMemory, totalMemory));
+
+        if (availableMemory < overrideMemory) {
+            runnerUtil.showError(runner, constant.messagesAvailableLessOverrideMemory(availableMemory), null);
             return false;
         }
 
-        if (availableMemory < overrideMemory) {
-            runnerUtil.showError(runner, constant.messagesAvailableLessOverrideMemory(), null);
-            return false;
+        if (overrideMemory > LARGE_AMOUNT_OF_RAM) {
+            runnerUtil.showInfo(runner, constant.messagesLargeMemoryRequest());
         }
 
         return true;

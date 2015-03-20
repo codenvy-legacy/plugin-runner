@@ -446,51 +446,6 @@ public class CheckRamAndRunActionTest {
     }
 
     @Test
-    public void shouldShowMessageTotalMemoryLessOverrideMemory() {
-        //preparing runner and run configuration
-        when(project.getProjectDescription()).thenReturn(projectDescriptor);
-        when(projectDescriptor.getRunners()).thenReturn(runners);
-        when(runner.getEnvironmentId()).thenReturn(ID_ENVIRONMENT);
-        when(runners.getConfigs()).thenReturn(hashMap);
-        when(hashMap.get(ID_ENVIRONMENT)).thenReturn(runnerConfiguration);
-        when(constant.messagesTotalLessOverrideMemory(1024, 512)).thenReturn(TOTAL_MEMORY_LESS_OVERRIDE_MEMORY);
-
-        //total memory
-        when(resourcesDescriptor.getTotalMemory()).thenReturn("512");
-        //used memory
-        when(resourcesDescriptor.getUsedMemory()).thenReturn("256");
-        //overrideMemory
-        when(runner.getRAM()).thenReturn(1024);
-        //requiredMemory
-        when(runnerConfiguration.getRam()).thenReturn(128);
-
-        checkRamAndRunAction.perform(runner);
-
-        verify(service).getResources(asyncRequestCallback);
-
-        verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
-
-        SuccessCallback<ResourcesDescriptor> successCallback = successCallBackCaptor.getValue();
-        successCallback.onSuccess(resourcesDescriptor);
-
-        verify(resourcesDescriptor).getTotalMemory();
-        verify(resourcesDescriptor).getUsedMemory();
-        verify(project).getProjectDescription();
-        verify(runners).getConfigs();
-        verify(hashMap).get(ID_ENVIRONMENT);
-        verify(runners, never()).getDefault();
-
-        verify(runner).getRAM();
-        verify(runnerConfiguration).getRam();
-
-        verify(constant).messagesTotalLessOverrideMemory(1024, 512);
-        verify(runnerUtil).showWarning(TOTAL_MEMORY_LESS_OVERRIDE_MEMORY);
-
-        verify(runner).setStatus(Runner.Status.FAILED);
-        verify(managerPresenter).update(runner);
-    }
-
-    @Test
     public void shouldShowMessageAvailableMemoryLessOverrideMemory() {
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
@@ -498,7 +453,7 @@ public class CheckRamAndRunActionTest {
         when(runner.getEnvironmentId()).thenReturn(ID_ENVIRONMENT);
         when(runners.getConfigs()).thenReturn(hashMap);
         when(hashMap.get(ID_ENVIRONMENT)).thenReturn(runnerConfiguration);
-        when(constant.messagesAvailableLessOverrideMemory()).thenReturn(MESSAGES_AVAILABLE_LESS_OVERRIDE_MEMORY);
+        when(constant.messagesAvailableLessOverrideMemory(256)).thenReturn(MESSAGES_AVAILABLE_LESS_OVERRIDE_MEMORY);
 
         //total memory
         when(resourcesDescriptor.getTotalMemory()).thenReturn("512");
@@ -529,7 +484,7 @@ public class CheckRamAndRunActionTest {
         verify(runner).getRAM();
         verify(runnerConfiguration).getRam();
 
-        verify(constant).messagesAvailableLessOverrideMemory();
+        verify(constant).messagesAvailableLessOverrideMemory(256);
         verify(runnerUtil).showError(runner, MESSAGES_AVAILABLE_LESS_OVERRIDE_MEMORY, null);
 
         verify(runner).setStatus(Runner.Status.FAILED);
@@ -654,46 +609,6 @@ public class CheckRamAndRunActionTest {
     }
 
     @Test
-    public void shouldShowMessageTotalLessOverrideMemoryButRunnerDescriptorIsNull() {
-        //preparing runner and run configuration
-        when(project.getProjectDescription()).thenReturn(projectDescriptor);
-        when(projectDescriptor.getRunners()).thenReturn(null);
-        when(runner.getEnvironmentId()).thenReturn(ID_ENVIRONMENT);
-        when(runners.getConfigs()).thenReturn(hashMap);
-        when(hashMap.get(ID_ENVIRONMENT)).thenReturn(runnerConfiguration);
-        when(constant.messagesTotalLessOverrideMemory(512, 384)).thenReturn(MESSAGES_TOTAL_LESS_REQUIRED_MEMORY);
-
-        //total memory
-        when(resourcesDescriptor.getTotalMemory()).thenReturn("384");
-        //used memory
-        when(resourcesDescriptor.getUsedMemory()).thenReturn("256");
-        //overrideMemory
-        when(runner.getRAM()).thenReturn(512);
-        //requiredMemory 0
-
-        checkRamAndRunAction.perform(runner);
-
-        verify(service).getResources(asyncRequestCallback);
-
-        verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
-
-        SuccessCallback<ResourcesDescriptor> successCallback = successCallBackCaptor.getValue();
-        successCallback.onSuccess(resourcesDescriptor);
-
-        verify(resourcesDescriptor).getTotalMemory();
-        verify(resourcesDescriptor).getUsedMemory();
-        verify(project).getProjectDescription();
-        verify(runners, never()).getDefault();
-
-        verify(runner).getRAM();
-
-        verify(constant).messagesTotalLessOverrideMemory(512, 384);
-        verify(runnerUtil).showWarning(MESSAGES_TOTAL_LESS_REQUIRED_MEMORY);
-
-        verify(runner).setStatus(Runner.Status.FAILED);
-    }
-
-    @Test
     public void shouldShowMessagesAvailableLessOverrideMemoryButRunnerDescriptorIsNull() {
         //preparing runner and run configuration
         when(project.getProjectDescription()).thenReturn(projectDescriptor);
@@ -702,7 +617,7 @@ public class CheckRamAndRunActionTest {
         when(runners.getConfigs()).thenReturn(hashMap);
         when(hashMap.get(ID_ENVIRONMENT)).thenReturn(runnerConfiguration);
 
-        when(constant.messagesAvailableLessOverrideMemory()).thenReturn(MESSAGES_AVAILABLE_LESS_OVERRIDE_MEMORY);
+        when(constant.messagesAvailableLessOverrideMemory(268)).thenReturn(MESSAGES_AVAILABLE_LESS_OVERRIDE_MEMORY);
 
         //total memory
         when(resourcesDescriptor.getTotalMemory()).thenReturn("1024");
@@ -728,7 +643,7 @@ public class CheckRamAndRunActionTest {
 
         verify(runner).getRAM();
 
-        verify(constant).messagesAvailableLessOverrideMemory();
+        verify(constant).messagesAvailableLessOverrideMemory(268);
         verify(runnerUtil).showError(runner, MESSAGES_AVAILABLE_LESS_OVERRIDE_MEMORY, null);
 
         verify(runner).setStatus(Runner.Status.FAILED);
