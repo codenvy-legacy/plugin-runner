@@ -238,4 +238,7 @@ public interface RunnerLocalizationConstant extends Messages {
 
     @Key("action.runner.not.specified")
     String actionRunnerNotSpecified();
+
+    @Key("message.runner.shutting.down")
+    String messageRunnerShuttingDown();
 }

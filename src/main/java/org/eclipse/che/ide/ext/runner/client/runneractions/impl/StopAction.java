@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
@@ -29,11 +32,10 @@ import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import javax.annotation.Nonnull;
 
+import static org.eclipse.che.ide.api.notification.Notification.Status.PROGRESS;
 import static org.eclipse.che.ide.api.notification.Notification.Type.ERROR;
 import static org.eclipse.che.ide.api.notification.Notification.Type.INFO;
 
@@ -87,6 +89,7 @@ public class StopAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform(@Nonnull final Runner runner) {
+        notificationManager.showNotification(new Notification(constant.messageRunnerShuttingDown(), PROGRESS));
         eventLogger.log(this);
 
         this.runner = runner;

@@ -43,6 +43,7 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -54,6 +55,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Alexander Andrienko
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class StopActionTest {
@@ -81,7 +83,7 @@ public class StopActionTest {
     @Mock
     private ConsoleContainer                                             consoleContainer;
     @Mock
-    private AnalyticsEventLogger                                          eventLogger;
+    private AnalyticsEventLogger                                         eventLogger;
 
     //action variables
     @Mock
@@ -311,5 +313,20 @@ public class StopActionTest {
         verify(presenter).update(runner);
 
         verify(service).stop(stopLink, callback);
+    }
+
+    @Test
+    public void notificationStopInProgressShouldBeShown() throws Exception {
+        when(constant.messageRunnerShuttingDown()).thenReturn(MESSAGE);
+
+        stopAction.perform(runner);
+
+        verify(constant).messageRunnerShuttingDown();
+        verify(notificationManager).showNotification(notificationCaptor.capture());
+
+        Notification notification = notificationCaptor.getValue();
+
+        assertThat(notification.getMessage(), equalTo(MESSAGE));
+        assertThat(notification.isFinished(), is(false));
     }
 }
