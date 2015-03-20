@@ -21,6 +21,7 @@ import org.eclipse.che.ide.api.parts.WorkspaceAgent;
 import org.eclipse.che.ide.ext.runner.client.actions.ChooseRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.actions.RunAction;
 import org.eclipse.che.ide.ext.runner.client.actions.RunWithAction;
+import org.eclipse.che.ide.ext.runner.client.constants.ActionId;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ import org.mockito.Mock;
 
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
-import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
+import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RIGHT_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
@@ -40,6 +41,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -93,12 +95,12 @@ public class RunnerExtensionTest {
         RunWithAction runWithAction = mock(RunWithAction.class);
         ChooseRunnerAction chooseRunnerAction = mock(ChooseRunnerAction.class);
 
-        DefaultActionGroup mainToolbarGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup rightToolbarGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup runContextGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup contextMenuGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup mainMenuGroup = mock(DefaultActionGroup.class);
 
-        when(actionManager.getAction(GROUP_MAIN_TOOLBAR)).thenReturn(mainToolbarGroup);
+        when(actionManager.getAction(GROUP_RIGHT_TOOLBAR)).thenReturn(rightToolbarGroup);
         when(actionManager.getAction(GROUP_RUN_CONTEXT_MENU)).thenReturn(runContextGroup);
         when(actionManager.getAction(GROUP_MAIN_CONTEXT_MENU)).thenReturn(contextMenuGroup);
         when(actionManager.getAction(GROUP_RUN)).thenReturn(mainMenuGroup);
@@ -107,7 +109,7 @@ public class RunnerExtensionTest {
         extension.setUpRunActions(actionManager, runAction, runWithAction, chooseRunnerAction);
 
         // check step
-        verify(mainToolbarGroup).add(actionGroupCaptor.capture(), constraintsCaptor.capture());
+        verify(rightToolbarGroup).add(actionGroupCaptor.capture(), constraintsCaptor.capture());
         verifyConstants(Anchor.AFTER, GROUP_BUILD_TOOLBAR);
 
         verify(runContextGroup).addSeparator();
@@ -120,6 +122,42 @@ public class RunnerExtensionTest {
         verify(actionManager).registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
 
         verifyConstants(Anchor.AFTER, GROUP_BUILD_TOOLBAR);
+    }
+
+
+    @Test
+    public void runnerToolbarActionsShouldBeAddedToRegisteredEarlyGroup() throws Exception {
+        // prepare step
+        ActionManager actionManager = mock(ActionManager.class);
+
+        RunAction runAction = mock(RunAction.class);
+        RunWithAction runWithAction = mock(RunWithAction.class);
+        ChooseRunnerAction chooseRunnerAction = mock(ChooseRunnerAction.class);
+
+        DefaultActionGroup rightToolbarGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup runToolbarGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup runContextGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup contextMenuGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup mainMenuGroup = mock(DefaultActionGroup.class);
+
+        when(actionManager.getAction(GROUP_RUN_TOOLBAR)).thenReturn(runToolbarGroup);
+        when(actionManager.getAction(GROUP_RUN_CONTEXT_MENU)).thenReturn(runContextGroup);
+        when(actionManager.getAction(GROUP_MAIN_CONTEXT_MENU)).thenReturn(contextMenuGroup);
+        when(actionManager.getAction(GROUP_RUN)).thenReturn(mainMenuGroup);
+
+        // test step
+        extension.setUpRunActions(actionManager, runAction, runWithAction, chooseRunnerAction);
+
+        // check step
+        verify(actionManager, never()).registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
+        verify(rightToolbarGroup, never()).add(eq(runToolbarGroup), constraintsCaptor.capture());
+        verify(runToolbarGroup).add(chooseRunnerAction);
+        verify(runToolbarGroup).add(eq(runAction), constraintsCaptor.capture());
+        verifyConstants(Anchor.AFTER, ActionId.CHOOSE_RUNNER_ID.getId());
+
+        verify(runContextGroup).addSeparator();
+        verify(runContextGroup).add(runAction);
+        verify(contextMenuGroup).add(runContextGroup);
     }
 
     private void verifyConstants(Anchor anchor, String actionId) {
