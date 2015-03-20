@@ -90,6 +90,12 @@ public class RunnerUtilImpl implements RunnerUtil {
 
     /** {@inheritDoc} */
     @Override
+    public void showInfo(@Nonnull Runner runner, @Nonnull String message) {
+        consoleContainer.printInfo(runner, message);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void showWarning(@Nonnull String message) {
         dialogFactory.createMessageDialog(locale.titlesWarning(), message, null).show();
     }
