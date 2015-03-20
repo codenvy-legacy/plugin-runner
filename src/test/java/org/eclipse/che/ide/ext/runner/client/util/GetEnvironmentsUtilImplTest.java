@@ -12,14 +12,16 @@ package org.eclipse.che.ide.ext.runner.client.util;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironment;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
-import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +31,9 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -46,6 +50,7 @@ public class GetEnvironmentsUtilImplTest {
 
     private static final String PROJECT_TYPE = "some project type";
     private static final String CATEGORY1    = "Category1";
+    private static final String SOME_TEXT    = "someText";
 
     //mocks for constructor
     @Mock
@@ -54,6 +59,8 @@ public class GetEnvironmentsUtilImplTest {
     private ModelsFactory         modelsFactory;
     @Mock
     private ProjectTypeRegistry   projectTypeRegistry;
+    @Mock
+    private AppContext            appContext;
 
     //runnerEnvironmentTrees
     @Mock
@@ -103,14 +110,21 @@ public class GetEnvironmentsUtilImplTest {
 
     @Mock
     private ProjectTypeDefinition definition;
+    @Mock
+    private CurrentProject        currentProject;
+    @Mock
+    private ProjectDescriptor     descriptor;
 
     @InjectMocks
-    private GetEnvironmentsUtilImpl getEnvironmentsUtil;
+    private GetEnvironmentsUtilImpl util;
 
     @Before
     public void setUp() {
         generateDifficultTree();
 
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
+        when(currentProject.getProjectDescription()).thenReturn(descriptor);
+        when(currentProject.getRunner()).thenReturn(SOME_TEXT);
         List<String> runnerCategoryList = Arrays.asList(CATEGORY1, "Category2", "Category3");
         when(projectTypeRegistry.getProjectType(PROJECT_TYPE)).thenReturn(definition);
         when(definition.getRunnerCategories()).thenReturn(runnerCategoryList);
@@ -120,7 +134,7 @@ public class GetEnvironmentsUtilImplTest {
 
     @Test
     public void allEnvironmentsShouldBeReturned() {
-        List<RunnerEnvironmentLeaf> result = getEnvironmentsUtil.getAllEnvironments(tree);
+        List<RunnerEnvironmentLeaf> result = util.getAllEnvironments(tree);
 
         assertThat(result.size(), is(6));
         assertThat(result, hasItems(runnerEnvLeaf1, runnerEnvLeaf2, runnerEnvLeaf3, runnerEnvLeaf4, runnerEnvLeaf5, runnerEnvLeaf6));
@@ -136,54 +150,69 @@ public class GetEnvironmentsUtilImplTest {
         when(runnerEnvLeaf1.getEnvironment()).thenReturn(runnerEnv1);
         when(runnerEnvLeaf2.getEnvironment()).thenReturn(runnerEnv2);
 
-        when(modelsFactory.createEnvironment(runnerEnv1, Scope.SYSTEM)).thenReturn(environment1);
-        when(modelsFactory.createEnvironment(runnerEnv2, Scope.SYSTEM)).thenReturn(environment2);
+        when(modelsFactory.createEnvironment(runnerEnv1, SYSTEM)).thenReturn(environment1);
+        when(modelsFactory.createEnvironment(runnerEnv2, SYSTEM)).thenReturn(environment2);
 
-        List<Environment> result = getEnvironmentsUtil.getEnvironmentsFromNodes(Arrays.asList(runnerEnvLeaf1, runnerEnvLeaf2),
-                                                                                Scope.SYSTEM);
+        List<Environment> result = util.getEnvironmentsFromNodes(Arrays.asList(runnerEnvLeaf1, runnerEnvLeaf2),
+                                                                 SYSTEM);
 
         assertThat(result.size(), is(2));
         assertThat(result, hasItems(environment1, environment2));
 
-        verify(modelsFactory).createEnvironment(runnerEnv1, Scope.SYSTEM);
-        verify(modelsFactory).createEnvironment(runnerEnv2, Scope.SYSTEM);
+        verify(modelsFactory).createEnvironment(runnerEnv1, SYSTEM);
+        verify(modelsFactory).createEnvironment(runnerEnv2, SYSTEM);
     }
 
     @Test
-    public void environmentShouldBeReturnedByProjectType() {
-        when(runnerEnvLeaf4.getEnvironment()).thenReturn(runEnvironment1);
-        when(runnerEnvLeaf5.getEnvironment()).thenReturn(runEnvironment2);
+    public void emptyListShouldBeReturnedWhenCurrentProjectIsNull() {
+        when(appContext.getCurrentProject()).thenReturn(null);
 
-        when(modelsFactory.createEnvironment(runEnvironment1, SYSTEM)).thenReturn(environment1);
-        when(modelsFactory.createEnvironment(runEnvironment2, SYSTEM)).thenReturn(environment2);
+        List<Environment> environments = util.getEnvironmentsByProjectType(tree, PROJECT_TYPE, SYSTEM);
 
-        List<Environment> result = getEnvironmentsUtil.getEnvironmentsByProjectType(tree, PROJECT_TYPE, SYSTEM);
+        assertThat(environments.isEmpty(), is(true));
+    }
+
+    @Test
+    public void systemEnvironmentsShouldBeReturnedWhenDefaultRunnerIsNull() throws Exception {
+        when(currentProject.getRunner()).thenReturn(null);
+        when(tree.getNode(PROJECT_TYPE)).thenReturn(tree);
+
+        List<Environment> environments = util.getEnvironmentsByProjectType(tree, PROJECT_TYPE, SYSTEM);
 
         verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
         verify(definition).getRunnerCategories();
-        verify(tree).setDisplayName(CATEGORY1);
-        verify(tree).getNode(CATEGORY1.toLowerCase());
+        verify(tree).getNode("category1");
 
-        verify(runnerEnvTree6).getLeaves();
-        verify(runnerEnvTree6).getNodes();
-        verify(runnerEnvTree8).getLeaves();
-        verify(runnerEnvTree8).getNodes();
-        verify(runnerEnvTree9).getLeaves();
-        verify(runnerEnvTree9).getNodes();
+        assertThat(environments.size(), is(2));
+    }
 
-        verify(runnerEnvLeaf4).getEnvironment();
-        verify(runnerEnvLeaf5).getEnvironment();
-        verify(modelsFactory).createEnvironment(runEnvironment1, SYSTEM);
-        verify(modelsFactory).createEnvironment(runEnvironment2, SYSTEM);
+    @Test
+    public void environmentsShouldBeReturnedWhenScopeIsProject() throws Exception {
+        List<Environment> environments = util.getEnvironmentsByProjectType(tree, PROJECT_TYPE, PROJECT);
 
-        assertThat(result, hasItems(environment1, environment2));
+        verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
+        verify(definition).getRunnerCategories();
+        verify(tree).getNode("category1");
+
+        assertThat(environments.size(), is(2));
+    }
+
+    @Test
+    public void environmentsShouldBeReturnedWhenProjectScopeIsSystem() throws Exception {
+        when(currentProject.getRunner()).thenReturn("text/text1/text2/text");
+        when(tree.getNode("text1")).thenReturn(runnerEnvTree6);
+        when(runnerEnvTree6.getNode("text2")).thenReturn(runnerEnvTree5);
+
+        List<Environment> environments = util.getEnvironmentsByProjectType(tree, PROJECT_TYPE, SYSTEM);
+
+        assertThat(environments.size(), is(3));
     }
 
     @Test
     public void allTreeShouldBeReturnedByProjectTypeIfThisProjectTypeIsNotExist() {
         when(tree.getNode(CATEGORY1.toLowerCase())).thenReturn(null);
 
-        RunnerEnvironmentTree result = getEnvironmentsUtil.getRunnerCategoryByProjectType(tree, PROJECT_TYPE);
+        RunnerEnvironmentTree result = util.getRunnerCategoryByProjectType(tree, PROJECT_TYPE);
 
         verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
         verify(definition).getRunnerCategories();
@@ -195,7 +224,7 @@ public class GetEnvironmentsUtilImplTest {
 
     @Test
     public void nodeForProjectTypeShouldBeReturned() {
-        RunnerEnvironmentTree result = getEnvironmentsUtil.getRunnerCategoryByProjectType(tree, PROJECT_TYPE);
+        RunnerEnvironmentTree result = util.getRunnerCategoryByProjectType(tree, PROJECT_TYPE);
 
         verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
         verify(definition).getRunnerCategories();
@@ -203,6 +232,43 @@ public class GetEnvironmentsUtilImplTest {
         verify(tree).getNode(CATEGORY1.toLowerCase());
 
         assertThat(result, is(runnerEnvTree6));
+    }
+
+    @Test
+    public void correctCategoryNameShouldBeReturned() throws Exception {
+        String category = util.getCorrectCategoryName("text/text/text");
+
+        assertThat(category, equalTo("text"));
+    }
+
+    @Test
+    public void emptyStringShouldBeReturnedWhenCurrentProjectIsNull() throws Exception {
+        when(appContext.getCurrentProject()).thenReturn(null);
+
+        String projectType = util.getType();
+
+        assertThat(projectType.isEmpty(), is(true));
+    }
+
+    @Test
+    public void typeFromRunnerCategoryShouldBeReturnedWhenDefaultRunnerIsNull() throws Exception {
+        when(definition.getRunnerCategories()).thenReturn(Arrays.asList(SOME_TEXT));
+        when(descriptor.getType()).thenReturn(SOME_TEXT);
+        when(projectTypeRegistry.getProjectType(SOME_TEXT)).thenReturn(definition);
+        when(currentProject.getRunner()).thenReturn(null);
+
+        String type = util.getType();
+
+        assertThat(type, equalTo(SOME_TEXT));
+    }
+
+    @Test
+    public void typeFromRunnerCategoryShouldBeReturnedWhenDefaultRunnerIsNotNull() throws Exception {
+        when(currentProject.getRunner()).thenReturn("text/text/text");
+
+        String type = util.getType();
+
+        assertThat(type, equalTo("text"));
     }
 
     /*

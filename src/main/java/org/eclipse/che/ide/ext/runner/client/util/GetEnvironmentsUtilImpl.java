@@ -13,9 +13,12 @@ package org.eclipse.che.ide.ext.runner.client.util;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
@@ -25,6 +28,8 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
+
 /**
  * @author Dmitry Shnurenko
  */
@@ -33,11 +38,13 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
 
     private final ModelsFactory       modelsFactory;
     private final ProjectTypeRegistry projectTypeRegistry;
+    private final AppContext          appContext;
 
     @Inject
-    public GetEnvironmentsUtilImpl(ModelsFactory modelsFactory, ProjectTypeRegistry projectTypeRegistry) {
+    public GetEnvironmentsUtilImpl(ModelsFactory modelsFactory, ProjectTypeRegistry projectTypeRegistry, AppContext appContext) {
         this.modelsFactory = modelsFactory;
         this.projectTypeRegistry = projectTypeRegistry;
+        this.appContext = appContext;
     }
 
     /** {@inheritDoc} */
@@ -80,10 +87,65 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
     public List<Environment> getEnvironmentsByProjectType(@Nonnull RunnerEnvironmentTree tree,
                                                           @Nonnull String projectType,
                                                           @Nonnull Scope scope) {
-        RunnerEnvironmentTree categoryNode = getRunnerCategoryByProjectType(tree, projectType);
-        List<RunnerEnvironmentLeaf> leaves = getAllEnvironments(categoryNode);
+        List<RunnerEnvironmentLeaf> leaves = new ArrayList<>();
+
+        CurrentProject currentProject = appContext.getCurrentProject();
+
+        if (currentProject == null) {
+            return new ArrayList<>();
+        }
+
+        String defaultRunner = currentProject.getRunner();
+
+        if (defaultRunner == null || PROJECT.equals(scope)) {
+            RunnerEnvironmentTree categoryNode = getRunnerCategoryByProjectType(tree, projectType);
+
+            leaves = getAllEnvironments(categoryNode);
+        } else {
+            String category = getCorrectCategoryName(defaultRunner);
+
+            String[] nodeNames = category.split("/");
+
+            for (String nodeName : nodeNames) {
+                tree = tree.getNode(nodeName);
+            }
+
+            leaves.addAll(getAllEnvironments(tree));
+        }
 
         return getEnvironmentsFromNodes(leaves, scope);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nonnull
+    public String getType() {
+        CurrentProject currentProject = appContext.getCurrentProject();
+
+        if (currentProject == null) {
+            return "";
+        }
+
+        ProjectDescriptor descriptor = currentProject.getProjectDescription();
+
+        String defaultRunner = currentProject.getRunner();
+
+        if (defaultRunner == null) {
+            ProjectTypeDefinition definition = projectTypeRegistry.getProjectType(descriptor.getType());
+
+            List<String> categories = definition.getRunnerCategories();
+            return categories.get(0);
+        } else {
+            return getCorrectCategoryName(defaultRunner);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public String getCorrectCategoryName(@Nonnull String defaultRunner) {
+        int index = defaultRunner.indexOf('/') + 1;
+        return defaultRunner.substring(index, defaultRunner.lastIndexOf('/'));
     }
 
     /** {@inheritDoc} */

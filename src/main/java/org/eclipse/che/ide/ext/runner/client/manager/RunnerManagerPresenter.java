@@ -19,7 +19,6 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
 import org.eclipse.che.api.core.rest.shared.dto.Link;
-import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.runner.dto.ApplicationProcessDescriptor;
 import org.eclipse.che.api.runner.dto.RunOptions;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -28,7 +27,6 @@ import org.eclipse.che.ide.api.event.ProjectActionEvent;
 import org.eclipse.che.ide.api.event.ProjectActionHandler;
 import org.eclipse.che.ide.api.parts.PartPresenter;
 import org.eclipse.che.ide.api.parts.base.BasePresenter;
-import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.ModelsFactory;
@@ -64,7 +62,6 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -115,7 +112,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
     private final PanelState                  panelState;
     private final RunnerCounter               runnerCounter;
     private final Set<Long>                   runnersId;
-    private final ProjectTypeRegistry         typeRegistry;
     private final RunnerUtil                  runnerUtil;
 
     private GetRunningProcessesAction getRunningProcessAction;
@@ -144,7 +140,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
                                   SelectionManager selectionManager,
                                   TimerFactory timerFactory,
                                   GetSystemEnvironmentsAction getSystemEnvironmentsAction,
-                                  ProjectTypeRegistry typeRegistry,
                                   RunnerUtil runnerUtil) {
         this.view = view;
         this.view.setDelegate(this);
@@ -155,7 +150,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         this.appContext = appContext;
         this.runnerCounter = runnerCounter;
         this.getSystemEnvironmentsAction = getSystemEnvironmentsAction;
-        this.typeRegistry = typeRegistry;
         this.runnerUtil = runnerUtil;
 
         this.selectionManager = selectionManager;
@@ -473,16 +467,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         if (currentProject == null) {
             throw new IllegalStateException("Can't launch runner for current project. Current project is absent...");
-        }
-
-        String typeId = currentProject.getProjectDescription().getType();
-        ProjectTypeDefinition definition = typeRegistry.getProjectType(typeId);
-
-        List<String> categories = definition.getRunnerCategories();
-
-        if (categories != null && !categories.isEmpty()) {
-            String type = categories.get(0);
-            runner.setType(type);
         }
 
         selectedEnvironment = null;

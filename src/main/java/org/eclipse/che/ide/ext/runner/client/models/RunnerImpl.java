@@ -22,6 +22,7 @@ import org.eclipse.che.api.runner.dto.RunnerMetric;
 import org.eclipse.che.api.runner.gwt.client.utils.RunnerUtils;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import org.eclipse.che.ide.util.StringUtils;
 
 import javax.annotation.Nonnegative;
@@ -83,8 +84,9 @@ public class RunnerImpl implements Runner {
     @AssistedInject
     public RunnerImpl(@Nonnull RunnerLocalizationConstant locale,
                       @Nonnull RunnerCounter runnerCounter,
+                      @Nonnull GetEnvironmentsUtil util,
                       @Nonnull @Assisted RunOptions runOptions) {
-        this(locale, runnerCounter, runOptions, null);
+        this(locale, runnerCounter, util, runOptions, null);
     }
 
     /**
@@ -103,6 +105,7 @@ public class RunnerImpl implements Runner {
     @AssistedInject
     public RunnerImpl(@Nonnull RunnerLocalizationConstant locale,
                       @Nonnull RunnerCounter runnerCounter,
+                      @Nonnull GetEnvironmentsUtil util,
                       @Nonnull @Assisted RunOptions runOptions,
                       @Nullable @Assisted String environmentName) {
         this.runOptions = runOptions;
@@ -115,6 +118,14 @@ public class RunnerImpl implements Runner {
         this.scope = Scope.SYSTEM;
 
         creationTime = System.currentTimeMillis();
+
+        String environmentId = runOptions.getEnvironmentId();
+
+        if (environmentId.startsWith("project://")) {
+            this.type = util.getType();
+        } else {
+            this.type = util.getCorrectCategoryName(runOptions.getEnvironmentId());
+        }
     }
 
     @Nonnull
@@ -367,12 +378,6 @@ public class RunnerImpl implements Runner {
     @Override
     public String getType() {
         return type;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setType(@Nonnull String type) {
-        this.type = type;
     }
 
     /** {@inheritDoc} */

@@ -217,6 +217,23 @@ public class GetSystemEnvironmentsActionTest {
     }
 
     @Test
+    public void correctCategoryNameShouldBeReturnedWhenDefaultProjectIsNotNull() throws Exception {
+        when(currentProject.getRunner()).thenReturn(MESSAGE);
+        when(environmentUtil.getCorrectCategoryName(MESSAGE)).thenReturn(MESSAGE);
+
+        action.perform();
+
+        verify(asyncCallbackBuilder).success(successCallBackCaptor.capture());
+        SuccessCallback<RunnerEnvironmentTree> successCallback = successCallBackCaptor.getValue();
+        successCallback.onSuccess(tree);
+
+        verify(currentProject).getRunner();
+        verify(environmentUtil).getCorrectCategoryName(MESSAGE);
+        verify(templatesContainer).setTypeItem(MESSAGE);
+        verify(environmentUtil, never()).getRunnerCategoryByProjectType(Matchers.<RunnerEnvironmentTree>anyObject(), anyString());
+    }
+
+    @Test
     public void systemEnvironmentsShouldNotBeGotWhenCurrentProjectIsNull() throws Exception {
         when(appContext.getCurrentProject()).thenReturn(null);
 

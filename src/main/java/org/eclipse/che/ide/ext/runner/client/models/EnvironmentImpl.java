@@ -13,13 +13,13 @@ package org.eclipse.che.ide.ext.runner.client.models;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironment;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
-import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -38,9 +38,7 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
  */
 public class EnvironmentImpl implements Environment {
 
-    public static final String ROOT_FOLDER          = "/.codenvy/runners/environments/";
-    public static final String PROJECT_SCOPE_PREFIX = "project://";
-    public static final String SYSTEM_SCOPE_PREFIX  = "system:/";
+    public static final String ROOT_FOLDER = "/.codenvy/runners/environments/";
 
     private final RunnerEnvironment   runnerEnvironment;
     private final String              path;
@@ -54,7 +52,7 @@ public class EnvironmentImpl implements Environment {
 
     @Inject
     public EnvironmentImpl(AppContext appContext,
-                           ProjectTypeRegistry projectTypeRegistry,
+                           GetEnvironmentsUtil util,
                            @Assisted @Nonnull RunnerEnvironment runnerEnvironment,
                            @Assisted @Nonnull Scope scope) {
         this.runnerEnvironment = runnerEnvironment;
@@ -78,26 +76,23 @@ public class EnvironmentImpl implements Environment {
                                             "This code can't work without this param.");
         }
 
-        if (SYSTEM.equals(scope)) {
-            String wsId = currentProject.getProjectDescription().getWorkspaceId();
+        ProjectDescriptor descriptor = currentProject.getProjectDescription();
+
+        boolean isScopeSystem = SYSTEM.equals(scope);
+
+        if (isScopeSystem) {
+            String wsId = descriptor.getWorkspaceId();
             path = getProtocol() + "//" + getHost() + "/api/runner/" + wsId + "/recipe?id=" + id;
         } else {
-            path = currentProject.getProjectDescription().getPath() + ROOT_FOLDER + lastIdPart;
+            path = descriptor.getPath() + ROOT_FOLDER + lastIdPart;
         }
 
         options = Collections.unmodifiableMap(runnerEnvironment.getOptions());
 
-        String typeEnvironment = id.replaceFirst(SYSTEM.equals(scope) ? SYSTEM_SCOPE_PREFIX : PROJECT_SCOPE_PREFIX, "");
-        index = typeEnvironment.lastIndexOf('/');
-        typeEnvironment = typeEnvironment.substring(0, index);
-
-        if (typeEnvironment.isEmpty()) {
-            String projectType = currentProject.getProjectDescription().getType();
-            ProjectTypeDefinition typeDefinition = projectTypeRegistry.getProjectType(projectType);
-
-            this.type = typeDefinition.getRunnerCategories().get(0);
+        if (isScopeSystem) {
+            this.type = util.getCorrectCategoryName(id);
         } else {
-            this.type = typeEnvironment;
+            this.type = util.getType();
         }
     }
 

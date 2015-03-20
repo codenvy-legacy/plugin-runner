@@ -10,11 +10,12 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.util;
 
+import com.google.inject.ImplementedBy;
+
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentLeaf;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironmentTree;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
-import com.google.inject.ImplementedBy;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -76,4 +77,22 @@ public interface GetEnvironmentsUtil {
      */
     @Nonnull
     RunnerEnvironmentTree getRunnerCategoryByProjectType(@Nonnull RunnerEnvironmentTree tree, @Nonnull String projectType);
+
+    /**
+     * Returns correct category name when default runner is defined for project.
+     *
+     * @param defaultRunner
+     *         runner from which need get category
+     * @return string representation of runner category
+     */
+    @Nonnull
+    String getCorrectCategoryName(@Nonnull String defaultRunner);
+
+    /**
+     * Returns correct project type.
+     *
+     * @return string representation of project type
+     */
+    @Nonnull
+    String getType();
 }

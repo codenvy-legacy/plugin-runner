@@ -20,6 +20,7 @@ import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
+import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +51,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -82,6 +85,8 @@ public class RunnerImplTest {
     private RunOptions                   runOptions;
     @Mock
     private ApplicationProcessDescriptor descriptor;
+    @Mock
+    private GetEnvironmentsUtil          util;
 
     @Mock
     private RunnerMetric stat;
@@ -96,10 +101,11 @@ public class RunnerImplTest {
     public void setUp() {
         // it have to be in this case. in other case we will have problems with initializing tests.
         TIME_CONSTANT = DATE_TIME_FORMAT.format(new Date(LONG_CONSTANT));
+        when(runOptions.getEnvironmentId()).thenReturn(TEXT);
 
         initConstructorParameter();
 
-        runner = new RunnerImpl(locale, runnerCounter, runOptions);
+        runner = new RunnerImpl(locale, runnerCounter, util, runOptions);
 
         //init application descriptor
         when(descriptor.getProcessId()).thenReturn(LONG_CONSTANT);
@@ -139,9 +145,10 @@ public class RunnerImplTest {
     @Test
     public void shouldVerifySecondConstructorWithEnvironmentNameNotNull() {
         reset(locale, runnerCounter, runOptions);
+        when(runOptions.getEnvironmentId()).thenReturn(TEXT);
         initConstructorParameter();
 
-        runner = new RunnerImpl(locale, runnerCounter, runOptions, TEXT);
+        runner = new RunnerImpl(locale, runnerCounter, util, runOptions, TEXT);
 
         verifySomeActionInConstructor();
         assertThat(runner.getTitle(), is(RUNNER_NAME + RUNNER_NUMBER + " - tomcat"));
@@ -150,9 +157,10 @@ public class RunnerImplTest {
     @Test
     public void shouldVerifySecondConstructorWithEnvironmentNameNull() {
         reset(locale, runnerCounter, runOptions);
+        when(runOptions.getEnvironmentId()).thenReturn(TEXT);
         initConstructorParameter();
 
-        runner = new RunnerImpl(locale, runnerCounter, runOptions, null);
+        runner = new RunnerImpl(locale, runnerCounter, util, runOptions, null);
 
         shouldVerifyFirstConstructor();
     }
@@ -493,10 +501,23 @@ public class RunnerImplTest {
 
     @Test
     public void environmentIdShouldBeReturned() {
+        reset(runOptions);
+        when(runOptions.getEnvironmentId()).thenReturn(TEXT);
         runner.getEnvironmentId();
 
         verify(runOptions).getEnvironmentId();
         assertThat(runner.getEnvironmentId(), is(TEXT));
+    }
+
+    @Test
+    public void typeOfProjectShouldBeAppliedWhenWeStartProjectEnvironment() throws Exception {
+        reset(runOptions, util);
+        when(runOptions.getEnvironmentId()).thenReturn("project://");
+
+        runner = new RunnerImpl(locale, runnerCounter, util, runOptions);
+
+        verify(util).getType();
+        verify(util, never()).getCorrectCategoryName(anyString());
     }
 
     @Test
@@ -527,7 +548,7 @@ public class RunnerImplTest {
     public void equalsShouldReturnFalseForRunnerObjectsWithDifferentTitle() {
         when(runnerCounter.getRunnerNumber()).thenReturn(2);
 
-        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, runOptions);
+        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, util, runOptions);
 
         assertThat(runner.equals(runner1), is(false));
         verify(runnerCounter, times(2)).getRunnerNumber();
@@ -535,15 +556,15 @@ public class RunnerImplTest {
 
     @Test
     public void equalsShouldReturnTrueForRunnerObjectsWithSameTitle() {
-        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, runOptions);
+        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, util, runOptions);
 
         assertThat(runner.equals(runner1), is(true));
     }
 
     @Test
     public void hashCodeShouldBeEquivalentForEquivalentObjects() {
-        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, runOptions);
-        RunnerImpl runner2 = new RunnerImpl(locale, runnerCounter, runOptions);
+        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, util, runOptions);
+        RunnerImpl runner2 = new RunnerImpl(locale, runnerCounter, util, runOptions);
         assertThat(runner1.hashCode(), is(runner2.hashCode()));
     }
 
@@ -552,8 +573,8 @@ public class RunnerImplTest {
         RunnerCounter runnerCounter1 = mock(RunnerCounter.class);
         when(runnerCounter1.getRunnerNumber()).thenReturn(2);
 
-        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, runOptions);
-        RunnerImpl runner2 = new RunnerImpl(locale, runnerCounter1, runOptions);
+        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, util, runOptions);
+        RunnerImpl runner2 = new RunnerImpl(locale, runnerCounter1, util, runOptions);
         assertThat(runner1.hashCode(), is(not(runner2.hashCode())));
     }
 
@@ -957,11 +978,13 @@ public class RunnerImplTest {
     }
 
     @Test
-    public void typeShouldBeChanged() {
-        assertThat(runner.getType(), nullValue());
+    public void categoryNameShouldBeReturnedWhenEnvironmentNameIsNotNull() {
+        reset(util);
+        when(runOptions.getEnvironmentId()).thenReturn(TEXT);
 
-        runner.setType(TEXT);
+        runner = new RunnerImpl(locale, runnerCounter, util, runOptions, TEXT);
 
-        assertThat(runner.getType(), is(TEXT));
+        verify(util).getCorrectCategoryName(TEXT);
+        verify(util, never()).getType();
     }
 }

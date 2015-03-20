@@ -26,7 +26,6 @@ import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.event.ProjectActionEvent;
 import org.eclipse.che.ide.api.parts.PartPresenter;
 import org.eclipse.che.ide.api.parts.PartStack;
-import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
 import org.eclipse.che.ide.ext.runner.client.constants.TimeInterval;
@@ -208,8 +207,6 @@ public class RunnerManagerPresenterTest {
     @Mock
     private Timer                     timer;
     @Mock
-    private ProjectTypeRegistry       typeRegistry;
-    @Mock
     private ProjectTypeDefinition     definition;
 
     private RunnerManagerPresenter presenter;
@@ -269,7 +266,6 @@ public class RunnerManagerPresenterTest {
                                                selectionManager,
                                                timerFactory,
                                                getSystemEnvironmentsAction,
-                                               typeRegistry,
                                                runnerUtil);
 
         //adding runner
@@ -292,7 +288,6 @@ public class RunnerManagerPresenterTest {
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getProjectDescription()).thenReturn(descriptor);
         when(descriptor.getType()).thenReturn(TEXT);
-        when(typeRegistry.getProjectType(TEXT)).thenReturn(definition);
         when(definition.getRunnerCategories()).thenReturn(Arrays.asList(TEXT));
         when(currentProject.getAttributeValue("runner:skipBuild")).thenReturn("true");
         when(runOptions.withSkipBuild(true)).thenReturn(runOptions);
@@ -384,7 +379,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void terminalHandlerShouldPerformWhenRunnerIsNull () {
+    public void terminalHandlerShouldPerformWhenRunnerIsNull() {
         verifyTabSelectHandler(tabBuilderProperties);
         verify(propertiesContainer).show((Runner)null);
         verify(locale).runnerTabProperties();
@@ -392,7 +387,7 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void propertiesHandlerShouldPerformWhenRunnerIsNull () {
+    public void propertiesHandlerShouldPerformWhenRunnerIsNull() {
         verifyTabSelectHandler(tabBuilderProperties);
         verify(propertiesContainer).show((Runner)null);
         verify(locale).runnerTabProperties();
@@ -1068,11 +1063,6 @@ public class RunnerManagerPresenterTest {
 
     private void verifyLaunchRunnerWithNotNullCurrentProject() {
         verify(appContext, times(2)).getCurrentProject();
-        verify(currentProject).getProjectDescription();
-        verify(descriptor).getType();
-        verify(typeRegistry).getProjectType(TEXT);
-        verify(definition).getRunnerCategories();
-        verify(runner).setType(TEXT);
 
         verify(dtoFactory).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);

@@ -17,19 +17,16 @@ import org.eclipse.che.api.project.shared.dto.ProjectTypeDefinition;
 import org.eclipse.che.api.project.shared.dto.RunnerEnvironment;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
-import org.eclipse.che.ide.api.project.type.ProjectTypeRegistry;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
+import org.eclipse.che.ide.ext.runner.client.util.GetEnvironmentsUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl.PROJECT_SCOPE_PREFIX;
-import static org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl.SYSTEM_SCOPE_PREFIX;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -37,8 +34,6 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,14 +52,16 @@ public class EnvironmentImplTest {
     @Mock(answer = RETURNS_DEEP_STUBS)
     private AppContext          appContext;
     @Mock
-    private ProjectTypeRegistry projectTypeRegistry;
-    @Mock
     private RunnerEnvironment   runnerEnvironment;
+    @Mock
+    private GetEnvironmentsUtil util;
 
     @Mock
-    private CurrentProject    currentProject;
+    private CurrentProject        currentProject;
     @Mock
-    private ProjectDescriptor descriptor;
+    private ProjectDescriptor     descriptor;
+    @Mock
+    private ProjectTypeDefinition definition;
 
     private EnvironmentImpl environment;
 
@@ -76,6 +73,7 @@ public class EnvironmentImplTest {
 
         when(appContext.getCurrentProject()).thenReturn(currentProject);
         when(currentProject.getProjectDescription()).thenReturn(descriptor);
+        when(currentProject.getRunner()).thenReturn(TEXT);
 
         when(descriptor.getWorkspaceId()).thenReturn(TEXT);
         when(descriptor.getPath()).thenReturn(TEXT);
@@ -85,7 +83,7 @@ public class EnvironmentImplTest {
         when(runnerEnvironment.getDescription()).thenReturn(TEXT);
         when(runnerEnvironment.getDisplayName()).thenReturn(DISPLAY_NAME);
 
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, SYSTEM);
+        environment = new EnvironmentImpl(appContext, util, runnerEnvironment, SYSTEM);
     }
 
     @Test
@@ -111,7 +109,7 @@ public class EnvironmentImplTest {
 
     @Test
     public void prepareActionShouldBePerformedWhenScopeIsProject() {
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);
+        environment = new EnvironmentImpl(appContext, util, runnerEnvironment, PROJECT);
 
         verify(runnerEnvironment, times(2)).getId();
         verify(appContext, times(2)).getCurrentProject();
@@ -130,7 +128,7 @@ public class EnvironmentImplTest {
     public void prepareActionShouldBePerformedWhenDisplayNameIsNull() {
         when(runnerEnvironment.getDisplayName()).thenReturn(null);
 
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);
+        environment = new EnvironmentImpl(appContext, util, runnerEnvironment, PROJECT);
 
         verify(runnerEnvironment, times(2)).getId();
         verify(appContext, times(2)).getCurrentProject();
@@ -149,7 +147,7 @@ public class EnvironmentImplTest {
     public void prepareActionShouldBePerformedWhenDisplayNameIsEmpty() {
         when(runnerEnvironment.getDisplayName()).thenReturn("");
 
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);
+        environment = new EnvironmentImpl(appContext, util, runnerEnvironment, PROJECT);
 
         verify(runnerEnvironment, times(2)).getId();
         verify(appContext, times(2)).getCurrentProject();
@@ -168,7 +166,7 @@ public class EnvironmentImplTest {
     public void shouldBeThrownExceptionInConstructorWhenCurrentProjectIsNull() {
         when(appContext.getCurrentProject()).thenReturn(null);
 
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, SYSTEM);
+        environment = new EnvironmentImpl(appContext, util, runnerEnvironment, SYSTEM);
     }
 
     @Test
@@ -198,40 +196,24 @@ public class EnvironmentImplTest {
     }
 
     @Test
-    public void environmentTypeShouldBeInitializedWithDefaultValue() throws Exception {
-        assertThat(environment.getType(), equalTo(FIRST_PART));
-    }
+    public void environmentIdShouldBeEqualsDefaultRunnerCategoryWhenScopeIsProject() throws Exception {
+        when(util.getType()).thenReturn(FIRST_PART);
 
-    @Test
-    public void environmentTypeWithProjectPrefixShouldBeAnalyzed() throws Exception {
-        when(runnerEnvironment.getId()).thenReturn(PROJECT_SCOPE_PREFIX + TEXT);
+        environment = new EnvironmentImpl(appContext, util, runnerEnvironment, PROJECT);
 
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);
+        verify(util).getType();
 
         assertThat(environment.getType(), equalTo(FIRST_PART));
     }
 
     @Test
-    public void environmentTypeWithSystemPrefixShouldBeAnalyzed() throws Exception {
-        when(runnerEnvironment.getId()).thenReturn(SYSTEM_SCOPE_PREFIX + TEXT);
+    public void environmentIdShouldBeEqualsDefaultRunnerCategoryWhenScopeIsSystem() throws Exception {
+        when(util.getCorrectCategoryName(TEXT)).thenReturn(FIRST_PART);
+        when(runnerEnvironment.getId()).thenReturn(TEXT);
 
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, SYSTEM);
+        environment = new EnvironmentImpl(appContext, util, runnerEnvironment, SYSTEM);
 
-        assertThat(environment.getType(), equalTo(FIRST_PART));
-    }
-
-    @Test
-    public void emptyEnvironmentTypeShouldBeAnalyzed() throws Exception {
-        when(runnerEnvironment.getId()).thenReturn("/");
-
-        //noinspection ConstantConditions
-        when(appContext.getCurrentProject().getProjectDescription().getType()).thenReturn(FIRST_PART);
-
-        ProjectTypeDefinition typeDefinition = mock(ProjectTypeDefinition.class);
-        when(projectTypeRegistry.getProjectType(anyString())).thenReturn(typeDefinition);
-        when(typeDefinition.getRunnerCategories()).thenReturn(Arrays.asList(FIRST_PART));
-
-        environment = new EnvironmentImpl(appContext, projectTypeRegistry, runnerEnvironment, PROJECT);
+        verify(util, times(2)).getCorrectCategoryName(TEXT);
 
         assertThat(environment.getType(), equalTo(FIRST_PART));
     }

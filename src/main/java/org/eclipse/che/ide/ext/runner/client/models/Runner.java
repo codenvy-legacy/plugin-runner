@@ -132,14 +132,6 @@ public interface Runner {
     @Nonnull
     String getType();
 
-    /**
-     * Sets type to current runner.
-     *
-     * @param type
-     *         type which need set
-     */
-    void setType(@Nonnull String type);
-
     /** @return scope of current runner */
     @Nonnull
     Scope getScope();
