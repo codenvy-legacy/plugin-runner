@@ -32,7 +32,7 @@
     </ui:style>
 
     <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize} {resources.runnerCss.consoleBackground}">
-        <g:west size="36">
+        <g:west size="18">
             <g:FlowPanel ui:field="buttons" addStyleNames="{resources.runnerCss.fullSize}"/>
         </g:west>
 
