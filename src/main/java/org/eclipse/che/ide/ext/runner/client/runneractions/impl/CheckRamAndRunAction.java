@@ -28,6 +28,7 @@ import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactor
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
@@ -50,6 +51,7 @@ import javax.annotation.Nonnull;
  */
 //Todo CheckRamAndRunAction is too difficult. This class should improve.
 public class CheckRamAndRunAction extends AbstractRunnerAction {
+    private final int LARGE_AMOUNT_OF_RAM = 4096;
     private final RunnerServiceClient                                 service;
     private final AppContext                                          appContext;
     private final DialogFactory                                       dialogFactory;
@@ -58,6 +60,7 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
     private final RunnerUtil                                          runnerUtil;
     private final RunAction                                           runAction;
     private final RunnerManagerPresenter                              managerPresenter;
+    private final ConsoleContainer                                    consoleContainer;
 
     private RunnerConfiguration runnerConfiguration;
     private CurrentProject      project;
@@ -67,6 +70,7 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
     public CheckRamAndRunAction(RunnerServiceClient service,
                                 AppContext appContext,
                                 DialogFactory dialogFactory,
+                                ConsoleContainer consoleContainer,
                                 Provider<AsyncCallbackBuilder<ResourcesDescriptor>> callbackBuilderProvider,
                                 RunnerLocalizationConstant constant,
                                 RunnerUtil runnerUtil,
@@ -79,6 +83,7 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
         this.runnerUtil = runnerUtil;
         this.runAction = actionFactory.createRun();
         this.dialogFactory = dialogFactory;
+        this.consoleContainer = consoleContainer;
         this.managerPresenter = managerPresenter;
 
         addAction(runAction);
@@ -230,14 +235,14 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
                                             @Nonnegative int usedMemory,
                                             @Nonnegative final int overrideMemory) {
         int availableMemory = totalMemory - usedMemory;
-        if (totalMemory < overrideMemory) {
-            runnerUtil.showWarning(constant.messagesTotalLessOverrideMemory(overrideMemory, totalMemory));
+
+        if (availableMemory < overrideMemory) {
+            runnerUtil.showError(runner, constant.messagesAvailableLessOverrideMemory(availableMemory), null);
             return false;
         }
 
-        if (availableMemory < overrideMemory) {
-            runnerUtil.showError(runner, constant.messagesAvailableLessOverrideMemory(), null);
-            return false;
+        if (overrideMemory > LARGE_AMOUNT_OF_RAM) {
+            consoleContainer.printInfo(runner, constant.messagesLargeMemoryRequest());
         }
 
         return true;
