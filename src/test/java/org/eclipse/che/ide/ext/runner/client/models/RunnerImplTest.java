@@ -521,6 +521,17 @@ public class RunnerImplTest {
     }
 
     @Test
+    public void typeOfProjectShouldBeAppliedEnvironmentIdIsNull() throws Exception {
+        reset(runOptions, util);
+        when(runOptions.getEnvironmentId()).thenReturn(null);
+
+        runner = new RunnerImpl(locale, runnerCounter, util, runOptions);
+
+        verify(util).getType();
+        verify(util, never()).getCorrectCategoryName(anyString());
+    }
+
+    @Test
     public void titleShouldBeChanged() {
         assertThat(runner.getTitle(), is(RUNNER_NAME + RUNNER_NUMBER));
 
