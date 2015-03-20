@@ -1043,7 +1043,7 @@ public class RunnerManagerPresenterTest {
         verify(partStack).hidePart(presenter);
         verify(getRunningProcessAction).stop();
         verify(selectionManager).setRunner(null);
-        verify(propertiesContainer).setVisible(false);
+
         verify(templates).setVisible(false);
 
         verify(view).setEnableRunButton(false);
@@ -1059,6 +1059,7 @@ public class RunnerManagerPresenterTest {
         verify(terminalContainer).reset();
         verify(consoleContainer).reset();
         verify(propertiesContainer).reset();
+        verify(propertiesContainer).show((Runner)null);
     }
 
     private void verifyLaunchRunnerWithNotNullCurrentProject() {

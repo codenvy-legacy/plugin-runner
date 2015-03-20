@@ -14,6 +14,8 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
@@ -48,6 +50,8 @@ public class PropertiesContainerPresenterTest {
     private WidgetFactory           widgetFactory;
     @Mock
     private SelectionManager        selectionManager;
+    @Mock
+    private AppContext              appContext;
 
     @Mock
     private Runner          runner;
@@ -57,14 +61,17 @@ public class PropertiesContainerPresenterTest {
     private PropertiesPanel stabPanel;
     @Mock
     private Environment     environment;
+    @Mock
+    private CurrentProject currentProject;
 
     private PropertiesContainerPresenter presenter;
 
     @Before
     public void setUp() {
         when(widgetFactory.createPropertiesPanel()).thenReturn(stabPanel);
+        when(appContext.getCurrentProject()).thenReturn(currentProject);
 
-        presenter = new PropertiesContainerPresenter(view, widgetFactory, selectionManager);
+        presenter = new PropertiesContainerPresenter(view, widgetFactory, selectionManager, appContext);
     }
 
     @Test
@@ -121,6 +128,17 @@ public class PropertiesContainerPresenterTest {
 
         verify(currentPanel).update(environment);
         verify(view).showWidget(currentPanel);
+    }
+
+    @Test
+    public void panelForEnvironmentShouldBeCreatedAndShownWhenCurrentProjectIsNull() {
+        when(appContext.getCurrentProject()).thenReturn(null);
+
+        presenter.show(environment);
+
+        verify(appContext).getCurrentProject();
+
+        verify(view).showWidget(stabPanel);
     }
 
     @Test

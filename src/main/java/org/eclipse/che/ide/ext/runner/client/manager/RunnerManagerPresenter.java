@@ -555,7 +555,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         selectionManager.setRunner(null);
 
-        propertiesContainer.setVisible(false);
         templateContainer.setVisible(false);
 
         view.setEnableRunButton(false);
@@ -575,6 +574,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         propertiesContainer.reset();
 
         getRunningProcessAction.stop();
+        propertiesContainer.show((Runner)null);
     }
 
     /**

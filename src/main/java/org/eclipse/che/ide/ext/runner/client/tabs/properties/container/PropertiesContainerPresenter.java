@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Environment;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
@@ -43,6 +44,7 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     private final PropertiesContainerView           view;
     private final SelectionManager                  selectionManager;
     private final WidgetFactory                     widgetFactory;
+    private final AppContext                        appContext;
     private final Map<Runner, PropertiesPanel>      runnerPanels;
     private final Map<Environment, PropertiesPanel> environmentsPanels;
 
@@ -52,11 +54,13 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     @Inject
     public PropertiesContainerPresenter(PropertiesContainerView view,
                                         WidgetFactory widgetFactory,
-                                        SelectionManager selectionManager) {
+                                        SelectionManager selectionManager,
+                                        AppContext appContext) {
         this.view = view;
         this.selectionManager = selectionManager;
         this.view.setDelegate(this);
         this.widgetFactory = widgetFactory;
+        this.appContext = appContext;
         stubPanel = widgetFactory.createPropertiesPanel();
 
         runnerPanels = new HashMap<>();
@@ -88,7 +92,7 @@ public class PropertiesContainerPresenter implements PropertiesContainer,
     /** {@inheritDoc} */
     @Override
     public void show(@Nullable Environment environment) {
-        if (environment == null) {
+        if (environment == null || appContext.getCurrentProject() == null) {
             view.showWidget(stubPanel);
             return;
         }
