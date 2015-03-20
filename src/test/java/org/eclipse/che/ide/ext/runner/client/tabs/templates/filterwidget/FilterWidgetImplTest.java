@@ -132,7 +132,7 @@ public class FilterWidgetImplTest {
     @Test
     public void theSecondScopeShouldBeReturned() throws Exception {
         when(filter.scopes.getSelectedIndex()).thenReturn(1);
-        when(filter.scopes.getValue(1)).thenReturn("System");
+        when(filter.scopes.getValue(1)).thenReturn("system");
 
         Scope scope = filter.getScope();
 

@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
  * @author Andrey Plotnikov
  */
 public enum Boot {
-    RUNNER_START("Runner Starts"), IDE_OPENS("IDE Opens");
+    RUNNER_START("runner starts"), IDE_OPENS("ide opens");
 
     private final String name;
 

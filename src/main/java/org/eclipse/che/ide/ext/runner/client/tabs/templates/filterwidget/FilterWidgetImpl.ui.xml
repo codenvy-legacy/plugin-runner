@@ -40,7 +40,7 @@
         }
 
         .marginScope {
-            margin-left: 14px;
+            margin-left: 12px;
         }
 
         .listBox {

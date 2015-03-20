@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
  * @author Andrey Plotnikov
  */
 public enum Shutdown {
-    BY_TIMEOUT("By Timeout"), ALWAYS_ON("Always On");
+    BY_TIMEOUT("by timeout"), ALWAYS_ON("always on");
 
     private final String name;
 
@@ -46,7 +46,8 @@ public enum Shutdown {
             }
         }
 
-        throw new UnsupportedOperationException("You tried to detect unknown shutdown. Please, check your value. Your shutdown is " + content);
+        throw new UnsupportedOperationException(
+                "You tried to detect unknown shutdown. Please, check your value. Your shutdown is " + content);
     }
 
 }
