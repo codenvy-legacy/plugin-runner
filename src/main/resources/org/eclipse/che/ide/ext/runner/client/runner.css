@@ -149,8 +149,9 @@
 
 .runnersAction {
     width: 115px;
-    margin-top: 4px;
+    margin-top: 3px;
     margin-left: 4px;
+    margin-right: 2px;
     border-radius: 5px;
     padding-left: 7px;
     padding-top: 1px;
