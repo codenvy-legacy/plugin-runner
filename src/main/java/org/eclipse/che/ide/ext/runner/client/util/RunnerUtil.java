@@ -77,7 +77,7 @@ public interface RunnerUtil {
     void showError(@Nonnull Runner runner, @Nonnull String message, @Nullable Throwable exception, @Nonnull Notification notification);
 
     /**
-     * Checks that current project is not null and user has permission for run project
+     * Checks user permissions for running project.
      *
      * @return true if current project is not null and user has permission for run project
      */

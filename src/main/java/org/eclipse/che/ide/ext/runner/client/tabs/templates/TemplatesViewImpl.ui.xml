@@ -63,7 +63,7 @@
                 <g:SimplePanel addStyleNames="{style.generalSeparator} {style.topSeparator}"/>
 
                 <g:ScrollPanel addStyleNames="{style.scroll}">
-                    <g:FlowPanel ui:field="environmentsPanel" addStyleNames="{style.environmentPanel}"/>
+                    <g:FlowPanel ui:field="environmentsPanel" debugId="environmentsPanel" addStyleNames="{style.environmentPanel}"/>
                 </g:ScrollPanel>
 
                 <g:SimplePanel addStyleNames="{style.generalSeparator} {style.bottomSeparator}"/>

@@ -125,7 +125,7 @@ public abstract class PropertiesPanelPresenter implements PropertiesPanelView.Ac
     /** {@inheritDoc} */
     @Override
     public void onConfigurationChanged() {
-        throw new UnsupportedOperationException("This is operation is unsupported");
+        throw new UnsupportedOperationException(UNSUPPORTED_METHOD);
     }
 
     /** {@inheritDoc} */
@@ -153,7 +153,7 @@ public abstract class PropertiesPanelPresenter implements PropertiesPanelView.Ac
     /** {@inheritDoc} */
     @Override
     public void update(@Nonnull Environment environment) {
-        throw new UnsupportedOperationException("This is operation is unsupported");
+        throw new UnsupportedOperationException(UNSUPPORTED_METHOD);
     }
 
     /** {@inheritDoc} */

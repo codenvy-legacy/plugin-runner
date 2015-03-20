@@ -31,7 +31,7 @@
     <g:FlowPanel>
         <g:Label ui:field="unavailableLabel" text="{locale.runnerNotReady}"
                  addStyleNames="{res.runnerCss.fullSize} {res.runnerCss.unAvailableMessage}"/>
-        <g:Frame ui:field="terminal" addStyleNames="{style.terminalFrame} {res.runnerCss.fullSize}"/>
+        <g:Frame ui:field="terminal" addStyleNames="{style.terminalFrame} {res.runnerCss.fullSize}" debugId="FrameTerminal"/>
     </g:FlowPanel>
 
 </ui:UiBinder>

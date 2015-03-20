@@ -89,6 +89,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -329,27 +330,73 @@ public class RunnerManagerPresenterTest {
         verify(timerFactory).newInstance(any(TimerFactory.TimerCallBack.class));
         verify(eventBus).addHandler(ProjectActionEvent.TYPE, presenter);
 
-        //init new historyTab
+        verify(view).setLeftPanel(leftTabContainer);
+        verify(view).setRightPanel(rightTabContainer);
+    }
+
+    @Test
+    public void verifyCreationHistoryTab() {
         verifyInitTab(tabBuilderHistory, history, REMOVABLE, LEFT, EnumSet.allOf(State.class), HISTORY_TAB);
+        verify(locale).runnerTabHistory();
         verify(leftTabContainer).addTab(historyTab);
+    }
 
-        //init template tab
+    @Test
+    public void verifyCreationTemplateTab() {
         verifyInitTab(tabBuilderTemplate, templates, REMOVABLE, LEFT, EnumSet.allOf(State.class), TEMPLATES);
+        verify(locale).runnerTabTemplates();
         verify(leftTabContainer).addTab(templateTab);
+    }
 
-        verifyTabSelectHandler(tabBuilderTemplate);
-        verify(panelState).setState(TEMPLATE);
-        verify(view).hideOtherButtons();
+    @Test
+    public void verifyCreationConsoleTab() {
+        verifyInitTab(tabBuilderConsole, consoleContainer, REMOVABLE, RIGHT, EnumSet.of(RUNNERS), CONSOLE);
+        verify(locale).runnerTabConsole();
+        verify(rightTabContainer).addTab(consoleTab);
 
-        /* verify initialize RightPanel*/
-        //verify templatesHandler
+    }
+
+    @Test
+    public void verifyCreationTerminalTab() {
+        verifyInitTab(tabBuilderTerminal, terminalContainer, VISIBLE, RIGHT, EnumSet.of(RUNNERS), TERMINAL);
+        verify(locale).runnerTabTerminal();
+        verify(rightTabContainer).addTab(terminalTab);
+    }
+
+    @Test
+    public void verifyCreationPropertiesTab() {
+        verifyInitTab(tabBuilderProperties, propertiesContainer, REMOVABLE, RIGHT, EnumSet.allOf(State.class), PROPERTIES);
+        verify(locale).runnerTabProperties();
+        verify(rightTabContainer).addTab(propertiesTab);
+    }
+
+    private void verifyInitTab(TabBuilder tabBuilder,
+                               TabPresenter tabPresenter,
+                               Tab.VisibleState state,
+                               TabType type,
+                               Set<State> states,
+                               String title) {
+        verify(tabBuilder).presenter(tabPresenter);
+        verify(tabBuilder).title(title);
+        verify(tabBuilder).visible(state);
+        verify(tabBuilder).scope(states);
+        verify(tabBuilder).tabType(type);
+    }
+
+    @Test
+    public void terminalHandlerShouldPerformWhenRunnerIsNull () {
         verifyTabSelectHandler(tabBuilderProperties);
         verify(propertiesContainer).show((Runner)null);
         verify(locale).runnerTabProperties();
         verify(runner, never()).setActiveTab(PROPERTIES);
+    }
 
-        verify(view).setLeftPanel(leftTabContainer);
-        verify(view).setRightPanel(rightTabContainer);
+    @Test
+    public void propertiesHandlerShouldPerformWhenRunnerIsNull () {
+        verifyTabSelectHandler(tabBuilderProperties);
+        verify(propertiesContainer).show((Runner)null);
+        verify(locale).runnerTabProperties();
+        verify(runner, never()).setActiveTab(PROPERTIES);
     }
 
     @Test
@@ -380,7 +427,23 @@ public class RunnerManagerPresenterTest {
     }
 
     @Test
-    public void prepareActionShouldBePerformed() {
+    public void consoleHandlerShouldPerformActionWhenSelectedRunnerIsNull() {
+        reset(locale);
+        verifyTabSelectHandler(tabBuilderConsole);
+
+        verifyZeroInteractions(locale);
+    }
+
+    @Test
+    public void terminalHandlerShouldPerformActionWhenSelectedRunnerIsNull() {
+        reset(locale);
+        verifyTabSelectHandler(tabBuilderTerminal);
+
+        verifyZeroInteractions(locale);
+    }
+
+    @Test
+    public void verifyTimer() {
         presenter.addRunner(processDescriptor);
 
         ArgumentCaptor<TimerFactory.TimerCallBack> argumentCaptor = ArgumentCaptor.forClass(TimerFactory.TimerCallBack.class);
@@ -391,48 +454,56 @@ public class RunnerManagerPresenterTest {
         verify(view, times(2)).updateMoreInfoPopup(runner);
         verify(view, times(2)).setTimeout(TEXT);
         verify(timer, times(2)).schedule(TimeInterval.ONE_SEC.getValue());
+    }
 
-        //init console tab
-        verifyInitTab(tabBuilderConsole, consoleContainer, REMOVABLE, RIGHT, EnumSet.of(RUNNERS), CONSOLE);
-        verify(rightTabContainer).addTab(consoleTab);
+    @Test
+    public void consoleHandlerShouldPerformActionWhenSelectedRunnerIsNotNull() {
+        presenter.addRunner(processDescriptor);
 
-        //verify consoleHandler
         verifyTabSelectHandler(tabBuilderConsole);
         verify(locale, times(2)).runnerTabConsole();
         verify(runner).setActiveTab(CONSOLE);
+    }
 
-        //init terminal tab
-        verifyInitTab(tabBuilderTerminal, terminalContainer, VISIBLE, RIGHT, EnumSet.of(RUNNERS), TERMINAL);
-        verify(locale).runnerTabTerminal();
-        verify(rightTabContainer).addTab(terminalTab);
+    @Test
+    public void terminalHandlerShouldPerformActionWhenSelectedRunnerIsNotNull() {
+        presenter.addRunner(processDescriptor);
 
-        //verify terminalHandler
         verifyTabSelectHandler(tabBuilderTerminal);
         verify(locale, times(2)).runnerTabTerminal();
         verify(runner).setActiveTab(TERMINAL);
+    }
 
-        //init properties tab
-        verifyInitTab(tabBuilderProperties, propertiesContainer, REMOVABLE, RIGHT, EnumSet.allOf(State.class), PROPERTIES);
-        verify(rightTabContainer).addTab(propertiesTab);
+    @Test
+    public void propertiesHandlerShouldPerformActionWhenSelectedRunnerIsNotNullAndPanelStateIsRunner() {
+        presenter.addRunner(processDescriptor);
 
-        //verify templatesHandler
         verifyTabSelectHandler(tabBuilderProperties);
         verify(propertiesContainer).show(runner);
+        verify(runner).setActiveTab(PROPERTIES);
         verify(locale, times(2)).runnerTabProperties();
         verify(runner).setActiveTab(PROPERTIES);
     }
 
-    private void verifyInitTab(TabBuilder tabBuilder,
-                               TabPresenter tabPresenter,
-                               Tab.VisibleState state,
-                               TabType type,
-                               Set<State> states,
-                               String title) {
-        verify(tabBuilder).presenter(tabPresenter);
-        verify(tabBuilder).title(title);
-        verify(tabBuilder).visible(state);
-        verify(tabBuilder).scope(states);
-        verify(tabBuilder).tabType(type);
+    @Test
+    public void propertiesHandlerShouldPerformActionWhenSelectedRunnerIsNullAndPanelStateIsRunner() {
+        reset(locale);
+        verifyTabSelectHandler(tabBuilderProperties);
+
+        verify(propertiesContainer).show(isNull(Runner.class));
+        verify(locale, never()).runnerTabProperties();
+        verify(runner, never()).setActiveTab(PROPERTIES);
+    }
+
+    @Test
+    public void propertiesHandlerShouldPerformActionWhenSelectedRunnerIsNotNullAndPanelStateIsProperties() {
+        when(panelState.getState()).thenReturn(TEMPLATE);
+        presenter.addRunner(processDescriptor);
+        reset(locale);
+
+        verifyTabSelectHandler(tabBuilderProperties);
+        verify(propertiesContainer).show(isNull(Environment.class));
+        verifyNoMoreInteractions(propertiesContainer, locale);
     }
 
     private void verifyTabSelectHandler(TabBuilder tabBuilder) {
