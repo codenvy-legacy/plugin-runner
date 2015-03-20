@@ -15,6 +15,7 @@ import com.google.inject.Singleton;
 
 import org.eclipse.che.ide.api.action.ActionManager;
 import org.eclipse.che.ide.api.action.DefaultActionGroup;
+import org.eclipse.che.ide.api.action.IdeActions;
 import org.eclipse.che.ide.api.constraints.Anchor;
 import org.eclipse.che.ide.api.constraints.Constraints;
 import org.eclipse.che.ide.api.extension.Extension;
@@ -26,6 +27,7 @@ import org.eclipse.che.ide.ext.runner.client.actions.RunWithAction;
 import org.eclipse.che.ide.ext.runner.client.constants.ActionId;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 
+import static org.eclipse.che.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RIGHT_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN;
@@ -68,7 +70,8 @@ public class RunnerExtension {
         if (runToolbarGroup == null) {
             DefaultActionGroup rightToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_RIGHT_TOOLBAR);
             runToolbarGroup = new DefaultActionGroup(GROUP_RUN_TOOLBAR, false, actionManager);
-            rightToolbarGroup.add(runToolbarGroup);
+            rightToolbarGroup.add(runToolbarGroup, new Constraints(Anchor.AFTER, GROUP_BUILD_TOOLBAR));
+            actionManager.registerAction(GROUP_RUN_TOOLBAR, runToolbarGroup);
         }
 
         actionManager.registerAction(ActionId.CHOOSE_RUNNER_ID.getId(), chooseRunner);

@@ -31,7 +31,7 @@ import org.mockito.Mock;
 
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_BUILD_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_CONTEXT_MENU;
-import static org.eclipse.che.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
+import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RIGHT_TOOLBAR;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_CONTEXT_MENU;
 import static org.eclipse.che.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
@@ -93,12 +93,12 @@ public class RunnerExtensionTest {
         RunWithAction runWithAction = mock(RunWithAction.class);
         ChooseRunnerAction chooseRunnerAction = mock(ChooseRunnerAction.class);
 
-        DefaultActionGroup mainToolbarGroup = mock(DefaultActionGroup.class);
+        DefaultActionGroup rightToolbarGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup runContextGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup contextMenuGroup = mock(DefaultActionGroup.class);
         DefaultActionGroup mainMenuGroup = mock(DefaultActionGroup.class);
 
-        when(actionManager.getAction(GROUP_MAIN_TOOLBAR)).thenReturn(mainToolbarGroup);
+        when(actionManager.getAction(GROUP_RIGHT_TOOLBAR)).thenReturn(rightToolbarGroup);
         when(actionManager.getAction(GROUP_RUN_CONTEXT_MENU)).thenReturn(runContextGroup);
         when(actionManager.getAction(GROUP_MAIN_CONTEXT_MENU)).thenReturn(contextMenuGroup);
         when(actionManager.getAction(GROUP_RUN)).thenReturn(mainMenuGroup);
@@ -107,7 +107,7 @@ public class RunnerExtensionTest {
         extension.setUpRunActions(actionManager, runAction, runWithAction, chooseRunnerAction);
 
         // check step
-        verify(mainToolbarGroup).add(actionGroupCaptor.capture(), constraintsCaptor.capture());
+        verify(rightToolbarGroup).add(actionGroupCaptor.capture(), constraintsCaptor.capture());
         verifyConstants(Anchor.AFTER, GROUP_BUILD_TOOLBAR);
 
         verify(runContextGroup).addSeparator();
