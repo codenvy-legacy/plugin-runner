@@ -23,7 +23,7 @@ import java.util.Map;
  * @author Andrey Plotnikov
  * @author Dmitry Shnurenko
  */
-public interface Environment {
+public interface Environment extends Comparable<Environment> {
 
     /** @return name of current environment */
     @Nonnull

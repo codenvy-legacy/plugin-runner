@@ -102,11 +102,15 @@ public class GetEnvironmentsUtilImplTest {
     private RunnerEnvironment runEnvironment1;
     @Mock
     private RunnerEnvironment runEnvironment2;
+    @Mock
+    private RunnerEnvironment runEnvironment3;
 
     @Mock
     private Environment environment1;
     @Mock
     private Environment environment2;
+    @Mock
+    private Environment environment3;
 
     @Mock
     private ProjectTypeDefinition definition;
@@ -153,6 +157,9 @@ public class GetEnvironmentsUtilImplTest {
         when(modelsFactory.createEnvironment(runnerEnv1, SYSTEM)).thenReturn(environment1);
         when(modelsFactory.createEnvironment(runnerEnv2, SYSTEM)).thenReturn(environment2);
 
+        when(environment1.compareTo(environment2)).thenReturn(1);
+        when(environment2.compareTo(environment1)).thenReturn(2);
+
         List<Environment> result = util.getEnvironmentsFromNodes(Arrays.asList(runnerEnvLeaf1, runnerEnvLeaf2),
                                                                  SYSTEM);
 
@@ -177,6 +184,15 @@ public class GetEnvironmentsUtilImplTest {
         when(currentProject.getRunner()).thenReturn(null);
         when(tree.getNode(PROJECT_TYPE)).thenReturn(tree);
 
+        when(runnerEnvLeaf4.getEnvironment()).thenReturn(runEnvironment1);
+        when(runnerEnvLeaf5.getEnvironment()).thenReturn(runEnvironment2);
+
+        when(modelsFactory.createEnvironment(runEnvironment1, SYSTEM)).thenReturn(environment1);
+        when(modelsFactory.createEnvironment(runEnvironment2, SYSTEM)).thenReturn(environment2);
+
+        when(environment1.compareTo(environment2)).thenReturn(1);
+        when(environment2.compareTo(environment1)).thenReturn(2);
+
         List<Environment> environments = util.getEnvironmentsByProjectType(tree, PROJECT_TYPE, SYSTEM);
 
         verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
@@ -188,6 +204,15 @@ public class GetEnvironmentsUtilImplTest {
 
     @Test
     public void environmentsShouldBeReturnedWhenScopeIsProject() throws Exception {
+        when(runnerEnvLeaf4.getEnvironment()).thenReturn(runEnvironment1);
+        when(runnerEnvLeaf5.getEnvironment()).thenReturn(runEnvironment2);
+
+        when(modelsFactory.createEnvironment(runEnvironment1, PROJECT)).thenReturn(environment1);
+        when(modelsFactory.createEnvironment(runEnvironment2, PROJECT)).thenReturn(environment2);
+
+        when(environment1.compareTo(environment2)).thenReturn(1);
+        when(environment2.compareTo(environment1)).thenReturn(2);
+
         List<Environment> environments = util.getEnvironmentsByProjectType(tree, PROJECT_TYPE, PROJECT);
 
         verify(projectTypeRegistry).getProjectType(PROJECT_TYPE);
@@ -202,6 +227,19 @@ public class GetEnvironmentsUtilImplTest {
         when(currentProject.getRunner()).thenReturn("text/text1/text2/text");
         when(tree.getNode("text1")).thenReturn(runnerEnvTree6);
         when(runnerEnvTree6.getNode("text2")).thenReturn(runnerEnvTree5);
+
+        when(runnerEnvLeaf4.getEnvironment()).thenReturn(runEnvironment1);
+        when(runnerEnvLeaf5.getEnvironment()).thenReturn(runEnvironment2);
+        when(runnerEnvLeaf6.getEnvironment()).thenReturn(runEnvironment3);
+
+        when(modelsFactory.createEnvironment(runEnvironment1, SYSTEM)).thenReturn(environment1);
+        when(modelsFactory.createEnvironment(runEnvironment2, SYSTEM)).thenReturn(environment2);
+        when(modelsFactory.createEnvironment(runEnvironment3, SYSTEM)).thenReturn(environment3);
+
+        when(environment1.compareTo(environment2)).thenReturn(1);
+        when(environment2.compareTo(environment1)).thenReturn(2);
+        when(environment3.compareTo(environment1)).thenReturn(-1);
+        when(environment3.compareTo(environment2)).thenReturn(5);
 
         List<Environment> environments = util.getEnvironmentsByProjectType(tree, PROJECT_TYPE, SYSTEM);
 

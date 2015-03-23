@@ -35,6 +35,7 @@ import org.eclipse.che.ide.rest.AsyncRequestCallback;
 
 import javax.annotation.Nonnull;
 
+import static org.eclipse.che.ide.api.notification.Notification.Status.FINISHED;
 import static org.eclipse.che.ide.api.notification.Notification.Status.PROGRESS;
 import static org.eclipse.che.ide.api.notification.Notification.Type.ERROR;
 import static org.eclipse.che.ide.api.notification.Notification.Type.INFO;
@@ -59,6 +60,7 @@ public class StopAction extends AbstractRunnerAction {
     private CurrentProject         project;
     private Runner                 runner;
     private RunnerManagerPresenter presenter;
+    private Notification           notification;
 
     @Inject
     public StopAction(RunnerServiceClient service,
@@ -89,7 +91,9 @@ public class StopAction extends AbstractRunnerAction {
     /** {@inheritDoc} */
     @Override
     public void perform(@Nonnull final Runner runner) {
-        notificationManager.showNotification(new Notification(constant.messageRunnerShuttingDown(), PROGRESS));
+        notification = new Notification(constant.messageRunnerShuttingDown(), PROGRESS);
+
+        notificationManager.showNotification(notification);
         eventLogger.log(this);
 
         this.runner = runner;
@@ -161,7 +165,10 @@ public class StopAction extends AbstractRunnerAction {
             consoleContainer.printError(runner, message);
         }
 
-        Notification notification = new Notification(message, notificationType);
+        notification.setMessage(message);
+        notification.setType(notificationType);
+        notification.setStatus(FINISHED);
+
         notificationManager.showNotification(notification);
 
         presenter.update(runner);

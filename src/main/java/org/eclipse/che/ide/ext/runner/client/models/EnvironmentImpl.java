@@ -156,4 +156,9 @@ public class EnvironmentImpl implements Environment {
         return options;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(@Nonnull Environment otherEnvironment) {
+        return name.toLowerCase().compareTo(otherEnvironment.getName().toLowerCase());
+    }
 }

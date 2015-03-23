@@ -27,6 +27,8 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
 
@@ -72,13 +74,15 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
     @Nonnull
     @Override
     public List<Environment> getEnvironmentsFromNodes(@Nonnull List<RunnerEnvironmentLeaf> leaves, @Nonnull Scope scope) {
-        List<Environment> environments = new ArrayList<>();
+        Set<Environment> sortEnvironment = new TreeSet<>();
 
         for (RunnerEnvironmentLeaf environmentLeaf : leaves) {
-            environments.add(modelsFactory.createEnvironment(environmentLeaf.getEnvironment(), scope));
+            Environment environment = modelsFactory.createEnvironment(environmentLeaf.getEnvironment(), scope);
+
+            sortEnvironment.add(environment);
         }
 
-        return environments;
+        return new ArrayList<>(sortEnvironment);
     }
 
     /** {@inheritDoc} */

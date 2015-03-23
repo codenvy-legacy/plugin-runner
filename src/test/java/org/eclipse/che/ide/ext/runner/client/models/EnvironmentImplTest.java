@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Alexander Andrienko
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class EnvironmentImplTest {
@@ -62,6 +63,8 @@ public class EnvironmentImplTest {
     private ProjectDescriptor     descriptor;
     @Mock
     private ProjectTypeDefinition definition;
+    @Mock
+    private Environment           otherEnvironment;
 
     private EnvironmentImpl environment;
 
@@ -231,6 +234,42 @@ public class EnvironmentImplTest {
     @Test(expected = UnsupportedOperationException.class)
     public void optionsShouldNotBeModified3() {
         environment.getOptions().clear();
+    }
+
+    @Test
+    public void positiveValueShouldBeReturned() throws Exception {
+        when(otherEnvironment.getName()).thenReturn("abc");
+
+        int value = environment.compareTo(otherEnvironment);
+
+        assertThat(value > 0, is(true));
+    }
+
+    @Test
+    public void negativeValueShouldBeReturned() throws Exception {
+        when(otherEnvironment.getName()).thenReturn("www");
+
+        int value = environment.compareTo(otherEnvironment);
+
+        assertThat(value < 0, is(true));
+    }
+
+    @Test
+    public void zeroShouldBeReturned() throws Exception {
+        when(otherEnvironment.getName()).thenReturn(DISPLAY_NAME);
+
+        int value = environment.compareTo(otherEnvironment);
+
+        assertThat(value == 0, is(true));
+    }
+
+    @Test
+    public void nameShouldBeComparedWhenOtherNameIsUpper() throws Exception {
+        when(otherEnvironment.getName()).thenReturn("DISPLAY NAME");
+
+        int value = environment.compareTo(otherEnvironment);
+
+        assertThat(value == 0, is(true));
     }
 
 }
