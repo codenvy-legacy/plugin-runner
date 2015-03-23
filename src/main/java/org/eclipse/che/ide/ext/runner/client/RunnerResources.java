@@ -137,6 +137,8 @@ public interface RunnerResources extends ClientBundle {
         String runnerFontStyle();
 
         String mainButtonIcon();
+
+        String leftTabContainerShadow();
     }
 
 }

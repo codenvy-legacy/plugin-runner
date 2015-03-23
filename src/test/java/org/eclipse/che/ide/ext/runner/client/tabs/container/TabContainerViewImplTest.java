@@ -30,8 +30,11 @@ import org.mockito.Mock;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType.RIGHT;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +42,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class TabContainerViewImplTest {
@@ -47,7 +51,7 @@ public class TabContainerViewImplTest {
     private static final String TITLE3 = "Title3";
 
     //mocks for constructor
-    @Mock
+    @Mock(answer = RETURNS_DEEP_STUBS)
     private RunnerResources resources;
     @Mock
     private WidgetFactory   widgetFactory;
@@ -94,7 +98,7 @@ public class TabContainerViewImplTest {
 
         when(tab1.getTabType()).thenReturn(TabType.LEFT);
         when(tab2.getTabType()).thenReturn(TabType.LEFT);
-        when(tab3.getTabType()).thenReturn(TabType.RIGHT);
+        when(tab3.getTabType()).thenReturn(RIGHT);
 
         when(widgetFactory.createTab(anyString(), any(TabType.class))).thenReturn(tabWidget1)
                                                                       .thenReturn(tabWidget2)
@@ -104,6 +108,8 @@ public class TabContainerViewImplTest {
 
         when(tabPresenter1.getView()).thenReturn(isWidget1);
         when(tabPresenter2.getView()).thenReturn(isWidget2);
+
+        when(resources.runnerCss().leftTabContainerShadow()).thenReturn(TITLE1);
     }
 
     @Test
@@ -125,6 +131,18 @@ public class TabContainerViewImplTest {
         verify(actionDelegate).onTabClicked(TITLE1);
 
         verify(tabContainerView.tabs).add(tabWidget1);
+        verify(tabContainerView.tabs).addStyleName(TITLE1);
+        verify(resources.runnerCss()).leftTabContainerShadow();
+    }
+
+    @Test
+    public void shadowShouldNotBeAddedWhenTabTypeIsRight() throws Exception {
+        when(tab1.getTabType()).thenReturn(RIGHT);
+
+        tabContainerView.addTab(tab1);
+
+        verify(resources.runnerCss(), never()).leftTabContainerShadow();
+        verify(tabContainerView.tabs, never()).addStyleName(TITLE1);
     }
 
     @Test

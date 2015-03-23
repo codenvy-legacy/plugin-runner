@@ -23,6 +23,7 @@ import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.Tab;
 import org.eclipse.che.ide.ext.runner.client.tabs.common.TabPresenter;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.Background;
+import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabType;
 import org.eclipse.che.ide.ext.runner.client.tabs.container.tab.TabWidget;
 
 import javax.annotation.Nonnull;
@@ -123,7 +124,13 @@ public class TabContainerViewImpl extends Composite implements TabContainerView 
     @Override
     public void addTab(@Nonnull Tab tab) {
         final String title = tab.getTitle();
-        TabWidget tabWidget = widgetFactory.createTab(title, tab.getTabType());
+        TabType tabType = tab.getTabType();
+
+        if (LEFT.equals(tabType)) {
+            tabs.addStyleName(resources.runnerCss().leftTabContainerShadow());
+        }
+
+        TabWidget tabWidget = widgetFactory.createTab(title, tabType);
         tabWidget.setDelegate(new TabWidget.ActionDelegate() {
             @Override
             public void onMouseClicked() {
