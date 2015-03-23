@@ -63,13 +63,16 @@ public interface RunnerLocalizationConstant extends Messages {
     String messagesTotalLessOverrideMemory(@Nonnegative int overrideRAM, @Nonnegative int totalRAM);
 
     @Key("messages.availableLessOverrideMemory")
-    String messagesAvailableLessOverrideMemory();
+    String messagesAvailableLessOverrideMemory(@Nonnegative int availableRAM);
 
     @Key("messages.overrideMemory")
     String messagesOverrideMemory();
 
     @Key("messages.overrideLessRequiredMemory")
     String messagesOverrideLessRequiredMemory(@Nonnegative int overrideRAM, @Nonnegative int requestedRAM);
+
+    @Key("messages.largeMemoryRequest")
+    String messagesLargeMemoryRequest();
 
     @Key("action.project.running.now")
     String projectRunningNow(@Nonnull String project);
