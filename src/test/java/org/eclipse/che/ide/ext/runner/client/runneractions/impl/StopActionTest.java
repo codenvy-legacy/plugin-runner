@@ -12,6 +12,7 @@ package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.inject.Provider;
+import com.google.web.bindery.event.shared.EventBus;
 
 import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
@@ -32,6 +33,7 @@ import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerView;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.LaunchAction;
+import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.common.RunnerApplicationStatusEvent;
 import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
@@ -85,6 +87,8 @@ public class StopActionTest {
     private ConsoleContainer                                             consoleContainer;
     @Mock
     private AnalyticsEventLogger                                         eventLogger;
+    @Mock
+    private EventBus                                                     eventBus;
 
     //action variables
     @Mock
@@ -138,6 +142,7 @@ public class StopActionTest {
                                     runnerUtil,
                                     actionFactory,
                                     consoleContainer,
+                                    eventBus,
                                     eventLogger,
                                     presenter);
 
@@ -211,6 +216,8 @@ public class StopActionTest {
         verify(project).setIsRunningEnabled(true);
         verify(runnerUtil).showError(runner, MESSAGE, reason);
 
+        verify(eventBus).fireEvent(Matchers.<RunnerApplicationStatusEvent>any());
+
         verify(service).stop(stopLink, callback);
     }
 
@@ -245,6 +252,7 @@ public class StopActionTest {
         verify(presenter).update(runner);
 
         verify(service).stop(stopLink, callback);
+        verify(eventBus).fireEvent(Matchers.<RunnerApplicationStatusEvent>any());
     }
 
     @Test
@@ -278,6 +286,7 @@ public class StopActionTest {
         verify(presenter).update(runner);
 
         verify(service).stop(stopLink, callback);
+        verify(eventBus).fireEvent(Matchers.<RunnerApplicationStatusEvent>any());
     }
 
     @Test
@@ -312,6 +321,7 @@ public class StopActionTest {
         verify(presenter).update(runner);
 
         verify(service).stop(stopLink, callback);
+        verify(eventBus).fireEvent(Matchers.<RunnerApplicationStatusEvent>any());
     }
 
     @Test

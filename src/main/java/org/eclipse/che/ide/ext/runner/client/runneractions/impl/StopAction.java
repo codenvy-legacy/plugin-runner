@@ -12,6 +12,7 @@ package org.eclipse.che.ide.ext.runner.client.runneractions.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.web.bindery.event.shared.EventBus;
 
 import org.eclipse.che.api.analytics.client.logger.AnalyticsEventLogger;
 import org.eclipse.che.api.core.rest.shared.dto.Link;
@@ -29,6 +30,7 @@ import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactor
 import org.eclipse.che.ide.ext.runner.client.manager.RunnerManagerPresenter;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
 import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
+import org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch.common.RunnerApplicationStatusEvent;
 import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
 import org.eclipse.che.ide.ext.runner.client.util.RunnerUtil;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
@@ -56,6 +58,7 @@ public class StopAction extends AbstractRunnerAction {
     private final GetLogsAction                                                logsAction;
     private final ConsoleContainer                                             consoleContainer;
     private final AnalyticsEventLogger                                         eventLogger;
+    private final EventBus                                                     eventBus;
 
     private CurrentProject         project;
     private Runner                 runner;
@@ -71,10 +74,12 @@ public class StopAction extends AbstractRunnerAction {
                       RunnerUtil runnerUtil,
                       RunnerActionFactory actionFactory,
                       ConsoleContainer consoleContainer,
+                      EventBus eventBus,
                       AnalyticsEventLogger eventLogger,
                       RunnerManagerPresenter runnerManagerPresenter) {
         this.service = service;
         this.appContext = appContext;
+        this.eventBus = eventBus;
         this.callbackBuilderProvider = callbackBuilderProvider;
         this.constant = constant;
         this.notificationManager = notificationManager;
@@ -132,6 +137,8 @@ public class StopAction extends AbstractRunnerAction {
                         runnerUtil.showError(runner,
                                              constant.applicationFailed(project.getProjectDescription().getName()),
                                              reason);
+
+                        eventBus.fireEvent(new RunnerApplicationStatusEvent(runner));
                     }
                 })
                 .build();
@@ -172,6 +179,8 @@ public class StopAction extends AbstractRunnerAction {
         notificationManager.showNotification(notification);
 
         presenter.update(runner);
+
+        eventBus.fireEvent(new RunnerApplicationStatusEvent(runner));
     }
 
 }
