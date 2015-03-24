@@ -10,17 +10,28 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.history.runner;
 
-import org.eclipse.che.ide.ext.runner.client.RunnerResources;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
-import org.eclipse.che.ide.ext.runner.client.tabs.common.item.ItemWidget;
-import org.eclipse.che.ide.ext.runner.client.tabs.common.item.RunnerItems;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
+import org.eclipse.che.ide.ext.runner.client.RunnerResources;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.models.Runner.Status;
+import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
+import org.eclipse.che.ide.ext.runner.client.tabs.common.item.ItemWidget;
+import org.eclipse.che.ide.ext.runner.client.tabs.common.item.RunnerItems;
 import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
+
+import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.FAILED;
+import static org.eclipse.che.ide.ext.runner.client.models.Runner.Status.STOPPED;
 
 /**
  * The class contains methods which allow change view representation of runner.
@@ -39,7 +50,9 @@ public class RunnerWidget implements RunnerItems<Runner> {
     private final SVGImage done;
     private final SVGImage stopped;
 
-    private Runner runner;
+    private Runner         runner;
+    private Status         runnerStatus;
+    private ActionDelegate delegate;
 
     @Inject
     public RunnerWidget(ItemWidget itemWidget, RunnerResources resources, final SelectionManager selectionManager) {
@@ -59,6 +72,40 @@ public class RunnerWidget implements RunnerItems<Runner> {
                 selectionManager.setRunner(runner);
             }
         });
+
+        addImagePanelActions();
+    }
+
+    private void addImagePanelActions() {
+        SimpleLayoutPanel imagePanel = itemWidget.getImagePanel();
+
+        final SVGImage image = new SVGImage(resources.erase());
+        image.addClassNameBaseVal(resources.runnerCss().whiteColor());
+
+        imagePanel.addDomHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(MouseOutEvent mouseOutEvent) {
+                changeRunnerStatusIcon();
+            }
+        }, MouseOutEvent.getType());
+
+        imagePanel.addDomHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(MouseOverEvent mouseOverEvent) {
+                if (FAILED.equals(runnerStatus) || STOPPED.equals(runnerStatus)) {
+                    itemWidget.setImage(image);
+                }
+            }
+        }, MouseOverEvent.getType());
+
+        imagePanel.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                if (FAILED.equals(runnerStatus) || STOPPED.equals(runnerStatus)) {
+                    delegate.onRunnerCleanBtnClicked(runner);
+                }
+            }
+        }, ClickEvent.getType());
     }
 
     /** {@inheritDoc} */
@@ -77,6 +124,7 @@ public class RunnerWidget implements RunnerItems<Runner> {
     @Override
     public void update(@Nonnull Runner runner) {
         this.runner = runner;
+        this.runnerStatus = runner.getStatus();
 
         changeRunnerStatusIcon();
 
@@ -125,5 +173,20 @@ public class RunnerWidget implements RunnerItems<Runner> {
     @Override
     public Widget asWidget() {
         return itemWidget.asWidget();
+    }
+
+    /**
+     * Sets action delegate to provide special actions.
+     *
+     * @param delegate
+     *         delegate which need set
+     */
+    public void setDelegate(@Nonnull ActionDelegate delegate) {
+        this.delegate = delegate;
+    }
+
+    public interface ActionDelegate {
+        /** Performs some actions in respond to user's actions. */
+        void onRunnerCleanBtnClicked(@Nonnull Runner runner);
     }
 }

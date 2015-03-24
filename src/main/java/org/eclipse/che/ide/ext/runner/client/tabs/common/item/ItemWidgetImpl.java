@@ -50,6 +50,8 @@ public class ItemWidgetImpl extends Composite implements ItemWidget, ClickHandle
     Label             startTime;
     @UiField
     SimpleLayoutPanel image;
+    @UiField
+    SimpleLayoutPanel imagePanel;
 
     @UiField(provided = true)
     final RunnerResources resources;
@@ -120,6 +122,8 @@ public class ItemWidgetImpl extends Composite implements ItemWidget, ClickHandle
     @Override
     public void setImage(@Nonnull SVGImage svgImageResource) {
         svgImage.getElement().setInnerHTML(svgImageResource.toString());
+        svgImage.addStyleName(resources.runnerCss().itemIcon());
+
         image.setWidget(svgImage);
     }
 
@@ -130,4 +134,10 @@ public class ItemWidgetImpl extends Composite implements ItemWidget, ClickHandle
         image.setWidget(pngImage);
     }
 
+    /** {@inheritDoc} */
+    @Nonnull
+    @Override
+    public SimpleLayoutPanel getImagePanel() {
+        return imagePanel;
+    }
 }

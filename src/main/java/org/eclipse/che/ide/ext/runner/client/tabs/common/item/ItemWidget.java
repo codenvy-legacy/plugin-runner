@@ -11,6 +11,8 @@
 package org.eclipse.che.ide.ext.runner.client.tabs.common.item;
 
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.inject.ImplementedBy;
 
 import org.eclipse.che.ide.api.mvp.View;
@@ -73,6 +75,10 @@ public interface ItemWidget extends View<ItemWidget.ActionDelegate> {
      *         image which need set
      */
     void setImage(@Nonnull ImageResource imageResource);
+
+    /** @return an instance of {@link FlowPanel} on which is displayed runner status icon. */
+    @Nonnull
+    SimpleLayoutPanel getImagePanel();
 
     interface ActionDelegate {
         /** Performs some actions when user click on widget. */
