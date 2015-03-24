@@ -535,6 +535,10 @@ public class RunnerManagerPresenterTest {
         verify(runner).resetCreationTime();
         verify(history).addRunner(runner);
 
+        verify(panelState).setState(RUNNERS);
+        verify(view).setEnableRunButton(anyBoolean());
+        verify(view).showOtherButtons();
+
         verifyRunnerSelected();
 
         verify(timer).schedule(TimeInterval.ONE_SEC.getValue());
@@ -1090,11 +1094,6 @@ public class RunnerManagerPresenterTest {
     private void verifyRunnerSelected() {
         verify(history).selectRunner(runner);
         verify(rightTabContainer).showTab(TEXT);
-
-        //select runners panel
-        verify(panelState).setState(RUNNERS);
-        verify(view).setEnableRunButton(anyBoolean());
-        verify(view).showOtherButtons();
 
         //update
         verify(history).update(runner);

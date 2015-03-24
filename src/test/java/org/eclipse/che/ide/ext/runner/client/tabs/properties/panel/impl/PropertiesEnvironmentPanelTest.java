@@ -95,6 +95,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Alexander Andrienko
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class PropertiesEnvironmentPanelTest {
@@ -469,11 +470,9 @@ public class PropertiesEnvironmentPanelTest {
 
         presenter.onSaveButtonClicked();
 
-        verify(projectDescriptor).getPath();
-        verify(view).getRam();
-        verify(environment).setRam(512);
+        verify(projectDescriptor, times(2)).getPath();
+        verify(environment).getRam();
         verify(currentProject).getProjectDescription();
-        verify(projectDescriptor).getPath();
         verify(environment, times(2)).getName();
 
         verify(view).getName();
@@ -483,18 +482,22 @@ public class PropertiesEnvironmentPanelTest {
         verify(voidAsyncCallbackBuilder).success(voidArgumentCaptor.capture());
         voidArgumentCaptor.getValue().onSuccess(null);
 
-        verify(projectEnvironmentsAction).perform();
-
         verify(editor).isDirty();
 
         verify(dtoFactory).createDto(RunnerConfiguration.class);
         verify(runnerConfiguration).withRam(MB_512.getValue());
 
-        verify(projectService).updateProject(anyString(),
-                                             eq(projectDescriptor),
-                                             Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
+        verify(projectService, times(2)).updateProject(anyString(),
+                                                       eq(projectDescriptor),
+                                                       Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
 
-        assertThat(runnerConfigs.containsKey(TEXT2), CoreMatchers.is(true));
+        verify(asyncDescriptorCallbackBuilder, times(2)).success(updateSuccessCaptor.capture());
+
+        updateSuccessCaptor.getValue().onSuccess(projectDescriptor);
+
+        verify(projectEnvironmentsAction).perform();
+
+        assertThat(runnerConfigs.containsKey(TEXT), CoreMatchers.is(true));
     }
 
     @Test
@@ -507,10 +510,9 @@ public class PropertiesEnvironmentPanelTest {
 
         presenter.onSaveButtonClicked();
 
-        verify(view).getRam();
-        verify(environment).setRam(512);
+        verify(environment).getRam();
         verify(currentProject).getProjectDescription();
-        verify(projectDescriptor).getPath();
+        verify(projectDescriptor, times(2)).getPath();
         verify(environment, times(2)).getName();
 
         verify(view).getName();
@@ -534,10 +536,9 @@ public class PropertiesEnvironmentPanelTest {
 
         presenter.onSaveButtonClicked();
 
-        verify(view).getRam();
-        verify(environment).setRam(512);
+        verify(environment).getRam();
         verify(currentProject).getProjectDescription();
-        verify(projectDescriptor).getPath();
+        verify(projectDescriptor, times(2)).getPath();
         verify(environment, times(2)).getName();
 
         verify(view).getName();
@@ -549,6 +550,14 @@ public class PropertiesEnvironmentPanelTest {
 
         verify(voidAsyncCallbackBuilder).success(voidArgumentCaptor.capture());
         voidArgumentCaptor.getValue().onSuccess(null);
+
+        verify(projectService, times(2)).updateProject(anyString(),
+                                                       eq(projectDescriptor),
+                                                       Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
+
+        verify(asyncDescriptorCallbackBuilder, times(2)).success(updateSuccessCaptor.capture());
+
+        updateSuccessCaptor.getValue().onSuccess(projectDescriptor);
 
         verify(projectEnvironmentsAction).perform();
 
@@ -563,10 +572,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(dtoFactory).createDto(RunnerConfiguration.class);
         verify(runnerConfiguration).withRam(MB_512.getValue());
 
-        verify(projectService).updateProject(anyString(),
-                                             eq(projectDescriptor),
-                                             Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
-
+        assertThat(runnerConfigs.containsKey(TEXT), is(true));
     }
 
     @Test
@@ -598,16 +604,23 @@ public class PropertiesEnvironmentPanelTest {
 
         presenter.onSaveButtonClicked();
 
-        verify(view).getRam();
-        verify(environment).setRam(512);
+        verify(environment).getRam();
         verify(currentProject).getProjectDescription();
-        verify(projectDescriptor).getPath();
+        verify(projectDescriptor, times(2)).getPath();
         verify(environment, times(2)).getName();
 
         verify(view).getName();
 
         verify(voidAsyncCallbackBuilder).success(voidArgumentCaptor.capture());
         voidArgumentCaptor.getValue().onSuccess(null);
+
+        verify(projectService, times(2)).updateProject(anyString(),
+                                                       eq(projectDescriptor),
+                                                       Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
+
+        verify(asyncDescriptorCallbackBuilder, times(2)).success(updateSuccessCaptor.capture());
+
+        updateSuccessCaptor.getValue().onSuccess(projectDescriptor);
 
         verify(projectEnvironmentsAction).perform();
 
@@ -644,7 +657,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(voidAsyncCallbackBuilder).success(voidArgumentCaptor.capture());
         voidArgumentCaptor.getValue().onSuccess(null);
 
-        verify(projectEnvironmentsAction).perform();
+        verifyUpdateProject();
     }
 
     private void buttonSaveCancelDeleteShouldBeDisable() {
@@ -673,7 +686,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(voidAsyncCallbackBuilder).success(voidArgumentCaptor.capture());
         voidArgumentCaptor.getValue().onSuccess(null);
 
-        verify(projectEnvironmentsAction).perform();
+        verifyUpdateProject();
     }
 
     @Test
@@ -692,7 +705,7 @@ public class PropertiesEnvironmentPanelTest {
         verify(voidAsyncCallbackBuilder).success(voidArgumentCaptor.capture());
         voidArgumentCaptor.getValue().onSuccess(null);
 
-        verify(projectEnvironmentsAction).perform();
+        verifyUpdateProject();
 
         verify(projectService).delete(TEXT, voidAsyncRequestCallback);
 
@@ -701,6 +714,18 @@ public class PropertiesEnvironmentPanelTest {
 
         verify(exception).getMessage();
         verify(notificationManager).showError(TEXT);
+    }
+
+    private void verifyUpdateProject() {
+        verify(projectService).updateProject(anyString(),
+                                             eq(projectDescriptor),
+                                             Matchers.<AsyncRequestCallback<ProjectDescriptor>>anyObject());
+
+        verify(asyncDescriptorCallbackBuilder).success(updateSuccessCaptor.capture());
+
+        updateSuccessCaptor.getValue().onSuccess(projectDescriptor);
+
+        verify(projectEnvironmentsAction).perform();
     }
 
     @Test

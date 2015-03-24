@@ -602,6 +602,8 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
 
         launchAction.perform(runner);
 
+        selectHistoryTab();
+
         return runner;
     }
 
@@ -642,8 +644,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         history.selectRunner(selectedRunner);
-
-        selectHistoryTab();
 
         rightTabContainer.showTab(selectedRunner.getActiveTab());
 
