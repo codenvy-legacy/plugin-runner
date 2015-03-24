@@ -159,6 +159,10 @@ public class GetEnvironmentsUtilImpl implements GetEnvironmentsUtil {
         ProjectTypeDefinition definition = projectTypeRegistry.getProjectType(projectType);
 
         List<String> categories = definition.getRunnerCategories();
+        if (categories == null || categories.isEmpty()) {
+            return tree;
+        }
+
         String category = categories.get(0);
         tree.setDisplayName(category);
 
