@@ -10,9 +10,10 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.history;
 
-import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.ImplementedBy;
+
+import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 
 import javax.annotation.Nonnull;
 
@@ -31,6 +32,14 @@ public interface HistoryView extends IsWidget {
      *         runner which was added
      */
     void addRunner(@Nonnull RunnerWidget runnerWidget);
+
+    /**
+     * Removes runner from panel.
+     *
+     * @param runnerWidget
+     *         widget which need remove
+     */
+    void removeRunner(@Nonnull RunnerWidget runnerWidget);
 
     /**
      * Sets visibility state to panel.

@@ -10,14 +10,14 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.history;
 
-import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
-import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
+import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,12 +29,14 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class HistoryPresenterTest {
@@ -68,6 +70,7 @@ public class HistoryPresenterTest {
 
         verify(selectionManager).setRunner(runner);
         verify(widgetFactory).createRunner();
+        verify(runnerWidget).setDelegate(historyPresenter);
         verify(runnerWidget).update(runner);
         verify(view).addRunner(runnerWidget);
 
@@ -160,4 +163,37 @@ public class HistoryPresenterTest {
         verify(view).clear();
     }
 
+    @Test
+    public void runnerShouldBeRemoved() throws Exception {
+        historyPresenter.addRunner(runner);
+
+        historyPresenter.onRunnerCleanBtnClicked(runner);
+
+        verify(view).removeRunner(runnerWidget);
+    }
+
+    @Test
+    public void firstRunnerShouldBeSelectedWhenWeRemoveRunner() throws Exception {
+        when(selectionManager.getRunner()).thenReturn(runner2);
+        historyPresenter.addRunner(runner);
+        historyPresenter.addRunner(runner2);
+
+        historyPresenter.onRunnerCleanBtnClicked(runner2);
+
+        verify(selectionManager, times(2)).setRunner(runner);
+        verify(runnerWidget, times(2)).select();
+    }
+
+    @Test
+    public void firstRunnerShouldNotBeSelectedWhenWeRemoveRunner() throws Exception {
+        historyPresenter.addRunner(runner);
+        historyPresenter.addRunner(runner2);
+        reset(selectionManager, runnerWidget);
+        when(selectionManager.getRunner()).thenReturn(runner);
+
+        historyPresenter.onRunnerCleanBtnClicked(runner2);
+
+        verify(selectionManager, never()).setRunner(runner);
+        verify(runnerWidget, never()).select();
+    }
 }

@@ -13,6 +13,7 @@ package org.eclipse.che.ide.ext.runner.client.tabs.common.item;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.eclipse.che.ide.ext.runner.client.RunnerResources;
@@ -23,6 +24,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.vectomatic.dom.svg.ui.SVGImage;
 
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -31,12 +35,13 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class ItemWidgetImplTest {
     private static final String TEST_TEXT = "some text for test";
 
-    @Mock
+    @Mock(answer = RETURNS_DEEP_STUBS)
     private RunnerResources           resources;
     @Mock
     private RunnerResources.RunnerCss css;
@@ -115,7 +120,15 @@ public class ItemWidgetImplTest {
 
         itemWidget.setImage(svgImageResource);
 
+        verify(resources.runnerCss()).itemIcon();
         verify(itemWidget.image).setWidget(any(SVGImage.class));
+    }
+
+    @Test
+    public void imagePanelShouldBeReturned() {
+        SimpleLayoutPanel panel = itemWidget.getImagePanel();
+
+        assertThat(panel, sameInstance(itemWidget.imagePanel));
     }
 
 }

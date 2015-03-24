@@ -10,18 +10,20 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.tabs.history;
 
-import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
-import org.eclipse.che.ide.ext.runner.client.models.Runner;
-import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
-import org.eclipse.che.ide.ext.runner.client.tabs.common.item.RunnerItems;
-import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import org.eclipse.che.ide.ext.runner.client.inject.factories.WidgetFactory;
+import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.selection.SelectionManager;
+import org.eclipse.che.ide.ext.runner.client.tabs.common.item.RunnerItems;
+import org.eclipse.che.ide.ext.runner.client.tabs.history.runner.RunnerWidget;
+
 import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -30,7 +32,7 @@ import java.util.Map;
  * @author Dmitry Shnurenko
  */
 @Singleton
-public class HistoryPresenter implements HistoryPanel {
+public class HistoryPresenter implements HistoryPanel, RunnerWidget.ActionDelegate {
 
     private final HistoryView               view;
     private final WidgetFactory             widgetFactory;
@@ -56,6 +58,7 @@ public class HistoryPresenter implements HistoryPanel {
         selectionManager.setRunner(runner);
 
         RunnerWidget runnerWidget = widgetFactory.createRunner();
+        runnerWidget.setDelegate(this);
         runnerWidget.update(runner);
 
         runnerWidgets.put(runner, runnerWidget);
@@ -73,6 +76,20 @@ public class HistoryPresenter implements HistoryPanel {
         }
 
         runnerWidget.update(runner);
+    }
+
+    private void selectFirst() {
+        Runner runner;
+
+        Iterator<Runner> iterator = runnerWidgets.keySet().iterator();
+
+        if (iterator.hasNext()) {
+            runner = iterator.next();
+
+            selectionManager.setRunner(runner);
+
+            selectRunner(runner);
+        }
     }
 
     /** {@inheritDoc} */
@@ -112,5 +129,18 @@ public class HistoryPresenter implements HistoryPanel {
     @Override
     public void go(@Nonnull AcceptsOneWidget container) {
         container.setWidget(view);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onRunnerCleanBtnClicked(@Nonnull Runner runner) {
+        RunnerWidget widget = runnerWidgets.get(runner);
+
+        view.removeRunner(widget);
+        runnerWidgets.remove(runner);
+
+        if (runner.equals(selectionManager.getRunner())) {
+            selectFirst();
+        }
     }
 }

@@ -173,3 +173,10 @@
 .leftTabContainerShadow {
     box-shadow: inset -1px 0 0 #4d4d4d, inset 0 -1px 0 0 #000000;
 }
+
+.itemIcon {
+    position: absolute;
+    padding-top: 10px;
+    padding-left: 6px;
+    z-index: 0;
+}

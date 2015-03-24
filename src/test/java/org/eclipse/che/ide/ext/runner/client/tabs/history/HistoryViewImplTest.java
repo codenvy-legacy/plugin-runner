@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Andrienko Alexander
+ * @author Dmitry Shnurenko
  */
 @RunWith(GwtMockitoTestRunner.class)
 public class HistoryViewImplTest {
@@ -50,6 +51,13 @@ public class HistoryViewImplTest {
         historyView.clear();
 
         verify(historyView.runnersPanel).clear();
+    }
+
+    @Test
+    public void runnerShouldBeRemoved() throws Exception {
+        historyView.removeRunner(runnerWidget);
+
+        verify(historyView.runnersPanel).remove(runnerWidget);
     }
 
 }
