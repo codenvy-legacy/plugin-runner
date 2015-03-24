@@ -10,18 +10,18 @@
  *******************************************************************************/
 package org.eclipse.che.ide.ext.runner.client.runneractions.impl.launch;
 
+import com.google.inject.Inject;
+
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentProject;
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.ext.runner.client.RunnerLocalizationConstant;
+import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
 import org.eclipse.che.ide.ext.runner.client.models.Runner;
+import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
 import org.eclipse.che.ide.ext.runner.client.runneractions.RunnerAction;
 import org.eclipse.che.ide.ext.runner.client.tabs.console.container.ConsoleContainer;
-import org.eclipse.che.ide.ext.runner.client.inject.factories.RunnerActionFactory;
-import org.eclipse.che.ide.ext.runner.client.runneractions.AbstractRunnerAction;
-
-import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 
