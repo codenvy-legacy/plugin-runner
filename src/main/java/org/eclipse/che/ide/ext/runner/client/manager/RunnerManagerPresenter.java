@@ -204,11 +204,7 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         TabSelectHandler historyHandler = new TabSelectHandler() {
             @Override
             public void onTabSelected() {
-                panelState.setState(RUNNERS);
-
-                view.setEnableRunButton(runnerUtil.hasRunPermission());
-
-                view.showOtherButtons();
+                selectHistoryTab();
             }
         };
 
@@ -646,6 +642,9 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         history.selectRunner(selectedRunner);
+
+        selectHistoryTab();
+
         rightTabContainer.showTab(selectedRunner.getActiveTab());
 
         update(selectedRunner);
@@ -660,5 +659,13 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         }
 
         templateContainer.select(selectedEnvironment);
+    }
+
+    private void selectHistoryTab() {
+        panelState.setState(RUNNERS);
+
+        view.setEnableRunButton(runnerUtil.hasRunPermission());
+
+        view.showOtherButtons();
     }
 }

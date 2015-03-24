@@ -39,6 +39,8 @@ import org.eclipse.che.ide.ui.dialogs.message.MessageDialog;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM.MB_4096;
+
 /**
  * This action executes a request on the server side for getting resources of project. These resources are used for checking RAM and
  * running a runner with the custom memory size. Action uses {@link RunAction}
@@ -51,7 +53,6 @@ import javax.annotation.Nonnull;
  */
 //Todo CheckRamAndRunAction is too difficult. This class should improve.
 public class CheckRamAndRunAction extends AbstractRunnerAction {
-    private final int LARGE_AMOUNT_OF_RAM = 4096;
     private final RunnerServiceClient                                 service;
     private final AppContext                                          appContext;
     private final DialogFactory                                       dialogFactory;
@@ -241,7 +242,7 @@ public class CheckRamAndRunAction extends AbstractRunnerAction {
             return false;
         }
 
-        if (overrideMemory > LARGE_AMOUNT_OF_RAM) {
+        if (overrideMemory > MB_4096.getValue()) {
             consoleContainer.printInfo(runner, constant.messagesLargeMemoryRequest());
         }
 

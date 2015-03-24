@@ -80,6 +80,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -696,7 +697,7 @@ public class RunnerManagerPresenterTest {
         verify(modelsFactory, times(2)).createRunner(runOptions);
 
         //verify launch runner
-        verify(panelState).setState(RUNNERS);
+        verify(panelState, times(2)).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -713,7 +714,7 @@ public class RunnerManagerPresenterTest {
         presenter.onRunButtonClicked();
 
         //verify launch runner
-        verify(panelState).setState(RUNNERS);
+        verify(panelState, times(2)).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -787,7 +788,7 @@ public class RunnerManagerPresenterTest {
         verify(runner).setStatus(Runner.Status.IN_QUEUE);
         verify(runner).getStatus();
 
-        verify(panelState).setState(RUNNERS);
+        verify(panelState, times(2)).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -825,7 +826,7 @@ public class RunnerManagerPresenterTest {
         verify(modelsFactory).createRunner(runOptions, TEXT);
 
         //verify launch runner
-        verify(panelState).setState(RUNNERS);
+        verify(panelState, times(2)).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
@@ -1089,6 +1090,11 @@ public class RunnerManagerPresenterTest {
     private void verifyRunnerSelected() {
         verify(history).selectRunner(runner);
         verify(rightTabContainer).showTab(TEXT);
+
+        //select runners panel
+        verify(panelState).setState(RUNNERS);
+        verify(view).setEnableRunButton(anyBoolean());
+        verify(view).showOtherButtons();
 
         //update
         verify(history).update(runner);
