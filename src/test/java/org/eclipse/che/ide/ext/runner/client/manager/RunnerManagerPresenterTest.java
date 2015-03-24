@@ -184,6 +184,8 @@ public class RunnerManagerPresenterTest {
     @Mock
     private Runner                    runner;
     @Mock
+    private Runner                    runner2;
+    @Mock
     private RunOptions                runOptions;
     @Mock
     private LaunchAction              launchAction;
@@ -271,14 +273,22 @@ public class RunnerManagerPresenterTest {
 
         //adding runner
         when(dtoFactory.createDto(RunOptions.class)).thenReturn(runOptions);
-        when(modelsFactory.createRunner(runOptions)).thenReturn(runner);
+        when(modelsFactory.createRunner(runOptions)).thenReturn(runner).thenReturn(runner2);
         when(processDescriptor.getProcessId()).thenReturn(PROCESS_ID);
         when(processDescriptor.getMemorySize()).thenReturn(MB_512.getValue());
         when(actionFactory.createLaunch()).thenReturn(launchAction);
         when(runner.getTimeout()).thenReturn(TEXT);
         when(selectionManager.getRunner()).thenReturn(runner);
+
         when(runner.getActiveTab()).thenReturn(TEXT);
         when(runner.getStatus()).thenReturn(Runner.Status.IN_PROGRESS);
+        when(runner.isAlive()).thenReturn(true);
+
+        when(runner2.getActiveTab()).thenReturn(TEXT);
+        when(runner2.getStatus()).thenReturn(Runner.Status.IN_PROGRESS);
+        when(runner2.isAlive()).thenReturn(true);
+
+        when(modelsFactory.createRunner(runOptions)).thenReturn(runner);
 
         //application url
         when(locale.uplAppWaitingForBoot()).thenReturn(TEXT);
@@ -685,41 +695,39 @@ public class RunnerManagerPresenterTest {
     @Test
     public void runnerShouldBeRunIfSelectedRunnerNotNullAndStatusIsInProgress() {
         when(runner.getStatus()).thenReturn(Runner.Status.IN_PROGRESS);
-        presenter.addRunner(processDescriptor);
         reset(view, history);
 
         presenter.onRunButtonClicked();
 
         verify(appContext, times(2)).getCurrentProject();
-        verify(dtoFactory, times(2)).createDto(RunOptions.class);
+        verify(dtoFactory).createDto(RunOptions.class);
         verify(runOptions).withSkipBuild(true);
         verify(runOptions).withMemorySize(MB_512.getValue());
-        verify(modelsFactory, times(2)).createRunner(runOptions);
+        verify(modelsFactory).createRunner(runOptions);
 
         //verify launch runner
-        verify(panelState, times(2)).setState(RUNNERS);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
         verify(checkRamAndRunAction).perform(runner);
-        verify(runner, times(2)).resetCreationTime();
+        verify(runner).resetCreationTime();
     }
 
     @Test
     public void newRunnerShouldBeRunIfPanelStateIsNotTemplate() {
         when(panelState.getState()).thenReturn(RUNNERS);
-        presenter.addRunner(processDescriptor);
         reset(view, history);
 
         presenter.onRunButtonClicked();
 
         //verify launch runner
-        verify(panelState, times(2)).setState(RUNNERS);
+        verify(panelState).setState(RUNNERS);
         verify(view).showOtherButtons();
         verify(history).addRunner(runner);
         verify(actionFactory).createCheckRamAndRun();
         verify(checkRamAndRunAction).perform(runner);
-        verify(runner, times(2)).resetCreationTime();
+        verify(runner).resetCreationTime();
     }
 
     @Test
@@ -774,11 +782,11 @@ public class RunnerManagerPresenterTest {
         verify(view).setApplicationURl(TEXT);
 
         verify(runner, times(3)).resetCreationTime();
-
     }
 
     @Test
     public void runnerShouldBeRerunIfRunnerNotNullAndStatusIsStopped() {
+        when(actionFactory.createCheckRamAndRun()).thenReturn(checkRamAndRunAction);
         when(runner.getStatus()).thenReturn(STOPPED);
         presenter.addRunner(processDescriptor);
         reset(view, history);
@@ -1032,7 +1040,6 @@ public class RunnerManagerPresenterTest {
 
     @Test
     public void projectShouldBeClosed() {
-        presenter.addRunner(processDescriptor);
         presenter.onRunButtonClicked();
         presenter.setPartStack(partStack);
         presenter.onProjectOpened(projectActionEvent);

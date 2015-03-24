@@ -439,8 +439,12 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         RunOptions runOptions = dtoFactory.createDto(RunOptions.class)
                                           .withSkipBuild(Boolean.valueOf(currentProject.getAttributeValue("runner:skipBuild")))
                                           .withMemorySize(MB_512.getValue());
+        Runner runner;
+        do {
+            runner = modelsFactory.createRunner(runOptions);
+        } while (runnerActions.containsKey(runner));
 
-        return launchRunner(modelsFactory.createRunner(runOptions));
+        return launchRunner(runner);
     }
 
     /** {@inheritDoc} */
@@ -562,7 +566,6 @@ public class RunnerManagerPresenter extends BasePresenter implements RunnerManag
         view.setTimeout(TIMER_STUB);
 
         history.clear();
-        runnerActions.clear();
 
         runnerCounter.reset();
         terminalContainer.reset();
