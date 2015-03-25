@@ -318,29 +318,36 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
     @Override
     public void onSaveButtonClicked() {
         isParameterChanged = false;
+
+        final String newEnvironmentName = view.getName();
+        final String environmentName = environment.getName();
+
         String pathToProject = projectDescriptor.getPath();
-
-        String nameValue = view.getName();
-        String environmentName = environment.getName();
-
         String path = pathToProject + ROOT_FOLDER + environmentName;
 
-        if (!environmentName.equals(nameValue)) {
-            AsyncRequestCallback<Void> asyncRequestCallback = voidAsyncCallbackBuilder
-                    .success(new SuccessCallback<Void>() {
-                        @Override
-                        public void onSuccess(Void result) {
-                            projectEnvironmentsAction.perform();
-                        }
-                    })
-                    .failure(new FailureCallback() {
-                        @Override
-                        public void onFailure(@Nonnull Throwable reason) {
-                            notificationManager.showError(reason.getMessage());
-                        }
-                    })
-                    .build();
-            projectService.rename(path, nameValue, null, asyncRequestCallback);
+        AsyncRequestCallback<Void> asyncRequestCallback = voidAsyncCallbackBuilder
+                .success(new SuccessCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        RunnerConfiguration config = runnerConfigs.get(environmentName);
+
+                        runnerConfigs.remove(environmentName);
+
+                        runnerConfigs.put(newEnvironmentName, config);
+
+                        updateProject();
+                    }
+                })
+                .failure(new FailureCallback() {
+                    @Override
+                    public void onFailure(@Nonnull Throwable reason) {
+                        notificationManager.showError(reason.getMessage());
+                    }
+                })
+                .build();
+
+        if (!environmentName.equals(newEnvironmentName)) {
+            projectService.rename(path, newEnvironmentName, null, asyncRequestCallback);
         }
 
         if (editor.isDirty()) {
@@ -358,20 +365,22 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
             });
         }
 
-        RAM ram = view.getRam();
-        currentRam = ram.getValue();
-        environment.setRam(ram.getValue());
-
-        RunnerConfiguration config = dtoFactory.createDto(RunnerConfiguration.class).withRam(ram.getValue());
+        RunnerConfiguration config = dtoFactory.createDto(RunnerConfiguration.class).withRam(environment.getRam());
 
         runnerConfigs.put(environmentName, config);
 
+        updateProject();
+    }
+
+    private void updateProject() {
         AsyncRequestCallback<ProjectDescriptor> asyncDescriptorCallback =
                 asyncDescriptorCallbackBuilder.success(new SuccessCallback<ProjectDescriptor>() {
                     @Override
                     public void onSuccess(ProjectDescriptor result) {
                         view.setEnableSaveButton(false);
                         view.setEnableCancelButton(false);
+
+                        projectEnvironmentsAction.perform();
                     }
                 }).failure(new FailureCallback() {
                     @Override
@@ -381,7 +390,7 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
                     }
                 }).build();
 
-        projectService.updateProject(pathToProject, projectDescriptor, asyncDescriptorCallback);
+        projectService.updateProject(projectDescriptor.getPath(), projectDescriptor, asyncDescriptorCallback);
     }
 
     /** {@inheritDoc} */
@@ -412,7 +421,7 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
 
                         runnerConfigs.remove(environmentName);
 
-                        projectEnvironmentsAction.perform();
+                        updateProject();
 
                         notifyListeners(environment);
                     }

@@ -78,20 +78,6 @@ public class HistoryPresenter implements HistoryPanel, RunnerWidget.ActionDelega
         runnerWidget.update(runner);
     }
 
-    private void selectFirst() {
-        Runner runner;
-
-        Iterator<Runner> iterator = runnerWidgets.keySet().iterator();
-
-        if (iterator.hasNext()) {
-            runner = iterator.next();
-
-            selectionManager.setRunner(runner);
-
-            selectRunner(runner);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public void selectRunner(@Nonnull Runner runner) {
@@ -141,6 +127,20 @@ public class HistoryPresenter implements HistoryPanel, RunnerWidget.ActionDelega
 
         if (runner.equals(selectionManager.getRunner())) {
             selectFirst();
+        }
+    }
+
+    private void selectFirst() {
+        Runner runner;
+
+        Iterator<Runner> iterator = runnerWidgets.keySet().iterator();
+
+        if (iterator.hasNext()) {
+            runner = iterator.next();
+
+            selectionManager.setRunner(runner);
+
+            selectRunner(runner);
         }
     }
 }
