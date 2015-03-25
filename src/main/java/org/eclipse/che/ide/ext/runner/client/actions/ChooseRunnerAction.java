@@ -130,6 +130,10 @@ public class ChooseRunnerAction extends AbstractRunnerActions implements CustomC
     /** @return selected environment. */
     @Nullable
     public Environment selectEnvironment() {
+        //Method returns null if list of environments is empty. And app will be run with default runner.
+        if (environments.getItemCount() < 1) {
+            return null;
+        }
         String selectedEnvironmentName = environments.getValue(environments.getSelectedIndex());
 
         for (Environment environment : projectRunners) {
