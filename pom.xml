@@ -25,7 +25,7 @@
     <name>Codenvy Plugin Runner</name>
     <scm>
         <connection>scm:git:git@github.com:codenvy/plugin-runner.git</connection>
-        <developerConnection>scm:git@github.com:codenvy/plugin-runner.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:codenvy/plugin-runner.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <properties>
