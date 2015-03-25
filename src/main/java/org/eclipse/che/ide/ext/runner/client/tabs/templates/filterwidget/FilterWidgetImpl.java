@@ -83,8 +83,8 @@ public class FilterWidgetImpl extends Composite implements FilterWidget {
     public void addType(@Nonnull String type) {
         types.clear();
 
+        types.addItem('/' + type);
         types.addItem(locale.configsTypeAll());
-        types.addItem(type);
 
         selectType(type);
     }

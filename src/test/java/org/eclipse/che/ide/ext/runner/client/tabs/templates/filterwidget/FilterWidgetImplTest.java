@@ -125,8 +125,8 @@ public class FilterWidgetImplTest {
         filter.addType(SOME_TEXT);
 
         verify(filter.types).clear();
+        verify(filter.types).addItem('/' + SOME_TEXT);
         verify(filter.types).addItem(TYPE_ALL);
-        verify(filter.types).addItem(SOME_TEXT);
     }
 
     @Test
