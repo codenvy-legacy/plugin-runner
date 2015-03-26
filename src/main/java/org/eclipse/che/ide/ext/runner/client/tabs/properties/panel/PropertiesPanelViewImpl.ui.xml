@@ -40,7 +40,7 @@
             width: 160px;
             border: 1px solid #191c1e;
             border-radius: 2px;
-            margin-right: 50px;
+            margin-right: 35px;
             padding-left: 5px;
             padding-top: 2px;
             background-color: #373737;
@@ -59,18 +59,19 @@
         }
 
         .dockerFileLabel {
-            margin-top: 10px;
+            margin-top: 7px;
         }
 
         .editor {
             border: 1px solid #191c1e;
             width: calc(100% - 20px);
+            margin-bottom: 15px;
         }
 
         .buttonsPanel {
-            width: 100px;
-            margin-left: 50px;
-            margin-top: 20px;
+            width: 115px;
+            margin-left: 20px;
+            margin-top: 14px;
         }
     </ui:style>
 
@@ -117,20 +118,19 @@
             </g:FlowPanel>
         </g:west>
 
-        <g:east size="180">
+        <g:east size="115">
             <g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}" debugId="docker-buttons-panel"/>
         </g:east>
 
         <g:center>
             <g:DockLayoutPanel unit="PX" addStyleNames="{resources.runnerCss.fullSize}">
-                <g:north size="30">
+                <g:north size="25">
                     <g:Label text="{locale.propertiesDockerfile}" addStyleNames="{style.dockerFileLabel}
                                                                                  {resources.runnerCss.propertiesFont}"/>
                 </g:north>
 
                 <g:center>
-                    <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{resources.runnerCss.fullSize} {style.editor}"
-                         debugId="dockerEditor"/>
+                    <g:SimpleLayoutPanel ui:field="editorPanel" addStyleNames="{style.editor}" debugId="dockerEditor"/>
                 </g:center>
             </g:DockLayoutPanel>
         </g:center>
