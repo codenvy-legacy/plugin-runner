@@ -142,5 +142,15 @@ public class GetSystemEnvironmentsAction extends AbstractRunnerAction {
         }
 
         chooseRunnerAction.addSystemRunners(environments);
+
+        for (Environment environment : environments) {
+            if (environment.getId().equals(defaultRunner)) {
+                container.setDefaultEnvironment(environment);
+
+                break;
+            } else {
+                container.setDefaultEnvironment(null);
+            }
+        }
     }
 }

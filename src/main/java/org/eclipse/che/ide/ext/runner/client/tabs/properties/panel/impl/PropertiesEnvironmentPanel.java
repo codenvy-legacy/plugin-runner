@@ -43,6 +43,7 @@ import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.RAM;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFile;
 import org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.docker.DockerFileFactory;
+import org.eclipse.che.ide.ext.runner.client.tabs.templates.TemplatesContainer;
 import org.eclipse.che.ide.ext.runner.client.util.NameGenerator;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
@@ -59,6 +60,7 @@ import java.util.Map;
 
 import static org.eclipse.che.ide.ext.runner.client.models.EnvironmentImpl.ROOT_FOLDER;
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.PROJECT;
+import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 
 /**
  * @author Andrey Plotnikov
@@ -85,6 +87,7 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
     private final AsyncCallbackBuilder<ProjectDescriptor>    asyncDescriptorCallbackBuilder;
     private final DialogFactory                              dialogFactory;
     private final List<RemovePanelListener>                  listeners;
+    private final TemplatesContainer                         templatesContainer;
 
     private ProjectDescriptor                projectDescriptor;
     private Map<String, RunnerConfiguration> runnerConfigs;
@@ -109,6 +112,7 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
                                       AsyncCallbackBuilder<Array<ItemReference>> asyncArrayCallbackBuilder,
                                       AsyncCallbackBuilder<Void> voidAsyncCallbackBuilder,
                                       AsyncCallbackBuilder<ProjectDescriptor> asyncDescriptorCallbackBuilder,
+                                      TemplatesContainer templatesContainer,
                                       @Assisted @Nonnull final Environment environment) {
         super(view, appContext);
 
@@ -127,6 +131,7 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
         this.asyncArrayCallbackBuilder = asyncArrayCallbackBuilder;
         this.voidAsyncCallbackBuilder = voidAsyncCallbackBuilder;
         this.asyncDescriptorCallbackBuilder = asyncDescriptorCallbackBuilder;
+        this.templatesContainer = templatesContainer;
 
         this.dialogFactory = dialogFactory;
 
@@ -476,7 +481,9 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
 
         Scope scope = environment.getScope();
 
-        view.setEnableDeleteButton(PROJECT.equals(scope));
+        boolean isProjectScope = PROJECT.equals(scope);
+
+        view.setEnableDeleteButton(isProjectScope);
 
         String environmentName = environment.getName();
 
@@ -490,6 +497,22 @@ public class PropertiesEnvironmentPanel extends PropertiesPanelPresenter {
         view.setName(environmentName);
         view.setType(environment.getType());
         view.selectScope(scope);
+
+        String defaultRunner = currentProject.getRunner();
+
+        view.changeSwitcherState(environment.getId().equals(defaultRunner));
+
+        if (isProjectScope) {
+            view.hideSwitcher();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onSwitcherChanged(boolean isOn) {
+        if (SYSTEM.equals(environment.getScope())) {
+            templatesContainer.setDefaultEnvironment(isOn ? environment : null);
+        }
     }
 
     /** {@inheritDoc} */

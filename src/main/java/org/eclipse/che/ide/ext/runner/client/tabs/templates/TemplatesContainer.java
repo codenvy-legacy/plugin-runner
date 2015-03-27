@@ -62,4 +62,12 @@ public interface TemplatesContainer extends TabPresenter {
     /** Changes enable state run button */
     void changeEnableStateRunButton();
 
+    /**
+     * Sets current environment as default for project. If we want delete default environment we need hand on null.
+     *
+     * @param environment
+     *         environment which need set
+     */
+    void setDefaultEnvironment(@Nullable Environment environment);
+
 }

@@ -32,11 +32,11 @@
 
         .label {
             float: left;
-            margin-top: -1px;
+            margin-top: 3px;
         }
 
         .marginType {
-            margin-left: 20px;
+            margin-left: 19px;
         }
 
         .marginScope {
@@ -56,13 +56,13 @@
 
     <g:FlowPanel addStyleNames="{style.main}">
         <g:FlowPanel addStyleNames="{style.typePanel}">
-            <g:Label text="{locale.configsType}" addStyleNames="{style.label}"/>
+            <g:Label text="{locale.configsType}" addStyleNames="{style.label} {resources.runnerCss.fontSizeTen}"/>
 
             <g:ListBox ui:field="types" addStyleNames="{style.listBox} {style.marginType} {resources.runnerCss.propertiesFont}"/>
         </g:FlowPanel>
 
         <g:FlowPanel addStyleNames="{style.scopePanel}">
-            <g:Label text="{locale.configsScope}" addStyleNames="{style.label}"/>
+            <g:Label text="{locale.configsScope}" addStyleNames="{style.label} {resources.runnerCss.fontSizeTen}"/>
 
             <g:ListBox ui:field="scopes" addStyleNames="{style.listBox} {style.marginScope} {resources.runnerCss.propertiesFont}"/>
         </g:FlowPanel>
