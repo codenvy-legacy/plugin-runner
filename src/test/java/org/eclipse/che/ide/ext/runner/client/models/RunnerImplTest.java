@@ -55,6 +55,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -556,20 +557,22 @@ public class RunnerImplTest {
     }
 
     @Test
-    public void equalsShouldReturnFalseForRunnerObjectsWithDifferentTitle() {
-        when(runnerCounter.getRunnerNumber()).thenReturn(2);
-
+    public void equalsShouldReturnFalseForRunnerObjectsWithDifferentTitleAndCreationTime() {
         RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, util, runOptions);
+        runner1.setTitle(TEXT);
 
         assertThat(runner.equals(runner1), is(false));
-        verify(runnerCounter, times(2)).getRunnerNumber();
     }
 
     @Test
-    public void equalsShouldReturnTrueForRunnerObjectsWithSameTitle() {
-        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, util, runOptions);
+    public void equalsShouldReturnFalseForRunnerObjectsWithSameTitleButDifferentCreationTime() {
+        runner.setTitle(TEXT);
+        timeout(1000);
 
-        assertThat(runner.equals(runner1), is(true));
+        RunnerImpl runner1 = new RunnerImpl(locale, runnerCounter, util, runOptions);
+        runner1.setTitle(TEXT);
+
+        assertThat(runner.equals(runner1), is(false));
     }
 
     @Test
