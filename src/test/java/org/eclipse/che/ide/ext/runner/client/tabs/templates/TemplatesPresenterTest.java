@@ -47,9 +47,11 @@ import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common
 import static org.eclipse.che.ide.ext.runner.client.tabs.properties.panel.common.Scope.SYSTEM;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -480,5 +482,38 @@ public class TemplatesPresenterTest {
         getProjectDescriptorShouldBeVerified();
 
         verifyNoMoreInteractions(environmentUtil, panelState, runnerUtil, runnerManagerView);
+    }
+
+    @Test
+    public void runEnableStatusShouldBeChangedAfterChangeScopeFromProjectToAll() {
+        presenter.addEnvironments(tree, SYSTEM);
+        presenter.addEnvironments(tree, PROJECT);
+
+        when(filter.getScope()).thenReturn(ALL);
+        when(filter.getType()).thenReturn(TYPE_ALL);
+        presenter.onValueChanged();
+        reset(runnerManagerView, view, panelState);
+
+        presenter.addEnvironments(tree, ALL);
+
+        verify(appContext, times(3)).getCurrentProject();
+        verify(currentProject, times(3)).getProjectDescription();
+        verify(environmentUtil).getEnvironmentsByProjectType(tree, SOME_TEXT, ALL);
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
+        verify(descriptor, times(2)).getType();
+
+        verify(view).addEnvironment(Matchers.<Map<Scope, List<Environment>>>anyObject());
+        verify(propertiesContainer, times(3)).setVisible(true);
+
+        verify(propertiesContainer, times(2)).show(systemEnvironment1);
+        verify(view).selectEnvironment(systemEnvironment1);
+        verify(selectionManager, times(2)).setEnvironment(systemEnvironment1);
+
+        verify(panelState).getState();
+
+        verify(runnerUtil, times(3)).hasRunPermission();
+
+        //run button should be visible
+        verify(runnerManagerView).setEnableRunButton(true);
     }
 }

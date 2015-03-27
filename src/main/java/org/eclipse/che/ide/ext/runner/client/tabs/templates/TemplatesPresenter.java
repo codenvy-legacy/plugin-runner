@@ -244,12 +244,15 @@ public class TemplatesPresenter implements TemplatesContainer, FilterWidget.Acti
     /** {@inheritDoc} */
     @Override
     public void changeEnableStateRunButton() {
-        List<Environment> environmentList = environmentMap.get(currentScope);
-        if (!runnerUtil.hasRunPermission() || environmentList == null) {
+        if (!runnerUtil.hasRunPermission()) {
             return;
         }
 
-        runnerManagerView.setEnableRunButton(!environmentList.isEmpty());
+        List<Environment> environmentList = environmentMap.get(currentScope);
+
+        boolean runButtonIsEnable = currentScope == ALL || !environmentList.isEmpty();
+
+        runnerManagerView.setEnableRunButton(runButtonIsEnable);
     }
 
     private void selectSystemScope() {
