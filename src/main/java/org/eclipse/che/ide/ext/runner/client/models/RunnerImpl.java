@@ -453,7 +453,7 @@ public class RunnerImpl implements Runner {
 
         RunnerImpl runner = (RunnerImpl)o;
 
-        return Objects.equals(title, runner.title);
+        return creationTime == runner.creationTime && Objects.equals(title, runner.title);
     }
 
     /** {@inheritDoc} */
