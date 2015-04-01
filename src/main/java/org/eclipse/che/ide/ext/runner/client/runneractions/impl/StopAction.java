@@ -157,8 +157,7 @@ public class StopAction extends AbstractRunnerAction {
         Notification.Type notificationType;
 
         Runner.Status runnerStatus = runner.getStatus();
-
-        if (Runner.Status.RUNNING.equals(runnerStatus) || Runner.Status.DONE.equals(runnerStatus)) {
+        if (Runner.Status.RUNNING.equals(runnerStatus) || Runner.Status.DONE.equals(runnerStatus) || Runner.Status.IN_PROGRESS.equals(runnerStatus)) {
             notificationType = INFO;
 
             runner.setStatus(Runner.Status.STOPPED);
