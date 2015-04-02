@@ -83,6 +83,11 @@ public class ConsoleImpl extends Composite implements Console {
     /** {@inheritDoc} */
     @Override
     public void print(@Nonnull String text) {
+        // nothing to display
+        if (text.isEmpty()) {
+            return;
+        }
+
         //The message from server can be include a few lines of console
         // We detect type from the full message which can be multiline
         MessageType messageType = MessageType.detect(text);
